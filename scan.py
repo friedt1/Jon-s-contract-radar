@@ -9,7 +9,7 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 
-OUT = pathlib.Path(__file__).resolve().parents[1] / 'data' / 'opportunities.json'
+OUT = pathlib.Path(__file__).resolve().parent / 'data' / 'opportunities.json'
 AREAS = ['Elmira', 'Horseheads', 'Corning', 'Bath', 'Ithaca', 'Binghamton', 'Owego', 'Waverly', 'Watkins Glen', 'Penn Yan', 'Sayre', 'Towanda', 'Cortland', 'Geneva', 'Hornell', 'Mansfield']
 CATEGORIES = {'Tree removal': ['tree removal', 'tree cutting', 'tree felling'], 'Tree trimming': ['tree trimming', 'tree pruning'], 'Land clearing': ['land clearing', 'right of way clearing'], 'Vegetation management': ['vegetation management', 'brush clearing', 'utility clearing'], 'Storm cleanup': ['storm debris', 'storm cleanup']}
 QUERIES = ['("tree removal" OR "tree trimming" OR "vegetation management") (bid OR RFP OR contract) (Elmira OR Ithaca OR Binghamton OR Corning)', '("land clearing" OR "brush clearing" OR "storm debris") (bid OR tender OR contract) ("New York" OR Pennsylvania)']
