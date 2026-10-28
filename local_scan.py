@@ -278,6 +278,12 @@ def assemble(sources, previous, now, getter=None, pause=None):
             lead.update(source_links=list(links.values()), first_seen=existing.get('first_seen', now.isoformat(timespec='seconds')), last_seen=now.isoformat(timespec='seconds'))
             found[uid] = lead
     if not successful: raise RuntimeError('All local sources failed; previous feed and history preserved: ' + json.dumps(status))
+    # News is context, not evidence that request discovery is healthy. If all
+    # configured request feeds fail, publishing a news-only scan would clear
+    # still-relevant current customer requests during an outage. Fail closed;
+    # the staged workflow leaves the previous public feed/history untouched.
+    if any(source['kind'] != 'news' for source in sources) and not request_successful:
+        raise RuntimeError('All request sources failed; previous feed and history preserved: ' + json.dumps(status))
     historical = dict(old)
     historical.update(found)
     # Keep the full discovery history; expiry only suppresses the current feed.
