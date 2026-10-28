@@ -61,6 +61,26 @@ class QualityTests(unittest.TestCase):
             record('Can anyone recommend a tree removal company in Elmira NY?'),
             SOCIAL, NOW))
 
+    def test_seller_ad_questions_are_not_customer_requests(self):
+        # Ads often open with the same question a homeowner would ask.
+        ads = (
+            'Need tree removal in Elmira NY? Contact us today!',
+            'Looking for tree trimming in Elmira NY? Our crews are available.',
+            'Need stump grinding in Elmira NY? Get a free quote.',
+            'Who can remove a tree in Elmira NY? We can help!',
+            'Need tree removal in Elmira NY? Schedule a free estimate.',
+        )
+        for phrase in ads:
+            with self.subTest(phrase=phrase):
+                self.assertIsNone(radar.candidate(record(phrase), SOCIAL, NOW))
+        # Do not reject actual people asking for a referral or a quote.
+        for phrase in (
+            'Can anyone recommend tree removal in Elmira NY?',
+            'Looking for a quote for stump grinding in Elmira NY.',
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIsNotNone(radar.candidate(record(phrase), SOCIAL, NOW))
+
     def test_news_cannot_resurrect_or_downgrade_historical_request(self):
         _, previous = assemble()
         prior = next(iter(previous['leads'].values()))
