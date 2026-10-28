@@ -45,7 +45,7 @@ class Page(HTMLParser):
     def handle_starttag(self,tag,attrs):
         a=dict(attrs)
         if tag in ('script','style'): self.skip+=1
-        if tag=='a': self.active=[a.get('href',''),[],len(self.text)]
+        if tag=='a': self.active=[a.get('href') or '',[],len(self.text)]
     def handle_data(self,s):
         if self.skip:return
         s=norm(s)
