@@ -54,3 +54,10 @@ This is a **manual research queue**, not verified leads or an automated source i
 - **Classifier rule:** Government construction press releases can identify useful prime contractors and real tree-work scope, but are not solicitations. Keep a separate `prime_contractor_prospect` research category with `subcontract_opening_verified=false` until the prime or official procurement notice confirms an actual opening. Do not count total highway project value as tree-service revenue.
 
 **Metrics remain unchanged:** 0 newly verified open paid tree-service opportunities, 0 qualified leads, 0 new automated sources.
+
+## October 28 active-but-out-of-scope procurement control
+
+- **Tioga County NY, 67 Central Avenue Demolition Project Rebid (Owego):** [official Tioga County Public Works notice](https://tiogacountyny.gov/departments/public-works/) describes demolition of a roughly 2,136-square-foot, two-story building, foundation removal, off-site demolition-debris disposal, and site restoration. The notice specifies a **mandatory prime-bidder walkthrough on October 29, 2026 at 9:00 a.m.** (previous walkthrough attendees may already satisfy it), written questions due **November 5 at noon**, and bids due **November 13, 2026 at 11:00 a.m.** The work is genuinely advertised and geographically nearby, but the published summary **does not establish tree removal, vegetation clearing, or a tree-service subcontract**. Do not count it as a tree-work lead or claim the tree-service business is eligible to prime the demolition job.
+- **Classifier rule:** An active demolition/site-restoration bid containing words such as *clearing*, *removal* or *debris* is **not** automatically a tree/land-clearing contract. Require explicit vegetation/tree/brush scope in the original solicitation or a confirmed suitable subcontract before promotion to the actionable tree-contract feed. Preserve this as a negative-control example, not an opportunity.
+
+**No change to qualified lead count:** 0 newly verified open paid tree-service opportunities; no production source or data changes.
