@@ -8,9 +8,10 @@ import re
 from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 
-LABELS = ("Agency", "Division", "Issue date", "Due date", "Location", "Category", "Ad type")
+LABELS = ("Agency", "Division", "Issue date", "Due date", "Location", "Category", "Ad type", "Description", "Detail URL", "Solicitation URL")
 WORK = re.compile(
     r"tree (?:removal|trimming|pruning|clearing|cutting|service|maintenance)|"
+    r"remov(?:al|e) of (?:hazardous )?trees?|"
     r"stump (?:removal|grinding)|brush (?:clearing|removal|cutting)|"
     r"vegetation management|right.of.way (?:clearing|vegetation)|"
     r"line clearance|roadside clearing|land clearing|forestry mulching|"
@@ -31,6 +32,7 @@ def extract(text):
     # A CR number follows a title and literal CR#: label in NYSCR's listing.
     markers = [i for i in range(1, len(lines)-1)
                if lines[i] == "CR#:" and NUMBER.fullmatch(lines[i+1])]
+    label_pattern = re.compile(r"^(" + "|".join(re.escape(label) for label in LABELS) + r"):\s*(.*)$", re.I)
     for n, marker in enumerate(markers):
         number = lines[marker+1]
         if number in seen or marker == 0:
@@ -39,13 +41,25 @@ def extract(text):
         start = marker + 2
         stop = markers[n+1]-1 if n+1 < len(markers) else len(lines)
         fields = {}
-        for i in range(start, max(start, stop-1)):
-            name = lines[i].removesuffix(":")
-            if name in LABELS and lines[i].endswith(":"):
-                fields[name] = lines[i+1] if i+1 < stop else ""
+        for i in range(start, stop):
+            match = label_pattern.fullmatch(lines[i])
+            if not match:
+                continue
+            label = next(name for name in LABELS if name.lower() == match.group(1).lower())
+            # Support both "Agency: Example" and the line-separated export format.
+            value = match.group(2).strip()
+            if not value and i + 1 < stop and not label_pattern.fullmatch(lines[i+1]):
+                value = lines[i+1]
+            fields[label] = value
         title = lines[marker-1]
-        if not WORK.search(title):
+        scope = fields.get("Description") or title
+        if not WORK.search(title + " " + scope):
             continue
+        link = fields.get("Detail URL") or fields.get("Solicitation URL") or ""
+        parsed = urlparse(link)
+        if (parsed.scheme != "https" or parsed.hostname not in ("nyscr.ny.gov", "www.nyscr.ny.gov")
+                or not re.search(r"(?<!\d)" + re.escape(number) + r"(?!\d)", parsed.path + "?" + parsed.query)):
+            link = ""
         due = fields.get("Due date", "")
         try:
             due_iso = dt.datetime.strptime(due, "%m/%d/%Y").date().isoformat() if DATE.fullmatch(due) else ""
@@ -60,12 +74,12 @@ def extract(text):
             "source": "NYS Contract Reporter",
             "status": "research_only",
             "open_status": "unknown",
-            "scope": title,
+            "scope": scope,
             "deadline_time": "",
             "deadline_timezone": "unverified",
             "location_verified": False,
-            "detail_url": None,
-            "verification": "Original notice, access permission, active status, and work location not verified",
+            "detail_url": link or None,
+            "verification": "Authorized export only; original notice status, access permission, and worksite not independently verified",
         })
     return result
 
