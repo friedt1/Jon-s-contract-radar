@@ -1,0 +1,716 @@
+[
+  {
+    "name": "Chemung County bids",
+    "type": "government",
+    "url": "https://chemungcountyny.gov/Bids.aspx",
+    "mode": "direct_page",
+    "verified_url": true
+  },
+  {
+    "name": "Steuben County bids",
+    "type": "government",
+    "url": "https://www.steubencountyny.gov/Bids.aspx",
+    "mode": "direct_page",
+    "verified_url": true
+  },
+  {
+    "name": "Schuyler County purchasing",
+    "type": "government",
+    "url": "https://www.schuylercountyny.gov/174/Purchasing",
+    "mode": "direct_page",
+    "verified_url": true
+  },
+  {
+    "name": "Tompkins County purchasing",
+    "type": "government",
+    "url": "https://www.tompkinscountyny.gov/All-Departments/Finance-Department/Purchasing-Division",
+    "mode": "direct_page",
+    "verified_url": true
+  },
+  {
+    "name": "Elmira City bids",
+    "type": "government",
+    "url": "https://www.cityofelmirany.gov/264/Sealed-Bid-Information",
+    "mode": "direct_page",
+    "verified_url": true
+  },
+  {
+    "name": "Elmira Next local bids",
+    "type": "aggregator",
+    "url": "https://elmiranext.com/bids",
+    "mode": "direct_page",
+    "verified_url": true
+  },
+  {
+    "name": "Lycoming County bids",
+    "type": "government",
+    "url": "https://lycomingcountypa.gov/government/departments/financial_management/bids.php",
+    "mode": "direct_page",
+    "verified_url": true
+  },
+  {
+    "name": "PA procurement opportunities",
+    "type": "state",
+    "url": "https://www.pa.gov/agencies/dgs/doing-business-with-the-commonwealth/business-inclusion-and-supplier-development/finding-opportunities",
+    "mode": "direct_page",
+    "verified_url": true
+  },
+  {
+    "name": "PA DGS construction bids",
+    "type": "state",
+    "url": "https://www.pa.gov/agencies/dgs/doing-business-with-the-commonwealth/submit-proposals-and-bids-for-commonwealth-projects",
+    "mode": "direct_page",
+    "verified_url": true
+  },
+  {
+    "name": "Tioga Bradford Housing Authority",
+    "type": "housing",
+    "url": "https://www.tbhra.org/bid-information/",
+    "mode": "direct_page",
+    "verified_url": true
+  },
+  {
+    "name": "Chemung County purchasing",
+    "type": "government",
+    "url": "https://chemungcountyny.gov/435/Purchasing",
+    "mode": "direct_page",
+    "verified_url": true
+  },
+  {
+    "name": "PennBid platform",
+    "type": "platform",
+    "url": "https://pennbid.bonfirehub.com",
+    "mode": "direct_page",
+    "verified_url": true
+  },
+  {
+    "name": "BidNet NY platform",
+    "type": "platform",
+    "url": "https://www.bidnetdirect.com/new-york",
+    "mode": "direct_page",
+    "verified_url": true
+  },
+  {
+    "name": "Tioga County NY",
+    "type": "NY counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Broome County",
+    "type": "NY counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Cortland County",
+    "type": "NY counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Yates County",
+    "type": "NY counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Ontario County",
+    "type": "NY counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Seneca County",
+    "type": "NY counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Allegany County",
+    "type": "NY counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Livingston County",
+    "type": "NY counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Wayne County",
+    "type": "NY counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Wyoming County",
+    "type": "NY counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Bradford County PA",
+    "type": "PA counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Tioga County PA",
+    "type": "PA counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Susquehanna County",
+    "type": "PA counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Sullivan County PA",
+    "type": "PA counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Clinton County PA",
+    "type": "PA counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Potter County PA",
+    "type": "PA counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Lackawanna County",
+    "type": "PA counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Wyoming County PA",
+    "type": "PA counties",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Town of Horseheads",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Village of Horseheads",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Town of Big Flats",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Town of Elmira",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "City of Corning",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Town of Corning",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "City of Ithaca",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Town of Ithaca",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "City of Binghamton",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Town of Vestal",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Village of Owego",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Village of Waverly",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Village of Watkins Glen",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Village of Bath",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "City of Hornell",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "City of Geneva",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "City of Cortland",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Village of Penn Yan",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Village of Montour Falls",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Town of Southport",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Town of Ashland NY",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Town of Erwin",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Town of Lansing",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Town of Dryden",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Town of Union NY",
+    "type": "NY municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Sayre Borough",
+    "type": "PA municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Athens Borough",
+    "type": "PA municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Towanda Borough",
+    "type": "PA municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Mansfield Borough",
+    "type": "PA municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Wellsboro Borough",
+    "type": "PA municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Troy Borough",
+    "type": "PA municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Williamsport City",
+    "type": "PA municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Montrose Borough",
+    "type": "PA municipalities",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Elmira City School District",
+    "type": "NY education",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Horseheads Central School District",
+    "type": "NY education",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Corning-Painted Post Area School District",
+    "type": "NY education",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Ithaca City School District",
+    "type": "NY education",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Binghamton City School District",
+    "type": "NY education",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Watkins Glen Central School District",
+    "type": "NY education",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Bath Central School District",
+    "type": "NY education",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Waverly Central School District",
+    "type": "NY education",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "SUNY Corning Community College",
+    "type": "NY education",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Cornell University",
+    "type": "NY education",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Ithaca College",
+    "type": "NY education",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Northern Tier Career Center",
+    "type": "PA education",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Sayre Area School District",
+    "type": "PA education",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Athens Area School District",
+    "type": "PA education",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Wellsboro Area School District",
+    "type": "PA education",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Mansfield University",
+    "type": "PA education",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "NYSEG",
+    "type": "utilities and transportation",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "New York State DOT Region 6",
+    "type": "utilities and transportation",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "New York State DOT Region 9",
+    "type": "utilities and transportation",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "PennDOT District 3",
+    "type": "utilities and transportation",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "PennDOT District 4",
+    "type": "utilities and transportation",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Pennsylvania American Water",
+    "type": "utilities and transportation",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Corning Natural Gas",
+    "type": "utilities and transportation",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "New York Power Authority",
+    "type": "utilities and transportation",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "FirstEnergy Penelec",
+    "type": "utilities and transportation",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Norfolk Southern",
+    "type": "utilities and transportation",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Arnot Realty",
+    "type": "commercial property",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Elmira-Corning Regional Airport",
+    "type": "commercial property",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Arnot Health",
+    "type": "commercial property",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Guthrie Healthcare",
+    "type": "commercial property",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "UPMC Williamsport",
+    "type": "commercial property",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Corning Incorporated",
+    "type": "commercial property",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Dandy Mini Marts",
+    "type": "commercial property",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Wegmans regional properties",
+    "type": "commercial property",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Brixmor Property Group",
+    "type": "commercial property",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "Kimco Realty",
+    "type": "commercial property",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "CBRE regional property management",
+    "type": "commercial property",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  },
+  {
+    "name": "JLL regional property management",
+    "type": "commercial property",
+    "url": "",
+    "mode": "discovery_pending",
+    "verified_url": false
+  }
+]
