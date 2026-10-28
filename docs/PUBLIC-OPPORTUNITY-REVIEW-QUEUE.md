@@ -72,3 +72,11 @@ This is a **manual research queue**, not verified leads or an automated source i
 - **Automation lesson:** The production scanner's empty qualified feed misses at least this publicly advertised regional bid. The next safe integration is a publisher-approved official procurement feed/API or opt-in bid alerts; do not scrape JavaScript portal internals or third-party listings without a terms review.
 
 **Production metrics unchanged:** 0 automatically qualified published opportunities, 0 new automated integrations. This manual discovery is an open paid-work *candidate*, not an assertion of an eligible or accepted bid.
+
+## October 28 official-feed availability check — no guessed endpoints
+
+- [Steuben County's official RSS directory](https://www.steubencountyny.gov/rss.aspx) explicitly offers feeds for pages, agendas, alerts, calendar, jobs and news, **but does not list a bid-postings feed**. Do not construct an undocumented bid RSS URL or treat a county jobs/news feed as contract notices. Its [official bid-postings page](https://www.steubencountyny.gov/Bids.aspx) is a separate public listing, and its bid status and closing date must be checked on the original detail.
+- [Chemung County's official bid-postings page](https://chemungcountyny.gov/Bids.aspx) offers email/text notifications for new bids. That is an opt-in alert mechanism, **not evidence of a public RSS or API**. The [Purchasing Department](https://chemungcountyny.gov/435/Purchasing) confirms BidNet Direct electronic submissions are supported but paper submission is also available; do not assume portal access or submission requirements are identical for every bid.
+- [NYS Contract Reporter](https://www.nyscr.ny.gov/) advertises a free account and current opportunity counts. A homepage count is not a verified individual solicitation and does not establish a publicly permitted machine feed. Source integration requires documented access/terms and live original-notice checks.
+
+**Admission decision:** These are official manual discovery resources only; no new automated sources, no qualified tree-work leads, and no production feed changes. An actual official RSS/API or publisher-approved alerts route remains to be verified.
