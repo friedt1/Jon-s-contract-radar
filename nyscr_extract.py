@@ -93,7 +93,7 @@ def promotable(notice, *, today=None):
     if parsed.scheme != "https" or parsed.hostname not in ("nyscr.ny.gov", "www.nyscr.ny.gov"):
         return False
     # A generic portal homepage is not an original solicitation.
-    if not re.search(r"(?<!\\d)" + re.escape(number) + r"(?!\\d)", parsed.path + "?" + parsed.query):
+    if not re.search(r"(?<!\d)" + re.escape(number) + r"(?!\d)", parsed.path + "?" + parsed.query):
         return False
     return bool(
         notice.get("status") == "verified_open"
