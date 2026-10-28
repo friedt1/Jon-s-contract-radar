@@ -158,9 +158,6 @@ def scan_civicplus(src, listing_pages, page_errors):
   if row['open_status'] in civicplus_bids.CLOSED:
    closed_count += 1
    continue
-  if row['deadline'] and row['deadline'] < today:
-   expired_count += 1
-   continue
   if not category(row['title'] + ' ' + row['description']):
    continue
   # The county listing is not the worksite; routing remains unverified.
@@ -168,19 +165,33 @@ def scan_civicplus(src, listing_pages, page_errors):
    break
   checked += 1
   detail_status = 'unknown'
+  detail_due = ''
+  detail_time = ''
+  detail_scope = ''
+  detail_worksite = ''
   try:
    blob, kind, final = fetch(row['url'], binary=True)
    if 'html' in kind or blob.lstrip().startswith(b'<'):
     detail = parse_html(blob.decode('utf-8', 'replace'))
-    detail_status = civicplus_bids.status_of(' '.join(detail.parts))
+    body = ' '.join(detail.parts)
+    detail_status = civicplus_bids.status_of(body)
+    detail_due, detail_time = civicplus_bids.detail_closing_of(body)
+    detail_scope = civicplus_bids.detail_description(body)
+    detail_worksite = civicplus_bids.detail_worksite(body)
   except Exception as e:
    errors.append(error_label(e))
   if detail_status in civicplus_bids.CLOSED:
    closed_count += 1
    continue
-  due = row['deadline']
-  evidence = row['title'] + ' bid ' + row['description'] + (' Due date: ' + due if due else '')
-  summary = ('Bid No. ' + row['bid_number'] + '. ' if row['bid_number'] else '') + row['description']
+  # The individual notice takes precedence over a stale listing date.
+  due = detail_due or row['deadline']
+  due_time = detail_time if detail_due else row['deadline_time']
+  if due and due < today:
+   expired_count += 1
+   continue
+  scope = detail_scope or row['description']
+  evidence = row['title'] + ' bid ' + scope + (' Due date: ' + due if due else '')
+  summary = ('Bid No. ' + row['bid_number'] + '. ' if row['bid_number'] else '') + scope
   if due:
    summary += ' Due date: ' + due
   add_lead(found, name, row['title'], row['url'], summary, 'individual county bid candidate', evidence=evidence)
@@ -188,13 +199,15 @@ def scan_civicplus(src, listing_pages, page_errors):
   if uid in found:
    found[uid].update({
     'agency': name.replace(' bids', '') + ' (issuing authority)',
-    'scope': row['title'],
+    'scope': detail_scope or row['title'],
     'bid_number': row['bid_number'],
-    'location': 'Worksite unverified; county issuing authority is not a worksite',
+    'location': detail_worksite or 'Worksite unverified; county issuing authority is not a worksite',
+    'location_verified': False,
     'open_status': 'detail_listed_open' if detail_status == 'open' else
                    'listing_open' if row['open_status'] == 'open' else 'unknown',
-    'deadline_time': row['deadline_time'],
+    'deadline_time': due_time,
     'deadline_timezone': 'unverified',
+    'deadline_source': 'individual notice' if detail_due else 'listing' if due else 'unknown',
     'travel_verified': False,
     'travel_category': 'unverified',
    })
