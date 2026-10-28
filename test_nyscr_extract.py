@@ -102,8 +102,8 @@ Detail URL: https://www.nyscr.ny.gov/Ads/View/2149995
                     "http://www.nyscr.ny.gov/Ads/View/2149995",
                     "https://www.nyscr.ny.gov/"):
             with self.subTest(url=url):
-                text = ("Tree removal bid\\nCR#:\\n2149995\\nAgency: Example\\n"
-                        "Due date: 11/20/2026\\nDetail URL: " + url)
+                text = ("Tree removal bid\nCR#:\n2149995\nAgency: Example\n"
+                        "Due date: 11/20/2026\nDetail URL: " + url)
                 rows = extract(text)
                 self.assertEqual(len(rows), 1)
                 self.assertIsNone(rows[0]["detail_url"])
