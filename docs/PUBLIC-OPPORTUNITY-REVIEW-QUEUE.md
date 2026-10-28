@@ -37,3 +37,11 @@ This is a **manual research queue**, not verified leads or an automated source i
 **Admission gate:** Confirm RSS permission/terms and robots, inspect actual entries and their original government permalinks, verify timestamps and tree-work relevance, then implement a bounded parser in a separate tested change. Do not feed procurement bids into homeowner counts. Avoid scraping the aggregator HTML or bypassing access controls.
 
 **Metrics unchanged:** 0 verified tree-work requests, 0 qualified leads, 0 new automated integrations.
+
+## October 28 negative-control checks — relevant words are not enough
+
+- **PA DCNR Tioga State Forest timber sale 16-2025BC04, Elk Township:** [official PA DCNR bid openings](https://iframeapps.dcnr.pa.gov/forestry/timbersales/bidsiframe.aspx) lists a November 4, 2026 opening for 1,176.3 MBF on Cedar Mountain and Mill Run Roads; [official Bid Express agency listing](https://www.bidexpress.com/businesses/102544/home) independently lists **16-2025BC04 Rock Some Mitchell** due November 4, 2026 at 17:00 UTC. This is a **stumpage sale where the bidder purchases timber**, not an agency paying a tree contractor for removals. It requires substantial buyer capital/qualification; **exclude from paid tree-service lead counts** even though it is local, open and tree-related. The official Bid Express listing says solicitations and notifications are free for this agency; it does not authorize automated harvesting of its site.
+- **Chemung County RFB-2816, Tree and Stump Removal (2026–2027):** [official county bid detail](https://www.chemungcountyny.gov/bids.aspx?bidID=31) labels the contract **Awarded**, with the bid closing October 23, 2025. It is an actual local tree-work procurement but **not currently open**. Archive as historical market intelligence only.
+- **Status distinction:** A procurement may be (a) currently open but a timber purchase, (b) relevant paid work but already awarded, or (c) an active paid service bid. Only (c), after original-notice verification and eligibility checks, can become a qualified contract lead.
+
+**Metrics remain:** 0 newly verified open paid tree-service opportunities, 0 qualified leads, 0 new automated sources. These records are manual classification examples only.
