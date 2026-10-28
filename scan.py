@@ -154,11 +154,13 @@ def scan_civicplus(src, listing_pages, page_errors):
  closed_count = 0
  expired_count = 0
  today = NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat()
- for row in records.values():
+ # Prioritize listing matches, but also inspect generic bid titles: the tree-work
+ # scope may exist only on the individual detail page. Keep the 36-detail cap.
+ prioritized = sorted(records.values(), key=lambda row:
+                      0 if category(row['title'] + ' ' + row['description']) else 1)
+ for row in prioritized:
   if row['open_status'] in civicplus_bids.CLOSED:
    closed_count += 1
-   continue
-  if not category(row['title'] + ' ' + row['description']):
    continue
   # The county listing is not the worksite; routing remains unverified.
   if checked >= civicplus_bids.MAX_DETAILS:
@@ -190,6 +192,10 @@ def scan_civicplus(src, listing_pages, page_errors):
    expired_count += 1
    continue
   scope = detail_scope or row['description']
+  # A fetched individual notice takes precedence over a misleading listing
+  # title. Never publish an unrelated notice merely because its title matched.
+  if not category(detail_scope if detail_scope else row['title'] + ' ' + scope):
+   continue
   evidence = row['title'] + ' bid ' + scope + (' Due date: ' + due if due else '')
   summary = ('Bid No. ' + row['bid_number'] + '. ' if row['bid_number'] else '') + scope
   if due:
