@@ -16,6 +16,7 @@ import tempfile
 import urllib.parse as up
 import urllib.request as ur
 import xml.etree.ElementTree as ET
+import local_bid_rss
 
 ROOT = pathlib.Path(__file__).resolve().parent
 SOURCES = ROOT / 'sources.json'
@@ -227,6 +228,20 @@ def run(src):
   try:
    items,st=scan_direct(src);leads.extend(items);statuses.append(st)
   except Exception as e:statuses.append('direct error: '+error_label(e))
+ if src['name']=='Elmira Next local bids':
+  try:
+   xml,ctype,_=fetch(local_bid_rss.FEED_URL)
+   records=local_bid_rss.parse(xml,now=NOW)
+   vetted={}
+   for item in records:
+    # Discovery only; published candidates still require source verification.
+    add_lead(vetted,src['name'],item['title'],item['url'],item['description'],'public bid RSS candidate')
+    if vetted:
+     for lead in vetted.values(): lead['published']=item['published']
+   leads.extend(vetted.values())
+   statuses.append(f'local bid RSS fetched; {len(records)} notices; {len(vetted)} unverified tree-service candidates')
+  except Exception as e:
+   statuses.append('local bid RSS error: '+error_label(e))
  try:
   items=scan_news(src);leads.extend(items);statuses.append(f'indirect RSS ok; {len(items)} candidates')
  except Exception as e:statuses.append('indirect RSS error: '+error_label(e))
