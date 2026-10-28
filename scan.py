@@ -235,9 +235,11 @@ def run(src):
    vetted={}
    for item in records:
     # Discovery only; published candidates still require source verification.
-    add_lead(vetted,src['name'],item['title'],item['url'],item['description'],'public bid RSS candidate')
-    if vetted:
-     for lead in vetted.values(): lead['published']=item['published']
+    item_leads={}
+    add_lead(item_leads,src['name'],item['title'],item['url'],item['description'],'public bid RSS candidate')
+    for uid,lead in item_leads.items():
+     lead['published']=item['published']
+     vetted[uid]=lead
    leads.extend(vetted.values())
    statuses.append(f'local bid RSS fetched; {len(records)} notices; {len(vetted)} unverified tree-service candidates')
   except Exception as e:
