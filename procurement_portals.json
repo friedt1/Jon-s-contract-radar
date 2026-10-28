@@ -1,0 +1,74 @@
+[
+  {
+    "name": "PlanHub",
+    "url": "https://go.planhub.com",
+    "kind": "construction lead platform",
+    "access": "verify access and licensing",
+    "ingestion_status": "not_connected",
+    "publish_automatically": false
+  },
+  {
+    "name": "MyGovWatch",
+    "url": "https://www.mygovwatch.com",
+    "kind": "bid aggregator",
+    "access": "verify domain and authorized access",
+    "ingestion_status": "not_connected",
+    "publish_automatically": false
+  },
+  {
+    "name": "The Bid Lab",
+    "url": "https://thebidlab.com",
+    "kind": "proposal services",
+    "access": "not a primary bid feed",
+    "ingestion_status": "not_connected",
+    "publish_automatically": false
+  },
+  {
+    "name": "CLEATUS",
+    "url": "https://www.cleat.ai/",
+    "kind": "bid intelligence API",
+    "access": "REST API available; obtain authorization/key",
+    "ingestion_status": "not_connected",
+    "publish_automatically": false
+  },
+  {
+    "name": "DemandStar",
+    "url": "https://network.demandstar.com/",
+    "kind": "government bidding portal",
+    "access": "public agency pages and vendor notifications",
+    "ingestion_status": "not_connected",
+    "publish_automatically": false
+  },
+  {
+    "name": "BidNet Direct — Empire State Purchasing Group",
+    "url": "https://www.bidnetdirect.com/new-york",
+    "kind": "government bidding portal",
+    "access": "already in sources.json as BidNet NY; avoid duplicate ingestion",
+    "ingestion_status": "not_connected",
+    "publish_automatically": false
+  },
+  {
+    "name": "Public Purchase",
+    "url": "https://www.publicpurchase.com/",
+    "kind": "government bidding portal",
+    "access": "registration or permission may be required",
+    "ingestion_status": "not_connected",
+    "publish_automatically": false
+  },
+  {
+    "name": "Find RFP",
+    "url": "https://www.findrfp.com/",
+    "kind": "bid aggregator",
+    "access": "verify authorized data access",
+    "ingestion_status": "not_connected",
+    "publish_automatically": false
+  },
+  {
+    "name": "NYS Contract Reporter (NYSCR)",
+    "url": "https://www.nyscr.ny.gov/home/contracts",
+    "kind": "official government procurement",
+    "access": "registration needed for resource access",
+    "ingestion_status": "not_connected",
+    "publish_automatically": false
+  }
+]
