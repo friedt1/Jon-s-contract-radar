@@ -45,3 +45,12 @@ This is a **manual research queue**, not verified leads or an automated source i
 - **Status distinction:** A procurement may be (a) currently open but a timber purchase, (b) relevant paid work but already awarded, or (c) an active paid service bid. Only (c), after original-notice verification and eligibility checks, can become a qualified contract lead.
 
 **Metrics remain:** 0 newly verified open paid tree-service opportunities, 0 qualified leads, 0 new automated sources. These records are manual classification examples only.
+
+
+## October 28 prime-contractor prospect — **not a confirmed subcontract opening**
+
+- **PennDOT I-180, Lycoming County (October 22, 2026 update):** [official project progress notice](https://www.pa.gov/agencies/penndot/news-and-media/newsroom/district-3/2026/highway-improvement-project-continues-on-i-180-in-lycoming-count16) identifies Glenn O. Hawbaker as the **prime contractor** for a two-year, **$14 million total highway improvement** project spanning Williamsport, Loyalsock, Fairfield, and Montoursville. The described scope explicitly includes **tree removal**, but that figure is the *entire road project value*, **not** a tree-removal subcontract value. PennDOT expects completion in fall 2026.
+- **Qualification:** Existing awarded prime contract; **no evidence that tree work remains unperformed or that a subcontract is available**. Preserve as *manual prime-contractor outreach research only* and exclude from open-bid and qualified-lead counts. Confirm actual work scope, current subcontract availability, and location before outreach; do not treat the media release as an invitation to bid. No driving time from Elmira was verified.
+- **Classifier rule:** Government construction press releases can identify useful prime contractors and real tree-work scope, but are not solicitations. Keep a separate `prime_contractor_prospect` research category with `subcontract_opening_verified=false` until the prime or official procurement notice confirms an actual opening. Do not count total highway project value as tree-service revenue.
+
+**Metrics remain unchanged:** 0 newly verified open paid tree-service opportunities, 0 qualified leads, 0 new automated sources.
