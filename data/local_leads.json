@@ -1,36 +1,43 @@
 {
-  "updated": null,
-  "request_sources_ok": 0,
+  "updated": "2026-10-28T05:26:03+00:00",
+  "request_sources_ok": 6,
   "source_status": {
-    "Public Mastodon \u00b7 Elmira": {
-      "state": "not_run",
+    "Public Mastodon · Elmira": {
+      "state": "ok",
+      "candidates": 0,
       "kind": "mastodon"
     },
-    "Public Mastodon \u00b7 Southern Tier": {
-      "state": "not_run",
+    "Public Mastodon · Southern Tier": {
+      "state": "ok",
+      "candidates": 0,
       "kind": "mastodon"
     },
-    "Public Mastodon \u00b7 Finger Lakes": {
-      "state": "not_run",
+    "Public Mastodon · Finger Lakes": {
+      "state": "ok",
+      "candidates": 0,
       "kind": "mastodon"
     },
-    "Public Mastodon \u00b7 Northern PA": {
-      "state": "not_run",
+    "Public Mastodon · Northern PA": {
+      "state": "ok",
+      "candidates": 0,
       "kind": "mastodon"
     },
-    "Public Mastodon \u00b7 Ithaca": {
-      "state": "not_run",
+    "Public Mastodon · Ithaca": {
+      "state": "ok",
+      "candidates": 0,
       "kind": "mastodon"
     },
-    "Public Mastodon \u00b7 Corning": {
-      "state": "not_run",
+    "Public Mastodon · Corning": {
+      "state": "ok",
+      "candidates": 0,
       "kind": "mastodon"
     },
-    "Google News \u00b7 local tree work (context only)": {
-      "state": "not_run",
+    "Google News · local tree work (context only)": {
+      "state": "ok",
+      "candidates": 0,
       "kind": "news"
     }
   },
   "leads": [],
-  "coverage_note": "Not scanned yet. Public hashtag coverage is limited; news is context only. Verify actual job site and driving time. No demonstration leads are published."
+  "coverage_note": "Public hashtag timelines and reviewed feeds only; sparse coverage, not all local requests. News is context only. Town screen approximates the Elmira NY / northern PA service area; verify driving time. Failed sources are not evidence of no requests."
 }
