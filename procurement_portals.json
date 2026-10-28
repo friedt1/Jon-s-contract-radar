@@ -70,5 +70,15 @@
     "access": "registration needed for resource access",
     "ingestion_status": "not_connected",
     "publish_automatically": false
+  },
+  {
+    "name": "Municibid",
+    "url": "https://municibid.com/",
+    "kind": "government surplus auction marketplace",
+    "access": "public auctions; not a procurement/RFP contract source",
+    "ingestion_status": "not_connected",
+    "publish_automatically": false,
+    "radar_channel": "equipment_and_surplus_only",
+    "note": "Government surplus equipment auctions. Do not misclassify auction listings as paid tree-service contracts."
   }
 ]
