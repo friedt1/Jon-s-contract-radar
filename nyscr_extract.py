@@ -48,7 +48,16 @@ def extract(text):
             label = next(name for name in LABELS if name.lower() == match.group(1).lower())
             # Support both "Agency: Example" and the line-separated export format.
             value = match.group(2).strip()
-            if not value and i + 1 < stop and not label_pattern.fullmatch(lines[i+1]):
+            if label == "Description":
+                # Authorized text exports may wrap the actual work scope onto
+                # multiple lines. Stop at the next labeled field or CR boundary.
+                continuation = []
+                for next_line in lines[i+1:stop]:
+                    if label_pattern.fullmatch(next_line):
+                        break
+                    continuation.append(next_line)
+                value = " ".join([value] + continuation).strip()[:2000]
+            elif not value and i + 1 < stop and not label_pattern.fullmatch(lines[i+1]):
                 value = lines[i+1]
             fields[label] = value
         title = lines[marker-1]
