@@ -112,10 +112,10 @@ class RegressionTests(unittest.TestCase):
         leads,status=self.direct(html)
         self.assertEqual(leads,[]);self.assertIn('0 details checked',status)
 
-    def test_all_13_configurations_use_direct_and_discovery(self):
+    def test_all_configurations_use_direct_and_discovery(self):
         sources=scanner.json.loads(scanner.SOURCES.read_text())
         direct=[s for s in sources if s.get('mode')=='direct_page']
-        self.assertEqual(len(direct),13)
+        self.assertEqual(len(direct),15)
         for src in direct:
             with self.subTest(source=src['name']):
                 with patch.object(scanner,'scan_direct',return_value=([], 'direct fetched')) as d, patch.object(scanner,'scan_news',return_value=[]) as n:
