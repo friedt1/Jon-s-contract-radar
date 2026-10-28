@@ -96,6 +96,33 @@ Detail URL: https://www.nyscr.ny.gov/Ads/View/2149995
         self.assertEqual(rows[0]["status"], "research_only")
         self.assertFalse(promotable(rows[0], today=dt.date(2026, 10, 28)))
 
+    def test_wrapped_description_finds_tree_scope_and_stops_at_next_notice(self):
+        text = """Highway maintenance contract
+CR#:
+2149997
+Agency: Example Highway Agency
+Description:
+Annual maintenance and hazard response including
+removal of hazardous trees along county roads.
+Due date: 11/20/2026
+Location: Elmira NY
+Detail URL: https://www.nyscr.ny.gov/Ads/View/2149997
+Office equipment
+CR#:
+2149998
+Agency: Example Office
+Description: Paper and printer supplies
+Due date: 11/21/2026
+"""
+        rows = extract(text)
+        self.assertEqual([r["cr_number"] for r in rows], ["2149997"])
+        self.assertIn("removal of hazardous trees", rows[0]["scope"])
+        self.assertNotIn("Office equipment", rows[0]["scope"])
+        self.assertEqual(rows[0]["deadline"], "2026-11-20")
+        self.assertEqual(rows[0]["detail_url"], "https://www.nyscr.ny.gov/Ads/View/2149997")
+        self.assertEqual(rows[0]["status"], "research_only")
+        self.assertFalse(promotable(rows[0], today=dt.date(2026, 10, 28)))
+
     def test_authorized_export_rejects_spoofed_or_mismatched_links(self):
         for url in ("https://www.nyscr.ny.gov.evil.example/Ads/View/2149995",
                     "https://www.nyscr.ny.gov/Ads/View/2149996",
