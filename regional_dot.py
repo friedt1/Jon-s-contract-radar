@@ -12,7 +12,9 @@ SOURCES = [
  {"name":"NYSDOT commodities and services","url":"https://www.dot.ny.gov/bids-and-lettings/commodities-and-services/opportunities","state":"NY"},
  {"name":"PennDOT ECMS construction bids","url":"https://www.ecmssyst.penndot.pa.gov/ECMS/","state":"PA"},
  {"name":"PennDOT bid access guidance","url":"https://www.pa.gov/services/penndot/find-contract-information-bid-opportunities","state":"PA"},
- {"name":"Pennsylvania state agency procurement","url":"https://www.pa.gov/agencies/dgs/doing-business-with-the-commonwealth/business-inclusion-and-supplier-development/finding-opportunities","state":"PA"}
+ {"name":"Pennsylvania state agency procurement","url":"https://www.pa.gov/agencies/dgs/doing-business-with-the-commonwealth/business-inclusion-and-supplier-development/finding-opportunities","state":"PA"},
+ {"name":"New York State Contract Reporter","url":"https://www.nyscr.ny.gov/home/contracts","state":"NY"},
+ {"name":"Pennsylvania eMarketplace solicitations","url":"https://www.emarketplace.state.pa.us/","state":"PA"}
 ]
 def check_source(source, opener=urllib.request.urlopen):
     request=urllib.request.Request(source["url"],headers={"User-Agent":"JonsContractRadar/1.0","Accept":"text/html"})
