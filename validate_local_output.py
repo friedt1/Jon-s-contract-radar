@@ -2,7 +2,7 @@
 import argparse
 import json
 import pathlib
-from local_scan import ROOT, SERVICES, canonical, date
+from local_scan import ROOT, SERVICES, canonical, date, redact_public_text
 
 
 def validate(data_dir, sources_path=ROOT / 'local_sources.json'):
@@ -32,6 +32,13 @@ def validate(data_dir, sources_path=ROOT / 'local_sources.json'):
                 assert status['records_inspected'] == status['requests'] + status['articles'] + sum(status['rejected'].values())
     for uid, lead in history['leads'].items():
         assert uid == lead['id']
+        # Public JSON history is just as exposed as the current dashboard feed.
+        # Reject unredacted legacy excerpts instead of relying only on the
+        # ingestion path to sanitize them before publication.
+        for field in ('title', 'summary', 'evidence_snippet'):
+            if field in lead:
+                assert isinstance(lead[field], str), 'Invalid public lead text'
+                assert redact_public_text(lead[field]) == lead[field], 'Private contact or street address in public ' + field
         assert lead['lead_type'] in ('service_request', 'news_context')
         assert lead['services'] and set(lead['services']) <= set(SERVICES)
         assert lead['customer_type'] in ('homeowner', 'commercial', 'unspecified')
