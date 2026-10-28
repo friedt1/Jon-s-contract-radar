@@ -11,6 +11,7 @@ from zoneinfo import ZoneInfo
 LABELS = ("Agency", "Division", "Issue date", "Due date", "Location", "Category", "Ad type", "Description", "Detail URL", "Solicitation URL")
 WORK = re.compile(
     r"tree (?:removal|trimming|pruning|clearing|cutting|service|maintenance)|"
+    r"remov(?:al|e) of (?:hazardous )?trees?|"
     r"stump (?:removal|grinding)|brush (?:clearing|removal|cutting)|"
     r"vegetation management|right.of.way (?:clearing|vegetation)|"
     r"line clearance|roadside clearing|land clearing|forestry mulching|"
