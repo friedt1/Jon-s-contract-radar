@@ -1,18 +1,18 @@
 {
-  "updated": "2026-10-28T04:32:58+00:00",
+  "updated": "2026-10-28T04:35:42+00:00",
   "opportunities": [],
   "source_status": {
-    "Chemung County bids": "direct error: TypeError; indirect RSS ok; 0 matches",
-    "Steuben County bids": "direct error: TypeError; indirect RSS ok; 0 matches",
-    "Schuyler County purchasing": "direct error: TypeError; indirect RSS ok; 0 matches",
+    "Chemung County bids": "direct fetched; 8 detail candidates; 6 detail checks; 0 matches; indirect RSS ok; 0 matches",
+    "Steuben County bids": "direct fetched; 11 detail candidates; 11 detail checks; 0 matches; indirect RSS ok; 0 matches",
+    "Schuyler County purchasing": "direct fetched; 5 detail candidates; 5 detail checks; 0 matches; indirect RSS ok; 0 matches",
     "Tompkins County purchasing": "direct fetched; 6 detail candidates; 6 detail checks; 0 matches; indirect RSS ok; 0 matches",
-    "Elmira City bids": "direct error: TypeError; indirect RSS ok; 0 matches",
+    "Elmira City bids": "direct fetched; 2 detail candidates; 2 detail checks; 0 matches; indirect RSS ok; 0 matches",
     "Elmira Next local bids": "direct fetched; 8 detail candidates; 8 detail checks; 0 matches; indirect RSS ok; 0 matches",
     "Lycoming County bids": "direct fetched; 3 detail candidates; 2 detail checks; 0 matches; indirect RSS ok; 0 matches",
     "PA procurement opportunities": "direct fetched; 17 detail candidates; 12 detail checks; 0 matches; indirect RSS ok; 0 matches",
     "PA DGS construction bids": "direct fetched; 22 detail candidates; 12 detail checks; 0 matches; indirect RSS ok; 0 matches",
     "Tioga Bradford Housing Authority": "direct fetched; 0 detail candidates; 0 detail checks; 0 matches; indirect RSS ok; 0 matches",
-    "Chemung County purchasing": "direct error: TypeError; indirect RSS ok; 0 matches",
+    "Chemung County purchasing": "direct fetched; 17 detail candidates; 12 detail checks; 0 matches; indirect RSS ok; 0 matches",
     "PennBid platform": "direct fetched; 1 detail candidates; 1 detail checks; 0 matches; indirect RSS ok; 0 matches",
     "BidNet NY platform": "direct fetched; 34 detail candidates; 12 detail checks; 0 matches; indirect RSS ok; 0 matches",
     "Tioga County NY": "indirect RSS ok; 0 matches",
@@ -106,5 +106,5 @@
     "JLL regional property management": "indirect RSS ok; 0 matches",
     "SAM.gov": "deferred"
   },
-  "coverage_note": "102 target searches configured; 102 indirect RSS searches completed; 8 direct home pages fetched. Detail pages checked where discoverable. Results are unverified, not a complete bid inventory; confirm bid status, deadline and drive time. SAM.gov deferred."
+  "coverage_note": "102 target searches configured; 102 indirect RSS searches completed; 13 direct home pages fetched. Detail pages checked where discoverable. Results are unverified, not a complete bid inventory; confirm bid status, deadline and drive time. SAM.gov deferred."
 }
