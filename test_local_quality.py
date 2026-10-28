@@ -103,6 +103,27 @@ class QualityTests(unittest.TestCase):
         self.assertEqual(feed['metrics']['request_candidates'], 0)
         self.assertEqual(feed['request_sources_ok'], 0)
 
+    def test_request_outage_with_healthy_news_preserves_published_artifacts(self):
+        # A news-only partial success must not overwrite previously published
+        # current customer requests or historical records.
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory)
+            (path / 'local_leads.json').write_text('{"sentinel": "prior customer feed"}')
+            (path / 'local_history.json').write_text('{"leads": {}, "sentinel": "prior history"}')
+            before = {name: (path / name).read_bytes() for name in
+                      ('local_leads.json', 'local_history.json')}
+            original = radar.assemble
+            def isolated(sources, previous, now):
+                return original([SOCIAL, NEWS], previous, now,
+                                getter=lambda url: '<rss><channel/></rss>' if url == NEWS['url'] else
+                                       (_ for _ in ()).throw(OSError('request feed unavailable')),
+                                pause=lambda _: None)
+            with patch('sys.argv', ['local_scan.py', '--data-dir', directory]), \\
+                 patch.object(radar, 'assemble', side_effect=isolated):
+                with self.assertRaisesRegex(RuntimeError, 'All request sources failed'):
+                    radar.main()
+            self.assertEqual(before, {name: (path / name).read_bytes() for name in before})
+
     def test_html_error_is_source_failure_not_empty_success(self):
         with self.assertRaisesRegex(RuntimeError, 'All local sources failed'):
             assemble(sources=[NEWS], getter=lambda _: '<html><body>Login</body></html>')
