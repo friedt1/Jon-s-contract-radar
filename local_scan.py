@@ -38,7 +38,7 @@ PLACES = {
     'Williamsport': ('PA', True), 'Montoursville': ('PA', False), 'Tunkhannock': ('PA', False),
 }
 REQUEST = re.compile(r"\b(?:need(?:s|ing)?|looking for|seeking|iso|in search of|can (?:anyone|someone)|recommend(?:ation)?s?|wanted|request(?:ing)? (?:a )?quote|who (?:can|does))\b", re.I)
-EXCLUDE = re.compile(r"\b(?:we (?:offer|provide)|our services|call us|free estimates|now hiring|help wanted|job opening|for sale|no longer need|already (?:found|hired)|(?:do not|don't|does not|doesn't) need|not looking for|recommend (?:my|our)|highly recommend|we specialize|fully insured|all sorted|request (?:closed|fulfilled)|work completed|no (?:longer )?(?:need|request)|looking for (?:work|customers)|services available|book (?:now|today))\b", re.I)
+EXCLUDE = re.compile(r"\b(?:we (?:offer|provide)|our services|call us|free estimates|now hiring|help wanted|job opening|for sale|no longer need|already (?:found|hired)|(?:do not|don't|does not|doesn't) need|not looking for|recommend (?:my|our)|(?:i|we)\s+(?:would\s+)?recommend|highly recommend|we specialize|fully insured|all sorted|request (?:closed|fulfilled)|work completed|no (?:longer )?(?:need|request)|looking for (?:work|customers)|services available|book (?:now|today))\b", re.I)
 NEWS = re.compile(r'\b(?:reported|according to|press release|news release|city council|study finds|breaking news)\b', re.I)
 
 
@@ -243,12 +243,15 @@ def assemble(sources, previous, now, getter=None, pause=None):
             pause(1)  # Sequential, bounded, no retries, no credentials or destination crawling.
         for lead in staged:
             uid = alias.get(lead['url']) or alias.get(lead['fingerprint']) or lead['id']
+            existing = found.get(uid, old.get(uid, {}))
+            # An article matching an older public request is not evidence that
+            # the customer still needs service. Keep the historical request
+            # intact; do not revive it in the current feed or downgrade it.
+            if lead['lead_type'] == 'news_context' and existing.get('lead_type') == 'service_request':
+                continue
             alias[lead['url']] = alias[lead['fingerprint']] = uid
             lead['id'] = uid
-            existing = found.get(uid, old.get(uid, {}))
             links = {x['url']: x for x in existing.get('source_links', []) + lead['source_links']}
-            # A news duplicate must never downgrade an explicitly observed request.
-            if uid in found and found[uid]['lead_type'] == 'service_request' and lead['lead_type'] == 'news_context': lead = dict(found[uid])
             lead.update(source_links=list(links.values()), first_seen=existing.get('first_seen', now.isoformat(timespec='seconds')), last_seen=now.isoformat(timespec='seconds'))
             found[uid] = lead
     if not successful: raise RuntimeError('All local sources failed; previous feed and history preserved: ' + json.dumps(status))
