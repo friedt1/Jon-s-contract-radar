@@ -1,18 +1,18 @@
 {
-  "updated": "2026-10-28T04:41:51+00:00",
+  "updated": "2026-10-28T05:10:49+00:00",
   "opportunities": [],
   "source_status": {
-    "Chemung County bids": "direct fetched; 6 details checked; 1 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
-    "Steuben County bids": "direct fetched; 12 details checked; 1 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
-    "Schuyler County purchasing": "direct fetched; 7 details checked; 1 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
+    "Chemung County bids": "direct fetched; 18 details checked; 2 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
+    "Steuben County bids": "direct fetched; 18 details checked; 1 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
+    "Schuyler County purchasing": "direct fetched; 18 details checked; 1 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
     "Tompkins County purchasing": "direct fetched; 18 details checked; 0 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
     "Elmira City bids": "direct fetched; 2 details checked; 1 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
-    "Elmira Next local bids": "direct fetched; 11 details checked; 0 PDFs checked; 2 candidates; indirect RSS ok; 0 candidates",
-    "Lycoming County bids": "direct fetched; 6 details checked; 0 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
-    "PA procurement opportunities": "direct fetched; 18 details checked; 0 PDFs checked; 2 candidates; indirect RSS ok; 0 candidates",
-    "PA DGS construction bids": "direct fetched; 18 details checked; 3 PDFs checked; 0 candidates; 1 detail errors; indirect RSS ok; 0 candidates",
-    "Tioga Bradford Housing Authority": "direct fetched; 1 details checked; 0 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
-    "Chemung County purchasing": "direct fetched; 18 details checked; 5 PDFs checked; 1 candidates; indirect RSS ok; 0 candidates",
+    "Elmira Next local bids": "direct fetched; 18 details checked; 0 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
+    "Lycoming County bids": "direct fetched; 7 details checked; 0 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
+    "PA procurement opportunities": "direct fetched; 18 details checked; 0 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
+    "PA DGS construction bids": "direct fetched; 18 details checked; 5 PDFs checked; 0 candidates; 1 detail errors: ValueError; indirect RSS ok; 0 candidates",
+    "Tioga Bradford Housing Authority": "direct fetched; 2 details checked; 0 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
+    "Chemung County purchasing": "direct fetched; 18 details checked; 5 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
     "PennBid platform": "direct fetched; 1 details checked; 0 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
     "BidNet NY platform": "direct fetched; 18 details checked; 0 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
     "Tioga County NY": "indirect RSS ok; 0 candidates",
@@ -106,5 +106,5 @@
     "JLL regional property management": "indirect RSS ok; 0 candidates",
     "SAM.gov": "deferred"
   },
-  "coverage_note": "Previously published expired/irrelevant candidates removed by offline revalidation. Last live scan timestamp and source observations retained; no fresh live scan verified. 102 targets, 13 direct integrations and 89 indirect-only targets. SAM.gov deferred. Unknown deadlines and driving times require manual verification."
+  "coverage_note": "102 named targets; 13 direct public home pages fetched, with bounded detail/PDF checks; 102 indirect news searches succeeded. Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. 89 targets use indirect discovery only. SAM.gov deferred."
 }
