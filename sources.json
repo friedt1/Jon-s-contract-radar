@@ -4,91 +4,108 @@
     "type": "government",
     "url": "https://chemungcountyny.gov/Bids.aspx",
     "mode": "direct_page",
-    "verified_url": true
+    "verified_url": true,
+    "discovery_query": "Chemung County NY"
   },
   {
     "name": "Steuben County bids",
     "type": "government",
     "url": "https://www.steubencountyny.gov/Bids.aspx",
     "mode": "direct_page",
-    "verified_url": true
+    "verified_url": true,
+    "discovery_query": "Steuben County NY"
   },
   {
     "name": "Schuyler County purchasing",
     "type": "government",
     "url": "https://www.schuylercountyny.gov/174/Purchasing",
     "mode": "direct_page",
-    "verified_url": true
+    "verified_url": true,
+    "discovery_query": "Schuyler County NY"
   },
   {
     "name": "Tompkins County purchasing",
     "type": "government",
     "url": "https://www.tompkinscountyny.gov/All-Departments/Finance-Department/Purchasing-Division",
     "mode": "direct_page",
-    "verified_url": true
+    "verified_url": true,
+    "discovery_query": "Tompkins County NY"
   },
   {
     "name": "Elmira City bids",
     "type": "government",
     "url": "https://www.cityofelmirany.gov/264/Sealed-Bid-Information",
     "mode": "direct_page",
-    "verified_url": true
+    "verified_url": true,
+    "discovery_query": "City of Elmira"
   },
   {
     "name": "Elmira Next local bids",
     "type": "aggregator",
     "url": "https://elmiranext.com/bids",
     "mode": "direct_page",
-    "verified_url": true
+    "verified_url": true,
+    "discovery_query": "Elmira"
   },
   {
     "name": "Lycoming County bids",
     "type": "government",
     "url": "https://lycomingcountypa.gov/government/departments/financial_management/bids.php",
     "mode": "direct_page",
-    "verified_url": true
+    "verified_url": true,
+    "discovery_query": "Lycoming County PA"
   },
   {
     "name": "PA procurement opportunities",
     "type": "state",
     "url": "https://www.pa.gov/agencies/dgs/doing-business-with-the-commonwealth/business-inclusion-and-supplier-development/finding-opportunities",
     "mode": "direct_page",
-    "verified_url": true
+    "verified_url": true,
+    "discovery_query": "Pennsylvania DGS",
+    "require_local_evidence": true
   },
   {
     "name": "PA DGS construction bids",
     "type": "state",
     "url": "https://www.pa.gov/agencies/dgs/doing-business-with-the-commonwealth/submit-proposals-and-bids-for-commonwealth-projects",
     "mode": "direct_page",
-    "verified_url": true
+    "verified_url": true,
+    "discovery_query": "Pennsylvania DGS",
+    "require_local_evidence": true
   },
   {
     "name": "Tioga Bradford Housing Authority",
     "type": "housing",
     "url": "https://www.tbhra.org/bid-information/",
     "mode": "direct_page",
-    "verified_url": true
+    "verified_url": true,
+    "discovery_query": "Tioga Bradford Housing Authority"
   },
   {
     "name": "Chemung County purchasing",
     "type": "government",
     "url": "https://chemungcountyny.gov/435/Purchasing",
     "mode": "direct_page",
-    "verified_url": true
+    "verified_url": true,
+    "discovery_query": "Chemung County NY"
   },
   {
     "name": "PennBid platform",
     "type": "platform",
     "url": "https://pennbid.bonfirehub.com",
     "mode": "direct_page",
-    "verified_url": true
+    "verified_url": true,
+    "discovery_query": "PennBid",
+    "require_local_evidence": true
   },
   {
     "name": "BidNet NY platform",
     "type": "platform",
     "url": "https://www.bidnetdirect.com/new-york",
     "mode": "direct_page",
-    "verified_url": true
+    "verified_url": true,
+    "discovery_query": "BidNet New York",
+    "require_local_evidence": true
   },
   {
     "name": "Tioga County NY",
@@ -564,153 +581,175 @@
     "type": "utilities and transportation",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "New York State DOT Region 6",
     "type": "utilities and transportation",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "New York State DOT Region 9",
     "type": "utilities and transportation",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "PennDOT District 3",
     "type": "utilities and transportation",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "PennDOT District 4",
     "type": "utilities and transportation",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "Pennsylvania American Water",
     "type": "utilities and transportation",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "Corning Natural Gas",
     "type": "utilities and transportation",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "New York Power Authority",
     "type": "utilities and transportation",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "FirstEnergy Penelec",
     "type": "utilities and transportation",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "Norfolk Southern",
     "type": "utilities and transportation",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "Arnot Realty",
     "type": "commercial property",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "Elmira-Corning Regional Airport",
     "type": "commercial property",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "Arnot Health",
     "type": "commercial property",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "Guthrie Healthcare",
     "type": "commercial property",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "UPMC Williamsport",
     "type": "commercial property",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "Corning Incorporated",
     "type": "commercial property",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "Dandy Mini Marts",
     "type": "commercial property",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "Wegmans regional properties",
     "type": "commercial property",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "Brixmor Property Group",
     "type": "commercial property",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "Kimco Realty",
     "type": "commercial property",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "CBRE regional property management",
     "type": "commercial property",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   },
   {
     "name": "JLL regional property management",
     "type": "commercial property",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "require_local_evidence": true
   }
 ]
