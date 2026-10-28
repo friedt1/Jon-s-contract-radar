@@ -81,6 +81,12 @@ def canonical(url):
     for key, value in query:
         if private_keys.search(key) or redact_public_text(value) != value:
             return ''
+    # Query filtering alone is insufficient: some public permalinks embed
+    # contact details or residential addresses in the path itself. Check the
+    # decoded path before displaying or retaining the original source URL.
+    decoded_path = up.unquote(p.path)
+    if redact_public_text(decoded_path.replace('-', ' ')) != decoded_path.replace('-', ' '):
+        return ''
     return up.urlunsplit(('https', p.netloc.lower(), p.path.rstrip('/') or '/', up.urlencode(sorted(query)), ''))
 
 
