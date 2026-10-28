@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const script = fs.readFileSync('local-leads.js', 'utf8');
 const fixture = {id:'1', title:'<img src=x onerror=alert(1)> Need tree removal', summary:'My yard', services:['Tree removal'], source:'Public town', source_links:[{source:'Public town',url:'https://example.org/post'}], location:'Elmira, NY', customer_type:'homeowner', lead_type:'service_request', score:95, published:'2026-10-27', first_seen:'2026-10-28', last_seen:'2026-10-28', geography_note:'Driving time unverified', score_reasons:['Explicit request']};
-function setup({feedError=false,historyError=false,empty=false}={}) {
+function setup({feedError=false,historyError=false,empty=false,stale=false,expired=false}={}) {
   const elements = new Map();
   const el = selector => {
     if (!elements.has(selector)) elements.set(selector, {value:'',textContent:'',innerHTML:'',addEventListener(){}});
@@ -13,7 +13,9 @@ function setup({feedError=false,historyError=false,empty=false}={}) {
   el('#local-kind').value = 'service_request'; el('#local-view').value = 'current'; el('#local-sort').value = 'score'; el('#local-score').value = '0';
   const feed = {updated: empty ? null : '2026-10-28T12:00:00Z', request_sources_ok:1, leads:empty ? [] : [fixture, {...fixture,id:'2',lead_type:'news_context',score:25,customer_type:'unspecified'}], source_status:{Public:{state:'ok',candidates:1}}, coverage_note:'Limited coverage'};
   const history = {leads:{old:{...fixture,id:'old',title:'Historical request',location:'Wellsboro, PA',customer_type:'commercial',services:['Stump grinding']}}};
-  const context = vm.createContext({URL,document:{querySelector:el},fetch:async path=>({ok: !(path.includes('local_history') ? historyError : feedError),json:async()=>path.includes('local_history') ? history : feed})});
+  const Clock = class extends Date { static now() { return Date.parse(stale ? '2026-10-30T12:00:00Z' : '2026-10-28T12:00:00Z'); } };
+  if (expired) feed.leads = feed.leads.map(x => ({...x,published:'2026-09-01'}));
+  const context = vm.createContext({URL,Date:Clock,document:{querySelector:el},fetch:async path=>({ok: !(path.includes('local_history') ? historyError : feedError),json:async()=>path.includes('local_history') ? history : feed})});
   vm.runInContext(script,context);
   return {el, context};
 }
@@ -38,6 +40,9 @@ const tick = () => new Promise(resolve=>setImmediate(resolve));
   el('#local-customer').value='commercial'; render(); assert.equal(el('#local-count').textContent,1);
   assert.ok(el('#local-status').textContent.includes('not necessarily current'));
   assert.equal(vm.runInContext("publicLink('javascript:alert(1)')",context),'');
+  const stale=setup({stale:true}); await tick(); assert.ok(stale.el('#local-status').textContent.includes('stale'));
+  const expired=setup({expired:true}); await tick(); assert.equal(expired.el('#local-count').textContent,0);
+  assert.ok(el('#local-metrics').textContent.includes('unavailable'));
   const failed=setup({feedError:true}); await tick(); assert.ok(failed.el('#local-status').textContent.includes('unavailable'));
   const historyFailed=setup({historyError:true}); await tick(); historyFailed.el('#local-view').value='history'; vm.runInContext('renderLocal()',historyFailed.context); assert.ok(historyFailed.el('#local-status').textContent.includes('history unavailable'));
   const empty=setup({empty:true}); await tick(); assert.ok(empty.el('#local-status').textContent.includes('not run'));

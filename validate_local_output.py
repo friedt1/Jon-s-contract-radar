@@ -5,10 +5,10 @@ import pathlib
 from local_scan import ROOT, SERVICES, canonical, date
 
 
-def validate(data_dir):
+def validate(data_dir, sources_path=ROOT / 'local_sources.json'):
     feed = json.loads((data_dir / 'local_leads.json').read_text())
     history = json.loads((data_dir / 'local_history.json').read_text())
-    sources = json.loads((ROOT / 'local_sources.json').read_text())
+    sources = json.loads(sources_path.read_text())
     assert set(feed['source_status']) == {s['name'] for s in sources}, 'Missing local source status'
     assert feed['updated'] == history['updated'], 'Mismatched feed/history run'
     assert feed['request_sources_ok'] == sum(s['state'] == 'ok' and s['kind'] != 'news' for s in feed['source_status'].values())
@@ -19,6 +19,17 @@ def validate(data_dir):
     else:
         assert date(feed['updated']), 'Invalid scan date'
         assert any(s['state'] == 'ok' for s in feed['source_status'].values()), 'No successful sources'
+    if feed.get('schema_version') == 2:
+        metrics = feed['metrics']
+        assert metrics['verified_requests'] == metrics['qualified_leads'] == 0
+        assert metrics['request_candidates'] == sum(x['lead_type'] == 'service_request' for x in feed['leads'])
+        assert metrics['news_context'] == sum(x['lead_type'] == 'news_context' for x in feed['leads'])
+        assert metrics['failed_sources'] == sum(x['state'] == 'error' for x in feed['source_status'].values())
+        assert metrics['records_inspected'] == sum(x.get('records_inspected', 0) for x in feed['source_status'].values())
+        for status in feed['source_status'].values():
+            assert status['checked_at'] == feed['updated']
+            if status['state'] == 'ok':
+                assert status['records_inspected'] == status['requests'] + status['articles'] + sum(status['rejected'].values())
     for uid, lead in history['leads'].items():
         assert uid == lead['id']
         assert lead['lead_type'] in ('service_request', 'news_context')
@@ -29,6 +40,11 @@ def validate(data_dir):
         assert lead['location'].endswith((', NY', ', PA'))
         assert canonical(lead['url']) == lead['url']
         assert lead['source_links'] and all(canonical(link['url']) == link['url'] for link in lead['source_links'])
+        if feed.get('schema_version') == 2 and uid in {x['id'] for x in feed['leads']}:
+            assert lead['evidence_snippet'] and lead['limitations']
+            assert lead['duplicate_key'] == lead['fingerprint']
+            assert lead['verification_state'] == ('unverified_candidate' if lead['lead_type'] == 'service_request' else 'not_a_request')
+            assert lead['confidence']
         assert date(lead['published']) <= date(lead['last_seen'])
         assert date(lead['first_seen']) <= date(lead['last_seen'])
     for lead in feed['leads']:
@@ -41,4 +57,6 @@ def validate(data_dir):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data-dir', type=pathlib.Path, default=ROOT / 'data')
-    validate(parser.parse_args().data_dir)
+    parser.add_argument('--sources', type=pathlib.Path, default=ROOT / 'local_sources.json')
+    args = parser.parse_args()
+    validate(args.data_dir, args.sources)

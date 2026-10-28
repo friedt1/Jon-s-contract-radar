@@ -1,0 +1,81 @@
+"""Offline quality fixtures are synthetic regression cases, never real leads."""
+import datetime as dt
+import json
+import pathlib
+import tempfile
+import unittest
+from unittest.mock import patch
+import local_scan as radar
+from test_local_scan import NOW, SOCIAL, NEWS, BODY, record, timeline, assemble
+from validate_local_output import validate
+
+
+class QualityTests(unittest.TestCase):
+    def test_evidence_contract_and_no_verification_claim(self):
+        lead = radar.candidate(record(), SOCIAL, NOW)
+        self.assertIn('Looking for tree removal', lead['evidence_snippet'])
+        self.assertEqual(lead['verification_state'], 'unverified_candidate')
+        self.assertEqual(lead['duplicate_key'], lead['fingerprint'])
+        self.assertTrue(lead['limitations'])
+        self.assertIn('heuristic', lead['confidence'])
+        article = radar.candidate(record(), NEWS, NOW)
+        self.assertEqual(article['verification_state'], 'not_a_request')
+
+    def test_negative_need_and_seller_recommendation(self):
+        for phrase in ["I don't need tree removal in Elmira", 'We highly recommend our tree removal in Elmira', 'Not looking for tree removal in Elmira', 'Need customers for tree removal in Elmira; fully insured']:
+            self.assertIsNone(radar.candidate(record(phrase), SOCIAL, NOW), phrase)
+
+    def test_metrics_explain_zero_and_keep_articles_separate(self):
+        feed, _ = assemble(getter=lambda _: timeline('Tree removal in Elmira', 'We offer tree removal in Elmira', 'Need tree removal in Texas', 'Need a plumber in Elmira'))
+        status = feed['source_status'][SOCIAL['name']]
+        self.assertEqual(status['records_inspected'], 4)
+        self.assertEqual(sum(status['rejected'].values()), 4)
+        self.assertEqual(feed['metrics']['verified_requests'], 0)
+        self.assertEqual(feed['metrics']['qualified_leads'], 0)
+        self.assertFalse(feed['leads'])
+
+    def test_news_metrics_never_qualified(self):
+        rss = '<rss><channel><item><title>Need tree removal in Elmira</title><link>https://example.org/story</link><pubDate>Tue, 27 Oct 2026 12:00:00 GMT</pubDate></item></channel></rss>'
+        feed, _ = assemble(sources=[NEWS], getter=lambda _: rss)
+        self.assertEqual(feed['metrics']['news_context'], 1)
+        self.assertEqual(feed['metrics']['request_candidates'], 0)
+        self.assertEqual(feed['request_sources_ok'], 0)
+
+    def test_html_error_is_source_failure_not_empty_success(self):
+        with self.assertRaisesRegex(RuntimeError, 'All local sources failed'):
+            assemble(sources=[NEWS], getter=lambda _: '<html><body>Login</body></html>')
+
+    def test_full_history_survives_expiry_and_partial_failures(self):
+        _, history = assemble()
+        original = next(iter(history['leads'].values()))
+        history['leads'] = {str(i): {**original, 'id':str(i), 'fingerprint':str(i)} for i in range(2005)}
+        # No retention truncation; failure at one source cannot purge old records.
+        feed, saved = assemble(sources=[SOCIAL, NEWS], previous=history,
+                              getter=lambda url: '[]' if url == SOCIAL['url'] else '<bad',
+                              now=NOW + dt.timedelta(days=31))
+        self.assertFalse(feed['leads'])
+        self.assertEqual(saved['leads'], history['leads'])
+
+    def test_rate_limits_for_reviewed_feeds(self):
+        source = {**SOCIAL, 'kind':'rss', 'public_feed_reviewed':True}
+        def get(url):
+            return 'User-agent: *\nAllow: /\nCrawl-delay: 4\nRequest-rate: 1/10' if url.endswith('robots.txt') else '<rss/>'
+        with patch.object(radar.time, 'sleep') as sleep:
+            self.assertEqual(list(radar.records(source, get)), [])
+            sleep.assert_called_once_with(10)
+        with self.assertRaisesRegex(ValueError, 'operator scheduling'):
+            list(radar.records(source, lambda _: 'User-agent: *\nAllow: /\nCrawl-delay: 120'))
+
+    def test_current_v2_artifacts_validate_and_tampering_fails(self):
+        sources = json.loads((radar.ROOT / 'local_sources.json').read_text())
+        def get(url):
+            return '<rss/>' if 'news.google.com' in url else timeline(BODY)
+        feed, history = radar.assemble(sources, {'leads':{}}, NOW, getter=get, pause=lambda _:None)
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory)
+            radar.write_json(path / 'local_leads.json', feed)
+            radar.write_json(path / 'local_history.json', history)
+            validate(path)
+            feed['metrics']['qualified_leads'] = 1
+            radar.write_json(path / 'local_leads.json', feed)
+            with self.assertRaises(AssertionError): validate(path)

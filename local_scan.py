@@ -38,7 +38,7 @@ PLACES = {
     'Williamsport': ('PA', True), 'Montoursville': ('PA', False), 'Tunkhannock': ('PA', False),
 }
 REQUEST = re.compile(r"\b(?:need(?:s|ing)?|looking for|seeking|iso|in search of|can (?:anyone|someone)|recommend(?:ation)?s?|wanted|request(?:ing)? (?:a )?quote|who (?:can|does))\b", re.I)
-EXCLUDE = re.compile(r'\b(?:we (?:offer|provide)|our services|call us|free estimates|now hiring|help wanted|job opening|for sale|no longer need|already (?:found|hired)|all sorted|request (?:closed|fulfilled)|work completed|no (?:longer )?(?:need|request)|looking for (?:work|customers)|services available|book (?:now|today))\b', re.I)
+EXCLUDE = re.compile(r"\b(?:we (?:offer|provide)|our services|call us|free estimates|now hiring|help wanted|job opening|for sale|no longer need|already (?:found|hired)|(?:do not|don't|does not|doesn't) need|not looking for|recommend (?:my|our)|highly recommend|we specialize|fully insured|all sorted|request (?:closed|fulfilled)|work completed|no (?:longer )?(?:need|request)|looking for (?:work|customers)|services available|book (?:now|today))\b", re.I)
 NEWS = re.compile(r'\b(?:reported|according to|press release|news release|city council|study finds|breaking news)\b', re.I)
 
 
@@ -114,18 +114,26 @@ def location(body):
     return None
 
 
-def candidate(record, source, now):
+def candidate(record, source, now, diagnostics=None):
+    def reject(reason):
+        if diagnostics is not None:
+            diagnostics[reason] = diagnostics.get(reason, 0) + 1
+        return None
     title = text(record.get('title', '')); body = text(record.get('body', ''))
     combined = title + ' ' + body
     published = date(record.get('published', ''))
-    if published is None or not 0 <= (now - published).total_seconds() <= 30 * 86400: return None
+    if published is None: return reject('undated')
+    if not 0 <= (now - published).total_seconds() <= 30 * 86400: return reject('expired_or_future')
     url = canonical(record.get('url', ''))
     place = location(combined)
     services = [name for name, pattern in SERVICES.items() if re.search(pattern, combined, re.I)]
-    if not url or not place or not services: return None
+    if not url: return reject('unsafe_permalink')
+    if not place: return reject('outside_or_unknown_location')
+    if not services: return reject('no_service_match')
     is_request = source['kind'] != 'news' and bool(REQUEST.search(combined)) and not EXCLUDE.search(combined) and not NEWS.search(combined)
     # Public social/feed advertisements and chatter are not useful customer leads.
-    if source['kind'] != 'news' and not is_request: return None
+    if source['kind'] != 'news' and not is_request:
+        return reject('advertising_or_closed' if EXCLUDE.search(combined) else 'article_or_discussion')
     kind = 'service_request' if is_request else 'news_context'
     customer = ('commercial' if re.search(r'\b(?:our business|my business|commercial property|our office|our store|our restaurant|our parking lot)\b', combined, re.I)
                 else 'homeowner' if re.search(r'\b(?:my yard|our yard|my home|our home|my house|our house|my backyard|our backyard)\b', combined, re.I) else 'unspecified')
@@ -133,6 +141,7 @@ def candidate(record, source, now):
     def redact(s):
         s = re.sub(r'\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b', '[contact on source]', s)
         return re.sub(r'(?<!\w)(?:\+?1[ .-]?)?\(?\d{3}\)?[ .-]?\d{3}[ .-]?\d{4}(?!\w)', '[contact on source]', s)
+    evidence = redact(combined).strip()
     title = redact(title or body[:160]); body = redact(body)
     age = (now - published).days
     score = min(100, (65 if is_request else 10) + (15 if age <= 7 else 5) + (10 if customer != 'unspecified' else 0) + min(10, 5 * len(services)))
@@ -140,6 +149,12 @@ def candidate(record, source, now):
     fingerprint = hashlib.sha256((re.sub(r'\W+', ' ', title.lower()).strip() + '|' + place + '|' + published.date().isoformat()).encode()).hexdigest()[:20]
     return {'id': hashlib.sha256(url.encode()).hexdigest()[:20], 'fingerprint': fingerprint,
             'title': title[:220], 'summary': body[:550], 'url': url, 'source': source['name'],
+            'evidence_snippet': evidence[:700], 'duplicate_key': fingerprint,
+            'confidence': 'heuristic request match' if is_request else 'context only',
+            'verification_state': 'unverified_candidate' if is_request else 'not_a_request',
+            'limitations': ['Original source not manually verified; availability unknown',
+                            'Town mention may not be job location; driving time unverified',
+                            'Text classification can produce false positives and miss requests'],
             'source_links': [{'source': source['name'], 'url': url}], 'location': place,
             'geography_note': 'Nearby town screen; actual job site and two-hour driving time unverified',
             'published': published.isoformat(timespec='seconds'), 'services': services, 'customer_type': customer,
@@ -157,6 +172,11 @@ def records(source, getter=None):
         robots = urllib.robotparser.RobotFileParser()
         robots.parse(getter(f'{root.scheme}://{root.netloc}/robots.txt').splitlines())
         if not robots.can_fetch(USER_AGENT, url): raise ValueError('robots disallows feed')
+        delay = max(1, robots.crawl_delay(USER_AGENT) or 0)
+        rate = robots.request_rate(USER_AGENT)
+        if rate: delay = max(delay, rate.seconds / rate.requests)
+        if delay > 60: raise ValueError('feed rate limit requires operator scheduling')
+        time.sleep(delay)
     payload = getter(url)
     if kind == 'mastodon':
         entries = json.loads(payload)
@@ -167,6 +187,8 @@ def records(source, getter=None):
             yield {'title': '', 'body': body, 'url': item.get('url', ''), 'published': item.get('created_at', '')}
     else:
         root = ET.fromstring(payload)
+        if root.tag not in ('rss', '{http://www.w3.org/2005/Atom}feed', '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}RDF'):
+            raise ValueError('RSS/Atom feed expected, not an HTML login or error page')
         atom = '{http://www.w3.org/2005/Atom}'
         for item in (root.findall('.//item') + root.findall(f'{atom}entry'))[:100]:
             link = item.findtext('link', '')
@@ -201,16 +223,21 @@ def assemble(sources, previous, now, getter=None, pause=None):
         alias[item['fingerprint']] = uid
         for link in item['source_links']: alias[canonical(link['url'])] = uid
     for source in sources:
-        staged = []
+        staged = []; inspected = 0; rejected = {}
         try:
             for record in records(source, getter):
-                lead = candidate(record, source, now)
+                inspected += 1
+                lead = candidate(record, source, now, rejected)
                 if lead: staged.append(lead)
             successful += 1
             if source['kind'] != 'news': request_successful += 1
-            status[source['name']] = {'state': 'ok', 'candidates': len(staged), 'kind': source['kind']}
+            status[source['name']] = {'state': 'ok', 'candidates': len(staged), 'kind': source['kind'],
+                                      'records_inspected': inspected, 'rejected': rejected,
+                                      'requests': sum(x['lead_type'] == 'service_request' for x in staged),
+                                      'articles': sum(x['lead_type'] == 'news_context' for x in staged),
+                                      'checked_at': now.isoformat(timespec='seconds')}
         except Exception as error:
-            status[source['name']] = {'state': 'error', 'error': type(error).__name__ + (f' HTTP {error.code}' if hasattr(error, 'code') else ''), 'kind': source['kind']}
+            status[source['name']] = {'state': 'error', 'error': type(error).__name__ + (f' HTTP {error.code}' if hasattr(error, 'code') else ''), 'kind': source['kind'], 'checked_at': now.isoformat(timespec='seconds')}
             continue
         finally:
             pause(1)  # Sequential, bounded, no retries, no credentials or destination crawling.
@@ -227,8 +254,15 @@ def assemble(sources, previous, now, getter=None, pause=None):
     if not successful: raise RuntimeError('All local sources failed; previous feed and history preserved: ' + json.dumps(status))
     historical = dict(old)
     historical.update(found)
-    historical = dict(sorted(historical.items(), key=lambda pair: pair[1]['last_seen'], reverse=True)[:2000])
+    # Keep the full discovery history; expiry only suppresses the current feed.
+    historical = dict(sorted(historical.items(), key=lambda pair: pair[1]['last_seen'], reverse=True))
     feed = {'updated': now.isoformat(timespec='seconds'), 'request_sources_ok': request_successful,
+            'schema_version': 2,
+            'metrics': {'records_inspected': sum(x.get('records_inspected', 0) for x in status.values()),
+                        'request_candidates': sum(x['lead_type'] == 'service_request' for x in found.values()),
+                        'news_context': sum(x['lead_type'] == 'news_context' for x in found.values()),
+                        'verified_requests': 0, 'qualified_leads': 0,
+                        'failed_sources': sum(x['state'] == 'error' for x in status.values())},
             'source_status': status, 'leads': sorted(found.values(), key=lambda x: (-x['score'], x['id'])),
             'coverage_note': 'Public hashtag timelines and reviewed feeds only; sparse coverage, not all local requests. News is context only. Town screen approximates the Elmira NY / northern PA service area; verify driving time. Failed sources are not evidence of no requests.'}
     history = {'updated': feed['updated'], 'leads': historical}
@@ -245,9 +279,10 @@ def write_json(path, data):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--sources', type=pathlib.Path, default=ROOT / 'local_sources.json', help='Operator-reviewed source configuration; no credentials')
     parser.add_argument('--data-dir', type=pathlib.Path, default=ROOT / 'data')
     args = parser.parse_args()
-    sources = json.loads((ROOT / 'local_sources.json').read_text())
+    sources = json.loads(args.sources.read_text())
     history_path = args.data_dir / 'local_history.json'
     previous = json.loads(history_path.read_text()) if history_path.exists() else {'leads': {}}
     feed, history = assemble(sources, previous, dt.datetime.now(dt.timezone.utc))

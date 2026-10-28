@@ -9,6 +9,8 @@ on:
     paths:
       - 'local*'
       - 'test_local*'
+      - 'scripts/publish-local.sh'
+      - 'validate_local_output.py'
       - '.github/workflows/local-leads.yml'
 permissions:
   contents: read
@@ -44,15 +46,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python local_scan.py
-      - run: python validate_local_output.py
+      - name: Scan into isolated staging directory
+        run: |
+          mkdir -p "$RUNNER_TEMP/local-radar"
+          cp data/local_history.json "$RUNNER_TEMP/local-radar/local_history.json"
+          python local_scan.py --data-dir "$RUNNER_TEMP/local-radar"
+          python validate_local_output.py --data-dir "$RUNNER_TEMP/local-radar"
+          cp "$RUNNER_TEMP/local-radar/"*.json data/
       - name: Publish only local discoveries (preserve concurrent contract updates)
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/local_leads.json data/local_history.json
-          if ! git diff --cached --quiet; then
-            git commit -m 'Update local customer discoveries and history'
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
+          bash scripts/publish-local.sh
