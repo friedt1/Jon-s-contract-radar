@@ -69,6 +69,19 @@ class ClassificationTests(unittest.TestCase):
         self.assertNotIn('phone', lead)
         self.assertNotIn('email', lead)
 
+    def test_residential_address_not_republished(self):
+        lead = radar.candidate(record(
+            'Looking for tree removal at 123 Main Street, Elmira NY. '
+            'Need a quote; email me at tree@example.org or call 607-555-0199.'
+        ), SOCIAL, NOW)
+        self.assertIsNotNone(lead)
+        for field in ('title', 'summary', 'evidence_snippet'):
+            self.assertNotIn('123 Main Street', lead[field])
+            self.assertNotIn('tree@example.org', lead[field])
+            self.assertNotIn('607-555-0199', lead[field])
+        self.assertIn('[address on source]', lead['evidence_snippet'])
+        self.assertEqual(lead['location'], 'Elmira, NY')
+
     def test_html_text_does_not_include_script(self):
         self.assertEqual(radar.text('<p>Need <b>tree removal</b></p><script>bad()</script>'), 'Need tree removal')
 
