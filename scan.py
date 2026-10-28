@@ -185,7 +185,7 @@ def scan_direct(src):
     records=p.rows if p.rows else [body]
     if not p.rows and (closed(body) or (deadline(body) and deadline(body)<NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat())):
      found.pop(hashlib.sha256(url.split('#')[0].encode()).hexdigest()[:16],None);continue
-    if len(records)==1 and category(title+' '+context) and eligible(body,name):
+    if len(records)==1 and category(body) and eligible(body,name):
      key=category(body);match=next((t for t in CATEGORIES[key] if t in body.lower()),'')
      ix=body.lower().find(match);snippet=body[max(0,ix-160):ix+520]
      add_lead(found,name,title if category(title) else snippet[:130],final_url,snippet+' '+('Deadline: '+deadline(body) if deadline(body) else ''),'direct detail candidate',evidence=body)
