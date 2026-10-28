@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-28T17:26:06+00:00",
+  "updated": "2026-10-28T18:14:07+00:00",
   "opportunities": [],
   "source_status": {
     "Chemung County bids": "direct fetched; 18 details checked; 2 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
@@ -83,9 +83,9 @@
     "Wellsboro Area School District": "indirect RSS ok; 0 candidates",
     "Mansfield University": "indirect RSS ok; 0 candidates",
     "NYSEG": "indirect RSS ok; 0 candidates",
-    "New York State DOT Region 6": "indirect RSS ok; 0 candidates",
+    "New York State DOT Region 6": "direct fetched; 18 details checked; 0 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
     "New York State DOT Region 9": "indirect RSS ok; 0 candidates",
-    "PennDOT District 3": "indirect RSS ok; 0 candidates",
+    "PennDOT District 3": "direct fetched; 1 details checked; 0 PDFs checked; 0 candidates; 1 detail errors: InvalidURL; indirect RSS ok; 0 candidates",
     "PennDOT District 4": "indirect RSS ok; 0 candidates",
     "Pennsylvania American Water": "indirect RSS ok; 0 candidates",
     "Corning Natural Gas": "indirect RSS ok; 0 candidates",
@@ -106,5 +106,5 @@
     "JLL regional property management": "indirect RSS ok; 0 candidates",
     "SAM.gov": "deferred"
   },
-  "coverage_note": "102 named targets; 13 direct public home pages fetched, with bounded detail/PDF checks; 102 indirect news searches succeeded. Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. 89 targets use indirect discovery only. SAM.gov deferred."
+  "coverage_note": "102 named targets; 15 direct public home pages fetched, with bounded detail/PDF checks; 102 indirect news searches succeeded. Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. 87 targets use indirect discovery only. SAM.gov deferred."
 }
