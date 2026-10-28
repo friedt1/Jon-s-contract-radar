@@ -38,7 +38,7 @@ PLACES = {
     'Williamsport': ('PA', True), 'Montoursville': ('PA', False), 'Tunkhannock': ('PA', False),
 }
 REQUEST = re.compile(r"\b(?:need(?:s|ing)?|looking for|seeking|iso|in search of|can (?:anyone|someone)|recommend(?:ation)?s?|wanted|request(?:ing)? (?:a )?quote|who (?:can|does))\b", re.I)
-EXCLUDE = re.compile(r"\b(?:we (?:offer|provide)|our services|call us|free estimates|now hiring|help wanted|job opening|for sale|no longer need|already (?:found|hired)|(?:do not|don't|does not|doesn't) need|not looking for|recommend (?:my|our)|(?:i|we)\s+(?:would\s+)?recommend|highly recommend|we specialize|fully insured|all sorted|request (?:closed|fulfilled)|work completed|no (?:longer )?(?:need|request)|looking for (?:work|customers)|services available|book (?:now|today))\b", re.I)
+EXCLUDE = re.compile(r"\b(?:we (?:offer|provide)|our services|call us|free estimates|now hiring|help wanted|job opening|for sale|no longer need|already (?:found|hired)|(?:do not|don't|does not|doesn't) need|not looking for|recommend (?:my|our)|(?:i|we)\s+(?:would\s+)?recommend|highly recommend|we specialize|fully insured|all sorted|request (?:closed|fulfilled)|work completed|no (?:longer )?(?:need|request)|looking for (?:work|customers)|services available|contact us|we can help|our crews? (?:are|is) available|get (?:a |your )?(?:free )?quote|schedule (?:a )?free estimate|book (?:now|today))\b", re.I)
 NEWS = re.compile(r'\b(?:reported|according to|press release|news release|city council|study finds|breaking news)\b', re.I)
 
 
