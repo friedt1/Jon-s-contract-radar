@@ -54,7 +54,7 @@ class CivicPlusTests(unittest.TestCase):
         self.assertEqual(leads[0]["status"], "unverified")
         self.assertFalse(leads[0]["travel_verified"])
         self.assertIn("3 individual bid records", status)
-        self.assertIn("1 relevant details checked", status)
+        self.assertIn("2 relevant details checked", status)
 
     def test_detail_closed_overrides_open_listing(self):
         html = card(13, "Tree removal bid", "Open", "11/19/2026")
@@ -85,6 +85,47 @@ class CivicPlusTests(unittest.TestCase):
             leads, status = scan.scan_direct(SOURCE)
         self.assertEqual(leads, [])
         self.assertIn("1 expired", status)
+
+    def test_generic_title_uses_individual_notice_scope(self):
+        html = (card(21, "General roadside maintenance", "Open", "11/19/2026")
+                + card(22, "Office supplies bid", "Open", "11/20/2026"))
+        def fake(url, binary=False):
+            if not binary:
+                return html, "text/html", url
+            if "bidID=21" in url:
+                body = ("<p>Status: Open</p><p>Description: Removal of hazardous trees "
+                        "along local roads.</p><p>Closing Date/Time: 11/19/2026 1:45 PM</p>")
+            else:
+                body = ("<p>Status: Open</p><p>Description: Office supplies and printers."
+                        "</p><p>Closing Date/Time: 11/20/2026</p>")
+            return body.encode(), "text/html", url
+        with patch.object(scan, "fetch", side_effect=fake):
+            leads, status = scan.scan_direct(SOURCE)
+        self.assertEqual(len(leads), 1)
+        self.assertEqual(leads[0]["url"], BASE + "?bidID=21")
+        self.assertIn("hazardous trees", leads[0]["scope"])
+        self.assertEqual(leads[0]["deadline"], "2026-11-19")
+        self.assertEqual(leads[0]["status"], "unverified")
+        self.assertIn("2 relevant details checked", status)
+
+    def test_relevant_listing_prioritized_before_generic_detail_cap(self):
+        html = ("".join(card(i, "General services", "Open", "11/19/2026")
+                        for i in range(100, 140))
+                + card(999, "Tree removal bid", "Open", "11/19/2026"))
+        checked = []
+        def fake(url, binary=False):
+            if not binary:
+                return html, "text/html", url
+            checked.append(url)
+            scope = "Tree removal near Elmira" if "bidID=999" in url else "Office supplies"
+            body = "<p>Status: Open</p><p>Description: " + scope + "</p>"
+            return body.encode(), "text/html", url
+        with patch.object(scan, "fetch", side_effect=fake):
+            leads, status = scan.scan_direct(SOURCE)
+        self.assertEqual(len(checked), civic.MAX_DETAILS)
+        self.assertEqual(checked[0], BASE + "?bidID=999")
+        self.assertEqual([r["url"] for r in leads], [BASE + "?bidID=999"])
+        self.assertIn("36 relevant details checked", status)
 
     def test_more_than_eighteen_individual_bid_cards(self):
         html = "".join(card(i, "Tree removal bid", "Open", "11/19/2026")
