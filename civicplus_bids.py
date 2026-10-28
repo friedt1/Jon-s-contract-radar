@@ -73,7 +73,7 @@ def detail_description(text):
     """Extract actual notice scope without treating unrelated page chrome as scope."""
     match = re.search(
         r"\bDescription\s*:\s*(.+?)(?=\b(?:Related Documents|Contact Us|"
-        r"Return To Main Bid Postings Page|Publication Date/Time|Closing Date/Time)\s*:|$)",
+        r"Return To Main Bid Postings Page|Publication Date/Time|Closing Date/Time|Project Location|Work Location|Worksite|Site Location)\s*:|$)",
         text, re.I | re.S,
     )
     return " ".join(match.group(1).split())[:1200] if match else ""
