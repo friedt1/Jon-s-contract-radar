@@ -17,6 +17,7 @@ import urllib.parse as up
 import urllib.request as ur
 import xml.etree.ElementTree as ET
 import local_bid_rss
+import public_bid_pagination as public_pages
 
 ROOT = pathlib.Path(__file__).resolve().parent
 SOURCES = ROOT / 'sources.json'
@@ -144,28 +145,46 @@ def scan_direct(src):
  html,ctype,final=fetch(base)
  if 'html' not in ctype and not html.lstrip().startswith('<'):return [],'unsupported content type'
  page=parse_html(html)
+ listing_pages=[(page,final)]
+ page_errors=[]
+ if name in public_pages.PUBLIC_LISTINGS:
+  seen_pages={final};cursor=0
+  while cursor<len(listing_pages) and len(listing_pages)<public_pages.MAX_PAGES:
+   current,origin=listing_pages[cursor];cursor+=1
+   for next_url in public_pages.next_pages(current.links,origin,seen_pages):
+    if len(listing_pages)>=public_pages.MAX_PAGES:break
+    seen_pages.add(next_url)
+    try:
+     extra,extra_type,extra_final=fetch(next_url)
+     if 'html' not in extra_type and not extra.lstrip().startswith('<'):
+      page_errors.append('unsupported pagination content');continue
+     listing_pages.append((parse_html(extra),extra_final))
+    except Exception as e:page_errors.append(error_label(e))
  # Keep each table/list record isolated from neighboring bid scopes and dates.
+ max_details=public_pages.MAX_PUBLIC_DETAILS if name in public_pages.PUBLIC_LISTINGS else MAX_DETAIL
  candidates=[]
- for title,href,pos in page.links:
+ listing_links=[(title,href,pos,p.link_rows.get(href,title),origin)
+                for p,origin in listing_pages for title,href,pos in p.links]
+ for title,href,pos,context,origin in listing_links:
   if not href or href.startswith(BAD_LINKS):continue
-  url=up.urljoin(final,href)
+  url=up.urljoin(origin,href)
   if up.urlparse(url).scheme not in ('http','https'):continue
   # Avoid unrelated off-site links, but allow bid platform destinations.
-  same_host=up.urlparse(url).hostname==up.urlparse(final).hostname
-  platform=allowed_link(url,final)
+  same_host=up.urlparse(url).hostname==up.urlparse(origin).hostname
+  platform=allowed_link(url,origin)
   if not (same_host or platform):continue
-  context=page.link_rows.get(href,title)[:1500]
+  context=context[:1500]
   descriptor=title+' '+context
   # Listing rows stay isolated; detail pages supply missing scope and deadlines.
   if eligible(context,name) and not excluded_url(url):
    add_lead(found,name,title if category(title) else context[:130],url,context)
-  if not excluded_url(url) and (any(x in (title+' '+href).lower() for x in FOLLOW_HINTS) or (category(descriptor) and same_host)) and url!=final:
+  if not excluded_url(url) and (any(x in (title+' '+href).lower() for x in FOLLOW_HINTS) or (category(descriptor) and same_host)) and url!=origin:
    score=(4 if category(title) else 0)+(3 if bidlike(title+' '+href) else 0)+(1 if category(context) else 0)
    candidates.append((score,url,title,context))
  # Row parsing is used to discover relevant detail URLs, not to invent bid links.
  candidates.sort(key=lambda x:-x[0])
  for _,url,title,context in candidates:
-  if url in visited or len(visited)>=MAX_DETAIL:continue
+  if url in visited or len(visited)>=max_details:continue
   visited.add(url)
   try:
    blob,kind,final_url=fetch(url,binary=True)
@@ -195,12 +214,12 @@ def scan_direct(src):
      target=up.urljoin(final_url,href)
      if href and not excluded_url(target) and allowed_link(target,final_url):
       if eligible(row,name):add_lead(found,name,label if category(label) else row[:130],target,row)
-      if len(candidates)<MAX_DETAIL*4 and target not in visited and (category(row) or bidlike(label+' '+href)):
+      if len(candidates)<max_details*4 and target not in visited and (category(row) or bidlike(label+' '+href)):
        candidates.append((0,target,label,row))
   except Exception as e:errors.append(type(e).__name__)
 
  rendering='; dynamic/login portal: extraction incomplete' if not page.rows and any(x in html.lower() for x in ('enable javascript','ng-app','id="app"','id="root"','sign in','log in')) else ''
- return list(found.values()),f'direct fetched; {len(visited)} details checked; {pdfs} PDFs checked; {len(found)} candidates'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+rendering
+ return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {pdfs} PDFs checked; {len(found)} candidates'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
 
 def scan_news(src):
  name=src['name'];query=src.get('discovery_query',name);q='"'+query.replace('"','')+'" ("tree removal" OR "tree trimming" OR "vegetation management" OR "land clearing" OR "forestry mulching" OR "storm cleanup" OR "brush clearing" OR "storm debris") (bid OR RFP OR contract OR procurement)'
