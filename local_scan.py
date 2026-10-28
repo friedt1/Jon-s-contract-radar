@@ -126,8 +126,8 @@ def redact_public_text(value):
     value = re.sub(r'(?<!\w)(?:\+?1[ .-]?)?\(?\d{3}\)?[ .-]?\d{3}[ .-]?\d{4}(?!\w)', '[contact on source]', value)
     # Rural NY/PA street addresses commonly use numbered State/County Routes.
     # Redact house numbers but leave road-only references like "Route 49".
-    value = re.sub(r'(?<!\\w)\\d{1,6}\\s+(?:(?:County|State)\\s+)?'
-                   r'(?:Route|Rte|Rt|Road|Rd|Highway|Hwy)\\.?\\s*#?\\s*\\d+[A-Za-z]?\\b',
+    value = re.sub(r'(?<!\w)\d{1,6}\s+(?:(?:County|State)\s+)?'
+                   r'(?:Route|Rte|Rt|Road|Rd|Highway|Hwy)\.?\s*#?\s*\d+[A-Za-z]?\b',
                    '[address on source]', value, flags=re.I)
     return re.sub(r'(?<!\w)\d{1,6}\s+(?:[A-Za-z0-9][A-Za-z0-9.-]*\s+){1,5}'
                   r'(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Lane|Ln|Boulevard|Blvd|Court|Ct|Place|Pl|Way)\b\.?',
