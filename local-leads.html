@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Local Customer Lead Radar | Jon's Tree Service</title>
+<link rel="stylesheet" href="local-leads.css"><script src="local-leads.js" defer></script></head>
+<body><header><nav aria-label="Radar sections"><a href="./index.html">Contract Radar</a> <a href="./local-leads.html" aria-current="page">Local Leads</a></nav>
+<h1>Local Customer Lead Radar</h1><p>Tree work near Elmira, NY · Southern Tier &amp; northern Pennsylvania</p></header>
+<main>
+<p class="notice">Public request candidates need verification. A nearby town match does not establish a two-hour drive. Confirm the job site, date, and whether help is still needed at the original source. No private groups or private search histories are accessed. Contact information is never invented.</p>
+<div class="stats"><div><b id="local-count">—</b>Matching results</div><div><b id="local-updated">—</b>Last scan (UTC)</div><div><b id="local-sources">—</b>Request sources accessible</div></div>
+<div class="controls">
+<label>Search<input id="local-query" type="search" placeholder="Town, service, request…"></label>
+<label>Service<select id="local-service"><option value="">All services</option><option>Tree removal</option><option>Tree trimming</option><option>Stump grinding</option><option>Storm cleanup</option><option>Land clearing</option></select></label>
+<label>Result type<select id="local-kind"><option value="service_request">Service requests</option><option value="news_context">News context only</option><option value="">All types</option></select></label>
+<label>Customer<select id="local-customer"><option value="">All customers</option><option value="homeowner">Homeowner</option><option value="commercial">Commercial</option><option value="unspecified">Unspecified</option></select></label>
+<label>State<select id="local-state"><option value="">NY &amp; PA</option><option>NY</option><option>PA</option></select></label>
+<label>Minimum relevance<select id="local-score"><option value="0">Any score</option><option value="50">50+</option><option value="80">80+</option></select></label>
+<label>View<select id="local-view"><option value="current">Latest scan</option><option value="history">Discovery history</option></select></label>
+<label>Sort<select id="local-sort"><option value="score">Relevance</option><option value="new">Newest discovery</option><option value="published">Newest post</option></select></label>
+</div>
+<p id="local-status" role="status" aria-live="polite">Loading public discoveries…</p>
+<section id="local-cards" aria-label="Matching local discoveries"></section>
+<details><summary>Source coverage and scan health</summary><p id="local-coverage"></p><ul id="local-health"></ul><p>Automatic scans run every six hours after this feature is merged and GitHub Actions is enabled. Public hashtag coverage is limited. An inaccessible source means unknown coverage. Historical entries are past discoveries, not confirmed active requests.</p></details>
+<p>Scores rank explicit request wording, service match, recent publication, and stated customer type. They do not verify authenticity, buying intent, job value, or availability. News always scores below requests.</p>
+</main></body></html>
