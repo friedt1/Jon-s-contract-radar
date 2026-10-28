@@ -266,6 +266,8 @@ def run(src):
  try:
   items=scan_news(src);leads.extend(items);statuses.append(f'indirect RSS ok; {len(items)} candidates')
  except Exception as e:statuses.append('indirect RSS error: '+error_label(e))
+ if src['name'] in ('BidNet NY platform','PennBid platform'):
+  statuses.append('individual listing ingestion not connected; provider-approved feed/access not established')
  return src['name'],'; '.join(statuses),leads
 
 def main():
@@ -297,7 +299,12 @@ def main():
  history_path.parent.mkdir(parents=True,exist_ok=True)
  history_path.write_text(json.dumps({'updated':NOW.isoformat(timespec='seconds'),'opportunities':historical},indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
  direct=sum('direct fetched' in x for x in status.values());indirect=sum('indirect RSS ok' in x for x in status.values())
- data={'updated':NOW.isoformat(timespec='seconds'),'opportunities':sorted(found.values(),key=lambda x:x.get('published',''),reverse=True)[:300],'source_status':status,'coverage_note':f'{len(sources)} named targets; {direct} direct public home pages fetched, with bounded detail/PDF checks; {indirect} indirect news searches succeeded. Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. {len(sources)-sum(x.get('mode')=='direct_page' for x in sources)} targets use indirect discovery only. SAM.gov deferred.'}
+ integration_status={
+  'NYS Contract Reporter':'blocked: terms prohibit bulk automated access without explicit permission; authorized export parser only',
+  'BidNet Direct':'not connected: individual bid listing interface/permission not established',
+  'PennBid':'not connected: individual bid listing interface/permission not established',
+ }
+ data={'integration_status':integration_status,'updated':NOW.isoformat(timespec='seconds'),'opportunities':sorted(found.values(),key=lambda x:x.get('published',''),reverse=True)[:300],'source_status':status,'coverage_note':f'{len(sources)} named targets; {direct} direct public home pages fetched, with bounded detail/PDF checks; {indirect} indirect news searches succeeded. Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. {len(sources)-sum(x.get('mode')=='direct_page' for x in sources)} targets use indirect discovery only. SAM.gov deferred.'}
  OUT.parent.mkdir(parents=True,exist_ok=True);OUT.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
  print(f'Targets {len(sources)}, direct fetched {direct}, indirect successful {indirect}, candidates {len(found)}')
 if __name__=='__main__':main()
