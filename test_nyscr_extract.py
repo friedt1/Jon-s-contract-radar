@@ -75,6 +75,60 @@ class NYSCRExtractTests(unittest.TestCase):
         self.assertEqual(row["deadline_timezone"], "unverified")
         self.assertFalse(row["location_verified"])
 
+    def test_authorized_export_captures_explicit_official_link_and_scope(self):
+        text = """Roadway maintenance project
+CR#:
+2149995
+Agency: Example Transportation Department
+Due date: 11/20/2026
+Location: Elmira, NY
+Description: Removal of hazardous trees and roadside brush along state routes.
+Detail URL: https://www.nyscr.ny.gov/Ads/View/2149995
+"""
+        rows = extract(text)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["title"], "Roadway maintenance project")
+        self.assertIn("hazardous trees", rows[0]["scope"])
+        self.assertEqual(rows[0]["agency"], "Example Transportation Department")
+        self.assertEqual(rows[0]["deadline"], "2026-11-20")
+        self.assertEqual(rows[0]["detail_url"], "https://www.nyscr.ny.gov/Ads/View/2149995")
+        self.assertEqual(rows[0]["open_status"], "unknown")
+        self.assertEqual(rows[0]["status"], "research_only")
+        self.assertFalse(promotable(rows[0], today=dt.date(2026, 10, 28)))
+
+    def test_authorized_export_rejects_spoofed_or_mismatched_links(self):
+        for url in ("https://www.nyscr.ny.gov.evil.example/Ads/View/2149995",
+                    "https://www.nyscr.ny.gov/Ads/View/2149996",
+                    "http://www.nyscr.ny.gov/Ads/View/2149995",
+                    "https://www.nyscr.ny.gov/"):
+            with self.subTest(url=url):
+                text = ("Tree removal bid\\nCR#:\\n2149995\\nAgency: Example\\n"
+                        "Due date: 11/20/2026\\nDetail URL: " + url)
+                rows = extract(text)
+                self.assertEqual(len(rows), 1)
+                self.assertIsNone(rows[0]["detail_url"])
+
+    def test_adjacent_notices_do_not_share_description_or_url(self):
+        text = """Tree trimming bid
+CR#:
+2149995
+Agency: First Agency
+Detail URL: https://www.nyscr.ny.gov/Ads/View/2149995
+Due date: 11/20/2026
+Road maintenance contract
+CR#:
+2149996
+Agency: Second Agency
+Description: Stump grinding and vegetation management.
+Due date: 11/21/2026
+"""
+        rows = extract(text)
+        self.assertEqual([r["cr_number"] for r in rows], ["2149995", "2149996"])
+        self.assertEqual(rows[0]["detail_url"], "https://www.nyscr.ny.gov/Ads/View/2149995")
+        self.assertIsNone(rows[1]["detail_url"])
+        self.assertEqual(rows[1]["agency"], "Second Agency")
+        self.assertIn("Stump grinding", rows[1]["scope"])
+
     def test_reject_expired_and_invalid_deadlines(self):
         row = extract(SAMPLE)[0] | {
             "status": "verified_open",
