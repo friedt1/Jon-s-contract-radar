@@ -11,7 +11,11 @@ import pathlib
 
 KEYWORDS = ("debris removal", "disaster debris", "emergency tree", "vegetation management",
             "right-of-way", "tree removal", "land clearing", "storm cleanup",
-            "brush clearing", "forestry mulching", "hazard tree", "debris hauling")
+            "brush clearing", "forestry mulching", "hazard tree", "debris hauling", "road clearing", "roadside clearing",
+            "highway clearing", "roadway debris", "blocked road", "downed trees",
+            "line clearance", "line clearing", "power line clearing", "powerline clearing",
+            "transmission line clearing", "distribution line clearing", "utility right-of-way",
+            "utility vegetation", "electric utility vegetation", "storm restoration")
 AGENCIES = ("fema", "usace", "army corps", "department of transportation",
             "state dot", "penndot", "nysdot", "emergency management")
 def classify(notice):
@@ -45,7 +49,7 @@ def classify(notice):
     if amount is not None and amount >= 250000: score += 3
     elif amount is not None and amount >= 100000: score += 2
     if days is not None and days >= 7: score += 2
-    if any(term in content for term in ("disaster debris", "emergency tree", "debris removal")): score += 2
+    if any(term in content for term in ("disaster debris", "emergency tree", "debris removal", "road clearing", "power line clearing", "line clearance", "storm restoration")): score += 2
     if any(term in content for term in AGENCIES): score += 1
     if notice.get("subcontracting_available") is True: score += 1
     result = dict(notice)
