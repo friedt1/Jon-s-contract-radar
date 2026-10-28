@@ -1,0 +1,58 @@
+name: Local Customer Lead Radar
+on:
+  schedule:
+    - cron: '20 */6 * * *'
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+    paths:
+      - 'local*'
+      - 'test_local*'
+      - '.github/workflows/local-leads.yml'
+permissions:
+  contents: read
+concurrency:
+  group: local-leads-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python -m unittest discover -s . -p 'test_*.py' -v
+      - run: node test_website.js && node test_local_website.js
+      - run: python validate_output.py && python validate_local_output.py
+  scan:
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python local_scan.py
+      - run: python validate_local_output.py
+      - name: Publish only local discoveries (preserve concurrent contract updates)
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/local_leads.json data/local_history.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Update local customer discoveries and history'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi

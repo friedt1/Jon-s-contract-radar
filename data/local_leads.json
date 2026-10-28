@@ -1,0 +1,36 @@
+{
+  "updated": null,
+  "request_sources_ok": 0,
+  "source_status": {
+    "Public Mastodon \u00b7 Elmira": {
+      "state": "not_run",
+      "kind": "mastodon"
+    },
+    "Public Mastodon \u00b7 Southern Tier": {
+      "state": "not_run",
+      "kind": "mastodon"
+    },
+    "Public Mastodon \u00b7 Finger Lakes": {
+      "state": "not_run",
+      "kind": "mastodon"
+    },
+    "Public Mastodon \u00b7 Northern PA": {
+      "state": "not_run",
+      "kind": "mastodon"
+    },
+    "Public Mastodon \u00b7 Ithaca": {
+      "state": "not_run",
+      "kind": "mastodon"
+    },
+    "Public Mastodon \u00b7 Corning": {
+      "state": "not_run",
+      "kind": "mastodon"
+    },
+    "Google News \u00b7 local tree work (context only)": {
+      "state": "not_run",
+      "kind": "news"
+    }
+  },
+  "leads": [],
+  "coverage_note": "Not scanned yet. Public hashtag coverage is limited; news is context only. Verify actual job site and driving time. No demonstration leads are published."
+}

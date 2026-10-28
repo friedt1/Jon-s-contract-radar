@@ -1,0 +1,9 @@
+[
+  {"name":"Public Mastodon · Elmira","kind":"mastodon","url":"https://mastodon.social/api/v1/timelines/tag/elmira?limit=40"},
+  {"name":"Public Mastodon · Southern Tier","kind":"mastodon","url":"https://mastodon.social/api/v1/timelines/tag/southerntier?limit=40"},
+  {"name":"Public Mastodon · Finger Lakes","kind":"mastodon","url":"https://mastodon.social/api/v1/timelines/tag/fingerlakes?limit=40"},
+  {"name":"Public Mastodon · Northern PA","kind":"mastodon","url":"https://mastodon.social/api/v1/timelines/tag/northernpa?limit=40"},
+  {"name":"Public Mastodon · Ithaca","kind":"mastodon","url":"https://mastodon.social/api/v1/timelines/tag/ithaca?limit=40"},
+  {"name":"Public Mastodon · Corning","kind":"mastodon","url":"https://mastodon.social/api/v1/timelines/tag/corning?limit=40"},
+  {"name":"Google News · local tree work (context only)","kind":"news","url":"https://news.google.com/rss/search?q=%28%22Elmira%22+OR+%22Corning%22+OR+%22Ithaca%22+OR+%22Wellsboro%22+OR+%22Towanda%22+OR+%22Williamsport%22%29+%28%22tree+removal%22+OR+%22tree+trimming%22+OR+%22stump+grinding%22+OR+%22storm+cleanup%22+OR+%22land+clearing%22%29+when%3A30d&hl=en-US&gl=US&ceid=US%3Aen"}
+]
