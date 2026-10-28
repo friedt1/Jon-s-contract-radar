@@ -34,7 +34,7 @@ def extract_nysdot_letting_ids(page, today=None):
     today = today or dt.datetime.now(dt.timezone.utc).date()
     text = re.sub(r"<[^>]+>", " ", page)
     text = " ".join(text.split())
-    dates = list(re.finditer(r"\\b(January|February|March|April|May|June|July|August|September|October|November|December)\\s+\\d{1,2},\\s+20\\d{2}\\b", text))
+    dates = list(re.finditer(r"\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+20\d{2}\b", text))
     found = []
     seen = set()
     for index, match in enumerate(dates):
@@ -45,7 +45,7 @@ def extract_nysdot_letting_ids(page, today=None):
         if letting_date < today:
             continue
         segment = text[match.end():dates[index + 1].start() if index + 1 < len(dates) else len(text)]
-        for identifier in re.findall(r"\\bD\\d{6}\\b", segment):
+        for identifier in re.findall(r"\bD\d{6}\b", segment):
             if identifier in seen:
                 continue
             seen.add(identifier)
