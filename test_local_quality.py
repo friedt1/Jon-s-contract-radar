@@ -118,8 +118,8 @@ class QualityTests(unittest.TestCase):
                                 getter=lambda url: '<rss><channel/></rss>' if url == NEWS['url'] else
                                        (_ for _ in ()).throw(OSError('request feed unavailable')),
                                 pause=lambda _: None)
-            with patch('sys.argv', ['local_scan.py', '--data-dir', directory]), \\
-                 patch.object(radar, 'assemble', side_effect=isolated):
+            with (patch('sys.argv', ['local_scan.py', '--data-dir', directory]),
+                  patch.object(radar, 'assemble', side_effect=isolated)):
                 with self.assertRaisesRegex(RuntimeError, 'All request sources failed'):
                     radar.main()
             self.assertEqual(before, {name: (path / name).read_bytes() for name in before})
