@@ -21,6 +21,34 @@ class QualityTests(unittest.TestCase):
         article = radar.candidate(record(), NEWS, NOW)
         self.assertEqual(article['verification_state'], 'not_a_request')
 
+    def test_historical_privacy_redaction_preserves_identity_and_history(self):
+        _, previous = assemble()
+        uid, prior = next(iter(previous['leads'].items()))
+        original_url = prior['url']
+        prior['title'] = 'Need tree removal at 123 West Second Street in Elmira NY'
+        prior['summary'] = 'Email owner@example.com or call (607) 555-1212 at 123 West Second Street'
+        prior['evidence_snippet'] = prior['summary']
+        feed, history = assemble(sources=[SOCIAL], previous=previous,
+                                 getter=lambda _: '[]', now=NOW + dt.timedelta(days=1))
+        self.assertEqual(feed['leads'], [])
+        sanitized = history['leads'][uid]
+        self.assertEqual(sanitized['id'], uid)
+        self.assertEqual(sanitized['url'], original_url)
+        self.assertEqual(sanitized['first_seen'], prior['first_seen'])
+        for field in ('title', 'summary', 'evidence_snippet'):
+            self.assertNotIn('123 West Second Street', sanitized[field])
+            self.assertNotIn('owner@example.com', sanitized[field])
+            self.assertNotIn('607) 555-1212', sanitized[field])
+        self.assertIn('[address on source]', sanitized['title'])
+        self.assertIn('[contact on source]', sanitized['summary'])
+
+    def test_historical_privacy_redaction_rejects_nontext(self):
+        _, previous = assemble()
+        next(iter(previous['leads'].values()))['summary'] = ['not a text value']
+        with self.assertRaisesRegex(ValueError, 'lead text must be a string'):
+            assemble(sources=[SOCIAL], previous=previous,
+                     getter=lambda _: '[]', now=NOW + dt.timedelta(days=1))
+
     def test_negative_need_and_seller_recommendation(self):
         for phrase in ["I don't need tree removal in Elmira", 'We highly recommend our tree removal in Elmira', 'Not looking for tree removal in Elmira', 'Need customers for tree removal in Elmira; fully insured']:
             self.assertIsNone(radar.candidate(record(phrase), SOCIAL, NOW), phrase)
