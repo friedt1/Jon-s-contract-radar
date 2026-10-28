@@ -152,14 +152,21 @@ class PersistenceTests(unittest.TestCase):
         self.assertFalse(feed['leads'])
         self.assertEqual(len(history2['leads']), 1)
 
-    def test_partial_failures_are_visible(self):
+    def test_news_only_success_cannot_clear_request_feed(self):
         def get(url):
             if url == SOCIAL['url']: raise OSError('unreachable')
             return '<rss><channel/></rss>'
+        with self.assertRaisesRegex(RuntimeError, 'All request sources failed'):
+            assemble(sources=[SOCIAL, NEWS], getter=get)
+
+    def test_partial_failure_visible_when_request_source_succeeds(self):
+        def get(url):
+            if url == NEWS['url']: raise OSError('unreachable')
+            return timeline(BODY)
         feed, _ = assemble(sources=[SOCIAL, NEWS], getter=get)
-        self.assertEqual(feed['source_status'][SOCIAL['name']]['state'], 'error')
-        self.assertEqual(feed['request_sources_ok'], 0)
-        self.assertFalse(feed['leads'])
+        self.assertEqual(feed['source_status'][NEWS['name']]['state'], 'error')
+        self.assertEqual(feed['request_sources_ok'], 1)
+        self.assertEqual(len(feed['leads']), 1)
 
     def test_all_failure_preserves_files(self):
         with tempfile.TemporaryDirectory() as tmp:
