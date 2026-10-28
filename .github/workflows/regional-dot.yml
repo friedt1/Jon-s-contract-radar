@@ -1,0 +1,35 @@
+name: Regional DOT Source Monitor
+on:
+  schedule:
+    - cron: '53 11 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: regional-dot-main
+  cancel-in-progress: false
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test DOT source monitor
+        run: python -m unittest test_regional_dot -v
+      - name: Check official DOT procurement portals
+        run: python regional_dot.py
+      - name: Publish DOT source status
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/regional_dot_sources.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Update DOT procurement portal status'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
