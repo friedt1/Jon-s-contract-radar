@@ -18,6 +18,7 @@ import urllib.request as ur
 import xml.etree.ElementTree as ET
 import local_bid_rss
 import public_bid_pagination as public_pages
+import civicplus_bids
 
 ROOT = pathlib.Path(__file__).resolve().parent
 SOURCES = ROOT / 'sources.json'
@@ -140,6 +141,73 @@ def allowed_link(url,base):
  if up.urlparse(url).scheme not in ('http','https'):return False
  return host==up.urlparse(base).hostname or any(host==x or host.endswith('.'+x) for x in ('bonfirehub.com','bidnetdirect.com','pennbid.net','publicpurchase.com'))
 
+def scan_civicplus(src, listing_pages, page_errors):
+ """Only individual public bidID notices; never treat the whole listing as a bid."""
+ name = src['name']
+ records = {}
+ for page, origin in listing_pages:
+  for row in civicplus_bids.listing_records(page, origin):
+   records.setdefault(row['url'], row)
+ found = {}
+ checked = 0
+ errors = []
+ closed_count = 0
+ expired_count = 0
+ today = NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat()
+ for row in records.values():
+  if row['open_status'] in civicplus_bids.CLOSED:
+   closed_count += 1
+   continue
+  if row['deadline'] and row['deadline'] < today:
+   expired_count += 1
+   continue
+  if not category(row['title'] + ' ' + row['description']):
+   continue
+  # The county listing is not the worksite; routing remains unverified.
+  if checked >= civicplus_bids.MAX_DETAILS:
+   break
+  checked += 1
+  detail_status = 'unknown'
+  try:
+   blob, kind, final = fetch(row['url'], binary=True)
+   if 'html' in kind or blob.lstrip().startswith(b'<'):
+    detail = parse_html(blob.decode('utf-8', 'replace'))
+    detail_status = civicplus_bids.status_of(' '.join(detail.parts))
+  except Exception as e:
+   errors.append(error_label(e))
+  if detail_status in civicplus_bids.CLOSED:
+   closed_count += 1
+   continue
+  due = row['deadline']
+  evidence = row['title'] + ' bid ' + row['description'] + (' Due date: ' + due if due else '')
+  summary = ('Bid No. ' + row['bid_number'] + '. ' if row['bid_number'] else '') + row['description']
+  if due:
+   summary += ' Due date: ' + due
+  add_lead(found, name, row['title'], row['url'], summary, 'individual county bid candidate', evidence=evidence)
+  uid = hashlib.sha256(row['url'].encode()).hexdigest()[:16]
+  if uid in found:
+   found[uid].update({
+    'agency': name.replace(' bids', '') + ' (issuing authority)',
+    'scope': row['title'],
+    'bid_number': row['bid_number'],
+    'location': 'Worksite unverified; county issuing authority is not a worksite',
+    'open_status': 'detail_listed_open' if detail_status == 'open' else
+                   'listing_open' if row['open_status'] == 'open' else 'unknown',
+    'deadline_time': row['deadline_time'],
+    'deadline_timezone': 'unverified',
+    'travel_verified': False,
+    'travel_category': 'unverified',
+   })
+ status = (f'direct fetched; {len(listing_pages)} listing pages; '
+           f'{len(records)} individual bid records; {checked} relevant details checked; '
+           f'{len(found)} unverified candidates; {closed_count} closed; {expired_count} expired')
+ if errors:
+  status += f'; {len(errors)} detail errors: ' + ','.join(sorted(set(errors)))
+ if page_errors:
+  status += f'; {len(page_errors)} pagination errors: ' + ','.join(sorted(set(page_errors)))
+ return list(found.values()), status
+
+
 def scan_direct(src):
  base=src['url'];name=src['name'];found={};visited=set();errors=[];pdfs=0
  html,ctype,final=fetch(base)
@@ -160,6 +228,8 @@ def scan_direct(src):
       page_errors.append('unsupported pagination content');continue
      listing_pages.append((parse_html(extra),extra_final))
     except Exception as e:page_errors.append(error_label(e))
+ if name in civicplus_bids.SOURCES:
+  return scan_civicplus(src, listing_pages, page_errors)
  # Keep each table/list record isolated from neighboring bid scopes and dates.
  max_details=public_pages.MAX_PUBLIC_DETAILS if name in public_pages.PUBLIC_LISTINGS else MAX_DETAIL
  candidates=[]
