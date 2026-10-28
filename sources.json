@@ -587,10 +587,12 @@
   {
     "name": "New York State DOT Region 6",
     "type": "utilities and transportation",
-    "url": "",
-    "mode": "discovery_pending",
-    "verified_url": false,
-    "require_local_evidence": true
+    "url": "https://www.dot.ny.gov/doing-business/opportunities/const-highway",
+    "mode": "direct_page",
+    "verified_url": true,
+    "require_local_evidence": true,
+    "discovery_query": "NYSDOT Region 6 tree clearing",
+    "note": "Statewide letting page, not region-specific; project scope and location require independent verification."
   },
   {
     "name": "New York State DOT Region 9",
@@ -603,10 +605,12 @@
   {
     "name": "PennDOT District 3",
     "type": "utilities and transportation",
-    "url": "",
-    "mode": "discovery_pending",
-    "verified_url": false,
-    "require_local_evidence": true
+    "url": "https://www.ecmssyst.penndot.pa.gov/ECMS/",
+    "mode": "direct_page",
+    "verified_url": true,
+    "require_local_evidence": true,
+    "discovery_query": "PennDOT District 3 tree clearing",
+    "note": "ECMS landing page; individual notices may require guest access or dynamic rendering. No bypass."
   },
   {
     "name": "PennDOT District 4",
