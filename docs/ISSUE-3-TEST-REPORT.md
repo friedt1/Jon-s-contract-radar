@@ -4,6 +4,14 @@ Status: offline implementation validated; source-expansion acceptance remains bl
 
 Base: `2cb4835e27a91e19ebe0b4bcae7e64c4f33008b6` on main. Branch: `dev/issue-3-local-lead-quality`. Verification ran October 28, 2026 (America/New_York). Python 3.12.14, Node v24.19.0, system Chromium and Poppler. CI continues to use Python 3.12 and Node 22; existing contract CI includes Python 3.13. Hosted CI and Python 3.13 were not executed here.
 
+## GitHub-hosted regression verification (October 28, 2026)
+
+After the initial Codex-environment report below, the draft PR was updated to reject seller-style "I recommend" statements and to prevent a later news article from reviving or downgrading a historical customer request. Three focused offline regression tests cover these cases.
+
+At commit `bede2092ef0c34574685adaed96606233eb6ea6d`, GitHub-hosted **Local Customer Lead Radar** run `40688438882` completed successfully: **69 Python tests passed**, both Node dashboard test suites passed, and both published-feed validators passed. GitHub-hosted **Automatic Contract Radar Scanner** run `40688438821` also completed successfully with Python 3.12 and 3.13 test jobs. Both PR-triggered scan/publish jobs were **skipped as designed**; no live scan or deployment was performed by these checks.
+
+**Acceptance still blocked:** no newly permitted direct-request source, no independently verified live customer examples, and no confirmed qualified local jobs. The PR remains a draft; hosted test success does not establish lawful new-source access or live usefulness. The historical test counts and environment limitations below describe the earlier Codex run, not the newer hosted verification.
+
 ## Changes under review
 
 - Evidence snippet, stable duplicate key, explicit heuristic confidence, verification state and limitations accompany every new discovery. Existing original timestamp, first/last seen, source permalinks, service/location and customer type remain.
