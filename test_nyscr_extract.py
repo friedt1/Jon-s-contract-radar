@@ -1,4 +1,5 @@
 import unittest
+import datetime as dt
 from nyscr_extract import extract, promotable
 
 SAMPLE = """Contracting Opportunities
@@ -48,22 +49,66 @@ class NYSCRExtractTests(unittest.TestCase):
     def test_missing_deadline_is_unverified(self):
         rows = extract("Brush clearing contract\nCR#:\n2149994\nAgency:\nExample Agency")
         self.assertEqual(rows[0]["deadline"], "")
-        self.assertFalse(promotable(rows[0]))
+        self.assertFalse(promotable(rows[0], today=dt.date(2026, 10, 28)))
 
     def test_no_invented_links_or_verified_status(self):
         for row in extract(SAMPLE):
             self.assertIsNone(row["detail_url"])
             self.assertEqual(row["status"], "research_only")
-            self.assertFalse(promotable(row))
+            self.assertFalse(promotable(row, today=dt.date(2026, 10, 28)))
 
     def test_requires_independent_checks(self):
         row = extract(SAMPLE)[0] | {
             "status": "verified_open", "detail_url": "https://www.nyscr.ny.gov/Ads/View/2149991",
             "authorized_access": True, "open_status_confirmed": True, "location_confirmed": True
         }
-        self.assertTrue(promotable(row))
-        self.assertFalse(promotable(row | {"authorized_access": False}))
-        self.assertFalse(promotable(row | {"detail_url": "javascript:alert(1)"}))
+        day = dt.date(2026, 10, 28)
+        self.assertTrue(promotable(row, today=day))
+        self.assertFalse(promotable(row | {"authorized_access": False}, today=day))
+        self.assertFalse(promotable(row | {"detail_url": "javascript:alert(1)"}, today=day))
+
+    def test_export_fields_are_explicitly_unverified(self):
+        row = extract(SAMPLE)[0]
+        self.assertEqual(row["open_status"], "unknown")
+        self.assertEqual(row["scope"], row["title"])
+        self.assertEqual(row["deadline_time"], "")
+        self.assertEqual(row["deadline_timezone"], "unverified")
+        self.assertFalse(row["location_verified"])
+
+    def test_reject_expired_and_invalid_deadlines(self):
+        row = extract(SAMPLE)[0] | {
+            "status": "verified_open",
+            "detail_url": "https://www.nyscr.ny.gov/Ads/View/2149991",
+            "authorized_access": True, "open_status_confirmed": True, "location_confirmed": True
+        }
+        self.assertFalse(promotable(row, today=dt.date(2026, 11, 20)))
+        self.assertFalse(promotable(row | {"deadline": "not-a-date"}, today=dt.date(2026, 10, 28)))
+        self.assertFalse(promotable(row | {"deadline": ""}, today=dt.date(2026, 10, 28)))
+
+    def test_reject_unrelated_or_mismatched_solicitation_links(self):
+        row = extract(SAMPLE)[0] | {
+            "status": "verified_open",
+            "authorized_access": True, "open_status_confirmed": True, "location_confirmed": True
+        }
+        day = dt.date(2026, 10, 28)
+        for link in ("https://example.com/Ads/View/2149991",
+                     "https://www.nyscr.ny.gov/",
+                     "https://www.nyscr.ny.gov/Ads/View/2149992",
+                     "http://www.nyscr.ny.gov/Ads/View/2149991",
+                     "https://www.nyscr.ny.gov.evil.example/Ads/View/2149991"):
+            with self.subTest(link=link):
+                self.assertFalse(promotable(row | {"detail_url": link}, today=day))
+
+    def test_reject_unconfirmed_scope_or_worksite(self):
+        row = extract(SAMPLE)[0] | {
+            "status": "verified_open",
+            "detail_url": "https://www.nyscr.ny.gov/Ads/View/2149991",
+            "authorized_access": True, "open_status_confirmed": True, "location_confirmed": True
+        }
+        day = dt.date(2026, 10, 28)
+        self.assertFalse(promotable(row | {"scope": "Printer supplies"}, today=day))
+        self.assertFalse(promotable(row | {"location_confirmed": False}, today=day))
+        self.assertFalse(promotable(row | {"agency": ""}, today=day))
 
 if __name__ == "__main__":
     unittest.main()
