@@ -143,7 +143,7 @@ def candidate(record, source, now, diagnostics=None):
         s = re.sub(r'(?<!\w)(?:\+?1[ .-]?)?\(?\d{3}\)?[ .-]?\d{3}[ .-]?\d{4}(?!\w)', '[contact on source]', s)
         # Do not republish residential street addresses from public posts.
         # The original permalink remains the contact route.
-        return re.sub(r'(?<!\w)\d{1,6}\s+(?:[A-Za-z0-9][A-Za-z0-9.'-]*\s+){1,5}'
+        return re.sub(r'(?<!\w)\d{1,6}\s+(?:[A-Za-z0-9][A-Za-z0-9.-]*\s+){1,5}'
                       r'(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Lane|Ln|Boulevard|Blvd|Court|Ct|Place|Pl|Way)\b\.?',
                       '[address on source]', s, flags=re.I)
     evidence = redact(combined).strip()
