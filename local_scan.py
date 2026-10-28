@@ -122,10 +122,10 @@ def redact_public_text(value):
     """
     if not isinstance(value, str):
         raise ValueError('lead text must be a string')
-    value = re.sub(r'\\b[\\w.+-]+@[\\w.-]+\\.[A-Za-z]{2,}\\b', '[contact on source]', value)
-    value = re.sub(r'(?<!\\w)(?:\\+?1[ .-]?)?\\(?\\d{3}\\)?[ .-]?\\d{3}[ .-]?\\d{4}(?!\\w)', '[contact on source]', value)
-    return re.sub(r'(?<!\\w)\\d{1,6}\\s+(?:[A-Za-z0-9][A-Za-z0-9.-]*\\s+){1,5}'
-                  r'(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Lane|Ln|Boulevard|Blvd|Court|Ct|Place|Pl|Way)\\b\\.?',
+    value = re.sub(r'\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b', '[contact on source]', value)
+    value = re.sub(r'(?<!\w)(?:\+?1[ .-]?)?\(?\d{3}\)?[ .-]?\d{3}[ .-]?\d{4}(?!\w)', '[contact on source]', value)
+    return re.sub(r'(?<!\w)\d{1,6}\s+(?:[A-Za-z0-9][A-Za-z0-9.-]*\s+){1,5}'
+                  r'(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Lane|Ln|Boulevard|Blvd|Court|Ct|Place|Pl|Way)\b\.?',
                   '[address on source]', value, flags=re.I)
 
 
