@@ -47,7 +47,7 @@ LOCAL_PLACES = ('elmira','chemung','steuben','schuyler','tompkins','horseheads',
  'ithaca','bradford','tioga','lycoming','williamsport','sayre','athens','towanda','wellsboro',
  'mansfield','broome','binghamton','owego','waverly','cortland','yates','seneca','montour',
  'bath','hornell','big flats','southport','vestal','dryden','lansing','watkins glen')
-BROAD_SOURCES = {'PA procurement opportunities','PA DGS construction bids','PennBid platform','BidNet NY platform'}
+BROAD_SOURCES = {'PA procurement opportunities','PA DGS construction bids','PennBid platform','BidNet NY platform','New York State DOT Region 6','PennDOT District 3'}
 
 def local_evidence(text):
  return any(re.search(r'\b'+re.escape(x)+r'\b',text,re.I) for x in LOCAL_PLACES)
@@ -183,7 +183,7 @@ def scan_direct(src):
     p=parse_html(blob.decode('utf-8','replace'));body=norm(' '.join(p.parts))[:20000]
     # A listing containing many bids must be handled as separate rows.
     records=p.rows if p.rows else [body]
-    if len(records)==1 and (closed(body) or (deadline(body) and deadline(body)<NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat())):
+    if not p.rows and (closed(body) or (deadline(body) and deadline(body)<NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat())):
      found.pop(hashlib.sha256(url.split('#')[0].encode()).hexdigest()[:16],None);continue
     if len(records)==1 and category(title+' '+context) and eligible(body,name):
      key=category(body);match=next((t for t in CATEGORIES[key] if t in body.lower()),'')
