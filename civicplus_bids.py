@@ -52,6 +52,42 @@ def closing_of(text):
     return date, (match.group(2) or "").strip()
 
 
+
+def detail_closing_of(text):
+    """Read the individual notice's closing field, never its publication date.
+
+    CivicPlus detail pages use 'Closing Date/Time' rather than the listing's
+    'Closes' label. The returned date is authoritative when present.
+    """
+    match = re.search(r"\bClosing\s+Date(?:/Time|\s+and\s+Time)?\s*:\s*" + DATE.pattern, text, re.I)
+    if not match:
+        return "", ""
+    try:
+        due = dt.datetime.strptime(match.group(1), "%m/%d/%Y").date().isoformat()
+    except ValueError:
+        return "", ""
+    return due, (match.group(2) or "").strip()
+
+
+def detail_description(text):
+    """Extract actual notice scope without treating unrelated page chrome as scope."""
+    match = re.search(
+        r"\bDescription\s*:\s*(.+?)(?=\b(?:Related Documents|Contact Us|"
+        r"Return To Main Bid Postings Page|Publication Date/Time|Closing Date/Time)\s*:|$)",
+        text, re.I | re.S,
+    )
+    return " ".join(match.group(1).split())[:1200] if match else ""
+
+
+def detail_worksite(text):
+    """Only explicit worksite labels count; a purchasing office is not a job site."""
+    match = re.search(
+        r"\b(?:Project Location|Work Location|Worksite|Site Location)\s*:\s*"
+        r"(.{1,180}?)(?=\b(?:Description|Status|Closing Date/Time|Related Documents)\s*:|$)",
+        text, re.I | re.S,
+    )
+    return " ".join(match.group(1).split())[:180] if match else ""
+
 def listing_records(page, origin):
     """Use link positions to isolate each individual bid from adjacent bid cards.
 
