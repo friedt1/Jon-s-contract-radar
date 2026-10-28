@@ -216,13 +216,26 @@ def records(source, getter=None):
         if root.tag not in ('rss', '{http://www.w3.org/2005/Atom}feed', '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}RDF'):
             raise ValueError('RSS/Atom feed expected, not an HTML login or error page')
         atom = '{http://www.w3.org/2005/Atom}'
-        for item in (root.findall('.//item') + root.findall(f'{atom}entry'))[:100]:
-            link = item.findtext('link', '')
+        rss1 = '{http://purl.org/rss/1.0/}'
+        dc = '{http://purl.org/dc/elements/1.1/}'
+        rdf = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+        # RSS 1.0 uses namespaced RDF items, unlike RSS 2.0. The previous
+        # parser accepted an RDF root but silently returned zero records.
+        items = (root.findall('.//item') + root.findall(f'.//{rss1}item') +
+                 root.findall(f'{atom}entry'))[:100]
+        for item in items:
+            link = item.findtext('link') or item.findtext(f'{rss1}link') or ''
             if not link:
-                link = next((x.get('href', '') for x in item.findall(f'{atom}link') if x.get('rel', 'alternate') == 'alternate'), '')
-            yield {'title': item.findtext('title') or item.findtext(f'{atom}title', ''),
-                   'body': item.findtext('description') or item.findtext(f'{atom}content') or item.findtext(f'{atom}summary', ''),
-                   'url': link, 'published': item.findtext('pubDate') or item.findtext(f'{atom}published') or item.findtext(f'{atom}updated', '')}
+                link = next((x.get('href', '') for x in item.findall(f'{atom}link')
+                             if x.get('rel', 'alternate') == 'alternate'), '')
+            if not link and item.tag == f'{rss1}item':
+                link = item.get(f'{rdf}about', '')
+            yield {'title': item.findtext('title') or item.findtext(f'{rss1}title') or item.findtext(f'{atom}title', ''),
+                   'body': item.findtext('description') or item.findtext(f'{rss1}description') or
+                           item.findtext(f'{atom}content') or item.findtext(f'{atom}summary', ''),
+                   'url': link,
+                   'published': item.findtext('pubDate') or item.findtext(f'{dc}date') or
+                                item.findtext(f'{atom}published') or item.findtext(f'{atom}updated', '')}
 
 
 def validate_sources(sources):
