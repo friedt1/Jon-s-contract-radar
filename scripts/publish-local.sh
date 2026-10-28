@@ -4,10 +4,17 @@ set -euo pipefail
 files=(data/local_leads.json data/local_history.json)
 git add -- "${files[@]}"
 if git diff --cached --quiet; then exit 0; fi
-if git diff --cached --name-only | rg -v '^data/local_(leads|history)\.json$'; then
-  echo 'Refusing to publish unrelated staged changes' >&2
-  exit 1
-fi
+# Use only Bash and Git: ripgrep is not guaranteed on Actions runners.
+# NUL-delimited paths prevent whitespace and quoted-path bypasses.
+while IFS= read -r -d '' path; do
+  case "$path" in
+    data/local_leads.json|data/local_history.json) ;;
+    *)
+      echo "Refusing to publish unrelated staged changes: $path" >&2
+      exit 1
+      ;;
+  esac
+done < <(git diff --cached --name-only -z)
 git commit -m 'Update local customer discoveries and history'
 for attempt in 1 2 3; do
   if git push origin HEAD:main; then exit 0; fi
