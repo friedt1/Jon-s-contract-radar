@@ -140,7 +140,12 @@ def candidate(record, source, now, diagnostics=None):
     # Do not republish incidental phone numbers/emails; source is the contact route.
     def redact(s):
         s = re.sub(r'\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b', '[contact on source]', s)
-        return re.sub(r'(?<!\w)(?:\+?1[ .-]?)?\(?\d{3}\)?[ .-]?\d{3}[ .-]?\d{4}(?!\w)', '[contact on source]', s)
+        s = re.sub(r'(?<!\\w)(?:\\+?1[ .-]?)?\\(?\\d{3}\\)?[ .-]?\\d{3}[ .-]?\\d{4}(?!\\w)', '[contact on source]', s)
+        # Do not republish residential street addresses from public posts.
+        # The original permalink remains the contact route.
+        return re.sub(r'(?<!\\w)\\d{1,6}\\s+(?:[A-Za-z][A-Za-z0-9.\\x27-]*\\s+){1,5}'
+                      r'(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Lane|Ln|Boulevard|Blvd|Court|Ct|Place|Pl|Way)\\b\\.?',
+                      '[address on source]', s, flags=re.I)
     evidence = redact(combined).strip()
     title = redact(title or body[:160]); body = redact(body)
     age = (now - published).days
