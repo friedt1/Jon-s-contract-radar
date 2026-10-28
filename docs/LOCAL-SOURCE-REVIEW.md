@@ -12,6 +12,12 @@ Review date: October 28, 2026. Cost budget: $0. No customer requests have been v
 | Freecycle | Primarily free items rather than paid tree-service intent; tree/wood offers can look like requests. | [terms](https://www.freecycle.org/pages/terms); probe denied by environment proxy. | **Disabled**, low intent fit; no bulk access or reuse approval established. |
 | Facebook / Nextdoor | Potential requests behind accounts/private groups; unavailable permitted integration. | No authorized public feed. | Excluded; no login, private data, profiling, or bypass. |
 
+## Mastodon terms review update — October 28, 2026
+
+Mastodon's [official July 31, 2026 announcement](https://blog.joinmastodon.org/2026/07/announcing-new-terms-of-service-for-our-servers/) confirms new terms for mastodon.social and mastodon.online took effect **August 31, 2026**. The [official API reference](https://docs.joinmastodon.org/methods/timelines/#tag) documents a public hashtag-timeline endpoint, but API technical accessibility is **not** blanket permission to harvest posts for commercial lead generation. The current terms page requires JavaScript in the available research client, so the exact applicable current automated-use provisions were **not verified** in this review. The older 2025 proposed restrictions should not be treated as definitive for the 2026 replacement terms.
+
+**Decision:** no new Mastodon instances, hashtags or automated use cases may be admitted based only on public API availability. The existing six configured endpoints remain under **permission review**, not independently approved for commercial data collection. Seek explicit current publisher terms/authorization before expansion; if prohibited, disable collection rather than switch to mirrors, HTML scraping, or other bypasses. The dashboard's zero observed leads is not evidence of lawful permission or market coverage.
+
 ## Actual examples and the evidence gap
 
 Multiple **real post examples** are required before a new source can be called useful. None could be retrieved in this task: the current published history is empty, and every live source probe was rejected by the environment proxy. The test phrases in `test_local_quality.py` and `test_local_scan.py` are synthetic and are never published as leads. Neither those tests nor a successful API response establishes that real local customer requests exist.
