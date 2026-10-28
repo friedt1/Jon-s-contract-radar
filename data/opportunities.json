@@ -4,22 +4,22 @@
     "BidNet Direct": "not connected: individual bid listing interface/permission not established",
     "PennBid": "not connected: individual bid listing interface/permission not established"
   },
-  "updated": "2026-10-28T22:08:52+00:00",
+  "updated": "2026-10-28T22:54:54+00:00",
   "opportunities": [],
   "source_status": {
     "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 0 relevant details checked; 0 unverified candidates; 0 closed; 0 expired; indirect RSS ok; 0 candidates",
     "Steuben County bids": "direct fetched; 1 listing pages; 7 individual bid records; 0 relevant details checked; 0 unverified candidates; 0 closed; 0 expired; indirect RSS ok; 0 candidates",
-    "Schuyler County purchasing": "direct error: URLError; indirect RSS ok; 0 candidates",
-    "Tompkins County purchasing": "direct fetched; 1 listing pages; 36 details checked; 1 PDFs checked; 0 candidates; 3 detail errors: HTTPError,ValueError; indirect RSS ok; 0 candidates",
+    "Schuyler County purchasing": "direct fetched; 1 listing pages; 36 details checked; 1 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
+    "Tompkins County purchasing": "direct fetched; 1 listing pages; 36 details checked; 1 PDFs checked; 0 candidates; 1 detail errors: ValueError; indirect RSS ok; 0 candidates",
     "Elmira City bids": "direct fetched; 1 listing pages; 2 details checked; 1 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
-    "Elmira Next local bids": "direct fetched; 1 listing pages; 11 details checked; 0 PDFs checked; 0 candidates; 1 detail errors: HTTPError; local bid RSS fetched; 1 notices; 0 unverified tree-service candidates; indirect RSS ok; 0 candidates",
+    "Elmira Next local bids": "direct fetched; 1 listing pages; 18 details checked; 0 PDFs checked; 0 candidates; local bid RSS fetched; 1 notices; 0 unverified tree-service candidates; indirect RSS ok; 0 candidates",
     "Lycoming County bids": "direct fetched; 1 listing pages; 7 details checked; 0 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
     "PA procurement opportunities": "direct fetched; 1 listing pages; 18 details checked; 0 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
     "PA DGS construction bids": "direct fetched; 1 listing pages; 18 details checked; 5 PDFs checked; 0 candidates; 1 detail errors: ValueError; indirect RSS ok; 0 candidates",
     "Tioga Bradford Housing Authority": "direct fetched; 1 listing pages; 2 details checked; 0 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
-    "Chemung County purchasing": "direct fetched; 1 listing pages; 18 details checked; 5 PDFs checked; 0 candidates; 1 detail errors: HTTPError; indirect RSS ok; 0 candidates",
+    "Chemung County purchasing": "direct fetched; 1 listing pages; 18 details checked; 5 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
     "PennBid platform": "direct fetched; 1 listing pages; 1 details checked; 0 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates; individual listing ingestion not connected; provider-approved feed/access not established",
-    "BidNet NY platform": "direct error: HTTPError HTTP 405; indirect RSS ok; 0 candidates; individual listing ingestion not connected; provider-approved feed/access not established",
+    "BidNet NY platform": "direct fetched; 1 listing pages; 18 details checked; 0 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates; individual listing ingestion not connected; provider-approved feed/access not established",
     "Tioga County NY": "indirect RSS ok; 0 candidates",
     "Broome County": "indirect RSS ok; 0 candidates",
     "Cortland County": "indirect RSS ok; 0 candidates",
@@ -111,5 +111,5 @@
     "JLL regional property management": "indirect RSS ok; 0 candidates",
     "SAM.gov": "deferred"
   },
-  "coverage_note": "102 named targets; 13 direct public home pages fetched, with bounded detail/PDF checks; 102 indirect news searches succeeded. Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. 87 targets use indirect discovery only. SAM.gov deferred."
+  "coverage_note": "102 named targets; 15 direct public home pages fetched, with bounded detail/PDF checks; 102 indirect news searches succeeded. Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. 87 targets use indirect discovery only. SAM.gov deferred."
 }
