@@ -1,7 +1,7 @@
 name: Local Customer Lead Radar
 on:
   schedule:
-    - cron: '20 */6 * * *'
+    - cron: '2,12,22,32,42,52 * * * *'
   workflow_dispatch:
   pull_request:
   push:
