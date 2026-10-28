@@ -114,6 +114,21 @@ def location(body):
     return None
 
 
+def redact_public_text(value):
+    """Remove incidental contacts and street addresses from public artifacts.
+
+    Original source permalinks remain the only contact route. Do not rewrite
+    fingerprints or IDs when sanitizing older history.
+    """
+    if not isinstance(value, str):
+        raise ValueError('lead text must be a string')
+    value = re.sub(r'\\b[\\w.+-]+@[\\w.-]+\\.[A-Za-z]{2,}\\b', '[contact on source]', value)
+    value = re.sub(r'(?<!\\w)(?:\\+?1[ .-]?)?\\(?\\d{3}\\)?[ .-]?\\d{3}[ .-]?\\d{4}(?!\\w)', '[contact on source]', value)
+    return re.sub(r'(?<!\\w)\\d{1,6}\\s+(?:[A-Za-z0-9][A-Za-z0-9.-]*\\s+){1,5}'
+                  r'(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Lane|Ln|Boulevard|Blvd|Court|Ct|Place|Pl|Way)\\b\\.?',
+                  '[address on source]', value, flags=re.I)
+
+
 def candidate(record, source, now, diagnostics=None):
     def reject(reason):
         if diagnostics is not None:
@@ -137,15 +152,8 @@ def candidate(record, source, now, diagnostics=None):
     kind = 'service_request' if is_request else 'news_context'
     customer = ('commercial' if re.search(r'\b(?:our business|my business|commercial property|our office|our store|our restaurant|our parking lot)\b', combined, re.I)
                 else 'homeowner' if re.search(r'\b(?:my yard|our yard|my home|our home|my house|our house|my backyard|our backyard)\b', combined, re.I) else 'unspecified')
-    # Do not republish incidental phone numbers/emails; source is the contact route.
-    def redact(s):
-        s = re.sub(r'\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b', '[contact on source]', s)
-        s = re.sub(r'(?<!\w)(?:\+?1[ .-]?)?\(?\d{3}\)?[ .-]?\d{3}[ .-]?\d{4}(?!\w)', '[contact on source]', s)
-        # Do not republish residential street addresses from public posts.
-        # The original permalink remains the contact route.
-        return re.sub(r'(?<!\w)\d{1,6}\s+(?:[A-Za-z0-9][A-Za-z0-9.-]*\s+){1,5}'
-                      r'(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Lane|Ln|Boulevard|Blvd|Court|Ct|Place|Pl|Way)\b\.?',
-                      '[address on source]', s, flags=re.I)
+    # Sanitize current public excerpts and older historical excerpts identically.
+    redact = redact_public_text
     evidence = redact(combined).strip()
     title = redact(title or body[:160]); body = redact(body)
     age = (now - published).days
@@ -223,6 +231,16 @@ def assemble(sources, previous, now, getter=None, pause=None):
     old = previous.get('leads', {})
     # Fail rather than overwrite corrupt history.
     if not isinstance(old, dict): raise ValueError('invalid history')
+    # Previously published entries may predate privacy redaction. Preserve their
+    # IDs, timestamps and original source links while sanitizing display text.
+    old = {
+        uid: {**item, **{
+            field: redact_public_text(item[field])
+            for field in ('title', 'summary', 'evidence_snippet')
+            if field in item
+        }}
+        for uid, item in old.items()
+    }
     alias = {}
     for uid, item in old.items():
         alias[item['fingerprint']] = uid
