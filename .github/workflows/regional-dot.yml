@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Test DOT source monitor
-        run: python -m unittest test_regional_dot -v
+        run: python -m unittest test_regional_dot test_nysdot_lettings -v
       - name: Check official DOT procurement portals
         run: python regional_dot.py
       - name: Publish DOT source status
