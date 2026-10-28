@@ -25,6 +25,40 @@ class QualityTests(unittest.TestCase):
         for phrase in ["I don't need tree removal in Elmira", 'We highly recommend our tree removal in Elmira', 'Not looking for tree removal in Elmira', 'Need customers for tree removal in Elmira; fully insured']:
             self.assertIsNone(radar.candidate(record(phrase), SOCIAL, NOW), phrase)
 
+    def test_seller_recommendation_is_not_a_customer_request(self):
+        for phrase in ('I recommend tree removal in Elmira NY.',
+                       'We would recommend tree removal in Elmira NY.'):
+            self.assertIsNone(radar.candidate(record(phrase), SOCIAL, NOW), phrase)
+        self.assertIsNotNone(radar.candidate(
+            record('Can anyone recommend a tree removal company in Elmira NY?'),
+            SOCIAL, NOW))
+
+    def test_news_cannot_resurrect_or_downgrade_historical_request(self):
+        _, previous = assemble()
+        prior = next(iter(previous['leads'].values()))
+        rss = ('<rss><channel><item><title>' + BODY + '</title>'
+               '<link>' + prior['url'] + '</link>'
+               '<pubDate>Tue, 27 Oct 2026 12:00:00 GMT</pubDate>'
+               '</item></channel></rss>')
+        feed, history = assemble(sources=[NEWS], previous=previous,
+                                 getter=lambda _: rss,
+                                 now=NOW + dt.timedelta(days=1))
+        self.assertEqual(feed['leads'], [])
+        self.assertEqual(feed['metrics']['request_candidates'], 0)
+        self.assertEqual(feed['metrics']['news_context'], 0)
+        self.assertEqual(history['leads'][prior['id']], prior)
+
+    def test_news_cannot_downgrade_request_in_same_scan(self):
+        rss = ('<rss><channel><item><title>' + BODY + '</title>'
+               '<link>https://social.example/@person/123</link>'
+               '<pubDate>Tue, 27 Oct 2026 12:00:00 GMT</pubDate>'
+               '</item></channel></rss>')
+        feed, history = assemble(sources=[SOCIAL, NEWS],
+                                 getter=lambda url: rss if url == NEWS['url'] else timeline(BODY))
+        self.assertEqual(len(feed['leads']), 1)
+        self.assertEqual(feed['leads'][0]['lead_type'], 'service_request')
+        self.assertEqual(history['leads'][feed['leads'][0]['id']]['lead_type'], 'service_request')
+
     def test_metrics_explain_zero_and_keep_articles_separate(self):
         feed, _ = assemble(getter=lambda _: timeline('Tree removal in Elmira', 'We offer tree removal in Elmira', 'Need tree removal in Texas', 'Need a plumber in Elmira'))
         status = feed['source_status'][SOCIAL['name']]
