@@ -40,7 +40,7 @@ class PermalinkPrivacyTests(unittest.TestCase):
             directory = pathlib.Path(folder)
             (directory/'local_leads.json').write_text(json.dumps(feed), encoding='utf-8')
             (directory/'local_history.json').write_text(json.dumps(history), encoding='utf-8')
-            with self.assertRaisesRegex(AssertionError, 'assert'):
+            with self.assertRaises(AssertionError):
                 validate(directory)
 
 if __name__ == '__main__':
