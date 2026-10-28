@@ -72,7 +72,15 @@ def safe_url(url):
 def canonical(url):
     if not safe_url(url): return ''
     p = up.urlsplit(url)
-    query = [(k, v) for k, v in up.parse_qsl(p.query) if not k.lower().startswith('utm_') and k.lower() not in ('fbclid', 'gclid')]
+    query = [(k, v) for k, v in up.parse_qsl(p.query, keep_blank_values=True)
+             if not k.lower().startswith('utm_') and k.lower() not in ('fbclid', 'gclid')]
+    # Source links are published verbatim in the dashboard and history.
+    # Never expose contact information or a residential address through
+    # query parameters even when display text has been sanitized.
+    private_keys = re.compile(r'(?:^|[_-])(?:email|e-mail|phone|mobile|cell|address|street|contact|token|auth|api_key)(?:$|[_-])', re.I)
+    for key, value in query:
+        if private_keys.search(key) or redact_public_text(value) != value:
+            return ''
     return up.urlunsplit(('https', p.netloc.lower(), p.path.rstrip('/') or '/', up.urlencode(sorted(query)), ''))
 
 
