@@ -9,12 +9,16 @@ import robots_policy
 import scan
 
 
+class RobotsResponse(io.BytesIO):
+    status = 200
+
+
 class RobotsPolicyTests(unittest.TestCase):
     def setUp(self):
         robots_policy._CACHE.clear()
 
     def test_specific_disallow_and_allowed_path(self):
-        with patch.object(robots_policy, "urlopen", return_value=io.BytesIO(
+        with patch.object(robots_policy, "urlopen", return_value=RobotsResponse(
                 b"User-agent: JonsContractRadar\nDisallow: /Bids.aspx\nAllow: /public/\n")):
             allowed, reason = robots_policy.allowed("https://agency.example/Bids.aspx")
             self.assertFalse(allowed)
