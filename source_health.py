@@ -68,7 +68,7 @@ def classify(source, status):
         "individual_bid_details_fetched": details_fetched,
         "detail_errors": detail_errors,
         "detail_access_state": detail_access_state,
-        "pdf_budget_skips": _number(r"\b(\d+) PDFs skipped at budget\b", status),
+        "pdf_budget_skips": _number(r"\b(\d+) PDF requests skipped at budget\b", status),
         "unverified_candidates": _number(r"\b(\d+) unverified candidates\b", status)
                                   or _number(r"; (\d+) candidates(?:;|$)", status),
         "diagnostic": status,
