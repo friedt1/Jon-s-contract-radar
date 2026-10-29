@@ -21,12 +21,12 @@
       "access_required": 1,
       "fetch_error": 0,
       "not_fetched": 0,
-      "staged_official_url": 15,
-      "not_configured": 69,
+      "staged_official_url": 16,
+      "not_configured": 68,
       "configured_direct": 18,
       "indirect_robots_blocked": 102,
       "individual_bid_records_found": 12,
-      "detail_fetches_attempted": 205,
+      "detail_fetches_attempted": 204,
       "individual_bid_details_fetched": 12,
       "unverified_candidates": 0
     },
@@ -124,10 +124,10 @@
         "staged_official_url": "",
         "activation_gate": "",
         "individual_bid_records_found": 0,
-        "detail_fetches_attempted": 7,
+        "detail_fetches_attempted": 6,
         "individual_bid_details_fetched": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 7 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: RobotsDenied; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 6 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: RobotsDenied; indirect RSS error: RobotsDenied"
       },
       {
         "name": "PA procurement opportunities",
@@ -398,11 +398,11 @@
       {
         "name": "Sullivan County PA",
         "mode": "discovery_pending",
-        "direct_state": "not_configured",
+        "direct_state": "staged_official_url",
         "indirect_state": "robots_blocked",
         "direct_url": "",
-        "staged_official_url": "",
-        "activation_gate": "",
+        "staged_official_url": "https://www.sullivancountypa.gov/public-notices",
+        "activation_gate": "Official county public-notices index mixes historical bids, employment, and non-procurement notices. Review robots and publisher terms; build permitted individual-notice adapter with bid-specific scope, current submission deadline, and worksite checks before activation. Do not treat public-notices index or archived mowing bids as open contracts.",
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
@@ -1462,7 +1462,7 @@
     ],
     "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Staged URLs are not monitored; all leads remain unverified."
   },
-  "updated": "2026-10-29T09:17:51+00:00",
+  "updated": "2026-10-29T10:17:07+00:00",
   "opportunities": [],
   "source_status": {
     "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 2 relevant details checked; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
@@ -1471,7 +1471,7 @@
     "Tompkins County purchasing": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 5 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied",
     "Elmira City bids": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "Elmira Next local bids": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 1 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied",
-    "Lycoming County bids": "direct fetched; 1 listing pages; 7 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: RobotsDenied; indirect RSS error: RobotsDenied",
+    "Lycoming County bids": "direct fetched; 1 listing pages; 6 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: RobotsDenied; indirect RSS error: RobotsDenied",
     "PA procurement opportunities": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "PA DGS construction bids": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "Tioga Bradford Housing Authority": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
