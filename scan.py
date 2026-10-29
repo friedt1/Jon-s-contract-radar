@@ -377,11 +377,15 @@ def scan_direct(src):
   # A listing row is discovery evidence only. Never publish its link until
   # the corresponding individual notice has actually been fetched and parsed.
   if not excluded_url(url) and (any(x in (title+' '+href).lower() for x in FOLLOW_HINTS) or (category(descriptor) and same_host)) and url!=origin:
-   score=(4 if category(title) else 0)+(3 if bidlike(title+' '+href) else 0)+(1 if category(context) else 0)
+   # A generic 'Details' label can still point directly to a bid notice.
+   # Prioritize its URL shape before unrelated purchasing/navigation links.
+   score=(6 if is_individual_notice_link(url) else 0)+(4 if category(title) else 0)+(3 if bidlike(title+' '+href) else 0)+(1 if category(context) else 0)
    candidates.append((score,url,title,context))
  # Row parsing is used to discover relevant detail URLs, not to invent bid links.
  candidates.sort(key=lambda x:-x[0])
- for _,url,title,context in candidates:
+ # Nested bid links must be examined before unrelated siblings exhaust the
+ # bounded detail budget. Python's list iterator visits inserted entries next.
+ for candidate_index, (_,url,title,context) in enumerate(candidates):
   if url in visited or len(visited)>=max_details:continue
   visited.add(url)
   try:
@@ -405,6 +409,7 @@ def scan_direct(src):
     if (not p.rows or individual_metadata_notice(body, final_url)) and (closed(body) or (deadline(body) and deadline(body)<NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat())):
      found.pop(notice_identity.notice_id(url),None);continue
     nested_notice_links = False
+    nested_candidates = []
     for label,href,_ in p.links:
      row=p.link_rows.get(href,label)
      target=safe_detail_url(final_url,href)
@@ -416,8 +421,12 @@ def scan_direct(src):
        nested_notice_links = True
       # A nested listing row likewise only queues a detail URL. It cannot
       # establish that the bid is current, relevant, or even accessible.
-      if len(candidates)<max_details*4 and target not in visited and (category(row) or bidlike(label+' '+href)):
-       candidates.append((0,target,label,row))
+      if len(nested_candidates)<max_details and target not in visited and (category(row) or bidlike(label+' '+href)):
+       priority = 8 if is_individual_notice_link(target) else 0
+       nested_candidates.append((priority,target,label,row))
+    if nested_candidates:
+     nested_candidates.sort(key=lambda item: -item[0])
+     candidates[candidate_index+1:candidate_index+1] = nested_candidates
     if nested_notice_links and not p.rows:
      nested_listing_pages += 1
     metadata_notice = individual_metadata_notice(body, final_url) and not nested_notice_links
