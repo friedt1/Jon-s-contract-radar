@@ -147,21 +147,27 @@
     "type": "NY counties",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.ontariocountyny.gov/2291/Current-Bids-RFPs-and-Results",
+    "activation_gate": "Official county page delegates current solicitations to OpenGov; verify permitted portal listing and individual notice extraction."
   },
   {
     "name": "Seneca County",
     "type": "NY counties",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.senecacountyny.gov/bids.aspx",
+    "activation_gate": "Official CivicPlus bidID listing confirmed; verify robots policy and live individual notice extraction before activation."
   },
   {
     "name": "Allegany County",
     "type": "NY counties",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.alleganyco.gov/departments/public-works/bids-awards/",
+    "activation_gate": "Official DPW bid specifications/awards page confirmed; verify robots policy and isolate current individual bid documents from past awards."
   },
   {
     "name": "Livingston County",
@@ -175,7 +181,9 @@
     "type": "NY counties",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.waynecountyny.gov/745/Purchasing",
+    "activation_gate": "Official county purchasing page announces OpenGov transition and vendor enrollment; identify current authoritative portal and permitted notice extraction."
   },
   {
     "name": "Wyoming County",
