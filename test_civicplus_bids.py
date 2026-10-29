@@ -81,7 +81,9 @@ class CivicPlusTests(unittest.TestCase):
         html = card(15, "Tree removal bid", "Open", "10/21/2026")
         html += '<a href="https://other.example/Bids.aspx?bidID=99">Tree removal bid</a>'
         self.assertEqual(len(civic.listing_records(scan.parse_html(html), BASE)), 1)
-        with patch.object(scan, "fetch", return_value=(html, "text/html", BASE)):
+        def fake(url, binary=False):
+            return (html.encode() if binary else html, "text/html", url)
+        with patch.object(scan, "fetch", side_effect=fake):
             leads, status = scan.scan_direct(SOURCE)
         self.assertEqual(leads, [])
         self.assertIn("1 expired", status)
