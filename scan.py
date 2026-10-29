@@ -95,8 +95,30 @@ def eligible(text, source='', today=None):
  if source in BROAD_SOURCES and not local_evidence(text): return False
  return True
 
+class UnsafeRedirect(PermissionError):
+ """A redirect was rejected before making the redirected HTTP request."""
+
+
 class RobotsAwareRedirect(ur.HTTPRedirectHandler):
  def redirect_request(self, req, fp, code, msg, headers, newurl):
+  # Check the redirect BEFORE urllib opens the destination. Validating
+  # r.url after fetch() is too late to prevent unapproved provider requests.
+  try:
+   original, target = up.urlsplit(req.full_url), up.urlsplit(newurl)
+   if (target.scheme not in ('http', 'https') or not target.hostname
+       or target.username is not None or target.password is not None
+       or target.port not in (None, 80, 443)):
+    raise UnsafeRedirect('unsafe redirect destination')
+   source_host = (original.hostname or '').lower().removeprefix('www.')
+   target_host = target.hostname.lower().removeprefix('www.')
+   if source_host != target_host:
+    raise UnsafeRedirect('cross-host redirect requires an approved source adapter')
+   if original.scheme == 'https' and target.scheme != 'https':
+    raise UnsafeRedirect('HTTPS downgrade redirect')
+   if is_individual_notice_link(req.full_url) and not redirect_preserves_notice(req.full_url, newurl):
+    raise UnsafeRedirect('redirect changed solicitation identity')
+  except ValueError as error:
+   raise UnsafeRedirect('malformed redirect destination') from error
   robots_policy.assert_allowed(newurl)
   return super().redirect_request(req, fp, code, msg, headers, newurl)
 
