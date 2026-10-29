@@ -404,12 +404,24 @@ def main():
  history_path.parent.mkdir(parents=True,exist_ok=True)
  history_path.write_text(json.dumps({'updated':NOW.isoformat(timespec='seconds'),'opportunities':historical},indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
  direct=sum('direct fetched' in x for x in status.values());indirect=sum('indirect RSS ok' in x for x in status.values())
+ # Configuration, page fetch, and individual-bid extraction are distinct states.
+ direct_names={s['name'] for s in sources if s.get('mode')=='direct_page' and s.get('verified_url') is True and s.get('url')}
+ coverage={
+  'total_targets':len(sources),
+  'direct_configured':len(direct_names),
+  'pending_direct':len(sources)-len(direct_names),
+  'direct_fetched':sum('direct fetched' in status.get(name,'') for name in direct_names),
+  'direct_not_fetched':sum('direct fetched' not in status.get(name,'') for name in direct_names),
+  'indirect_rss_succeeded':indirect,
+  'verified_open_contracts':sum(x.get('status')=='verified' and x.get('open_status')=='verified_open' for x in found.values()),
+  'warning':'A fetched listing page is not proof that all individual bids were extracted or that any bid is open.'
+ }
  integration_status={
   'NYS Contract Reporter':'blocked: terms prohibit bulk automated access without explicit permission; authorized export parser only',
   'BidNet Direct':'not connected: individual bid listing interface/permission not established',
   'PennBid':'not connected: individual bid listing interface/permission not established',
  }
- data={'integration_status':integration_status,'updated':NOW.isoformat(timespec='seconds'),'opportunities':sorted(found.values(),key=lambda x:x.get('published',''),reverse=True)[:300],'source_status':status,'coverage_note':f'{len(sources)} named targets; {direct} direct public home pages fetched, with bounded detail/PDF checks; {indirect} indirect news searches succeeded. Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. {len(sources)-sum(x.get('mode')=='direct_page' for x in sources)} targets use indirect discovery only. SAM.gov deferred.'}
+ data={'integration_status':integration_status,'source_coverage':coverage,'updated':NOW.isoformat(timespec='seconds'),'opportunities':sorted(found.values(),key=lambda x:x.get('published',''),reverse=True)[:300],'source_status':status,'coverage_note':f'{len(sources)} named targets; {direct} direct public home pages fetched, with bounded detail/PDF checks; {indirect} indirect news searches succeeded. Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. {coverage['pending_direct']} targets do not have verified direct integrations. SAM.gov deferred.'}
  OUT.parent.mkdir(parents=True,exist_ok=True);OUT.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
  print(f'Targets {len(sources)}, direct fetched {direct}, indirect successful {indirect}, candidates {len(found)}')
 if __name__=='__main__':main()
