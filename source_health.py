@@ -39,10 +39,10 @@ def classify(source, status):
 
     # A successful listing fetch can conceal blocked or failed individual
     # notice requests. Record those separately from homepage availability.
-    detail_errors = _number(r"\\b(\\d+) detail errors:", status)
-    detail_checked = _number(r"\\b(\\d+) (?:relevant )?details checked\\b", status)
-    details_fetched = _number(r"\\b(\\d+) individual bid details fetched\\b", status)
-    error_section = re.search(r"\\b\\d+ detail errors:\\s*([^;]*)", status)
+    detail_errors = _number(r"\b(\d+) detail errors:", status)
+    detail_checked = _number(r"\b(\d+) (?:relevant )?details checked\b", status)
+    details_fetched = _number(r"\b(\d+) individual bid details fetched\b", status)
+    error_section = re.search(r"\b\d+ detail errors:\s*([^;]*)", status)
     error_names = error_section.group(1) if error_section else ""
     if "RobotsDenied" in error_names:
         detail_access_state = "robots_blocked"
@@ -68,7 +68,7 @@ def classify(source, status):
         "individual_bid_details_fetched": details_fetched,
         "detail_errors": detail_errors,
         "detail_access_state": detail_access_state,
-        "pdf_budget_skips": _number(r"\\b(\\d+) PDFs skipped at budget\\b", status),
+        "pdf_budget_skips": _number(r"\b(\d+) PDFs skipped at budget\b", status),
         "unverified_candidates": _number(r"\b(\d+) unverified candidates\b", status)
                                   or _number(r"; (\d+) candidates(?:;|$)", status),
         "diagnostic": status,
