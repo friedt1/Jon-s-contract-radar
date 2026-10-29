@@ -77,6 +77,13 @@ class CivicPlusDetailTests(unittest.TestCase):
         self.assertEqual(len(leads), 1)
         self.assertIn("Worksite unverified", leads[0]["location"])
 
+    def test_bidid_homepage_without_individual_fields_is_not_proof(self):
+        leads, status = self.run_scan(listing("11/19/2026"),
+                                      '<html><h1>County purchasing homepage</h1></html>')
+        self.assertEqual(leads, [])
+        self.assertIn('0 individual bid details fetched', status)
+        self.assertIn('missing individual bid fields', status)
+
     def test_detail_failure_is_reported_without_publishing_listing_only_lead(self):
         def fake(url, binary=False):
             if binary:
