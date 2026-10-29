@@ -46,7 +46,7 @@ MAX_BYTES = 2_500_000
 # landing pages and county outbound links are not permission to crawl notices.
 UNCONNECTED_PLATFORMS = frozenset({'BidNet NY platform', 'PennBid platform'})
 EXTERNAL_PROVIDER_HOSTS = ('bonfirehub.com', 'bidnetdirect.com',
-                           'pennbid.net', 'publicpurchase.com')
+                           'pennbid.net', 'publicpurchase.com', 'opengov.com')
 
 
 def norm(s): return re.sub(r'\s+',' ',re.sub(r'<[^>]*>',' ',s or '')).strip()
@@ -452,7 +452,7 @@ def metadata_description(body):
 
 
 def scan_direct(src):
- base=src['url'];name=src['name'];found={};visited=set();errors=[];pdfs=0;pdfs_skipped=0;provider_skips=0;nested_listing_pages=0;metadata_details=0
+ base=src['url'];name=src['name'];found={};visited=set();errors=[];pdfs=0;pdfs_skipped=0;provider_skips=set();nested_listing_pages=0;metadata_details=0
  html,ctype,final=fetch(base)
  if 'html' not in ctype and not html.lstrip().startswith('<'):return [],'unsupported content type'
  page=parse_html(html)
@@ -486,7 +486,7 @@ def scan_direct(src):
   url=safe_detail_url(origin,href)
   if not url:
    try:
-    if provider_link(up.urljoin(origin,href)):provider_skips+=1
+    if provider_link(up.urljoin(origin,href)):provider_skips.add(up.urljoin(origin,href))
    except (TypeError,ValueError):pass
    continue
   # Follow only same-host notices and explicitly permitted platform links.
@@ -545,6 +545,13 @@ def scan_direct(src):
     for label,href,_ in p.links:
      row=p.link_rows.get(href,label)
      target=safe_detail_url(final_url,href)
+     if not target:
+      # Nested agency purchasing pages may delegate the actual notices to
+      # OpenGov/BidNet/etc. Record that access gap without visiting the portal.
+      try:
+       external=up.urljoin(final_url,href)
+       if provider_link(external):provider_skips.add(external)
+      except (TypeError,ValueError):pass
      if target and not excluded_url(target):
       # A page linking to distinct individual bid URLs is a listing, even
       # when it uses divs rather than tr/article/li elements. Do not emit
@@ -590,7 +597,7 @@ def scan_direct(src):
   except Exception as e:errors.append(type(e).__name__)
 
  rendering='; dynamic/login portal: extraction incomplete' if not page.rows and any(x in html.lower() for x in ('enable javascript','ng-app','id="app"','id="root"','sign in','log in')) else ''
- return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {metadata_details} individual bid details fetched; {pdfs} PDFs checked; {pdfs_skipped} PDF requests skipped at budget; {provider_skips} external provider links skipped (access required); {len(found)} candidates; {nested_listing_pages} nested listing pages excluded as notices'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
+ return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {metadata_details} individual bid details fetched; {pdfs} PDFs checked; {pdfs_skipped} PDF requests skipped at budget; {len(provider_skips)} external provider links skipped (access required); {len(found)} candidates; {nested_listing_pages} nested listing pages excluded as notices'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
 
 def scan_news(src):
  name=src['name'];query=src.get('discovery_query',name);q='"'+query.replace('"','')+'" ("tree removal" OR "tree trimming" OR "vegetation management" OR "land clearing" OR "forestry mulching" OR "storm cleanup" OR "brush clearing" OR "storm debris") (bid OR RFP OR contract OR procurement)'
