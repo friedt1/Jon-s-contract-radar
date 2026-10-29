@@ -289,8 +289,8 @@ def scan_direct(src):
   context=context[:1500]
   descriptor=title+' '+context
   # Listing rows stay isolated; detail pages supply missing scope and deadlines.
-  if eligible(context,name) and not excluded_url(url):
-   add_lead(found,name,title if category(title) else context[:130],url,context)
+  # A listing row is discovery evidence only. Never publish its link until
+  # the corresponding individual notice has actually been fetched and parsed.
   if not excluded_url(url) and (any(x in (title+' '+href).lower() for x in FOLLOW_HINTS) or (category(descriptor) and same_host)) and url!=origin:
    score=(4 if category(title) else 0)+(3 if bidlike(title+' '+href) else 0)+(1 if category(context) else 0)
    candidates.append((score,url,title,context))
@@ -326,7 +326,8 @@ def scan_direct(src):
      row=p.link_rows.get(href,label)
      target=up.urljoin(final_url,href)
      if href and not excluded_url(target) and allowed_link(target,final_url):
-      if eligible(row,name):add_lead(found,name,label if category(label) else row[:130],target,row)
+      # A nested listing row likewise only queues a detail URL. It cannot
+      # establish that the bid is current, relevant, or even accessible.
       if len(candidates)<max_details*4 and target not in visited and (category(row) or bidlike(label+' '+href)):
        candidates.append((0,target,label,row))
   except Exception as e:errors.append(type(e).__name__)
