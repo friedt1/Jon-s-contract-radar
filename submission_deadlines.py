@@ -105,6 +105,7 @@ def _receipt_before_date_matches(text):
             continue
         clock = re.sub(r"\.", "", match.group("clock").upper())
         clock = re.sub(r"\s+", " ", clock).strip()
+        clock = re.sub(r"([AP])\s+(?=M\b)", r"\1", clock)
         if ":" not in clock:
             clock = re.sub(r"^(\d{1,2})", r"\1:00", clock)
         try:
@@ -139,6 +140,7 @@ def submission_deadline_details(text):
         clock = ""
         if raw:
             value = re.sub(r"\s+", " ", re.sub(r"\.", "", raw.group("clock").upper())).strip()
+            value = re.sub(r"([AP])\s+(?=M\b)", r"\1", value)
             if ":" not in value:
                 value = re.sub(r"^(\d{1,2})", r"\1:00", value)
             try:
