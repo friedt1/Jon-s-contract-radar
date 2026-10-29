@@ -220,8 +220,8 @@ def records(source, getter=None):
         # Require an actual user-agent group for explicitly reviewed RSS feeds;
         # unavailable/ambiguous policy means no automated collection.
         robots_lines = robots_body.splitlines()
-        if (re.search(r'<\\s*(?:!doctype|html|head|body|script)\\b', robots_body, re.I)
-                or not any(re.match(r'^\\s*user-agent\\s*:\\s*\\S+', line, re.I)
+        if (re.search(r'<\s*(?:!doctype|html|head|body|script)\b', robots_body, re.I)
+                or not any(re.match(r'^\s*user-agent\s*:\s*\S+', line, re.I)
                            for line in robots_lines)):
             raise ValueError('robots policy missing or invalid; feed not fetched')
         robots = urllib.robotparser.RobotFileParser()
