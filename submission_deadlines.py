@@ -62,9 +62,9 @@ def submission_deadline(text):
 
 # A submission *date* alone cannot establish that a same-day bid has closed.
 # Extract a clock time only when adjacent to the same validated submission label.
-_CLOCK = r"(?:0?[1-9]|1[0-2])(?::[0-5]\\d)?\\s*[AP]M"
-_AFTER_DATE = re.compile(r"^\\s*(?:,\\s*|at\\s+)?(?P<clock>" + _CLOCK + r")\\b", re.I)
-_BEFORE_DATE = re.compile(r"(?P<clock>" + _CLOCK + r")\\s*(?:on\\s+)?$", re.I)
+_CLOCK = r"(?:0?[1-9]|1[0-2])(?::[0-5]\d)?\s*[AP]M"
+_AFTER_DATE = re.compile(r"^\s*(?:,\s*|at\s+)?(?P<clock>" + _CLOCK + r")\b", re.I)
+_BEFORE_DATE = re.compile(r"(?P<clock>" + _CLOCK + r")\s*(?:on\s+)?$", re.I)
 
 
 def submission_deadline_details(text):
@@ -78,7 +78,7 @@ def submission_deadline_details(text):
         return "", ""
     matches = []
     for match in _CANDIDATE.finditer(text):
-        prefix = re.split(r"[.;\\n]", text[max(0, match.start()-80):match.start()])[-1]
+        prefix = re.split(r"[.;\n]", text[max(0, match.start()-80):match.start()])[-1]
         between = match.group("between")
         if _OTHER_MILESTONE_END.search(prefix) or _OTHER_MILESTONE.search(between):
             continue
@@ -90,9 +90,9 @@ def submission_deadline_details(text):
         raw = (after or before)
         clock = ""
         if raw:
-            value = re.sub(r"\\s+", " ", raw.group("clock").upper()).strip()
+            value = re.sub(r"\s+", " ", raw.group("clock").upper()).strip()
             if ":" not in value:
-                value = re.sub(r"^(\\d{1,2})", r"\\1:00", value)
+                value = re.sub(r"^(\d{1,2})", r"\1:00", value)
             try:
                 clock = dt.datetime.strptime(value, "%I:%M %p").strftime("%I:%M %p").lstrip("0")
             except ValueError:
