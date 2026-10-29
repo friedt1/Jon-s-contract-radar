@@ -25,6 +25,43 @@ class ExplicitClosingTimeTests(unittest.TestCase):
                 self.assertEqual(submission_deadline_details(example), ("2026-10-29", "1:00 PM"))
                 self.assertTrue(explicit_closing_passed(example, scan.NOW))
 
+    def test_dotted_meridiem_and_comma_at_cutoffs(self):
+        # Synthetic bid wording, not an actual open procurement.
+        examples = (
+            "Bids due October 29, 2026, at 1:30 P.M.",
+            "Bids due 10/29/2026 at 1:30 p.m.",
+            "Closing Date/Time: 10/29/2026 1:30 P. M.",
+            "Bids due at 1:30 P.M. on Oct 29, 2026",
+            "Sealed bids will be received until 1:30 P.M. on Oct 29, 2026",
+        )
+        for example in examples:
+            with self.subTest(example=example):
+                self.assertEqual(submission_deadline_details(example),
+                                 ("2026-10-29", "1:30 PM"))
+                self.assertTrue(explicit_closing_passed(example, scan.NOW))
+
+    def test_dotted_question_time_cannot_override_later_bid_cutoff(self):
+        example = ("Questions due 10/29/2026 at 9:00 A.M.; "
+                   "Bids due 10/29/2026, at 4:00 P.M.")
+        self.assertEqual(submission_deadline_details(example),
+                         ("2026-10-29", "4:00 PM"))
+        self.assertFalse(explicit_closing_passed(example, scan.NOW))
+        self.assertEqual(submission_deadline_details(
+            "Questions about bids due at 9:00 A.M. on Oct 29, 2026"), ("", ""))
+
+    def test_scanner_excludes_same_day_dotted_deadline(self):
+        src = {"name": "Test County", "url": "https://example.org/bids",
+               "mode": "direct_page"}
+        def fake(url, binary=False):
+            body = ('<h1>Tree removal bid</h1><p>Bids due '
+                    'October 29, 2026, at 1:30 P.M.</p>') if binary else (
+                    '<a href="/bid/1">Tree removal bid</a>')
+            return (body.encode() if binary else body, "text/html", url)
+        with patch.object(scan, "fetch", side_effect=fake):
+            leads, status = scan.scan_direct(src)
+        self.assertEqual(leads, [])
+        self.assertIn("1 details checked", status)
+
     def test_question_and_walkthrough_times_do_not_close_bid(self):
         example = ("Questions due 10/29/2026 at 9:00 AM; "
                    "Site visit deadline 10/29/2026 at 10:00 AM; "
