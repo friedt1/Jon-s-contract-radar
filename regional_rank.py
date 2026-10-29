@@ -21,7 +21,7 @@ AGENCIES = ("fema", "usace", "army corps", "department of transportation",
             "state dot", "penndot", "nysdot", "emergency management")
 
 
-def finite_nonnegative(value):
+def finite_number(value):
     """Treat malformed, non-finite and boolean numeric claims as unknown."""
     if isinstance(value, bool) or value is None:
         return None
@@ -29,7 +29,7 @@ def finite_nonnegative(value):
         number = float(value)
     except (TypeError, ValueError, OverflowError):
         return None
-    return number if math.isfinite(number) and number >= 0 else None
+    return number if math.isfinite(number) else None
 
 
 def classify(notice):
@@ -41,14 +41,18 @@ def classify(notice):
     url = str(notice.get("url") or "")
     if not url.startswith("https://"):
         return None
-    hours = finite_nonnegative(notice.get("drive_hours"))
-    if hours is not None and hours > 12:
+    hours = finite_number(notice.get("drive_hours"))
+    if hours is not None and (hours < 0 or hours > 12):
         return None
     # Strings like "false" and NaN/Infinity must never certify travel.
     # Only an explicit boolean True plus a finite, in-range route can do so.
     travel_verified = notice.get("travel_verified") is True and hours is not None
-    amount = finite_nonnegative(notice.get("estimated_value_usd"))
-    days = finite_nonnegative(notice.get("estimated_duration_days"))
+    amount = finite_number(notice.get("estimated_value_usd"))
+    days = finite_number(notice.get("estimated_duration_days"))
+    if amount is not None and amount < 0:
+        amount = None
+    if days is not None and days < 0:
+        days = None
     score = 0
     if amount is not None and amount >= 250000: score += 3
     elif amount is not None and amount >= 100000: score += 2
