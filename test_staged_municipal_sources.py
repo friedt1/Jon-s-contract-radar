@@ -34,6 +34,26 @@ class MunicipalStagingTests(unittest.TestCase):
                 self.assertFalse(entry.get("url"))
         self.assertTrue({"Village of Horseheads", "City of Cortland"} <= civicplus_bids.SOURCES)
 
+    def test_binghamton_official_granicus_index_is_staged_only(self):
+        # Official city purchasing index has individual /Home/Components/RFP/RFP/
+        # records, but this project has not established permission or a parser.
+        records = json.loads((pathlib.Path(__file__).parent / "sources.json").read_text())
+        row = next(x for x in records if x["name"] == "City of Binghamton")
+        self.assertEqual(row["mode"], "discovery_pending")
+        self.assertFalse(row["verified_url"])
+        self.assertEqual(row["url"], "")
+        self.assertEqual(row["candidate_official_url"],
+                         "https://www.binghamton-ny.gov/government/departments/purchasing/bids-rfps")
+        self.assertIn("Granicus adapter", row["activation_gate"])
+        self.assertIn("status", row["activation_gate"])
+        # Do not pretend the CivicPlus probe can ingest a Granicus notice.
+        def fetch(url, binary=False):
+            return '<a href="/Home/Components/RFP/RFP/416/90">Sale for 312 Main Street</a>', "text/html", url
+        probe = staged.probe(row, fetch=fetch, now=NOW)
+        self.assertEqual(probe["state"], "listing_reachable_adapter_required")
+        self.assertFalse(probe["direct_monitoring_activated"])
+        self.assertEqual(probe["individual_records_discovered"], 0)
+
     def test_explicit_no_open_bids_not_confused_with_broken_parser(self):
         entry = "https://www.cortlandny.gov/Bids.aspx"
         def fetch(url, binary=False):
