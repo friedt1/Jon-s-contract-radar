@@ -9,8 +9,8 @@ from pathlib import Path
 
 
 def report(payload):
-    sources = payload.get("source_status") or {}
-    leads = payload.get("opportunities") or []
+    sources = payload.get("source_status", {})
+    leads = payload.get("opportunities", [])
     if not isinstance(sources, dict) or not isinstance(leads, list):
         raise ValueError("invalid published scan schema")
     results = []
