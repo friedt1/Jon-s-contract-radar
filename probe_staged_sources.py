@@ -18,6 +18,7 @@ import scan
 ROOT = pathlib.Path(__file__).resolve().parent
 SOURCES = ROOT / "sources.json"
 OUT = ROOT / "data" / "staged_probes.json"
+MAX_SAMPLE_DETAILS = 3  # A broken historical notice must not condemn a whole source.
 
 
 def _error(exc):
@@ -34,6 +35,8 @@ def probe(source, fetch=scan.fetch, now=None):
         "listing_retrieved": False,
         "individual_notice_retrieved": False,
         "individual_records_discovered": 0,
+        "individual_samples_attempted": 0,
+        "individual_sample_failures": [],
         "activation_gate": source.get("activation_gate", ""),
         "terms_review": "required; robots allowance alone is not authorization",
         "direct_monitoring_activated": False,
@@ -75,12 +78,79 @@ def probe(source, fetch=scan.fetch, now=None):
                                    if adapter is civicplus_bids else
                                    "listing_reachable_no_individual_records")
             return result
-        # A single existing notice, including an old/closed notice, is enough
-        # to test parser shape. It is NEVER a verified open opportunity.
-        detail_url = records[0]["url"]
-        try:
-            blob, ctype, detail_final = fetch(detail_url, binary=True)
-        except robots_policy.RobotsDenied:
+        # A stale or broken first link is common on county bid indexes. Probe
+        # at most three distinct public notice URLs, stopping at the first
+        # well-shaped individual record. A sample is diagnostic evidence only:
+        # no candidate is emitted and no source is activated.
+        for record in records[:MAX_SAMPLE_DETAILS]:
+            detail_url = record["url"]
+            result["individual_samples_attempted"] += 1
+            failure = {"url": detail_url}
+            try:
+                blob, ctype, detail_final = fetch(detail_url, binary=True)
+            except robots_policy.RobotsDenied:
+                failure["state"] = "individual_notice_robots_blocked"
+                result["individual_sample_failures"].append(failure)
+                continue
+            except Exception as exc:
+                failure["state"] = "individual_notice_fetch_error"
+                failure["error_type"] = _error(exc)
+                result["individual_sample_failures"].append(failure)
+                continue
+            if (adapter.individual_url(detail_final, final) != detail_url
+                    or ("html" not in ctype and not blob.lstrip().startswith(b"<"))):
+                failure["state"] = "individual_notice_redirect_or_type_mismatch"
+                result["individual_sample_failures"].append(failure)
+                continue
+            body = " ".join(scan.parse_html(blob.decode("utf-8", "replace")).parts)
+            if adapter is civicplus_bids:
+                valid_shape = (re.search(r"\bBid\s+(?:Number|Title)\s*:", body, re.I)
+                               and re.search(r"\b(?:Description|Closing\s+Date/Time|Status)\s*:", body, re.I))
+            else:
+                valid_shape = granicus_rfps.detail_shape(body)
+            if not valid_shape:
+                failure["state"] = "individual_notice_fields_missing"
+                result["individual_sample_failures"].append(failure)
+                continue
+
+            result["individual_notice_retrieved"] = True
+            result["sample_notice_url"] = detail_url
+            detail_status = adapter.status_of(body)
+            status = detail_status if detail_status != "unknown" else record["open_status"]
+            result["sample_notice_status"] = status
+            result["sample_notice_status_source"] = (
+                "individual_notice" if detail_status != "unknown" else "listing_unverified"
+            )
+            detail_due, detail_time = adapter.detail_closing_of(body)
+            listed_due = record["deadline"]
+            listed_time = record["deadline_time"]
+            conflict = bool(detail_due and listed_due and
+                            (detail_due != listed_due or
+                             bool(detail_time and listed_time and
+                                  detail_time.replace(" ", "").upper() !=
+                                  listed_time.replace(" ", "").upper())))
+            due = detail_due or listed_due
+            due_time = detail_time if detail_due else listed_time
+            result["sample_notice_deadline"] = due
+            result["sample_notice_deadline_time"] = due_time
+            result["sample_notice_deadline_conflict"] = conflict
+            result["sample_notice_temporal_evidence"] = (
+                "conflicting_deadlines_unverified" if conflict else
+                "closed_or_awarded" if status in civicplus_bids.CLOSED else
+                "deadline_passed" if due and civicplus_bids.closing_passed(due, due_time, now) else
+                "deadline_not_passed_unverified" if due else "deadline_unknown"
+            )
+            result["state"] = "notice_format_confirmed_terms_review_required"
+            return result
+
+        failures = result["individual_sample_failures"]
+        distinct_states = {failure["state"] for failure in failures}
+        result["state"] = (next(iter(distinct_states)) if len(distinct_states) == 1
+                           else "individual_notice_samples_failed")
+        if len(failures) == 1 and "error_type" in failures[0]:
+            result["error_type"] = failures[0]["error_type"]
+        return result
+    except robots_policy.RobotsDenied:
             result["state"] = "individual_notice_robots_blocked"
             return result
         except Exception as exc:
