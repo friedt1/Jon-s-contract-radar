@@ -151,55 +151,6 @@ def probe(source, fetch=scan.fetch, now=None):
             result["error_type"] = failures[0]["error_type"]
         return result
     except robots_policy.RobotsDenied:
-            result["state"] = "individual_notice_robots_blocked"
-            return result
-        except Exception as exc:
-            result["state"] = "individual_notice_fetch_error"
-            result["error_type"] = _error(exc)
-            return result
-        if (adapter.individual_url(detail_final, final) != detail_url
-                or ("html" not in ctype and not blob.lstrip().startswith(b"<"))):
-            result["state"] = "individual_notice_redirect_or_type_mismatch"
-            return result
-        body = " ".join(scan.parse_html(blob.decode("utf-8", "replace")).parts)
-        if adapter is civicplus_bids:
-            valid_shape = (re.search(r"\bBid\s+(?:Number|Title)\s*:", body, re.I)
-                           and re.search(r"\b(?:Description|Closing\s+Date/Time|Status)\s*:", body, re.I))
-        else:
-            valid_shape = granicus_rfps.detail_shape(body)
-        if not valid_shape:
-            result["state"] = "individual_notice_fields_missing"
-            return result
-        result["individual_notice_retrieved"] = True
-        result["sample_notice_url"] = detail_url
-        detail_status = adapter.status_of(body)
-        status = detail_status if detail_status != "unknown" else records[0]["open_status"]
-        result["sample_notice_status"] = status
-        result["sample_notice_status_source"] = (
-            "individual_notice" if detail_status != "unknown" else "listing_unverified"
-        )
-        detail_due, detail_time = adapter.detail_closing_of(body)
-        listed_due = records[0]["deadline"]
-        listed_time = records[0]["deadline_time"]
-        conflict = bool(detail_due and listed_due and
-                        (detail_due != listed_due or
-                         bool(detail_time and listed_time and
-                              detail_time.replace(" ", "").upper() !=
-                              listed_time.replace(" ", "").upper())))
-        due = detail_due or listed_due
-        due_time = detail_time if detail_due else listed_time
-        result["sample_notice_deadline"] = due
-        result["sample_notice_deadline_time"] = due_time
-        result["sample_notice_deadline_conflict"] = conflict
-        result["sample_notice_temporal_evidence"] = (
-            "conflicting_deadlines_unverified" if conflict else
-            "closed_or_awarded" if status in civicplus_bids.CLOSED else
-            "deadline_passed" if due and civicplus_bids.closing_passed(due, due_time, now) else
-            "deadline_not_passed_unverified" if due else "deadline_unknown"
-        )
-        result["state"] = "notice_format_confirmed_terms_review_required"
-        return result
-    except robots_policy.RobotsDenied:
         result["state"] = "listing_robots_blocked"
     except Exception as exc:
         result["state"] = "listing_fetch_error"
