@@ -23,6 +23,7 @@ class MunicipalStagingTests(unittest.TestCase):
             "Village of Horseheads": "https://www.villageofhorseheads.gov/Bids.aspx",
             "City of Cortland": "https://www.cortlandny.gov/Bids.aspx",
             "City of Corning": "https://cityofcorningny.gov/index.asp?SEC=07CB95A9-0A8E-4D9D-B22C-7B8C866B36E5",
+            "Town of Corning": "https://townofcorningny.gov/",
         }
         self.assertEqual(len(records), 102)
         for name, url in expected.items():
@@ -46,13 +47,20 @@ class MunicipalStagingTests(unittest.TestCase):
                          "https://www.binghamton-ny.gov/government/departments/purchasing/bids-rfps")
         self.assertIn("Granicus adapter", row["activation_gate"])
         self.assertIn("status", row["activation_gate"])
-        # Do not pretend the CivicPlus probe can ingest a Granicus notice.
+        # The new Granicus probe may read individual notices, but never
+        # promotes a staged source or treats a stale Open label as live.
         def fetch(url, binary=False):
-            return '<a href="/Home/Components/RFP/RFP/416/90">Sale for 312 Main Street</a>', "text/html", url
+            if not binary:
+                return ('<tr><td><a href="/Home/Components/RFP/RFP/416/90">'
+                        'Sale for 312 Main Street</a></td><td>07/23/2026</td>'
+                        '<td>08/12/2026 10:30 AM</td><td>Open</td></tr>'), "text/html", url
+            return (b'<h1>Sale for 312 Main Street</h1><p>Start Date: 07/23/2026</p>'
+                    b'<p>Close Date: 08/12/2026 10:30 AM</p>'), "text/html", url
         probe = staged.probe(row, fetch=fetch, now=NOW)
-        self.assertEqual(probe["state"], "listing_reachable_adapter_required")
+        self.assertEqual(probe["state"], "notice_format_confirmed_terms_review_required")
+        self.assertEqual(probe["individual_records_discovered"], 1)
+        self.assertEqual(probe["sample_notice_temporal_evidence"], "deadline_passed")
         self.assertFalse(probe["direct_monitoring_activated"])
-        self.assertEqual(probe["individual_records_discovered"], 0)
 
     def test_explicit_no_open_bids_not_confused_with_broken_parser(self):
         entry = "https://www.cortlandny.gov/Bids.aspx"
