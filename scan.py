@@ -68,7 +68,22 @@ def deadline(text):
  return max(dates).isoformat() if dates else ''
 
 def closed(text):
- return bool(re.search(r'\b(?:awarded|cancelled|canceled|expired|closed|bid results|award notice|no (?:open|current|active) bids)\b', text,re.I))
+ """Recognize closed solicitations, not ordinary worksite road closures.
+
+ A notice about removing trees on a closed road is not a closed bid.
+ Bare 'Closed' is still accepted for explicit status-only fields.
+ """
+ text = norm(text)
+ if re.fullmatch(r'(?:closed|awarded|cancelled|canceled|expired)', text, re.I):
+  return True
+ return bool(re.search(
+  r'\b(?:awarded|cancelled|canceled|expired|bid results|award notice|'
+  r'no (?:open|current|active) bids)\b'
+  r'|\b(?:bid(?:ding)?|solicitation|rfp|rfq|contract|opportunity|status)'
+  r'\s+(?:is\s+)?(?:now\s+)?closed\b'
+  r'|\bstatus\s*:\s*closed\b'
+  r'|\bclosed\s+(?:for|to)\s+(?:bids?|proposals?|submissions?)\b',
+  text, re.I))
 
 def eligible(text, source='', today=None):
  today=today or NOW.astimezone(ZoneInfo('America/New_York')).date()
@@ -172,6 +187,24 @@ def safe_detail_url(origin, href):
   return url if allowed_link(url, origin) else ''
  except ValueError:
   return ''
+
+def is_individual_notice_link(url):
+ """A bid-detail shaped link, not a procurement index or PDF attachment.
+
+ This is only a *listing detection* hint. It never establishes that a
+ solicitation is real, open, or permitted to fetch.
+ """
+ try:
+  parsed = up.urlparse(url)
+  if parsed.path.lower().endswith('.pdf'):
+   return False
+  if any(key.lower() == 'bidid' for key in up.parse_qs(parsed.query)):
+   return True
+  return bool(re.search(
+   r'/(?:bids?|rfp|rfq|solicitations?|tenders?|opportunities?)/[^/]+/?$',
+   parsed.path, re.I))
+ except ValueError:
+  return False
 
 
 def scan_civicplus(src, listing_pages, page_errors):
@@ -286,7 +319,7 @@ def scan_civicplus(src, listing_pages, page_errors):
 
 
 def scan_direct(src):
- base=src['url'];name=src['name'];found={};visited=set();errors=[];pdfs=0
+ base=src['url'];name=src['name'];found={};visited=set();errors=[];pdfs=0;nested_listing_pages=0
  html,ctype,final=fetch(base)
  if 'html' not in ctype and not html.lstrip().startswith('<'):return [],'unsupported content type'
  page=parse_html(html)
@@ -350,22 +383,30 @@ def scan_direct(src):
     records=p.rows if p.rows else [body]
     if not p.rows and (closed(body) or (deadline(body) and deadline(body)<NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat())):
      found.pop(notice_identity.notice_id(url),None);continue
-    if not p.rows and category(body) and eligible(body,name):
-     key=category(body);match=next((t for t in CATEGORIES[key] if t in body.lower()),'')
-     ix=body.lower().find(match);snippet=body[max(0,ix-160):ix+520]
-     add_lead(found,name,title if category(title) else snippet[:130],final_url,snippet+' '+('Deadline: '+deadline(body) if deadline(body) else ''),'direct detail candidate',evidence=body)
+    nested_notice_links = False
     for label,href,_ in p.links:
      row=p.link_rows.get(href,label)
      target=safe_detail_url(final_url,href)
      if target and not excluded_url(target):
+      # A page linking to distinct individual bid URLs is a listing, even
+      # when it uses divs rather than tr/article/li elements. Do not emit
+      # the listing URL as an individual solicitation.
+      if target != final_url and is_individual_notice_link(target):
+       nested_notice_links = True
       # A nested listing row likewise only queues a detail URL. It cannot
       # establish that the bid is current, relevant, or even accessible.
       if len(candidates)<max_details*4 and target not in visited and (category(row) or bidlike(label+' '+href)):
        candidates.append((0,target,label,row))
+    if nested_notice_links and not p.rows:
+     nested_listing_pages += 1
+    if not p.rows and not nested_notice_links and category(body) and eligible(body,name):
+     key=category(body);match=next((t for t in CATEGORIES[key] if t in body.lower()),'')
+     ix=body.lower().find(match);snippet=body[max(0,ix-160):ix+520]
+     add_lead(found,name,title if category(title) else snippet[:130],final_url,snippet+' '+('Deadline: '+deadline(body) if deadline(body) else ''),'direct detail candidate',evidence=body)
   except Exception as e:errors.append(type(e).__name__)
 
  rendering='; dynamic/login portal: extraction incomplete' if not page.rows and any(x in html.lower() for x in ('enable javascript','ng-app','id="app"','id="root"','sign in','log in')) else ''
- return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {pdfs} PDFs checked; {len(found)} candidates'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
+ return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {pdfs} PDFs checked; {len(found)} candidates; {nested_listing_pages} nested listing pages excluded as notices'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
 
 def scan_news(src):
  name=src['name'];query=src.get('discovery_query',name);q='"'+query.replace('"','')+'" ("tree removal" OR "tree trimming" OR "vegetation management" OR "land clearing" OR "forestry mulching" OR "storm cleanup" OR "brush clearing" OR "storm debris") (bid OR RFP OR contract OR procurement)'
