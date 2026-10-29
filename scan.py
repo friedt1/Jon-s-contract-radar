@@ -404,7 +404,7 @@ def metadata_description(body):
 
 
 def scan_direct(src):
- base=src['url'];name=src['name'];found={};visited=set();errors=[];pdfs=0;nested_listing_pages=0;metadata_details=0
+ base=src['url'];name=src['name'];found={};visited=set();errors=[];pdfs=0;pdfs_skipped=0;nested_listing_pages=0;metadata_details=0
  html,ctype,final=fetch(base)
  if 'html' not in ctype and not html.lstrip().startswith('<'):return [],'unsupported content type'
  page=parse_html(html)
@@ -457,6 +457,12 @@ def scan_direct(src):
  # bounded detail budget. Python's list iterator visits inserted entries next.
  for candidate_index, (_,url,title,context) in enumerate(candidates):
   if url in visited or len(visited)>=max_details:continue
+  # A PDF URL can be identified before downloading its bytes. Once the
+  # extractor budget is exhausted, skip it without spending another request
+  # or consuming the remaining individual-notice detail budget.
+  if up.urlsplit(url).path.lower().endswith('.pdf') and pdfs>=MAX_PDF:
+   pdfs_skipped+=1
+   continue
   visited.add(url)
   try:
    blob,kind,final_url=fetch(url,binary=True)
@@ -532,7 +538,7 @@ def scan_direct(src):
   except Exception as e:errors.append(type(e).__name__)
 
  rendering='; dynamic/login portal: extraction incomplete' if not page.rows and any(x in html.lower() for x in ('enable javascript','ng-app','id="app"','id="root"','sign in','log in')) else ''
- return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {metadata_details} individual bid details fetched; {pdfs} PDFs checked; {len(found)} candidates; {nested_listing_pages} nested listing pages excluded as notices'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
+ return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {metadata_details} individual bid details fetched; {pdfs} PDFs checked; {pdfs_skipped} PDFs skipped at budget; {len(found)} candidates; {nested_listing_pages} nested listing pages excluded as notices'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
 
 def scan_news(src):
  name=src['name'];query=src.get('discovery_query',name);q='"'+query.replace('"','')+'" ("tree removal" OR "tree trimming" OR "vegetation management" OR "land clearing" OR "forestry mulching" OR "storm cleanup" OR "brush clearing" OR "storm debris") (bid OR RFP OR contract OR procurement)'
