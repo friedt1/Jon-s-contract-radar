@@ -107,10 +107,12 @@ def fetch(url, binary=False):
 
 class Page(HTMLParser):
  def __init__(self):
-  super().__init__();self.parts=[];self.links=[];self.active=None;self.skip=0;self.in_row=False;self.row=[];self.rows=[];self.link_rows={};self.row_links=[]
+  super().__init__();self.parts=[];self.links=[];self.active=None;self.skip=0;self.in_row=False;self.row=[];self.rows=[];self.link_rows={};self.row_links=[];self.headings=[];self.heading_tag=None;self.heading_parts=[]
  def handle_starttag(self,tag,attrs):
   a=dict(attrs)
   if tag in ('script','style','noscript'):self.skip+=1
+  if tag in ('h1','h2') and self.heading_tag is None:
+   self.heading_tag=tag;self.heading_parts=[]
   if tag in ('tr','article','li') and not self.in_row:
    self.row_tag=tag;self.in_row=True;self.row=[];self.row_links=[]
   if tag=='a':
@@ -121,10 +123,14 @@ class Page(HTMLParser):
   s=norm(s)
   if s:
    self.parts.append(s)
+   if self.heading_tag is not None:self.heading_parts.append(s)
    if self.active is not None:self.active[1].append(s)
    if self.in_row:self.row.append(s)
  def handle_endtag(self,tag):
   if tag in ('script','style','noscript'):self.skip=max(0,self.skip-1)
+  if tag==self.heading_tag:
+   self.headings.append(norm(' '.join(self.heading_parts)))
+   self.heading_tag=None;self.heading_parts=[]
   if tag=='a' and self.active is not None:
    href,words,pos=self.active;self.links.append((norm(' '.join(words)),href,pos));self.active=None
   if self.in_row and tag==self.row_tag:
@@ -498,12 +504,27 @@ def scan_direct(src):
     if nested_notice_links and not p.rows:
      nested_listing_pages += 1
     metadata_notice = individual_metadata_notice(body, final_url) and not nested_notice_links
-    if metadata_notice:
+    # Many actual notices include <li> work requirements or navigation. Such
+    # markup creates parser rows, but does not make the page a bid index.
+    # Require a bid-specific heading AND submission evidence on a detail-shaped
+    # URL; a tree-work mention in a menu or an undated listing is insufficient.
+    heading_scope = next((heading for heading in p.headings
+                          if category(heading) and bidlike(heading)
+                          and not re.search(r'\b(?:listings?|list of|all bids|current bids|bid opportunities)\b',
+                                            heading, re.I)), '')
+    heading_notice = (not nested_notice_links and bool(heading_scope)
+                      and is_individual_notice_link(final_url)
+                      and (bool(deadline(body)) or bool(re.search(
+                          r'\b(?:Bid\s+(?:Number|No\.?)|Solicitation\s+(?:Number|ID))\s*:',
+                          body, re.I))))
+    if metadata_notice or heading_notice:
      metadata_details += 1
-    # A single notice's metadata rows are not a listing of separate bids.
-    # Only the Description field, never navigation text, establishes relevance.
-    scope = metadata_description(body) if metadata_notice else body
-    if (not p.rows or metadata_notice) and not nested_notice_links and category(scope) and eligible(scope + (' bid' if metadata_notice else '') + (' Due date: ' + deadline(body) if deadline(body) else ''), name) and not closed(body) and not explicit_closing_passed(body,NOW):
+    # A single notice's metadata rows or list-backed bid heading is not a
+    # multi-notice index. Scope must come from the individual heading or the
+    # Description field, never from unrelated navigation/list items.
+    scope = (metadata_description(body) if metadata_notice else
+             heading_scope if heading_notice else body)
+    if (not p.rows or metadata_notice or heading_notice) and not nested_notice_links and category(scope) and eligible(scope + (' bid' if metadata_notice else '') + (' Due date: ' + deadline(body) if deadline(body) else ''), name) and not closed(body) and not explicit_closing_passed(body,NOW):
      key=category(scope);match=next((t for t in CATEGORIES[key] if t in scope.lower()),'')
      ix=scope.lower().find(match);snippet=scope[max(0,ix-160):ix+520]
      add_lead(found,name,title if category(title) else snippet[:130],final_url,('Bid description: ' if metadata_notice else '')+snippet+' '+('Deadline: '+deadline(body) if deadline(body) else ''),'individual metadata bid candidate' if metadata_notice else 'direct detail candidate',evidence=body)
