@@ -93,3 +93,13 @@ Four more verified official county pages were staged without activation:
 **Seven official endpoints are staged, not activated.** No increase to the
 18 configured direct sources is claimed. Activation must not be inferred from
 an official county homepage or a publicly viewable listing alone.
+
+A source-health-only snapshot was also derived from the **existing**
+2026-10-29T03:06:36Z published scan so the dashboard can show diagnostics
+immediately after deployment, without changing the scan timestamp or adding
+any opportunities. It reports 15 fetched-but-unverified direct pages, 2
+robots-blocked direct pages, 1 access-required portal, 7 staged official URLs,
+77 still unconfigured, 12 discovered individual bid records, 206 detail fetch
+attempts, and 0 candidates. All 102 indirect news searches were robots-blocked.
+These are historical diagnostics, not a new live scan or proof of complete
+individual-bid extraction.
