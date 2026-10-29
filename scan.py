@@ -393,6 +393,10 @@ def scan_direct(src):
  listing_links=[(title,href,pos,p.link_rows.get(href,title),origin)
                 for p,origin in listing_pages for title,href,pos in p.links]
  for title,href,pos,context,origin in listing_links:
+  # Pager controls are listing navigation, not bid-detail candidates. Even
+  # malformed page cursors must not consume the individual-detail budget.
+  if name in public_pages.PUBLIC_LISTINGS and public_pages.pagination_label(title):
+   continue
   url=safe_detail_url(origin,href)
   if not url:continue
   # Follow only same-host notices and explicitly permitted platform links.

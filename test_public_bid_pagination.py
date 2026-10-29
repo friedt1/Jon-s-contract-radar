@@ -52,5 +52,75 @@ class PublicPaginationTests(unittest.TestCase):
         self.assertEqual(len(leads), 25)
         self.assertIn("25 details checked", status)
 
+    def test_common_pager_labels_and_safe_numeric_cursors(self):
+        links = [
+            ("Next »", "?page=2", 0),
+            ("Page 3", "?page=3", 1),
+            ("2 of 4", "?page=4", 2),
+            ("Next >", "?offset=40", 3),
+            ("Next page 5", "?pageno=5", 4),
+            ("View bid", "?page=9", 5),
+            ("Older news", "?page=10", 6),
+        ]
+        self.assertEqual(pages.next_pages(links, SOURCE["url"], {SOURCE["url"]}), [
+            "https://example.gov/Bids.aspx?page=2",
+            "https://example.gov/Bids.aspx?page=3",
+            "https://example.gov/Bids.aspx?page=4",
+            "https://example.gov/Bids.aspx?offset=40",
+            "https://example.gov/Bids.aspx?pageno=5",
+        ])
+
+    def test_pagination_rejects_credentialed_malformed_or_bid_detail_urls(self):
+        links = [
+            ("Next", "https://user:secret@example.gov/Bids.aspx?page=2", 0),
+            ("Next", "https://example.gov:8443/Bids.aspx?page=2", 0),
+            ("Next", "?page=next", 0),
+            ("Next", "?page=-2", 0),
+            ("Next", "?page=2&bidID=42", 0),
+            ("Next", "/Bids.aspx?page=2\\n", 0),
+            ("Next", "https://other.gov/Bids.aspx?page=2", 0),
+            ("Next", "?page=2#top", 0),
+            ("Next", "?page=2#duplicate", 0),
+        ]
+        self.assertEqual(pages.next_pages(links, SOURCE["url"], {SOURCE["url"]}),
+                         ["https://example.gov/Bids.aspx?page=2"])
+
+    def test_next_arrow_reaches_third_page_individual_bid(self):
+        second = "https://example.gov/Bids.aspx?page=2"
+        third = "https://example.gov/Bids.aspx?page=3"
+        detail = "https://example.gov/bid/103"
+        pages_by_url = {
+            SOURCE["url"]: '<a href="?page=2">Next »</a>',
+            second: '<a href="?page=3">Page 3</a>',
+            third: '<a href="/bid/103">Tree removal bid</a>',
+            detail: "<h1>Tree removal bid due November 19, 2026</h1>",
+        }
+        fetched = []
+        def fake(url, binary=False):
+            fetched.append(url)
+            body = pages_by_url[url]
+            return (body.encode() if binary else body, "text/html", url)
+        with patch.object(scan, "fetch", side_effect=fake):
+            leads, status = scan.scan_direct(SOURCE)
+        self.assertEqual(fetched, [SOURCE["url"], second, third, detail])
+        self.assertEqual([lead["url"] for lead in leads], [detail])
+        self.assertIn("3 listing pages", status)
+        self.assertIn("1 details checked", status)
+
+    def test_invalid_pager_does_not_consume_detail_budget(self):
+        detail = "https://example.gov/bid/104"
+        listing = ('<a href="?page=2&bidID=999">Next</a>'
+                   '<a href="/bid/104">Tree trimming bid</a>')
+        fetched = []
+        def fake(url, binary=False):
+            fetched.append(url)
+            body = listing if url == SOURCE["url"] else "<h1>Tree trimming bid due 11/19/2026</h1>"
+            return (body.encode() if binary else body, "text/html", url)
+        with patch.object(scan, "fetch", side_effect=fake):
+            leads, status = scan.scan_direct(SOURCE)
+        self.assertEqual(fetched, [SOURCE["url"], detail])
+        self.assertEqual([lead["url"] for lead in leads], [detail])
+        self.assertIn("1 details checked", status)
+
 if __name__ == "__main__":
     unittest.main()
