@@ -83,6 +83,12 @@ def summarize(sources, statuses):
               "fetch_error", "not_fetched", "staged_official_url", "not_configured")
     counts = {state: sum(row["direct_state"] == state for row in rows) for state in states}
     counts["configured_direct"] = sum(bool(row["direct_url"]) for row in rows)
+    # Landing-page configuration is not a working provider integration.
+    # These are potential fetch targets, not proof of permitted extraction.
+    counts["configured_access_required"] = sum(
+        bool(row["direct_url"]) and row["direct_state"] == "access_required" for row in rows)
+    counts["configured_fetch_targets"] = (
+        counts["configured_direct"] - counts["configured_access_required"])
     counts["indirect_robots_blocked"] = sum(row["indirect_state"] == "robots_blocked" for row in rows)
     counts["individual_bid_records_found"] = sum(row["individual_bid_records_found"] for row in rows)
     counts["detail_fetches_attempted"] = sum(row["detail_fetches_attempted"] for row in rows)
@@ -101,5 +107,6 @@ def summarize(sources, statuses):
                     "individual details fetched prove retrieval, not open status. "
                     "Individual-detail robots blocks and errors are reported separately. "
                     "External provider links require an approved adapter and are not followed. "
+                    "Configured access-required portals are not direct fetch targets. "
                     "Staged URLs are not monitored; all leads remain unverified.")
     }
