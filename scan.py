@@ -21,6 +21,7 @@ import public_bid_pagination as public_pages
 import civicplus_bids
 import robots_policy
 import source_health
+from submission_deadlines import submission_deadline
 
 ROOT = pathlib.Path(__file__).resolve().parent
 SOURCES = ROOT / 'sources.json'
@@ -58,14 +59,7 @@ def local_evidence(text):
  return any(re.search(r'\b'+re.escape(x)+r'\b',text,re.I) for x in LOCAL_PLACES)
 
 def deadline(text):
- """Only dates explicitly labeled as submission deadlines, never posting dates."""
- dates=[]
- pattern=r"(?:due(?: date)?|closing(?:\s+date(?:/time)?)?|bids? (?:due|received)|submit(?:ted)? (?:by|until)|deadline)[^.;\n]{0,65}?((?:\d{4}-\d{1,2}-\d{1,2})|(?:\d{1,2}/\d{1,2}/\d{2,4})|(?:(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},?\s+\d{4}))"
- for value in re.findall(pattern,text,re.I):
-  for fmt in ('%Y-%m-%d','%m/%d/%Y','%m/%d/%y','%B %d %Y','%b %d %Y'):
-   try: dates.append(dt.datetime.strptime(value.replace(',',''),fmt).date());break
-   except ValueError: pass
- return max(dates).isoformat() if dates else ''
+ return submission_deadline(text)
 
 def closed(text):
  """Recognize closed solicitations, not ordinary worksite road closures.
@@ -435,7 +429,7 @@ def scan_direct(src):
     # A single notice's metadata rows are not a listing of separate bids.
     # Only the Description field, never navigation text, establishes relevance.
     scope = metadata_description(body) if metadata_notice else body
-    if (not p.rows or metadata_notice) and not nested_notice_links and category(scope) and eligible(scope+' bid '+('Due date: '+deadline(body) if deadline(body) else ''),name) and not closed(body):
+    if (not p.rows or metadata_notice) and not nested_notice_links and category(scope) and eligible(scope + (' bid' if metadata_notice else '') + (' Due date: ' + deadline(body) if deadline(body) else ''), name) and not closed(body):
      key=category(scope);match=next((t for t in CATEGORIES[key] if t in scope.lower()),'')
      ix=scope.lower().find(match);snippet=scope[max(0,ix-160):ix+520]
      add_lead(found,name,title if category(title) else snippet[:130],final_url,('Bid description: ' if metadata_notice else '')+snippet+' '+('Deadline: '+deadline(body) if deadline(body) else ''),'individual metadata bid candidate' if metadata_notice else 'direct detail candidate',evidence=body)
