@@ -23,6 +23,7 @@ class MunicipalStagingTests(unittest.TestCase):
             "Village of Horseheads": "https://www.villageofhorseheads.gov/Bids.aspx",
             "City of Cortland": "https://www.cortlandny.gov/Bids.aspx",
             "City of Corning": "https://cityofcorningny.gov/index.asp?SEC=07CB95A9-0A8E-4D9D-B22C-7B8C866B36E5",
+            "Town of Corning": "https://townofcorningny.gov/",
         }
         self.assertEqual(len(records), 102)
         for name, url in expected.items():
