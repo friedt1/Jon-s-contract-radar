@@ -10,6 +10,8 @@ import re
 from urllib.parse import parse_qs, urljoin, urlparse
 from zoneinfo import ZoneInfo
 
+import public_bid_pagination as public_pages
+
 SOURCES = frozenset({"Chemung County bids", "Steuben County bids",
                      "Town of Horseheads", "City of Ithaca",
                      "Cortland County", "Yates County", "Seneca County",
@@ -136,7 +138,8 @@ def listing_records(page, origin):
     links = []
     for label, href, position in page.links:
         url = individual_url(href, origin)
-        if url:
+        # A misleading bidID on a pager control is not a solicitation card.
+        if url and not public_pages.pagination_label(label):
             links.append((position, label, url))
     links.sort()
     first = {}
