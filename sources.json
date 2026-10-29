@@ -120,21 +120,27 @@
     "type": "NY counties",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.broomecountyny.gov/purchasing/open-solicitations",
+    "activation_gate": "Official county page delegates bid documents to BidNet; provider-approved individual-notice access and robots policy review required."
   },
   {
     "name": "Cortland County",
     "type": "NY counties",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.cortlandcountyny.gov/Bids.aspx",
+    "activation_gate": "Official CivicPlus listing confirmed; verify robots policy and live bidID detail extraction before activation."
   },
   {
     "name": "Yates County",
     "type": "NY counties",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.yatescountyny.gov/bids.aspx",
+    "activation_gate": "Official CivicPlus listing confirmed; verify robots policy and live bidID detail extraction before activation."
   },
   {
     "name": "Ontario County",
