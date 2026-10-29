@@ -37,6 +37,24 @@ def classify(source, status):
     else:
         indirect_state = "not_run"
 
+    # A successful listing fetch can conceal blocked or failed individual
+    # notice requests. Record those separately from homepage availability.
+    detail_errors = _number(r"\\b(\\d+) detail errors:", status)
+    detail_checked = _number(r"\\b(\\d+) (?:relevant )?details checked\\b", status)
+    details_fetched = _number(r"\\b(\\d+) individual bid details fetched\\b", status)
+    error_section = re.search(r"\\b\\d+ detail errors:\\s*([^;]*)", status)
+    error_names = error_section.group(1) if error_section else ""
+    if "RobotsDenied" in error_names:
+        detail_access_state = "robots_blocked"
+    elif detail_errors:
+        detail_access_state = "partial_fetch_errors" if details_fetched else "fetch_error"
+    elif details_fetched:
+        detail_access_state = "retrieved_unverified"
+    elif detail_checked:
+        detail_access_state = "attempted_unverified"
+    else:
+        detail_access_state = "not_attempted"
+
     return {
         "name": source["name"],
         "mode": mode,
@@ -46,8 +64,11 @@ def classify(source, status):
         "staged_official_url": source.get("candidate_official_url", "") if not configured else "",
         "activation_gate": source.get("activation_gate", ""),
         "individual_bid_records_found": _number(r"\b(\d+) individual bid records\b", status),
-        "detail_fetches_attempted": _number(r"\b(\d+) (?:relevant )?details checked\b", status),
-        "individual_bid_details_fetched": _number(r"\b(\d+) individual bid details fetched\b", status),
+        "detail_fetches_attempted": detail_checked,
+        "individual_bid_details_fetched": details_fetched,
+        "detail_errors": detail_errors,
+        "detail_access_state": detail_access_state,
+        "pdf_budget_skips": _number(r"\\b(\\d+) PDFs skipped at budget\\b", status),
         "unverified_candidates": _number(r"\b(\d+) unverified candidates\b", status)
                                   or _number(r"; (\d+) candidates(?:;|$)", status),
         "diagnostic": status,
@@ -64,6 +85,9 @@ def summarize(sources, statuses):
     counts["individual_bid_records_found"] = sum(row["individual_bid_records_found"] for row in rows)
     counts["detail_fetches_attempted"] = sum(row["detail_fetches_attempted"] for row in rows)
     counts["individual_bid_details_fetched"] = sum(row["individual_bid_details_fetched"] for row in rows)
+    counts["detail_errors"] = sum(row["detail_errors"] for row in rows)
+    counts["detail_robots_blocked_sources"] = sum(row["detail_access_state"] == "robots_blocked" for row in rows)
+    counts["pdf_budget_skips"] = sum(row["pdf_budget_skips"] for row in rows)
     counts["unverified_candidates"] = sum(row["unverified_candidates"] for row in rows)
     return {
         "counts": counts,
@@ -71,5 +95,6 @@ def summarize(sources, statuses):
         "warning": ("A source can be fetched without extracting individual bids. "
                     "Detail fetch attempts do not establish valid notices; "
                     "individual details fetched prove retrieval, not open status. "
+                    "Individual-detail robots blocks and errors are reported separately. "
                     "Staged URLs are not monitored; all leads remain unverified.")
     }
