@@ -15,7 +15,7 @@ MAX_PAGES = 3
 MAX_PUBLIC_DETAILS = 36
 
 
-def _pagination_label(label):
+def pagination_label(label):
     """Recognize common public-listing pager labels, not arbitrary navigation."""
     label = " ".join(label.lower().split())
     return bool(re.fullmatch(
@@ -35,7 +35,7 @@ def next_pages(links, listing_url, seen):
     base = urlparse(listing_url)
     found = []
     for label, href, _ in links:
-        if not isinstance(href, str) or not href or not _pagination_label(label):
+        if not isinstance(href, str) or not href or not pagination_label(label):
             continue
         if any(ord(c) < 33 or ord(c) == 127 or c == "\\" for c in href):
             continue
