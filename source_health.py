@@ -69,6 +69,8 @@ def classify(source, status):
         "detail_errors": detail_errors,
         "detail_access_state": detail_access_state,
         "pdf_budget_skips": _number(r"\b(\d+) PDF requests skipped at budget\b", status),
+        "external_provider_links_skipped": _number(
+            r"\b(\d+) external provider links skipped \(access required\)", status),
         "unverified_candidates": _number(r"\b(\d+) unverified candidates\b", status)
                                   or _number(r"; (\d+) candidates(?:;|$)", status),
         "diagnostic": status,
@@ -88,6 +90,8 @@ def summarize(sources, statuses):
     counts["detail_errors"] = sum(row["detail_errors"] for row in rows)
     counts["detail_robots_blocked_sources"] = sum(row["detail_access_state"] == "robots_blocked" for row in rows)
     counts["pdf_budget_skips"] = sum(row["pdf_budget_skips"] for row in rows)
+    counts["external_provider_links_skipped"] = sum(
+        row["external_provider_links_skipped"] for row in rows)
     counts["unverified_candidates"] = sum(row["unverified_candidates"] for row in rows)
     return {
         "counts": counts,
@@ -96,5 +100,6 @@ def summarize(sources, statuses):
                     "Detail fetch attempts do not establish valid notices; "
                     "individual details fetched prove retrieval, not open status. "
                     "Individual-detail robots blocks and errors are reported separately. "
+                    "External provider links require an approved adapter and are not followed. "
                     "Staged URLs are not monitored; all leads remain unverified.")
     }
