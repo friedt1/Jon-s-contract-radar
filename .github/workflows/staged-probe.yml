@@ -7,6 +7,11 @@ on:
   pull_request:
     paths:
       - probe_staged_sources.py
+      - civicplus_bids.py
+      - granicus_rfps.py
+      - robots_policy.py
+      - test_granicus_rfps.py
+      - test_civicplus_bids.py
       - test_staged_probes.py
       - test_staged_municipal_sources.py
       - test_waverly_staging.py
@@ -34,13 +39,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      - run: python -m unittest test_staged_probes test_staged_municipal_sources test_waverly_staging -v
+      - run: python -m unittest test_staged_probes test_staged_municipal_sources test_waverly_staging test_granicus_rfps test_civicplus_bids -v
 
   probe:
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
     needs: test
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 20
     permissions:
       contents: write
     steps:
