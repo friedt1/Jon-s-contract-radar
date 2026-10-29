@@ -10,7 +10,7 @@ const element = selector => {
 element('#sort').value = 'new';
 const feed = JSON.parse(fs.readFileSync('data/opportunities.json', 'utf8'));
 const fixture = {title: '<script>unsafe</script> Tree removal bid', summary: 'Tree removal', category: 'Tree removal', source: 'Chemung', location: 'Elmira', published: '2026-10-28', url: 'https://example.org/bid'};
-const context = vm.createContext({document: {querySelector: element}, fetch: async () => ({ok: true, json: async () => ({...feed, source_coverage: {direct_fetched: 3, pending_direct: 84}, opportunities: [fixture]})})});
+const context = vm.createContext({document: {querySelector: element}, fetch: async () => ({ok: true, json: async () => ({...feed, source_coverage: {direct_fetched: 3, pending_direct: 84}, source_health: {counts: {configured_direct: 18, fetched_unverified: 15, robots_blocked: 1, access_required: 1, staged_official_url: 3, indirect_robots_blocked: 102}, sources: [{name: 'Yates County', direct_state: 'staged_official_url', indirect_state: 'robots_blocked', staged_official_url: 'https://www.yatescountyny.gov/bids.aspx', diagnostic: 'Indirect robots blocked', activation_gate: 'Verify robots before activation'}, {name: '<script>bad source</script>', direct_state: 'robots_blocked', indirect_state: 'not_run', diagnostic: 'Robots blocked', activation_gate: ''}]}, opportunities: [fixture]})})});
 const html = fs.readFileSync('index.html', 'utf8');
 vm.runInContext(html.split('<script>')[1].split('</script>')[0], context);
 setImmediate(() => {
@@ -20,6 +20,15 @@ setImmediate(() => {
   assert.equal(element('#sources').textContent, 3);
   assert.equal(element('#pending').textContent, 84);
   assert.notEqual(element('#sources').textContent, Object.values(feed.source_status).filter(x => /direct fetched|indirect RSS ok/.test(x)).length);
+  assert.ok(element('#health-summary').textContent.includes('18 direct configurations'));
+  assert.ok(element('#health-list').innerHTML.includes('Yates County'));
+  assert.ok(element('#health-list').innerHTML.includes('&lt;script&gt;bad source'));
+  assert.ok(!element('#health-list').innerHTML.includes('<script>bad source'));
+  element('#health-filter').value = 'staged_official_url';
+  vm.runInContext('renderHealth()', context);
+  assert.ok(element('#health-list').innerHTML.includes('Yates County'));
+  assert.ok(!element('#health-list').innerHTML.includes('bad source'));
+  element('#health-filter').value = '';
   element('#type').value = 'Storm cleanup';
   vm.runInContext('render()', context);
   assert.equal(element('#count').textContent, 0);
