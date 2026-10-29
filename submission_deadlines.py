@@ -12,7 +12,9 @@ _DATE = (r"(?P<date>(?:\d{4}-\d{1,2}-\d{1,2})|"
          r"May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|"
          r"Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},?\s+\d{4}))")
 _LABEL = (r"(?P<label>due(?:\s+date)?|closing(?:\s+date(?:/time)?)?|"
-          r"bids?\s+(?:due|received)|submit(?:ted)?\s+(?:by|until)|deadline)")
+          r"bids?\s+(?:due|received|(?:must|will|shall)\s+be\s+received)|"
+          r"proposals?\s+(?:(?:must|will|shall)\s+be\s+)?submitted|"
+          r"submit(?:ted)?\s+(?:by|until)|deadline)")
 _CANDIDATE = re.compile(_LABEL + r"(?P<between>[^.;\n]{0,65}?)" + _DATE, re.I)
 _OTHER_MILESTONE = re.compile(
     r"(?:questions?|q\s*&\s*a|inquir(?:y|ies)|clarifications?|"
@@ -24,7 +26,7 @@ _OTHER_MILESTONE = re.compile(
 _OTHER_MILESTONE_END = re.compile(
     r"(?:questions?|q\s*&\s*a|inquir(?:y|ies)|clarifications?|"
     r"rfis?|answers?|addenda|addendums?|meetings?|conferences?|"
-    r"site\s+visits?|walk[- ]?throughs?)\s*$",
+    r"site\s+visits?|walk[- ]?throughs?)(?:\s+(?:about|regarding|concerning))?\s*$",
     re.I,
 )
 
