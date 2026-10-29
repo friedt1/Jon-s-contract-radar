@@ -58,6 +58,7 @@ class NoticeRedirectIdentityTests(unittest.TestCase):
         self.assertEqual(leads, [])
         self.assertEqual(calls, [BASE, "https://example.gov/bid/42"])
         self.assertIn("1 details checked", status)
+        self.assertIn("unsafe or changed notice redirect", status)
 
     def test_same_notice_redirect_remains_unverified_candidate(self):
         listing = '<a href="/bid/42">Tree removal bid due 11/19/2026</a>'
