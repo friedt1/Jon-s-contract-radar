@@ -21,8 +21,8 @@
       "access_required": 1,
       "fetch_error": 0,
       "not_fetched": 0,
-      "staged_official_url": 14,
-      "not_configured": 70,
+      "staged_official_url": 15,
+      "not_configured": 69,
       "configured_direct": 18,
       "indirect_robots_blocked": 102,
       "individual_bid_records_found": 12,
@@ -71,7 +71,7 @@
         "detail_fetches_attempted": 36,
         "individual_bid_details_fetched": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 2 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Tompkins County purchasing",
@@ -85,7 +85,7 @@
         "detail_fetches_attempted": 36,
         "individual_bid_details_fetched": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 5 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Elmira City bids",
@@ -141,7 +141,7 @@
         "detail_fetches_attempted": 18,
         "individual_bid_details_fetched": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "PA DGS construction bids",
@@ -155,7 +155,7 @@
         "detail_fetches_attempted": 18,
         "individual_bid_details_fetched": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 5 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Tioga Bradford Housing Authority",
@@ -183,7 +183,7 @@
         "detail_fetches_attempted": 18,
         "individual_bid_details_fetched": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 5 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "PennBid platform",
@@ -412,11 +412,11 @@
       {
         "name": "Clinton County PA",
         "mode": "discovery_pending",
-        "direct_state": "not_configured",
+        "direct_state": "staged_official_url",
         "indirect_state": "robots_blocked",
         "direct_url": "",
-        "staged_official_url": "",
-        "activation_gate": "",
+        "staged_official_url": "https://www.clintoncountypa.gov/about-us/rfps",
+        "activation_gate": "Official county RFP index confirmed; some listings still display Open without a closing date despite old start dates. Verify robots and site terms, build CivicPlus RFP component-list/detail adapter (not bidID), reject expired individual notices, and confirm worksite travel time before direct activation.",
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
@@ -1462,20 +1462,20 @@
     ],
     "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Staged URLs are not monitored; all leads remain unverified."
   },
-  "updated": "2026-10-29T07:24:50+00:00",
+  "updated": "2026-10-29T08:21:40+00:00",
   "opportunities": [],
   "source_status": {
     "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 2 relevant details checked; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
     "Steuben County bids": "direct fetched; 1 listing pages; 7 individual bid records; 7 relevant details checked; 7 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
-    "Schuyler County purchasing": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Tompkins County purchasing": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied",
+    "Schuyler County purchasing": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 2 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "Tompkins County purchasing": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 5 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied",
     "Elmira City bids": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "Elmira Next local bids": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 1 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied",
     "Lycoming County bids": "direct fetched; 1 listing pages; 7 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: RobotsDenied; indirect RSS error: RobotsDenied",
-    "PA procurement opportunities": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "PA DGS construction bids": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 5 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied",
+    "PA procurement opportunities": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "PA DGS construction bids": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "Tioga Bradford Housing Authority": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Chemung County purchasing": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 5 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "Chemung County purchasing": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "PennBid platform": "direct blocked by robots policy: robots disallows requested path; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established",
     "BidNet NY platform": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established",
     "Tioga County NY": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 5 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
