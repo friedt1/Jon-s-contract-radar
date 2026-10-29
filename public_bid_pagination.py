@@ -15,22 +15,50 @@ MAX_PAGES = 3
 MAX_PUBLIC_DETAILS = 36
 
 
+def _pagination_label(label):
+    """Recognize common public-listing pager labels, not arbitrary navigation."""
+    label = " ".join(label.lower().split())
+    return bool(re.fullmatch(
+        r"(?:next(?: page)?(?: [>»›]+| [0-9]+)?|[>»›]+|"
+        r"page [0-9]+(?: of [0-9]+)?|[0-9]+(?: of [0-9]+)?)",
+        label,
+    ))
+
+
 def next_pages(links, listing_url, seen):
-    """Return candidate listing pagination URLs, never generic detail links."""
+    """Return bounded same-page listing URLs, never individual bids or logins.
+
+    The label must indicate pagination, the query must contain a numeric page
+    cursor, and the URL must remain on the same HTTPS host and path. This is
+    only discovery of public listings, not evidence of an open solicitation.
+    """
     base = urlparse(listing_url)
     found = []
     for label, href, _ in links:
-        label = label.strip().lower()
-        if not (label in {"next", "next page", "›", "»"} or label.isdigit()):
+        if not isinstance(href, str) or not href or not _pagination_label(label):
             continue
-        url = urljoin(listing_url, href)
-        parsed = urlparse(url)
-        if (parsed.scheme != "https" or parsed.hostname != base.hostname
-                or parsed.path.lower().rstrip("/") != base.path.lower().rstrip("/")
-                or url in seen):
+        if any(ord(c) < 33 or ord(c) == 127 or c == "\\" for c in href):
             continue
-        params = {k.lower() for k in parse_qs(parsed.query)}
-        if not params.intersection(PAGE_KEYS):
+        try:
+            url = urljoin(listing_url, href)
+            parsed = urlparse(url)
+            if (parsed.scheme != "https" or parsed.hostname != base.hostname
+                    or parsed.username is not None or parsed.password is not None
+                    or parsed.port not in (None, 443)
+                    or parsed.path.lower().rstrip("/") != base.path.lower().rstrip("/")):
+                continue
+            params = {k.lower(): v for k, v in parse_qs(parsed.query).items()}
+            if "bidid" in params:  # a bid detail must never masquerade as a pager
+                continue
+            cursors = [value for key, values in params.items()
+                       if key in PAGE_KEYS for value in values]
+            if not cursors or not all(value.isascii() and value.isdigit()
+                                      for value in cursors):
+                continue
+            # Fragments never change the listing page; avoid duplicate fetches.
+            url = parsed._replace(fragment="").geturl()
+            if url not in seen and url not in found:
+                found.append(url)
+        except ValueError:
             continue
-        found.append(url)
     return found
