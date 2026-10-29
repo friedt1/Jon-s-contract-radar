@@ -1,5 +1,6 @@
 """Offline staged-source probes: no real site or opportunity is asserted."""
 import unittest
+from urllib.error import HTTPError
 from unittest.mock import Mock
 
 import probe_staged_sources as staged
@@ -61,6 +62,65 @@ class StagedProbeTests(unittest.TestCase):
         other = dict(SOURCE, name="Allegany County")
         row = staged.probe(other, fetch=lambda url: ("<h1>County bids</h1>", "text/html", url))
         self.assertEqual(row["state"], "listing_reachable_adapter_required")
+
+    def test_opengov_delegation_requires_provider_access(self):
+        other = dict(SOURCE, name="Ontario County")
+        row = staged.probe(other, fetch=lambda url: (
+            "<h1>Current bids are posted on OpenGov</h1>", "text/html", url))
+        self.assertEqual(row["state"],
+                         "listing_reachable_external_provider_access_required")
+        self.assertFalse(row["individual_notice_retrieved"])
+        self.assertFalse(row["direct_monitoring_activated"])
+
+    def test_listing_http_failures_are_not_generic_errors(self):
+        for code, state in ((401, "listing_authentication_required"),
+                            (403, "listing_access_forbidden"),
+                            (404, "listing_not_found"),
+                            (429, "listing_rate_limited"),
+                            (503, "listing_server_error")):
+            with self.subTest(code=code):
+                error = HTTPError(ENTRY, code, "blocked", None, None)
+                row = staged.probe(SOURCE, fetch=Mock(side_effect=error))
+                self.assertEqual(row["state"], state)
+                self.assertEqual(row["http_status"], code)
+                self.assertFalse(row["listing_retrieved"])
+                self.assertFalse(row["direct_monitoring_activated"])
+
+    def test_individual_http_failures_are_not_generic_errors(self):
+        for code, state in ((401, "individual_notice_authentication_required"),
+                            (403, "individual_notice_access_forbidden"),
+                            (429, "individual_notice_rate_limited")):
+            with self.subTest(code=code):
+                def fetch(url, binary=False):
+                    if url == ENTRY:
+                        return listing(), "text/html", url
+                    raise HTTPError(url, code, "blocked", None, None)
+                row = staged.probe(SOURCE, fetch=fetch)
+                self.assertEqual(row["state"], state)
+                self.assertEqual(row["individual_sample_failures"][0]["http_status"], code)
+                self.assertFalse(row["individual_notice_retrieved"])
+                self.assertFalse(row["direct_monitoring_activated"])
+
+    def test_future_deadline_sample_precedes_stale_open_notice(self):
+        html = (
+            '<article><a href="/Bids.aspx?bidID=4">Old tree bid</a>'
+            '<p>Status: Open</p><p>Closes: 10/01/2026 10:00 AM</p></article>'
+            '<article><a href="/Bids.aspx?bidID=5">Future tree bid</a>'
+            '<p>Status: Open</p><p>Closes: 11/15/2026 10:00 AM</p></article>'
+        )
+        calls = []
+        def fetch(url, binary=False):
+            calls.append(url)
+            if url == ENTRY:
+                return html, "text/html", url
+            return detail().encode(), "text/html", url
+        row = staged.probe(SOURCE, fetch=fetch, now=staged.dt.datetime(
+            2026, 10, 29, 18, tzinfo=staged.dt.timezone.utc))
+        self.assertEqual(row["individual_records_discovered"], 2)
+        self.assertEqual(row["individual_samples_attempted"], 1)
+        self.assertIn("bidID=5", row["sample_notice_url"])
+        self.assertEqual(len(calls), 2)
+        self.assertFalse(row["direct_monitoring_activated"])
 
     def test_redirect_to_homepage_does_not_prove_individual_notice(self):
         def fetch(url, binary=False):
