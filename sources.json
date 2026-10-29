@@ -323,7 +323,9 @@
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.binghamton-ny.gov/government/departments/purchasing/bids-rfps",
+    "activation_gate": "Official city Purchasing Bids & RFPs table confirmed in indexed city pages; direct fetch returned HTTP 403 during review. Check robots/terms and obtain permitted access, parse individual Granicus RFP links and closing timestamps, and reject stale Open labels with past deadlines before activation."
   },
   {
     "name": "Town of Vestal",
