@@ -2,13 +2,14 @@
 
 Never activates a source, changes sources.json, or creates opportunity records.
 robots.txt is a necessary gate, not proof of site terms or API authorization.
-Only one individual CivicPlus notice per source is fetched to test adapter shape.
+At most three individual notices per source are fetched to test adapter shape.
 """
 import datetime as dt
 import json
 import pathlib
 import re
 from urllib.parse import urlparse
+from urllib.error import HTTPError
 
 import civicplus_bids
 import granicus_rfps
@@ -23,6 +24,34 @@ MAX_SAMPLE_DETAILS = 3  # A broken historical notice must not condemn a whole so
 
 def _error(exc):
     return type(exc).__name__
+
+
+def _http_failure(code, scope):
+    # A 403 may be a firewall/permission denial, not proof that login is
+    # possible. Preserve the distinction instead of reporting a generic error.
+    if code == 401:
+        return f"{scope}_authentication_required"
+    if code == 403:
+        return f"{scope}_access_forbidden"
+    if code in (404, 410):
+        return f"{scope}_not_found"
+    if code == 429:
+        return f"{scope}_rate_limited"
+    if 500 <= code < 600:
+        return f"{scope}_server_error"
+    return f"{scope}_http_error"
+
+
+def _sample_priority(record, now):
+    # Prefer a listing with a future closing date over a stale "Open" label.
+    # A sampled notice is NEVER an actionable or verified contract.
+    if record.get("open_status") in civicplus_bids.CLOSED:
+        return 3
+    due = record.get("deadline", "")
+    if due:
+        return 2 if civicplus_bids.closing_passed(
+            due, record.get("deadline_time", ""), now) else 0
+    return 1
 
 
 def probe(source, fetch=scan.fetch, now=None):
@@ -67,7 +96,7 @@ def probe(source, fetch=scan.fetch, now=None):
             # platform. Reading its announcement page is not direct access
             # to individual solicitations on that platform.
             delegated_to_provider = bool(re.search(
-                r"\b(?:BidNet|Empire State Purchasing Group)\b", listing_text, re.I)
+                r"\b(?:BidNet|Empire State Purchasing Group|OpenGov|Bonfire|PennBid|Public Purchase)\b", listing_text, re.I)
                 and re.search(r"\b(?:bid|rfp|rfq|solicitation|packet)s?\b",
                               listing_text, re.I))
             result["state"] = (
@@ -88,11 +117,12 @@ def probe(source, fetch=scan.fetch, now=None):
                                    if adapter is civicplus_bids else
                                    "listing_reachable_no_individual_records")
             return result
-        # A stale or broken first link is common on county bid indexes. Probe
-        # at most three distinct public notice URLs, stopping at the first
-        # well-shaped individual record. A sample is diagnostic evidence only:
+        # Stale or broken notices are common. Prefer listings with a future
+        # deadline, then unknown deadlines, then expired/closed listings.
+        # Probe at most three distinct public URLs, stopping at the first
+        # well-shaped record. A sample is diagnostic evidence only:
         # no candidate is emitted and no source is activated.
-        for record in records[:MAX_SAMPLE_DETAILS]:
+        for record in sorted(records, key=lambda record: _sample_priority(record, now))[:MAX_SAMPLE_DETAILS]:
             detail_url = record["url"]
             result["individual_samples_attempted"] += 1
             failure = {"url": detail_url}
@@ -100,6 +130,11 @@ def probe(source, fetch=scan.fetch, now=None):
                 blob, ctype, detail_final = fetch(detail_url, binary=True)
             except robots_policy.RobotsDenied:
                 failure["state"] = "individual_notice_robots_blocked"
+                result["individual_sample_failures"].append(failure)
+                continue
+            except HTTPError as exc:
+                failure["state"] = _http_failure(exc.code, "individual_notice")
+                failure["http_status"] = exc.code
                 result["individual_sample_failures"].append(failure)
                 continue
             except Exception as exc:
@@ -162,6 +197,9 @@ def probe(source, fetch=scan.fetch, now=None):
         return result
     except robots_policy.RobotsDenied:
         result["state"] = "listing_robots_blocked"
+    except HTTPError as exc:
+        result["state"] = _http_failure(exc.code, "listing")
+        result["http_status"] = exc.code
     except Exception as exc:
         result["state"] = "listing_fetch_error"
         result["error_type"] = _error(exc)
