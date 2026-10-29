@@ -173,15 +173,31 @@ def scan_civicplus(src, listing_pages, page_errors):
   detail_worksite = ''
   try:
    blob, kind, final = fetch(row['url'], binary=True)
-   if 'html' in kind or blob.lstrip().startswith(b'<'):
-    detail = parse_html(blob.decode('utf-8', 'replace'))
-    body = ' '.join(detail.parts)
-    detail_status = civicplus_bids.status_of(body)
-    detail_due, detail_time = civicplus_bids.detail_closing_of(body)
-    detail_scope = civicplus_bids.detail_description(body)
-    detail_worksite = civicplus_bids.detail_worksite(body)
+   # Never publish a listing-only candidate when the individual notice could
+   # not be read. A failed fetch or redirect to a homepage is not evidence.
+   if 'html' not in kind and not blob.lstrip().startswith(b'<'):
+    errors.append('unsupported detail content')
+    continue
+   resolved = civicplus_bids.individual_url(final, row['url'])
+   expected_id = next((v[0] for k, v in up.parse_qs(up.urlparse(row['url']).query).items()
+                       if k.lower() == 'bidid' and v), '')
+   actual_id = next((v[0] for k, v in up.parse_qs(up.urlparse(final).query).items()
+                     if k.lower() == 'bidid' and v), '')
+   if not resolved or actual_id != expected_id:
+    errors.append('detail redirected away from original bid')
+    continue
+   detail = parse_html(blob.decode('utf-8', 'replace'))
+   body = ' '.join(detail.parts)
+   if not body:
+    errors.append('empty detail content')
+    continue
+   detail_status = civicplus_bids.status_of(body)
+   detail_due, detail_time = civicplus_bids.detail_closing_of(body)
+   detail_scope = civicplus_bids.detail_description(body)
+   detail_worksite = civicplus_bids.detail_worksite(body)
   except Exception as e:
    errors.append(error_label(e))
+   continue
   if detail_status in civicplus_bids.CLOSED:
    closed_count += 1
    continue

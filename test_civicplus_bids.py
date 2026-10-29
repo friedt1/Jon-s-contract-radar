@@ -81,7 +81,9 @@ class CivicPlusTests(unittest.TestCase):
         html = card(15, "Tree removal bid", "Open", "10/21/2026")
         html += '<a href="https://other.example/Bids.aspx?bidID=99">Tree removal bid</a>'
         self.assertEqual(len(civic.listing_records(scan.parse_html(html), BASE)), 1)
-        with patch.object(scan, "fetch", return_value=(html, "text/html", BASE)):
+        def fake(url, binary=False):
+            return (html.encode() if binary else html, "text/html", url)
+        with patch.object(scan, "fetch", side_effect=fake):
             leads, status = scan.scan_direct(SOURCE)
         self.assertEqual(leads, [])
         self.assertIn("1 expired", status)
@@ -137,6 +139,44 @@ class CivicPlusTests(unittest.TestCase):
             leads, status = scan.scan_direct(SOURCE)
         self.assertEqual(len(leads), 25)
         self.assertIn("25 relevant details checked", status)
+
+    def test_detail_network_failure_never_publishes_listing_candidate(self):
+        html = card(31, "Tree removal bid", "Open", "11/19/2026")
+        def fake(url, binary=False):
+            if binary:
+                raise OSError("temporary network failure")
+            return html, "text/html", url
+        with patch.object(scan, "fetch", side_effect=fake):
+            leads, status = scan.scan_direct(SOURCE)
+        self.assertEqual(leads, [])
+        self.assertIn("1 detail errors: OSError", status)
+
+    def test_redirected_bid_detail_cannot_validate_original_notice(self):
+        html = card(32, "Tree trimming bid", "Open", "11/19/2026")
+        for destination in (BASE, BASE + "?bidID=999", "https://other.example/Bids.aspx?bidID=32"):
+            with self.subTest(destination=destination):
+                def fake(url, binary=False):
+                    if binary:
+                        return b"<p>Status: Open</p><p>Description: Tree trimming</p>", "text/html", destination
+                    return html, "text/html", url
+                with patch.object(scan, "fetch", side_effect=fake):
+                    leads, status = scan.scan_direct(SOURCE)
+                self.assertEqual(leads, [])
+                self.assertIn("detail redirected away from original bid", status)
+
+    def test_non_html_and_empty_individual_details_are_not_candidates(self):
+        html = card(33, "Tree removal bid", "Open", "11/19/2026")
+        for payload, kind, error in ((b"%PDF-1.4", "application/pdf", "unsupported detail content"),
+                                     (b"<html></html>", "text/html", "empty detail content")):
+            with self.subTest(kind=kind):
+                def fake(url, binary=False):
+                    if binary:
+                        return payload, kind, url
+                    return html, "text/html", url
+                with patch.object(scan, "fetch", side_effect=fake):
+                    leads, status = scan.scan_direct(SOURCE)
+                self.assertEqual(leads, [])
+                self.assertIn(error, status)
 
     def test_status_and_date_are_not_inferred_from_unrelated_posted_date(self):
         page = scan.parse_html('<a href="/Bids.aspx?bidID=17">Tree removal bid</a>'
