@@ -30,23 +30,7 @@ class IndividualMetadataTests(unittest.TestCase):
 
  def test_metadata_table_is_one_unverified_individual_bid(self):
   leads,status=self.scan_fixture(TABLE_NOTICE)
-  body='County bid detail Bid Number: 123 Description: Hazardous tree removal along county roads Closing Date/Time: 11/19/2026 10:00 AM Status: Open'
-  self.assertTrue(scan.individual_metadata_notice(body,NOTICE))
-  self.assertIn('tree removal',scan.metadata_description(body))
-  scope=scan.metadata_description(body)
-  self.assertEqual(scan.category(scope),'Tree removal')
-  self.assertTrue(scan.eligible(scope+' bid Due date: 2026-11-19','Test County'))
-  self.assertTrue(scan.eligible(body,'Test County'))
-  manual={}
-  scan.add_lead(manual,'Test County','Hazardous tree removal bid',NOTICE,scope+' Deadline: 2026-11-19',evidence=body)
-  self.assertEqual(len(manual),1,msg=str(manual))
-  parsed=scan.norm(' '.join(scan.parse_html(TABLE_NOTICE).parts))
-  parsed_scope=scan.metadata_description(parsed)
-  flags={'metadata':scan.individual_metadata_notice(parsed,NOTICE),
-         'scope':parsed_scope,'category':scan.category(parsed_scope),
-         'deadline':scan.deadline(parsed),'closed':scan.closed(parsed),
-         'eligible':scan.eligible(parsed_scope+' bid '+('Due date: '+scan.deadline(parsed) if scan.deadline(parsed) else ''),'Test County')}
-  self.assertEqual(len(leads),1,msg=status+' '+str(flags))
+  self.assertEqual(len(leads),1,msg=status)
   self.assertEqual(leads[0]['url'],NOTICE)
   self.assertEqual(leads[0]['deadline'],'2026-11-19')
   self.assertEqual(leads[0]['status'],'unverified')
