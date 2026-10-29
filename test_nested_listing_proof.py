@@ -83,11 +83,15 @@ class ClosedStatusContextTests(unittest.TestCase):
             with self.subTest(text=text):
                 self.assertTrue(scan.closed(text))
 
-    def test_erie_historical_and_owego_unrelated_not_live(self):
+    def test_erie_portal_not_local_and_owego_demolition_not_tree_work(self):
+        # Erie 6565-26 has a reported Oct 29 deadline, but a deadline alone
+        # cannot prove permitted PennBid access, open status, or local routing.
         erie = ("Erie PA Bid 6565-26 TREE & STUMP REMOVAL "
-                "due 10/20/2026")
+                "due 10/29/2026")
         owego = ("67 Central Avenue Demolition Rebid, Owego NY. "
                  "Building demolition and site restoration due 11/13/2026")
+        self.assertEqual(scan.deadline(erie), "2026-10-29")
+        self.assertEqual(scan.category(erie), "Tree removal")
         self.assertFalse(scan.eligible(erie, "PennBid platform"))
         self.assertIsNone(scan.category(owego))
         self.assertFalse(scan.eligible(owego, "Tioga County NY"))
