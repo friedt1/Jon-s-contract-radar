@@ -59,7 +59,9 @@ def bidlike(s):
 LOCAL_PLACES = ('elmira','chemung','steuben','schuyler','tompkins','horseheads','corning',
  'ithaca','bradford','tioga','lycoming','williamsport','sayre','athens','towanda','wellsboro',
  'mansfield','broome','binghamton','owego','waverly','cortland','yates','seneca','montour',
- 'bath','hornell','big flats','southport','vestal','dryden','lansing','watkins glen')
+ 'bath','hornell','big flats','southport','vestal','dryden','lansing','watkins glen',
+ # Syracuse city is near the two-hour boundary; worksite drive remains unverified.
+ 'syracuse')
 BROAD_SOURCES = {'PA procurement opportunities','PA DGS construction bids','PennBid platform','BidNet NY platform','New York State DOT Region 6','PennDOT District 3'}
 
 def local_evidence(text):
