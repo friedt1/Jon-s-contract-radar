@@ -104,9 +104,9 @@ def probe(source, fetch=scan.fetch, now=None):
             # spelling out OpenGov/BidNet in visible page text. Inspect only
             # links explicitly labeled as procurement, never follow them.
             provider_link = any(
-                re.search(r"(?:^|\\.)(?:opengov\\.com|bonfirehub\\.com|bidnetdirect\\.com|pennbid\\.net|publicpurchase\\.com)$",
+                re.search(r"(?:^|\.)(?:opengov\.com|bonfirehub\.com|bidnetdirect\.com|pennbid\.net|publicpurchase\.com)$",
                           (urlparse(href).hostname or "").lower())
-                and re.search(r"\\b(?:bids?|rfps?|rfqs?|solicitations?|procurement|proposals?)\\b",
+                and re.search(r"\b(?:bids?|rfps?|rfqs?|solicitations?|procurement|proposals?)\b",
                               label, re.I)
                 for label, href, _ in page.links
             )
