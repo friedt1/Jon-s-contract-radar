@@ -110,9 +110,10 @@
   {
     "name": "Tioga County NY",
     "type": "NY counties",
-    "url": "",
-    "mode": "discovery_pending",
-    "verified_url": false
+    "url": "https://tiogacountyny.com/departments/public-works/",
+    "mode": "direct_page",
+    "verified_url": true,
+    "discovery_query": "Tioga County NY Public Works"
   },
   {
     "name": "Broome County",
