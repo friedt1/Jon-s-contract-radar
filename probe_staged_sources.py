@@ -179,7 +179,8 @@ def probe(source, fetch=scan.fetch, now=None):
             # "Open" detail should silently override a contradictory status.
             status_conflict = (detail_status != "unknown"
                                and listed_status != "unknown"
-                               and detail_status != listed_status)
+                               and ((detail_status in civicplus_bids.CLOSED)
+                                    != (listed_status in civicplus_bids.CLOSED)))
             result["sample_notice_status"] = status
             result["sample_notice_listing_status"] = listed_status
             result["sample_notice_status_conflict"] = status_conflict
