@@ -6,25 +6,25 @@ deadlines. This parser never establishes a notice's open status or time zone.
 import datetime as dt
 import re
 
-_DATE = (r"(?P<date>(?:\\d{4}-\\d{1,2}-\\d{1,2})|"
-         r"(?:\\d{1,2}/\\d{1,2}/\\d{2,4})|"
+_DATE = (r"(?P<date>(?:\d{4}-\d{1,2}-\d{1,2})|"
+         r"(?:\d{1,2}/\d{1,2}/\d{2,4})|"
          r"(?:(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|"
          r"May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|"
-         r"Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\s+\\d{1,2},?\\s+\\d{4}))")
-_LABEL = (r"(?P<label>due(?:\\s+date)?|closing(?:\\s+date(?:/time)?)?|"
-          r"bids?\\s+(?:due|received)|submit(?:ted)?\\s+(?:by|until)|deadline)")
-_CANDIDATE = re.compile(_LABEL + r"(?P<between>[^.;\\n]{0,65}?)" + _DATE, re.I)
+         r"Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},?\s+\d{4}))")
+_LABEL = (r"(?P<label>due(?:\s+date)?|closing(?:\s+date(?:/time)?)?|"
+          r"bids?\s+(?:due|received)|submit(?:ted)?\s+(?:by|until)|deadline)")
+_CANDIDATE = re.compile(_LABEL + r"(?P<between>[^.;\n]{0,65}?)" + _DATE, re.I)
 _OTHER_MILESTONE = re.compile(
-    r"(?:questions?|q\\s*&\\s*a|inquir(?:y|ies)|clarifications?|"
-    r"requests?\\s+for\\s+(?:information|clarification)|rfis?|answers?|"
-    r"addenda|addendums?|pre[- ]?bid\\s+(?:meetings?|conferences?)|"
-    r"site\\s+visits?|walk[- ]?throughs?|mandatory\\s+meetings?)",
+    r"(?:questions?|q\s*&\s*a|inquir(?:y|ies)|clarifications?|"
+    r"requests?\s+for\s+(?:information|clarification)|rfis?|answers?|"
+    r"addenda|addendums?|pre[- ]?bid\s+(?:meetings?|conferences?)|"
+    r"site\s+visits?|walk[- ]?throughs?|mandatory\s+meetings?)",
     re.I,
 )
 _OTHER_MILESTONE_END = re.compile(
-    r"(?:questions?|q\\s*&\\s*a|inquir(?:y|ies)|clarifications?|"
+    r"(?:questions?|q\s*&\s*a|inquir(?:y|ies)|clarifications?|"
     r"rfis?|answers?|addenda|addendums?|meetings?|conferences?|"
-    r"site\\s+visits?|walk[- ]?throughs?)\\s*$",
+    r"site\s+visits?|walk[- ]?throughs?)\s*$",
     re.I,
 )
 
@@ -50,7 +50,7 @@ def submission_deadline(text):
     for match in _CANDIDATE.finditer(text):
         # Restrict prefix to the current sentence/field, so an earlier
         # unrelated "questions" label cannot poison the next bid deadline.
-        prefix = re.split(r"[.;\\n]", text[max(0, match.start()-80):match.start()])[-1]
+        prefix = re.split(r"[.;\n]", text[max(0, match.start()-80):match.start()])[-1]
         between = match.group("between")
         if _OTHER_MILESTONE_END.search(prefix) or _OTHER_MILESTONE.search(between):
             continue
