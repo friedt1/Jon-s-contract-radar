@@ -201,6 +201,11 @@ def scan_civicplus(src, listing_pages, page_errors):
    if not body:
     errors.append('empty detail content')
     continue
+   # A server can retain ?bidID= in the URL while serving its generic
+   # homepage. Require at least one bid-specific detail label as well.
+   if not re.search(r'\b(?:Bid\s+(?:Number|Title)|Closing\s+Date/Time|Description|Status)\s*:', body, re.I):
+    errors.append('missing individual bid fields')
+    continue
    # Count only a successfully fetched, non-empty notice whose bidID still
    # matches the listing. Attempts and homepage reads are not bid details.
    individual_details_fetched += 1
