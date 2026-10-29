@@ -8,30 +8,32 @@
     "total_targets": 102,
     "direct_configured": 18,
     "pending_direct": 84,
-    "direct_fetched": 14,
-    "direct_not_fetched": 4,
+    "direct_fetched": 15,
+    "direct_not_fetched": 3,
     "indirect_rss_succeeded": 0,
     "verified_open_contracts": 0,
     "warning": "A fetched listing page is not proof that all individual bids were extracted or that any bid is open."
   },
   "source_health": {
     "counts": {
-      "fetched_unverified": 14,
-      "robots_blocked": 2,
+      "fetched_unverified": 15,
+      "robots_blocked": 1,
       "access_required": 2,
       "fetch_error": 0,
       "not_fetched": 0,
       "staged_official_url": 16,
       "not_configured": 68,
       "configured_direct": 18,
+      "configured_access_required": 2,
+      "configured_fetch_targets": 16,
       "indirect_robots_blocked": 102,
       "individual_bid_records_found": 12,
-      "detail_fetches_attempted": 141,
+      "detail_fetches_attempted": 148,
       "individual_bid_details_fetched": 12,
       "detail_errors": 1,
       "detail_robots_blocked_sources": 0,
       "pdf_budget_skips": 182,
-      "external_provider_links_skipped": 6,
+      "external_provider_links_skipped": 7,
       "unverified_candidates": 0
     },
     "sources": [
@@ -80,14 +82,14 @@
         "staged_official_url": "",
         "activation_gate": "",
         "individual_bid_records_found": 0,
-        "detail_fetches_attempted": 10,
+        "detail_fetches_attempted": 7,
         "individual_bid_details_fetched": 0,
         "detail_errors": 0,
         "detail_access_state": "attempted_unverified",
         "pdf_budget_skips": 0,
         "external_provider_links_skipped": 1,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 10 details checked; 0 individual bid details fetched; 2 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 7 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Tompkins County purchasing",
@@ -128,20 +130,20 @@
       {
         "name": "Elmira Next local bids",
         "mode": "direct_page",
-        "direct_state": "robots_blocked",
+        "direct_state": "fetched_unverified",
         "indirect_state": "robots_blocked",
         "direct_url": "https://elmiranext.com/bids",
         "staged_official_url": "",
         "activation_gate": "",
         "individual_bid_records_found": 0,
-        "detail_fetches_attempted": 0,
+        "detail_fetches_attempted": 10,
         "individual_bid_details_fetched": 0,
         "detail_errors": 0,
-        "detail_access_state": "not_attempted",
+        "detail_access_state": "attempted_unverified",
         "pdf_budget_skips": 0,
-        "external_provider_links_skipped": 0,
+        "external_provider_links_skipped": 1,
         "unverified_candidates": 0,
-        "diagnostic": "direct blocked by robots policy: robots policy unavailable: URLError; local bid RSS error: RobotsDenied; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 10 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 1 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Lycoming County bids",
@@ -1872,17 +1874,17 @@
         "diagnostic": "indirect RSS error: RobotsDenied"
       }
     ],
-    "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Individual-detail robots blocks and errors are reported separately. External provider links require an approved adapter and are not followed. Staged URLs are not monitored; all leads remain unverified."
+    "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Individual-detail robots blocks and errors are reported separately. External provider links require an approved adapter and are not followed. Configured access-required portals are not direct fetch targets. Staged URLs are not monitored; all leads remain unverified."
   },
-  "updated": "2026-10-29T13:40:36+00:00",
+  "updated": "2026-10-29T14:38:56+00:00",
   "opportunities": [],
   "source_status": {
     "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 2 relevant details checked; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
     "Steuben County bids": "direct fetched; 1 listing pages; 7 individual bid records; 7 relevant details checked; 7 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
-    "Schuyler County purchasing": "direct fetched; 1 listing pages; 10 details checked; 0 individual bid details fetched; 2 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "Schuyler County purchasing": "direct fetched; 1 listing pages; 7 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "Tompkins County purchasing": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 5 PDFs checked; 30 PDF requests skipped at budget; 2 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied",
     "Elmira City bids": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Elmira Next local bids": "direct blocked by robots policy: robots policy unavailable: URLError; local bid RSS error: RobotsDenied; indirect RSS error: RobotsDenied",
+    "Elmira Next local bids": "direct fetched; 1 listing pages; 10 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 1 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied",
     "Lycoming County bids": "direct fetched; 1 listing pages; 5 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 2 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "PA procurement opportunities": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "PA DGS construction bids": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
@@ -1981,5 +1983,5 @@
     "JLL regional property management": "indirect RSS error: RobotsDenied",
     "SAM.gov": "deferred"
   },
-  "coverage_note": "102 named targets; 14 direct public home pages fetched, with bounded detail/PDF checks; 0 indirect news searches succeeded. Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. 84 targets do not have verified direct integrations. SAM.gov deferred."
+  "coverage_note": "102 named targets; 15 direct public home pages fetched, with bounded detail/PDF checks; 0 indirect news searches succeeded. Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. 84 targets do not have verified direct integrations. SAM.gov deferred."
 }
