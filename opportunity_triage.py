@@ -7,6 +7,7 @@ Never use this module to promote a source or verify an opportunity.
 import datetime as dt
 
 import civicplus_bids
+from submission_deadlines import eastern_deadline_timezone
 
 CATEGORY_POINTS = {
     "Tree removal": 30,
@@ -67,6 +68,7 @@ def review_assessment(lead, today=None, now=None):
                    and isinstance(now, dt.datetime) and now.tzinfo is not None
                    and now.utcoffset() is not None
                    and bool(lead.get("deadline_time"))
+                   and eastern_deadline_timezone(lead.get("deadline_timezone"))
                    and civicplus_bids.closing_passed(
                        parsed.isoformat(), str(lead["deadline_time"]), now))
     if parsed and (parsed < today or time_passed):
