@@ -32,6 +32,21 @@ def validate(root=scan.ROOT):
         }
         if any(coverage.get(key) != expected for key, expected in checks.items()):
             raise ValueError('Inconsistent direct source coverage metrics')
+    health = data.get('source_health')
+    if health is not None:
+        rows = health.get('sources', [])
+        counts = health.get('counts', {})
+        if len(rows) != len(sources) or {row.get('name') for row in rows} != {s['name'] for s in sources}:
+            raise ValueError('Source health must report all 102 named targets')
+        if counts.get('configured_direct') != coverage['direct_configured']:
+            raise ValueError('Source health direct configuration disagrees with coverage')
+        states = ('fetched_unverified', 'robots_blocked', 'access_required',
+                  'fetch_error', 'not_fetched', 'staged_official_url', 'not_configured')
+        if sum(counts.get(key, 0) for key in states) != len(sources):
+            raise ValueError('Source health states do not account for all targets')
+        for row in rows:
+            if row['direct_state'] == 'staged_official_url' and row.get('direct_url'):
+                raise ValueError('Staged official URLs cannot count as active monitoring')
     if not isinstance(data['opportunities'], list) or not isinstance(history['opportunities'], dict):
         raise ValueError('Invalid opportunity/history containers')
     ids = set()
