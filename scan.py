@@ -21,6 +21,7 @@ import public_bid_pagination as public_pages
 import civicplus_bids
 import robots_policy
 import source_health
+import opportunity_triage
 from submission_deadlines import submission_deadline, submission_deadline_details, explicit_closing_passed
 
 ROOT = pathlib.Path(__file__).resolve().parent
@@ -523,7 +524,9 @@ def main():
   historical=previous.get('opportunities',{}) if isinstance(previous,dict) else {}
   if not isinstance(historical,dict):historical={}
  except (ValueError,OSError):historical={}
+ local_today=NOW.astimezone(ZoneInfo('America/New_York')).date()
  for uid,lead in found.items():
+  lead.update(opportunity_triage.review_assessment(lead, local_today))
   old=historical.get(uid,{})
   old.pop('excluded_reason',None)
   historical[uid]={**old,**lead,'first_seen':old.get('first_seen',NOW.isoformat(timespec='seconds')),'last_seen':NOW.isoformat(timespec='seconds')}
@@ -531,7 +534,9 @@ def main():
  historical=dict(sorted(historical.items(),key=lambda x:x[1].get('last_seen',''),reverse=True)[:1000])
  history_path.parent.mkdir(parents=True,exist_ok=True)
  history_path.write_text(json.dumps({'updated':NOW.isoformat(timespec='seconds'),'opportunities':historical},indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
- published_leads=sorted(found.values(),key=lambda x:x.get('published',''),reverse=True)[:300]
+ # A missed expired notice may remain in history for audit, never in active feed.
+ published_leads=sorted((lead for lead in found.values() if lead['review_priority']!='expired_check'),
+                        key=lambda x:(x['review_score'], x.get('published','')),reverse=True)[:300]
  direct=sum('direct fetched' in x for x in status.values());indirect=sum('indirect RSS ok' in x for x in status.values())
  # Configuration, page fetch, and individual-bid extraction are distinct states.
  direct_names={s['name'] for s in sources if s.get('mode')=='direct_page' and s.get('verified_url') is True and s.get('url')}
