@@ -3,6 +3,7 @@
 Never used on NYSCR, BidNet or PennBid; those require a permitted
 listing/export interface. Do not follow off-host or unrelated links.
 """
+import re
 from urllib.parse import urljoin, urlparse, parse_qs
 
 PUBLIC_LISTINGS = frozenset({
