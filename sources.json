@@ -237,9 +237,10 @@
   {
     "name": "Town of Horseheads",
     "type": "NY municipalities",
-    "url": "",
-    "mode": "discovery_pending",
-    "verified_url": false
+    "url": "https://www.townofhorseheads.gov/Bids.aspx",
+    "mode": "direct_page",
+    "verified_url": true,
+    "discovery_query": "Town of Horseheads bid postings"
   },
   {
     "name": "Village of Horseheads",
@@ -279,9 +280,10 @@
   {
     "name": "City of Ithaca",
     "type": "NY municipalities",
-    "url": "",
-    "mode": "discovery_pending",
-    "verified_url": false
+    "url": "https://www.cityofithacany.gov/Bids.aspx",
+    "mode": "direct_page",
+    "verified_url": true,
+    "discovery_query": "City of Ithaca bid postings"
   },
   {
     "name": "Town of Ithaca",
