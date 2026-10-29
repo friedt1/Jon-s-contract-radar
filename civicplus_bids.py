@@ -17,17 +17,28 @@ CLOSED = frozenset({"closed", "awarded", "cancelled", "canceled"})
 
 
 def individual_url(href, origin):
-    url = urljoin(origin, href)
-    base, parsed = urlparse(origin), urlparse(url)
-    if parsed.scheme != "https" or parsed.hostname != base.hostname:
+    """Only well-formed same-host HTTPS CivicPlus bid notices are fetchable."""
+    if not isinstance(href, str) or not href or any(
+        ord(c) < 33 or ord(c) == 127 or c == "\\\\" for c in href
+    ) or re.search(r"%(?:0[0-9a-f]|1[0-9a-f]|7f)", href, re.I):
         return ""
-    query = parse_qs(parsed.query)
-    if not any(k.lower() == "bidid" and values and values[0].isdigit()
-               for k, values in query.items()):
+    try:
+        url = urljoin(origin, href)
+        base, parsed = urlparse(origin), urlparse(url)
+        if (parsed.scheme != "https" or not parsed.hostname
+                or parsed.hostname != base.hostname
+                or parsed.username is not None or parsed.password is not None
+                or parsed.port not in (None, 443)):
+            return ""
+        query = parse_qs(parsed.query)
+        if not any(k.lower() == "bidid" and values and values[0].isdigit()
+                   for k, values in query.items()):
+            return ""
+        if not parsed.path.lower().endswith("/bids.aspx"):
+            return ""
+        return url.split("#", 1)[0]
+    except ValueError:
         return ""
-    if not parsed.path.lower().endswith("/bids.aspx"):
-        return ""
-    return url.split("#", 1)[0]
 
 
 def status_of(text):
