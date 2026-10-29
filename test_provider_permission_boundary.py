@@ -29,6 +29,7 @@ class ExternalProviderBoundaryTests(unittest.TestCase):
             "https://www.bidnetdirect.com/new-york/solicitations/42",
             "https://www.pennbid.net/bid/21",
             "https://publicpurchase.com/bids/23",
+            "https://procurement.opengov.com/portal/example/projects/88",
         )
         for url in external:
             with self.subTest(url=url):
@@ -73,6 +74,37 @@ class ExternalProviderBoundaryTests(unittest.TestCase):
         self.assertIn("2 external provider links skipped (access required)", status)
         health = source_health.classify(SOURCE, status)
         self.assertEqual(health["external_provider_links_skipped"], 2)
+
+    def test_nested_agency_page_reports_opengov_without_fetching_provider(self):
+        # A county may link to its purchasing page first, then to a hosted
+        # portal. That nested provider must be reported, not crawled.
+        portal = "https://procurement.opengov.com/portal/example/projects/88"
+        calls = []
+
+        def fake_fetch(url, binary=False):
+            calls.append(url)
+            if url == SOURCE["url"]:
+                body = '<a href="/procurement">Current bids</a>'
+            elif url == "https://example.gov/procurement":
+                body = ('<a href="' + portal + '">View Bids</a>'
+                        '<a href="/bid/55">Tree removal bid due 11/19/2026</a>')
+            elif url == "https://example.gov/bid/55":
+                body = '<h1>Tree removal bid due 11/19/2026</h1>'
+            else:
+                raise AssertionError("Unapproved provider was fetched: " + url)
+            return (body.encode() if binary else body, "text/html", url)
+
+        with patch.object(scan, "fetch", side_effect=fake_fetch):
+            leads, status = scan.scan_direct(SOURCE)
+        self.assertNotIn(portal, calls)
+        self.assertEqual(len(leads), 1)
+        self.assertEqual(leads[0]["status"], "unverified")
+        self.assertIn("1 external provider links skipped (access required)", status)
+        self.assertEqual(source_health.classify(SOURCE, status)["external_provider_links_skipped"], 1)
+
+    def test_opengov_lookalike_is_not_treated_as_provider(self):
+        self.assertTrue(scan.provider_link("https://procurement.opengov.com/portal/agency"))
+        self.assertFalse(scan.provider_link("https://opengov.com.evil.example/bids"))
 
     def test_unconnected_portals_never_enter_direct_scan(self):
         for name in scan.UNCONNECTED_PLATFORMS:
