@@ -195,6 +195,31 @@ class CivicPlusTests(unittest.TestCase):
                 self.assertEqual(leads, [])
                 self.assertIn(error, status)
 
+    def test_empty_bidid_listing_does_not_fall_back_to_generic_navigation(self):
+        # A procurement landing page may contain tree-related navigation, but
+        # it is not proof of an individual open solicitation.
+        html = ('<h1>Bid opportunities</h1>'
+                '<a href="/details">Tree removal bid details</a>')
+        fetched = []
+        def fake(url, binary=False):
+            fetched.append(url)
+            body = html if not binary else '<h1>Tree removal bid due 11/19/2026</h1>'
+            return (body.encode() if binary else body, "text/html", url)
+        with patch.object(scan, "fetch", side_effect=fake):
+            leads, status = scan.scan_direct(SOURCE)
+        self.assertEqual(leads, [])
+        self.assertEqual(fetched, [BASE])
+        self.assertIn("0 individual bid records", status)
+        self.assertIn("0 individual bid details fetched", status)
+
+    def test_redirected_civicplus_listing_never_falls_back_to_generic(self):
+        html = '<a href="/bid/777">Tree trimming bid</a>'
+        with patch.object(scan, "fetch", return_value=(
+                html, "text/html", "https://example.gov/")):
+            leads, status = scan.scan_direct(SOURCE)
+        self.assertEqual(leads, [])
+        self.assertIn("redirected away from Bids.aspx", status)
+
     def test_status_and_date_are_not_inferred_from_unrelated_posted_date(self):
         page = scan.parse_html('<a href="/Bids.aspx?bidID=17">Tree removal bid</a>'
                                '<p>Publication Date/Time: 10/29/2026</p>')
