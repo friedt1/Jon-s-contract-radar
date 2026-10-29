@@ -61,7 +61,7 @@ class RobotsPolicyTests(unittest.TestCase):
             with self.assertRaises(robots_policy.RobotsDenied):
                 handler.redirect_request(Request("https://agency.example/Bids.aspx"),
                                          None, 302, "Found", {},
-                                         "https://other.example/private")
+                                         "https://agency.example/private")
 
 
 if __name__ == "__main__":
