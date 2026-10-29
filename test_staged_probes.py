@@ -72,6 +72,30 @@ class StagedProbeTests(unittest.TestCase):
         self.assertFalse(row["individual_notice_retrieved"])
         self.assertFalse(row["direct_monitoring_activated"])
 
+    def test_labeled_outbound_bid_portal_is_access_required_not_adapter_ready(self):
+        other = dict(SOURCE, name="Ontario County")
+        for host in ("procurement.opengov.com", "pennbid.bonfirehub.com",
+                     "www.bidnetdirect.com", "www.publicpurchase.com"):
+            with self.subTest(host=host):
+                html = ('<h1>Purchasing</h1><a href="https://' + host +
+                        '/agency">View Bids & RFPs</a>')
+                row = staged.probe(other, fetch=lambda url: (html, "text/html", url))
+                self.assertEqual(row["state"],
+                                 "listing_reachable_external_provider_access_required")
+                self.assertFalse(row["direct_monitoring_activated"])
+                self.assertFalse(row["individual_notice_retrieved"])
+
+    def test_unrelated_or_lookalike_portal_link_does_not_claim_delegation(self):
+        other = dict(SOURCE, name="Ontario County")
+        for html in (
+            '<h1>Purchasing</h1><a href="https://procurement.opengov.com/">Privacy policy</a>',
+            '<h1>Purchasing</h1><a href="https://opengov.com.evil.example/bids">View Bids</a>',
+        ):
+            with self.subTest(html=html):
+                row = staged.probe(other, fetch=lambda url: (html, "text/html", url))
+                self.assertEqual(row["state"], "official_page_reachable_no_procurement_evidence")
+                self.assertFalse(row["direct_monitoring_activated"])
+
     def test_listing_http_failures_are_not_generic_errors(self):
         for code, state in ((401, "listing_authentication_required"),
                             (403, "listing_access_forbidden"),
