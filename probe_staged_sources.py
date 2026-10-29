@@ -23,7 +23,8 @@ def _error(exc):
     return type(exc).__name__
 
 
-def probe(source, fetch=scan.fetch):
+def probe(source, fetch=scan.fetch, now=None):
+    now = now or dt.datetime.now(dt.timezone.utc)
     url = source["candidate_official_url"]
     result = {
         "name": source["name"],
@@ -51,7 +52,11 @@ def probe(source, fetch=scan.fetch):
         records = civicplus_bids.listing_records(scan.parse_html(html), final)
         result["individual_records_discovered"] = len(records)
         if not records:
-            result["state"] = "listing_reachable_no_bidid_records"
+            listing_text = " ".join(scan.parse_html(html).parts)
+            if re.search(r"\b(?:there are )?no (?:currently )?open bids?(?: postings)?(?: at this time)?\b", listing_text, re.I):
+                result["state"] = "listing_reachable_no_open_bids"
+            else:
+                result["state"] = "listing_reachable_no_bidid_records"
             return result
         # A single existing notice, including an old/closed notice, is enough
         # to test parser shape. It is NEVER a verified open opportunity.
@@ -76,7 +81,18 @@ def probe(source, fetch=scan.fetch):
             return result
         result["individual_notice_retrieved"] = True
         result["sample_notice_url"] = detail_url
-        result["sample_notice_status"] = civicplus_bids.status_of(body)
+        status = civicplus_bids.status_of(body)
+        result["sample_notice_status"] = status
+        detail_due, detail_time = civicplus_bids.detail_closing_of(body)
+        due = detail_due or records[0]["deadline"]
+        due_time = detail_time if detail_due else records[0]["deadline_time"]
+        result["sample_notice_deadline"] = due
+        result["sample_notice_deadline_time"] = due_time
+        result["sample_notice_temporal_evidence"] = (
+            "closed_or_awarded" if status in civicplus_bids.CLOSED else
+            "deadline_passed" if due and civicplus_bids.closing_passed(due, due_time, now) else
+            "deadline_not_passed_unverified" if due else "deadline_unknown"
+        )
         result["state"] = "notice_format_confirmed_terms_review_required"
         return result
     except robots_policy.RobotsDenied:
@@ -90,7 +106,7 @@ def probe(source, fetch=scan.fetch):
 def build(sources, fetch=scan.fetch, now=None):
     staged = [s for s in sources if s.get("mode") == "discovery_pending"
               and s.get("candidate_official_url")]
-    rows = [probe(source, fetch=fetch) for source in staged]
+    rows = [probe(source, fetch=fetch, now=now) for source in staged]
     return {
         "updated": (now or dt.datetime.now(dt.timezone.utc)).isoformat(),
         "configured_targets": len(sources),
@@ -98,6 +114,7 @@ def build(sources, fetch=scan.fetch, now=None):
         "probes": rows,
         "warning": ("Diagnostic only: no source is activated by these probes. "
                     "A fetched page or parsed historical notice is not an open bid. "
+                    "Sample 'Open' labels can be stale; inspect temporal evidence. "
                     "Review publisher terms, individual extraction, and live scan "
                     "before changing discovery_pending."),
     }
