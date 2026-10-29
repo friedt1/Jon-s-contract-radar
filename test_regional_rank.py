@@ -141,6 +141,21 @@ class RegionalRankTests(unittest.TestCase):
         same_day = dict(future, deadline="2026-10-29")
         self.assertIsNone(classify(same_day, today=today, now=local))
 
+    def test_stump_removal_wording_is_relevant_but_never_verified(self):
+        import datetime as dt
+        today = dt.date(2026, 10, 29)
+        for title in ("Tree & Stump Removal", "Tree and Stump Removal",
+                      "Stump Grinding"):
+            with self.subTest(title=title):
+                notice = {"title": title, "url": "https://county.example/bids/20",
+                          "deadline": "2026-11-01"}
+                item = classify(notice, today=today)
+                self.assertIsNotNone(item)
+                self.assertEqual(item["status"], "review required")
+                self.assertEqual(item["deadline_status"], "stated_unverified")
+                self.assertIsNone(classify(dict(notice, deadline="2026-10-28"),
+                                           today=today))
+
     def test_no_invented_notices(self):
         self.assertEqual(build([])["opportunities"],[])
 if __name__ == "__main__": unittest.main()
