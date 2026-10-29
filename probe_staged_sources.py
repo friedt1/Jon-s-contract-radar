@@ -11,6 +11,7 @@ import re
 from urllib.parse import urlparse
 
 import civicplus_bids
+import granicus_bids
 import robots_policy
 import scan
 
@@ -46,6 +47,22 @@ def probe(source, fetch=scan.fetch, now=None):
             result["state"] = "unsupported_listing_content_type"
             return result
         result["listing_retrieved"] = True
+        if source["name"] == "City of Binghamton":
+            # Granicus table rows are discovery evidence only. Never activate
+            # this staged source or publish a notice without permitted detail
+            # extraction and publisher terms review.
+            records = granicus_bids.listing_records(scan.parse_html(html), final, now)
+            result["individual_records_discovered"] = len(records)
+            stale = [row for row in records
+                     if row["publisher_status"] == "open" and row["deadline_passed"]]
+            result["stale_open_badges"] = len(stale)
+            if stale:
+                result["sample_notice_deadline"] = stale[0]["deadline"]
+                result["sample_notice_deadline_time"] = stale[0]["deadline_time"]
+                result["sample_notice_temporal_evidence"] = "deadline_passed"
+            result["state"] = ("listing_reachable_granicus_records_details_unverified"
+                               if records else "listing_reachable_no_granicus_records")
+            return result
         if source["name"] not in civicplus_bids.SOURCES:
             result["state"] = "listing_reachable_adapter_required"
             return result
