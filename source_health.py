@@ -47,6 +47,7 @@ def classify(source, status):
         "activation_gate": source.get("activation_gate", ""),
         "individual_bid_records_found": _number(r"\b(\d+) individual bid records\b", status),
         "detail_fetches_attempted": _number(r"\b(\d+) (?:relevant )?details checked\b", status),
+        "individual_bid_details_fetched": _number(r"\b(\d+) individual bid details fetched\b", status),
         "unverified_candidates": _number(r"\b(\d+) unverified candidates\b", status)
                                   or _number(r"; (\d+) candidates(?:;|$)", status),
         "diagnostic": status,
@@ -62,11 +63,13 @@ def summarize(sources, statuses):
     counts["indirect_robots_blocked"] = sum(row["indirect_state"] == "robots_blocked" for row in rows)
     counts["individual_bid_records_found"] = sum(row["individual_bid_records_found"] for row in rows)
     counts["detail_fetches_attempted"] = sum(row["detail_fetches_attempted"] for row in rows)
+    counts["individual_bid_details_fetched"] = sum(row["individual_bid_details_fetched"] for row in rows)
     counts["unverified_candidates"] = sum(row["unverified_candidates"] for row in rows)
     return {
         "counts": counts,
         "sources": rows,
         "warning": ("A source can be fetched without extracting individual bids. "
-                    "Detail fetch attempts do not establish valid notices. "
+                    "Detail fetch attempts do not establish valid notices; "
+                    "individual details fetched prove retrieval, not open status. "
                     "Staged URLs are not monitored; all leads remain unverified.")
     }

@@ -52,16 +52,19 @@ class CivicPlusDetailTests(unittest.TestCase):
         self.assertFalse(lead["travel_verified"])
         self.assertEqual(lead["status"], "unverified")
         self.assertIn("1 relevant details checked", status)
+        self.assertIn("1 individual bid details fetched", status)
 
     def test_detail_expired_overrides_future_listing(self):
         leads, status = self.run_scan(listing("11/19/2026"), detail(due="10/20/2026"))
         self.assertEqual(leads, [])
         self.assertIn("1 expired", status)
+        self.assertIn("1 individual bid details fetched", status)
 
     def test_detail_awarded_overrides_open_listing(self):
         leads, status = self.run_scan(listing("11/19/2026"), detail(status="Awarded"))
         self.assertEqual(leads, [])
         self.assertIn("1 closed", status)
+        self.assertIn("1 individual bid details fetched", status)
 
     def test_publication_date_is_not_a_deadline(self):
         self.assertEqual(civic.detail_closing_of("Publication Date/Time: 11/19/2026"), ("", ""))
@@ -74,6 +77,13 @@ class CivicPlusDetailTests(unittest.TestCase):
         self.assertEqual(len(leads), 1)
         self.assertIn("Worksite unverified", leads[0]["location"])
 
+    def test_bidid_homepage_without_individual_fields_is_not_proof(self):
+        leads, status = self.run_scan(listing("11/19/2026"),
+                                      '<html><h1>County purchasing homepage</h1></html>')
+        self.assertEqual(leads, [])
+        self.assertIn('0 individual bid details fetched', status)
+        self.assertIn('missing individual bid fields', status)
+
     def test_detail_failure_is_reported_without_publishing_listing_only_lead(self):
         def fake(url, binary=False):
             if binary:
@@ -83,6 +93,7 @@ class CivicPlusDetailTests(unittest.TestCase):
             leads, status = scan.scan_direct(SOURCE)
         self.assertEqual(leads, [])
         self.assertIn("detail errors: OSError", status)
+        self.assertIn("0 individual bid details fetched", status)
 
 
 if __name__ == "__main__":

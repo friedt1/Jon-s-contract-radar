@@ -9,11 +9,13 @@ class SourceHealthTests(unittest.TestCase):
         src = {"name": "County", "mode": "direct_page", "url": "https://county.example/Bids.aspx",
                "verified_url": True}
         row = source_health.classify(src, "direct fetched; 1 listing pages; 4 individual bid records; "
-                                    "3 relevant details checked; 0 unverified candidates; "
+                                    "3 relevant details checked; 2 individual bid details fetched; "
+                                    "0 unverified candidates; "
                                     "indirect RSS error: RobotsDenied")
         self.assertEqual(row["direct_state"], "fetched_unverified")
         self.assertEqual(row["individual_bid_records_found"], 4)
         self.assertEqual(row["detail_fetches_attempted"], 3)
+        self.assertEqual(row["individual_bid_details_fetched"], 2)
         self.assertEqual(row["unverified_candidates"], 0)
         self.assertEqual(row["indirect_state"], "robots_blocked")
 
@@ -43,6 +45,7 @@ class SourceHealthTests(unittest.TestCase):
         self.assertEqual(summary["counts"]["robots_blocked"], 1)
         self.assertEqual(summary["counts"]["access_required"], 1)
         self.assertEqual(summary["counts"]["not_configured"], 1)
+        self.assertEqual(summary["counts"]["individual_bid_details_fetched"], 0)
 
     def test_failed_fetch_and_missing_status_are_visible(self):
         src = {"name": "County", "mode": "direct_page", "url": "https://county.example/bids",
