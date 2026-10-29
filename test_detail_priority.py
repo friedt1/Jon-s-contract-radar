@@ -47,7 +47,8 @@ class DetailPriorityTests(unittest.TestCase):
         self.assertEqual(fetched[0], NOTICE)
         self.assertEqual([lead["url"] for lead in leads], [NOTICE])
         self.assertEqual(leads[0]["status"], "unverified")
-        self.assertIn("18 details checked", status)
+        self.assertEqual(fetched, [NOTICE])
+        self.assertIn("1 details checked", status)
 
     def test_nested_individual_notice_preempts_unrelated_siblings(self):
         listing = '<a href="/procurement">Current bids</a>' + NAV
