@@ -455,7 +455,10 @@ def scan_direct(src):
   try:
    blob,kind,final_url=fetch(url,binary=True)
    # Redirects must not turn a permitted source link into an untrusted host.
-   if not redirect_preserves_notice(url,final_url) or excluded_url(final_url):continue
+   if not redirect_preserves_notice(url,final_url):
+    errors.append('unsafe or changed notice redirect')
+    continue
+   if excluded_url(final_url):continue
    if 'pdf' in kind or url.lower().split('?')[0].endswith('.pdf'):
     if pdfs>=MAX_PDF:continue
     pdfs+=1;text=pdf_text(blob)
