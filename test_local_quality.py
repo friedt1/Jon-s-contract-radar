@@ -107,6 +107,17 @@ class QualityTests(unittest.TestCase):
         self.assertEqual(feed['leads'][0]['lead_type'], 'service_request')
         self.assertEqual(history['leads'][feed['leads'][0]['id']]['lead_type'], 'service_request')
 
+    def test_news_first_does_not_duplicate_later_customer_request(self):
+        rss = ('<rss><channel><item><title>' + BODY + '</title>'
+               '<link>https://news.example/duplicate-story</link>'
+               '<pubDate>Tue, 27 Oct 2026 12:00:00 GMT</pubDate>'
+               '</item></channel></rss>')
+        feed, history = assemble(sources=[NEWS, SOCIAL],
+                                 getter=lambda url: rss if url == NEWS['url'] else timeline(BODY))
+        self.assertEqual(len(feed['leads']), 1)
+        self.assertEqual(feed['leads'][0]['lead_type'], 'service_request')
+        self.assertEqual(feed['metrics']['news_context'], 0)
+
     def test_same_generic_title_does_not_merge_different_customers(self):
         # Two different local customers can use the same headline on one day.
         # They must not collapse into a single lead merely because the
