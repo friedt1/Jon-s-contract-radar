@@ -12,6 +12,7 @@ import math
 from zoneinfo import ZoneInfo
 
 from notice_identity import canonical_url
+import civicplus_bids
 
 KEYWORDS = ("debris removal", "disaster debris", "emergency tree", "vegetation management",
             "right-of-way", "tree removal", "land clearing", "storm cleanup",
@@ -47,8 +48,13 @@ def _closed_by_publisher(notice):
     return False
 
 
-def _deadline_state(notice, today):
-    """A date is not evidence that a bid is open; reject only known past dates."""
+def _deadline_state(notice, today, now=None):
+    """A date never verifies an open bid; exclude known elapsed NY/PA cutoffs.
+
+    A same-day clock is only actionable when an aware timestamp is available.
+    Unknown or malformed clocks and explicitly non-Eastern timezones remain
+    unverified rather than being interpreted as an Eastern submission cutoff.
+    """
     raw = notice.get("deadline")
     if raw in (None, ""):
         return "unknown"
@@ -58,17 +64,34 @@ def _deadline_state(notice, today):
         due = dt.date.fromisoformat(raw)
     except ValueError:
         return "invalid"
-    return "expired" if due < today else "stated_unverified"
+    if due < today:
+        return "expired"
+    timezone = str(notice.get("deadline_timezone") or "").strip().lower()
+    eastern = not timezone or "eastern" in timezone or "new_york" in timezone
+    if (due == today and eastern and isinstance(now, dt.datetime)
+            and now.tzinfo is not None and now.utcoffset() is not None
+            and now.astimezone(ZoneInfo("America/New_York")).date() == today
+            and civicplus_bids.closing_passed(
+                due.isoformat(), str(notice.get("deadline_time") or ""), now)):
+        return "expired"
+    return "stated_unverified"
 
 
-def classify(notice, today=None):
+def classify(notice, today=None, now=None):
     if not isinstance(notice, dict):
         return None
-    # NY/PA bid dates are assessed using the local calendar, not UTC midnight.
-    today = today or dt.datetime.now(ZoneInfo("America/New_York")).date()
+    # Production scans check explicit same-day cutoffs using an aware Eastern
+    # clock. Tests supplying a date alone do not silently invent a clock.
+    if now is None and today is None:
+        now = dt.datetime.now(ZoneInfo("America/New_York"))
+    if today is None:
+        today = (now.astimezone(ZoneInfo("America/New_York")).date()
+                 if isinstance(now, dt.datetime) and now.tzinfo is not None
+                 and now.utcoffset() is not None
+                 else dt.datetime.now(ZoneInfo("America/New_York")).date())
     if _closed_by_publisher(notice):
         return None
-    deadline_state = _deadline_state(notice, today)
+    deadline_state = _deadline_state(notice, today, now=now)
     if deadline_state == "expired":
         return None
     title = str(notice.get("title") or "")
@@ -109,12 +132,12 @@ def classify(notice, today=None):
     result["status"] = "review required"
     return result
 
-def build(notices, today=None):
+def build(notices, today=None, now=None):
     # One public notice may appear through several marketing/tracking URLs.
     # Keep substantive query keys (including bid IDs) so distinct bids survive.
     by_url = {}
     for notice in notices:
-        item = classify(notice, today=today)
+        item = classify(notice, today=today, now=now)
         if item is None:
             continue
         key = item["url"]
