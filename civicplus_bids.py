@@ -12,7 +12,8 @@ from zoneinfo import ZoneInfo
 
 SOURCES = frozenset({"Chemung County bids", "Steuben County bids",
                      "Town of Horseheads", "City of Ithaca",
-                     "Cortland County", "Yates County", "Seneca County"})
+                     "Cortland County", "Yates County", "Seneca County",
+                     "Bradford County PA"})
 MAX_DETAILS = 36
 DATE = re.compile(r"\b(\d{1,2}/\d{1,2}/\d{4})(?:\s+(\d{1,2}:\d{2}\s*[AP]M))?\b", re.I)
 STATUS = re.compile(r"\bStatus\s*:\s*(?:Closes\s*:\s*)?(Open|Closed|Awarded|Cancelled|Canceled)\b", re.I)
@@ -87,7 +88,7 @@ def detail_closing_of(text):
 def closing_passed(date, time, now):
     """Conservatively reject a known NY CivicPlus deadline after local closing time.
 
-    The configured CivicPlus targets are New York agencies; use Eastern local
+    The configured CivicPlus targets are NY/PA agencies; use Eastern local
     time including daylight saving. If a closing time is missing or malformed,
     do not invent one: the same-day notice remains unverified.
     """

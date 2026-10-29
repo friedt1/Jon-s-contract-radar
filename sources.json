@@ -197,7 +197,9 @@
     "type": "PA counties",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.bradfordcountypa.gov/bids.aspx",
+    "activation_gate": "Official Bradford County PA CivicPlus bid postings page confirmed; currently reports no open bids. Review robots/terms and verify live same-host individual bidID detail extraction before activation."
   },
   {
     "name": "Tioga County PA",
@@ -211,7 +213,9 @@
     "type": "PA counties",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.susqco.com/departments/county-commissioners/current-bid-specifications",
+    "activation_gate": "Official county current bid specifications page confirmed. Distinguish service procurement from Municibid surplus auctions; verify robots/terms and isolate individual current solicitations before activation."
   },
   {
     "name": "Sullivan County PA",
