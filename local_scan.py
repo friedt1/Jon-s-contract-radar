@@ -190,8 +190,16 @@ def candidate(record, source, now, diagnostics=None):
     title = redact(title or body[:160]); body = redact(body)
     age = (now - published).days
     score = min(100, (65 if is_request else 10) + (15 if age <= 7 else 5) + (10 if customer != 'unspecified' else 0) + min(10, 5 * len(services)))
-    # Same title, town and day cross-posts are intentionally conservative matches.
-    fingerprint = hashlib.sha256((re.sub(r'\W+', ' ', title.lower()).strip() + '|' + place + '|' + published.date().isoformat()).encode()).hexdigest()[:20]
+    # A generic title can be shared by unrelated homeowners in the same town
+    # on the same day. Only merge cross-source posts when their sanitized
+    # title AND full request text match; same-URL updates still match via URL.
+    # This intentionally favors missing a cross-post over losing a real job.
+    normalized_title = re.sub(r'\W+', ' ', title.lower()).strip()
+    normalized_body = re.sub(r'\W+', ' ', body.lower()).strip()
+    fingerprint = hashlib.sha256(
+        (normalized_title + '|' + normalized_body + '|' + place + '|' +
+         published.date().isoformat()).encode()
+    ).hexdigest()[:20]
     return {'id': hashlib.sha256(url.encode()).hexdigest()[:20], 'fingerprint': fingerprint,
             'title': title[:220], 'summary': body[:550], 'url': url, 'source': source['name'],
             'evidence_snippet': evidence[:700], 'duplicate_key': fingerprint,
