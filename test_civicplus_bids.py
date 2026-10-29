@@ -238,5 +238,44 @@ class CivicPlusTests(unittest.TestCase):
         self.assertEqual(rows[0]["deadline"], "")
 
 
+    def test_withdrawn_and_expired_publisher_statuses_are_not_review_candidates(self):
+        # Synthetic Erie-style tree/stump notice: a future date does not
+        # override an explicit publisher withdrawal or expiry.
+        for state in ("Withdrawn", "Expired"):
+            with self.subTest(state=state):
+                self.assertEqual(civic.status_of("Status: " + state), state.lower())
+                html = card(81, "Tree and stump removal", state, "11/19/2026")
+                records = civic.listing_records(scan.parse_html(html), BASE)
+                self.assertEqual(records[0]["open_status"], state.lower())
+                self.assertEqual(records[0]["deadline"], "2026-11-19")
+                with patch.object(scan, "fetch", return_value=(html, "text/html", BASE)):
+                    leads, status = scan.scan_direct(SOURCE)
+                self.assertEqual(leads, [])
+                self.assertIn("1 closed", status)
+
+                listing = card(82, "Tree and stump removal", "Open", "11/19/2026")
+                def fake(url, binary=False):
+                    body = ("<p>Status: " + state +
+                            "</p><p>Description: Tree and stump removal.</p>"
+                            "<p>Closing Date/Time: 11/19/2026 1:30 PM</p>") if binary else listing
+                    return (body.encode() if binary else body, "text/html", url)
+                with patch.object(scan, "fetch", side_effect=fake):
+                    leads, status = scan.scan_direct(SOURCE)
+                self.assertEqual(leads, [])
+                self.assertIn("1 closed", status)
+
+    def test_closed_question_period_is_not_a_closed_solicitation(self):
+        for label in ("Closed for questions", "Closed to inquiries",
+                      "Closed for RFIs", "Closed for addenda"):
+            with self.subTest(label=label):
+                self.assertEqual(civic.status_of("Status: " + label), "unknown")
+        self.assertEqual(civic.status_of("Status: Reopened"), "reopened")
+        self.assertEqual(civic.status_of("Status: Closed"), "closed")
+        # The Owego demolition regression remains unrelated and cannot enter
+        # a tree-work feed merely because its question period is closed.
+        self.assertFalse(scan.category("Owego building demolition and site restoration"))
+
+
+
 if __name__ == "__main__":
     unittest.main()
