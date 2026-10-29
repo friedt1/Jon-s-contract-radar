@@ -53,6 +53,42 @@ class OpportunityTriageTests(unittest.TestCase):
         self.assertNotEqual(review_assessment(erie, self.TODAY)["review_priority"], "high")
         self.assertNotEqual(review_assessment(owego, self.TODAY)["review_priority"], "high")
 
+    def test_same_day_cutoff_is_excluded_after_eastern_deadline(self):
+        # Erie tree/stump is a historical regression, NOT a verified lead.
+        erie = {"category": "Tree removal", "lead_type": "individual county bid candidate",
+                "deadline": "2026-10-29", "deadline_time": "9:00 AM",
+                "open_status": "listing_open", "status": "unverified"}
+        after = dt.datetime(2026, 10, 29, 14, 37, tzinfo=dt.timezone.utc)
+        before = dt.datetime(2026, 10, 29, 12, 37, tzinfo=dt.timezone.utc)
+        self.assertEqual(review_assessment(erie, self.TODAY, now=after)["review_priority"],
+                         "expired_check")
+        self.assertNotEqual(review_assessment(erie, self.TODAY, now=before)["review_priority"],
+                            "expired_check")
+        self.assertEqual(erie["status"], "unverified")
+
+    def test_unknown_or_malformed_same_day_time_is_not_invented(self):
+        after = dt.datetime(2026, 10, 29, 14, 37, tzinfo=dt.timezone.utc)
+        lead = {"category": "Tree removal", "lead_type": "direct detail candidate",
+                "deadline": "2026-10-29", "status": "unverified"}
+        self.assertNotEqual(review_assessment(lead, self.TODAY, now=after)["review_priority"],
+                            "expired_check")
+        lead["deadline_time"] = "time to be announced"
+        self.assertNotEqual(review_assessment(lead, self.TODAY, now=after)["review_priority"],
+                            "expired_check")
+        lead["deadline_time"] = "9:00 AM"
+        naive = dt.datetime(2026, 10, 29, 14, 37)
+        self.assertNotEqual(review_assessment(lead, self.TODAY, now=naive)["review_priority"],
+                            "expired_check")
+
+    def test_closed_or_awarded_status_overrides_future_deadline(self):
+        lead = {"category": "Tree removal", "lead_type": "individual county bid candidate",
+                "deadline": "2026-11-13", "status": "unverified",
+                "open_status": "detail_listed_awarded"}
+        result = review_assessment(lead, self.TODAY)
+        self.assertEqual(result["review_priority"], "expired_check")
+        self.assertEqual(result["review_score"], 0)
+        self.assertIn("closed/awarded/cancelled", result["review_factors"][-1])
+
     def test_invalid_dates_and_unknown_categories_are_safe(self):
         lead = {"category": "Unrelated", "lead_type": "unknown", "deadline": "not-a-date"}
         self.assertEqual(review_assessment(lead, self.TODAY)["review_score"], 0)
