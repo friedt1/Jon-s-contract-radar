@@ -7,11 +7,11 @@ import re
 
 _CLOSED = re.compile(
     r"^(?:closed|awarded|cancelled|canceled|withdrawn|expired)"
-    r"(?:$|[\\s:;,()\\-–—/])", re.I
+    r"(?:$|[\s:;,()\-–—/])", re.I
 )
 _QUESTION_ONLY = re.compile(
-    r"^closed\\s+(?:for|to)\\s+(?:questions?|inquir(?:y|ies)|"
-    r"clarifications?|rfis?|addenda)\\b", re.I
+    r"^closed\s+(?:for|to)\s+(?:questions?|inquir(?:y|ies)|"
+    r"clarifications?|rfis?|addenda)\b", re.I
 )
 
 
