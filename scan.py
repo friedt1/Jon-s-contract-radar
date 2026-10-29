@@ -246,7 +246,7 @@ def scan_civicplus(src, listing_pages, page_errors):
   # The individual notice takes precedence over a stale listing date.
   due = detail_due or row['deadline']
   due_time = detail_time if detail_due else row['deadline_time']
-  if due and due < today:
+  if civicplus_bids.closing_passed(due, due_time, NOW):
    expired_count += 1
    continue
   scope = detail_scope or row['description']
