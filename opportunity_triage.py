@@ -8,6 +8,7 @@ import datetime as dt
 
 import civicplus_bids
 from submission_deadlines import eastern_deadline_timezone
+from publisher_status import publisher_closed
 
 CATEGORY_POINTS = {
     "Tree removal": 30,
@@ -49,12 +50,7 @@ def review_assessment(lead, today=None, now=None):
         parsed = None
     # Do not prioritize a notice that the publisher explicitly marks closed,
     # even if its original deadline was later extended or is still in the future.
-    closed_states = {"closed", "awarded", "cancelled", "canceled",
-                     "detail_listed_closed", "listing_closed",
-                     "detail_listed_awarded", "listing_awarded",
-                     "detail_listed_cancelled", "listing_cancelled"}
-    if any(str(lead.get(key, "")).strip().lower() in closed_states
-           for key in ("status", "open_status")):
+    if publisher_closed(lead):
         return {
             "review_score": 0, "review_priority": "expired_check",
             "review_factors": factors + ["publisher indicates closed/awarded/cancelled; exclude from active review"],
