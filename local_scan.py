@@ -78,15 +78,28 @@ def canonical(url):
     # Never expose contact information or a residential address through
     # query parameters even when display text has been sanitized.
     private_keys = re.compile(r'(?:^|[_-])(?:email|e-mail|phone|mobile|cell|address|street|contact|token|auth|api_key)(?:$|[_-])', re.I)
+    # A URL may be percent-encoded more than once. Checking only the first
+    # decoding pass misses contacts such as %252B16075550199 (a double-encoded
+    # phone number). Reject rather than publishing an opaque private link.
+    def decoded_forms(value):
+        for _ in range(4):
+            yield value
+            decoded = up.unquote(value)
+            if decoded == value:
+                break
+            value = decoded
+
     for key, value in query:
-        if private_keys.search(key) or redact_public_text(value) != value:
+        if any(private_keys.search(form) for form in decoded_forms(key)):
+            return ''
+        if any(redact_public_text(form) != form for form in decoded_forms(value)):
             return ''
     # Query filtering alone is insufficient: some public permalinks embed
-    # contact details or residential addresses in the path itself. Check the
-    # decoded path before displaying or retaining the original source URL.
-    decoded_path = up.unquote(p.path)
-    if redact_public_text(decoded_path.replace('-', ' ')) != decoded_path.replace('-', ' '):
-        return ''
+    # contact details or residential addresses in the path itself.
+    for decoded_path in decoded_forms(p.path):
+        check = decoded_path.replace('-', ' ')
+        if redact_public_text(check) != check:
+            return ''
     return up.urlunsplit(('https', p.netloc.lower(), p.path.rstrip('/') or '/', up.urlencode(sorted(query)), ''))
 
 
