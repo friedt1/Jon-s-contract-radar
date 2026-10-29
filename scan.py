@@ -187,7 +187,6 @@ def scan_civicplus(src, listing_pages, page_errors):
  errors = []
  closed_count = 0
  expired_count = 0
- today = NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat()
  # Prioritize listing matches, but also inspect generic bid titles: the tree-work
  # scope may exist only on the individual detail page. Keep the 36-detail cap.
  prioritized = sorted(records.values(), key=lambda row:
