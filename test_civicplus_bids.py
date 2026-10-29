@@ -164,6 +164,23 @@ class CivicPlusTests(unittest.TestCase):
                 self.assertEqual(leads, [])
                 self.assertIn("detail redirected away from original bid", status)
 
+    def test_staged_counties_reject_stale_open_badges(self):
+        # Synthetic fixtures resemble a common source inconsistency: a listing
+        # still says Open even though its closing date has passed.
+        for name, url, due in (
+            ("Cortland County", "https://www.cortlandcountyny.gov/Bids.aspx", "10/22/2026"),
+            ("Yates County", "https://www.yatescountyny.gov/bids.aspx", "10/26/2026"),
+        ):
+            with self.subTest(name=name):
+                self.assertIn(name, civic.SOURCES)
+                html = card(77, "Tree removal bid", "Open", due)
+                def fake(target, binary=False):
+                    return (html.encode() if binary else html, "text/html", target)
+                with patch.object(scan, "fetch", side_effect=fake):
+                    leads, status = scan.scan_direct({"name": name, "url": url, "mode": "direct_page"})
+                self.assertEqual(leads, [])
+                self.assertIn("1 expired", status)
+
     def test_non_html_and_empty_individual_details_are_not_candidates(self):
         html = card(33, "Tree removal bid", "Open", "11/19/2026")
         for payload, kind, error in ((b"%PDF-1.4", "application/pdf", "unsupported detail content"),
