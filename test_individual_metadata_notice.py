@@ -30,7 +30,10 @@ class IndividualMetadataTests(unittest.TestCase):
 
  def test_metadata_table_is_one_unverified_individual_bid(self):
   leads,status=self.scan_fixture(TABLE_NOTICE)
-  self.assertEqual(len(leads),1)
+  body='County bid detail Bid Number: 123 Description: Hazardous tree removal along county roads Closing Date/Time: 11/19/2026 10:00 AM Status: Open'
+  self.assertTrue(scan.individual_metadata_notice(body,NOTICE))
+  self.assertIn('tree removal',scan.metadata_description(body))
+  self.assertEqual(len(leads),1,msg=status)
   self.assertEqual(leads[0]['url'],NOTICE)
   self.assertEqual(leads[0]['deadline'],'2026-11-19')
   self.assertEqual(leads[0]['status'],'unverified')
