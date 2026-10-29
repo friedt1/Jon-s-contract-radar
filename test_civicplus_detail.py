@@ -74,18 +74,15 @@ class CivicPlusDetailTests(unittest.TestCase):
         self.assertEqual(len(leads), 1)
         self.assertIn("Worksite unverified", leads[0]["location"])
 
-    def test_unknown_deadline_and_detail_failure_remain_unverified(self):
+    def test_detail_failure_is_reported_without_publishing_listing_only_lead(self):
         def fake(url, binary=False):
             if binary:
                 raise OSError("network failure")
             return listing(due=""), "text/html", url
         with patch.object(scan, "fetch", side_effect=fake):
             leads, status = scan.scan_direct(SOURCE)
-        self.assertEqual(len(leads), 1)
-        self.assertEqual(leads[0]["deadline"], "")
-        self.assertEqual(leads[0]["deadline_source"], "unknown")
-        self.assertEqual(leads[0]["status"], "unverified")
-        self.assertIn("detail errors", status)
+        self.assertEqual(leads, [])
+        self.assertIn("detail errors: OSError", status)
 
 
 if __name__ == "__main__":
