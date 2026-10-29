@@ -20,6 +20,7 @@ import local_bid_rss
 import public_bid_pagination as public_pages
 import civicplus_bids
 import robots_policy
+import source_health
 
 ROOT = pathlib.Path(__file__).resolve().parent
 SOURCES = ROOT / 'sources.json'
@@ -432,7 +433,7 @@ def main():
   'BidNet Direct':'not connected: individual bid listing interface/permission not established',
   'PennBid':'not connected: individual bid listing interface/permission not established',
  }
- data={'integration_status':integration_status,'source_coverage':coverage,'updated':NOW.isoformat(timespec='seconds'),'opportunities':published_leads,'source_status':status,'coverage_note':f'{len(sources)} named targets; {direct} direct public home pages fetched, with bounded detail/PDF checks; {indirect} indirect news searches succeeded. Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. {coverage['pending_direct']} targets do not have verified direct integrations. SAM.gov deferred.'}
+ data={'integration_status':integration_status,'source_coverage':coverage,'source_health':source_health.summarize(sources,status),'updated':NOW.isoformat(timespec='seconds'),'opportunities':published_leads,'source_status':status,'coverage_note':f'{len(sources)} named targets; {direct} direct public home pages fetched, with bounded detail/PDF checks; {indirect} indirect news searches succeeded. Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. {coverage['pending_direct']} targets do not have verified direct integrations. SAM.gov deferred.'}
  OUT.parent.mkdir(parents=True,exist_ok=True);OUT.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
  print(f'Targets {len(sources)}, direct fetched {direct}, indirect successful {indirect}, candidates {len(found)}')
 if __name__=='__main__':main()
