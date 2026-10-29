@@ -187,7 +187,6 @@ def scan_civicplus(src, listing_pages, page_errors):
  errors = []
  closed_count = 0
  expired_count = 0
- today = NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat()
  # Prioritize listing matches, but also inspect generic bid titles: the tree-work
  # scope may exist only on the individual detail page. Keep the 36-detail cap.
  prioritized = sorted(records.values(), key=lambda row:
@@ -246,7 +245,7 @@ def scan_civicplus(src, listing_pages, page_errors):
   # The individual notice takes precedence over a stale listing date.
   due = detail_due or row['deadline']
   due_time = detail_time if detail_due else row['deadline_time']
-  if due and due < today:
+  if civicplus_bids.closing_passed(due, due_time, NOW):
    expired_count += 1
    continue
   scope = detail_scope or row['description']

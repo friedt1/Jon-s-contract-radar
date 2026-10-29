@@ -8,6 +8,7 @@ deadline, bid documents and travel time have been independently checked.
 import datetime as dt
 import re
 from urllib.parse import parse_qs, urljoin, urlparse
+from zoneinfo import ZoneInfo
 
 SOURCES = frozenset({"Chemung County bids", "Steuben County bids",
                      "Town of Horseheads", "City of Ithaca",
@@ -80,6 +81,29 @@ def detail_closing_of(text):
     except ValueError:
         return "", ""
     return due, (match.group(2) or "").strip()
+
+
+
+def closing_passed(date, time, now):
+    """Conservatively reject a known NY CivicPlus deadline after local closing time.
+
+    The configured CivicPlus targets are New York agencies; use Eastern local
+    time including daylight saving. If a closing time is missing or malformed,
+    do not invent one: the same-day notice remains unverified.
+    """
+    if not date:
+        return False
+    local = now.astimezone(ZoneInfo("America/New_York"))
+    today = local.date().isoformat()
+    if date < today:
+        return True
+    if date > today or not time:
+        return False
+    try:
+        closing = dt.datetime.strptime(" ".join(time.upper().split()), "%I:%M %p").time()
+    except ValueError:
+        return False
+    return local.time().replace(tzinfo=None) >= closing
 
 
 def detail_description(text):
