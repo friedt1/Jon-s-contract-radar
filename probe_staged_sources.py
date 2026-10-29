@@ -70,8 +70,8 @@ def probe(source, fetch=scan.fetch):
             result["state"] = "individual_notice_redirect_or_type_mismatch"
             return result
         body = " ".join(scan.parse_html(blob.decode("utf-8", "replace")).parts)
-        if (not re.search(r"\\bBid\\s+(?:Number|Title)\\s*:", body, re.I)
-                or not re.search(r"\\b(?:Description|Closing\\s+Date/Time|Status)\\s*:", body, re.I)):
+        if (not re.search(r"\bBid\s+(?:Number|Title)\s*:", body, re.I)
+                or not re.search(r"\b(?:Description|Closing\s+Date/Time|Status)\s*:", body, re.I)):
             result["state"] = "individual_notice_fields_missing"
             return result
         result["individual_notice_retrieved"] = True
