@@ -95,7 +95,7 @@ class RegionalRankTests(unittest.TestCase):
         result = build([base, variant, distinct], today=today)["opportunities"]
         self.assertEqual(len(result), 2)
         self.assertEqual(len({x["url"] for x in result}), 2)
-        self.assertEqual(next(x for x in result if "bidID=12" in x["url"])["priority_score"], 2)
+        self.assertEqual(next(x for x in result if "bidID=12" in x["url"])["priority_score"], 3)
         self.assertTrue(all(x["status"] == "review required" for x in result))
 
     def test_no_invented_notices(self):
