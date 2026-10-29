@@ -159,6 +159,7 @@ def scan_civicplus(src, listing_pages, page_errors):
    records.setdefault(row['url'], row)
  found = {}
  checked = 0
+ individual_details_fetched = 0
  errors = []
  closed_count = 0
  expired_count = 0
@@ -200,6 +201,9 @@ def scan_civicplus(src, listing_pages, page_errors):
    if not body:
     errors.append('empty detail content')
     continue
+   # Count only a successfully fetched, non-empty notice whose bidID still
+   # matches the listing. Attempts and homepage reads are not bid details.
+   individual_details_fetched += 1
    detail_status = civicplus_bids.status_of(body)
    detail_due, detail_time = civicplus_bids.detail_closing_of(body)
    detail_scope = civicplus_bids.detail_description(body)
@@ -244,6 +248,7 @@ def scan_civicplus(src, listing_pages, page_errors):
    })
  status = (f'direct fetched; {len(listing_pages)} listing pages; '
            f'{len(records)} individual bid records; {checked} relevant details checked; '
+           f'{individual_details_fetched} individual bid details fetched; '
            f'{len(found)} unverified candidates; {closed_count} closed; {expired_count} expired')
  if errors:
   status += f'; {len(errors)} detail errors: ' + ','.join(sorted(set(errors)))
