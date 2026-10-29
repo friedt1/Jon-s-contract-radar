@@ -19,6 +19,36 @@ class SafeDirectLinksTests(unittest.TestCase):
                          "https://example.gov/bids?page=2")
         self.assertEqual(scan.safe_detail_url(BASE, "https://pennbid.net/bid/123"), "")
 
+    def test_https_listing_never_downgrades_to_http_detail(self):
+        # The redirect handler already rejects HTTPS-to-HTTP redirects.
+        # An explicit same-host link must not bypass that boundary.
+        self.assertEqual(scan.safe_detail_url(BASE, "http://example.gov/bid/42"), "")
+        self.assertFalse(scan.allowed_link("http://example.gov/bid/42", BASE))
+        self.assertEqual(scan.safe_detail_url(BASE, "/bid/42"),
+                         "https://example.gov/bid/42")
+        # An HTTP-origin listing may still link to HTTPS.
+        self.assertEqual(scan.safe_detail_url("http://example.gov/bids",
+                                              "https://example.gov/bid/42"),
+                         "https://example.gov/bid/42")
+
+    def test_https_downgrade_does_not_consume_detail_budget(self):
+        listing = ('<a href="http://example.gov/bid/1">Tree removal bid due 11/19/2026</a>'
+                   '<a href="/bid/2">Tree removal bid due 11/19/2026</a>')
+        detail = "<h1>Tree removal bid due 11/19/2026</h1>"
+        fetched = []
+
+        def fake_fetch(url, binary=False):
+            fetched.append(url)
+            body = listing if url == BASE else detail
+            return (body.encode() if binary else body, "text/html", url)
+
+        with patch.object(scan, "fetch", side_effect=fake_fetch):
+            leads, status = scan.scan_direct(SOURCE)
+        self.assertEqual(fetched, [BASE, "https://example.gov/bid/2"])
+        self.assertEqual(len(leads), 1)
+        self.assertEqual(leads[0]["status"], "unverified")
+        self.assertIn("1 details checked", status)
+
     def test_rejects_malformed_untrusted_or_credentialed_links(self):
         invalid = [
             "", " ", "/bid/1\n", "/bid/1\\extra", "/bid/%0aevil",
