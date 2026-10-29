@@ -107,6 +107,36 @@ class QualityTests(unittest.TestCase):
         self.assertEqual(feed['leads'][0]['lead_type'], 'service_request')
         self.assertEqual(history['leads'][feed['leads'][0]['id']]['lead_type'], 'service_request')
 
+    def test_same_generic_title_does_not_merge_different_customers(self):
+        # Two different local customers can use the same headline on one day.
+        # They must not collapse into a single lead merely because the
+        # headline, town, and posting date match.
+        common = 'Looking for tree removal in Elmira NY'
+        entries = [
+            {'title': common, 'body': 'Need a quote for a fallen maple at my house in Elmira NY.',
+             'url': 'https://social.example/@first/101', 'published': '2026-10-27T12:00:00Z'},
+            {'title': common, 'body': 'Need a quote for two tall pines in my yard in Elmira NY.',
+             'url': 'https://social.example/@second/102', 'published': '2026-10-27T12:00:00Z'},
+        ]
+        with patch.object(radar, 'records', return_value=iter(entries)):
+            feed, history = radar.assemble([SOCIAL], {'leads': {}}, NOW,
+                                           getter=lambda _: '[]', pause=lambda _: None)
+        self.assertEqual(len(feed['leads']), 2)
+        self.assertEqual(len(history['leads']), 2)
+        self.assertEqual(len({lead['duplicate_key'] for lead in feed['leads']}), 2)
+
+    def test_legacy_fingerprint_still_matches_stable_permalink(self):
+        # Existing history must keep its original ID and first-seen date.
+        _, previous = assemble()
+        prior = next(iter(previous['leads'].values()))
+        prior['fingerprint'] = 'legacy-title-only-fingerprint'
+        prior['duplicate_key'] = prior['fingerprint']
+        feed, history = assemble(previous=previous, now=NOW + dt.timedelta(hours=1))
+        self.assertEqual(len(feed['leads']), 1)
+        self.assertEqual(feed['leads'][0]['id'], prior['id'])
+        self.assertEqual(feed['leads'][0]['first_seen'], prior['first_seen'])
+        self.assertEqual(len(history['leads']), 1)
+
     def test_metrics_explain_zero_and_keep_articles_separate(self):
         feed, _ = assemble(getter=lambda _: timeline('Tree removal in Elmira', 'We offer tree removal in Elmira', 'Need tree removal in Texas', 'Need a plumber in Elmira'))
         status = feed['source_status'][SOCIAL['name']]
