@@ -41,6 +41,8 @@ class SourceHealthTests(unittest.TestCase):
         }
         summary = source_health.summarize(sources, status)
         self.assertEqual(summary["counts"]["configured_direct"], 2)
+        self.assertEqual(summary["counts"]["configured_access_required"], 1)
+        self.assertEqual(summary["counts"]["configured_fetch_targets"], 1)
         self.assertEqual(summary["counts"]["fetched_unverified"], 0)
         self.assertEqual(summary["counts"]["robots_blocked"], 1)
         self.assertEqual(summary["counts"]["access_required"], 1)
