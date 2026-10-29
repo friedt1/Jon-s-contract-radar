@@ -269,7 +269,9 @@
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.villageofhorseheads.gov/Bids.aspx",
+    "activation_gate": "Official CivicPlus bid-postings page confirmed; check robots, publisher terms, same-host bidID detail extraction, and stale 'Open' labels before activating."
   },
   {
     "name": "Town of Big Flats",
@@ -290,7 +292,9 @@
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://cityofcorningny.gov/index.asp?SEC=07CB95A9-0A8E-4D9D-B22C-7B8C866B36E5",
+    "activation_gate": "Official City General Notices page includes RFQ postings but is not a dedicated bid feed; identify individual notice adapter, review robots/terms and exclude old RFQs before activation."
   },
   {
     "name": "Town of Corning",
@@ -375,7 +379,9 @@
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.cortlandny.gov/Bids.aspx",
+    "activation_gate": "Official CivicPlus Bids & RFPs page confirmed; currently may show no open postings. Check robots, publisher terms, and individual bidID extraction before activating."
   },
   {
     "name": "Village of Penn Yan",
