@@ -196,6 +196,38 @@ def safe_detail_url(origin, href):
  except ValueError:
   return ''
 
+
+def redirect_preserves_notice(requested, final):
+ """Reject same-host redirects that silently substitute a different bid.
+
+ A successful HTTP response does not prove it is the requested solicitation.
+ Allow harmless query/trailing-slash canonicalization, but fail closed when a
+ stable bid/notice identifier disappears or changes.
+ """
+ if not safe_detail_url(requested, final):
+  return False
+ before, after = up.urlsplit(requested), up.urlsplit(final)
+ if before.scheme == 'https' and after.scheme != 'https':
+  return False
+ stable_keys = {'bidid', 'bid_id', 'noticeid', 'solicitationid', 'rfpid', 'id'}
+ before_params = {key.lower(): values for key, values in up.parse_qs(before.query).items()}
+ after_params = {key.lower(): values for key, values in up.parse_qs(after.query).items()}
+ for key in stable_keys & before_params.keys():
+  if before_params[key] != after_params.get(key):
+   return False
+ if is_individual_notice_link(requested):
+  if 'bidid' in before_params:
+   return 'bidid' in after_params
+  if not is_individual_notice_link(final):
+   return False
+  before_slug = before.path.rstrip('/').rsplit('/', 1)[-1].casefold()
+  after_slug = after.path.rstrip('/').rsplit('/', 1)[-1].casefold()
+  if before_slug != after_slug:
+   return False
+ return True
+
+
+
 def is_individual_notice_link(url):
  """A bid-detail shaped link, not a procurement index or PDF attachment.
 
@@ -423,7 +455,10 @@ def scan_direct(src):
   try:
    blob,kind,final_url=fetch(url,binary=True)
    # Redirects must not turn a permitted source link into an untrusted host.
-   if not safe_detail_url(url,final_url) or excluded_url(final_url):continue
+   if not redirect_preserves_notice(url,final_url):
+    errors.append('unsafe or changed notice redirect')
+    continue
+   if excluded_url(final_url):continue
    if 'pdf' in kind or url.lower().split('?')[0].endswith('.pdf'):
     if pdfs>=MAX_PDF:continue
     pdfs+=1;text=pdf_text(blob)
