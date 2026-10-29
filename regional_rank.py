@@ -8,6 +8,7 @@ import argparse
 import datetime as dt
 import json
 import pathlib
+import math
 
 KEYWORDS = ("debris removal", "disaster debris", "emergency tree", "vegetation management",
             "right-of-way", "tree removal", "land clearing", "storm cleanup",
@@ -18,6 +19,19 @@ KEYWORDS = ("debris removal", "disaster debris", "emergency tree", "vegetation m
             "utility vegetation", "electric utility vegetation", "storm restoration")
 AGENCIES = ("fema", "usace", "army corps", "department of transportation",
             "state dot", "penndot", "nysdot", "emergency management")
+
+
+def finite_nonnegative(value):
+    """Treat malformed, non-finite and boolean numeric claims as unknown."""
+    if isinstance(value, bool) or value is None:
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return number if math.isfinite(number) and number >= 0 else None
+
+
 def classify(notice):
     title = str(notice.get("title") or "")
     description = str(notice.get("summary") or "")
@@ -27,24 +41,14 @@ def classify(notice):
     url = str(notice.get("url") or "")
     if not url.startswith("https://"):
         return None
-    try:
-        hours = float(notice["drive_hours"])
-    except (KeyError, TypeError, ValueError):
-        hours = None
-    if hours is not None and (hours < 0 or hours > 12):
+    hours = finite_nonnegative(notice.get("drive_hours"))
+    if hours is not None and hours > 12:
         return None
-    # Missing routing proof never counts as a verified twelve-hour match.
-    travel_verified = bool(notice.get("travel_verified")) and hours is not None
-    amount = notice.get("estimated_value_usd")
-    try:
-        amount = float(amount) if amount is not None else None
-    except (ValueError, TypeError):
-        amount = None
-    days = notice.get("estimated_duration_days")
-    try:
-        days = float(days) if days is not None else None
-    except (ValueError, TypeError):
-        days = None
+    # Strings like "false" and NaN/Infinity must never certify travel.
+    # Only an explicit boolean True plus a finite, in-range route can do so.
+    travel_verified = notice.get("travel_verified") is True and hours is not None
+    amount = finite_nonnegative(notice.get("estimated_value_usd"))
+    days = finite_nonnegative(notice.get("estimated_duration_days"))
     score = 0
     if amount is not None and amount >= 250000: score += 3
     elif amount is not None and amount >= 100000: score += 2
