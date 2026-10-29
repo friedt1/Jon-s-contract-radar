@@ -87,7 +87,8 @@ def probe(source, fetch=scan.fetch, now=None):
             # An official homepage is not necessarily a procurement listing.
             # Report whether there is even visible bid/RFP/RFQ evidence before
             # claiming that a notice adapter is the only missing piece.
-            listing_text = " ".join(scan.parse_html(html).parts)
+            page = scan.parse_html(html)
+            listing_text = " ".join(page.parts)
             has_procurement_evidence = bool(re.search(
                 r"\b(?:bids?|rfps?|rfqs?|procurement|solicitations?|"
                 r"request\s+for\s+(?:proposals?|qualifications?))\b",
@@ -99,9 +100,19 @@ def probe(source, fetch=scan.fetch, now=None):
                 r"\b(?:BidNet|Empire State Purchasing Group|OpenGov|Bonfire|PennBid|Public Purchase)\b", listing_text, re.I)
                 and re.search(r"\b(?:bid|rfp|rfq|solicitation|packet)s?\b",
                               listing_text, re.I))
+            # Many agencies label the outbound link "View Bids" without
+            # spelling out OpenGov/BidNet in visible page text. Inspect only
+            # links explicitly labeled as procurement, never follow them.
+            provider_link = any(
+                re.search(r"(?:^|\.)(?:opengov\.com|bonfirehub\.com|bidnetdirect\.com|pennbid\.net|publicpurchase\.com)$",
+                          (urlparse(href).hostname or "").lower())
+                and re.search(r"\b(?:bids?|rfps?|rfqs?|solicitations?|procurement|proposals?)\b",
+                              label, re.I)
+                for label, href, _ in page.links
+            )
             result["state"] = (
                 "listing_reachable_external_provider_access_required"
-                if delegated_to_provider else
+                if delegated_to_provider or provider_link else
                 "listing_reachable_adapter_required" if has_procurement_evidence else
                 "official_page_reachable_no_procurement_evidence"
             )
