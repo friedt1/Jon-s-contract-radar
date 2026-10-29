@@ -73,3 +73,23 @@ Google News queries were rejected by the robots policy; PennBid was blocked,
 and BidNet individual-notice access was not connected. These are integration
 blockers, not evidence that no contracts exist. A fresh hosted scan is needed
 after merge to populate the new diagnostics.
+
+Four more verified official county pages were staged without activation:
+
+- Seneca County: `https://www.senecacountyny.gov/bids.aspx` — CivicPlus
+  individual bidID listing; the October 28 page showed a November 6, 2026
+  jail EHR bid, which is unrelated to tree work and must be rejected.
+- Allegany County: `https://www.alleganyco.gov/departments/public-works/bids-awards/`
+  — public DPW bid specs and awards, requiring per-document extraction and
+  separation of current notices from historical results.
+- Ontario County: `https://www.ontariocountyny.gov/2291/Current-Bids-RFPs-and-Results`
+  — official page delegates current notices to OpenGov; portal permission and
+  individual listing extraction are not established.
+- Wayne County: `https://www.waynecountyny.gov/745/Purchasing` — official
+  purchasing page describes an OpenGov transition, while vendor information
+  still references BidNet; the authoritative listing interface and permission
+  require confirmation.
+
+**Seven official endpoints are staged, not activated.** No increase to the
+18 configured direct sources is claimed. Activation must not be inferred from
+an official county homepage or a publicly viewable listing alone.
