@@ -42,6 +42,12 @@ MAX_DETAIL = 18
 MAX_PDF = 5
 MAX_BYTES = 2_500_000
 
+# These providers have no approved individual-listing integration. Their public
+# landing pages and county outbound links are not permission to crawl notices.
+UNCONNECTED_PLATFORMS = frozenset({'BidNet NY platform', 'PennBid platform'})
+EXTERNAL_PROVIDER_HOSTS = ('bonfirehub.com', 'bidnetdirect.com',
+                           'pennbid.net', 'publicpurchase.com')
+
 
 def norm(s): return re.sub(r'\s+',' ',re.sub(r'<[^>]*>',' ',s or '')).strip()
 def category(s):
@@ -174,10 +180,29 @@ def annotate_explicit_closing(out, url, text):
 def excluded_url(url):
  return bool(re.search(r'archive|bid[-_ ]?results|bid[-_ ]?recordings|award|\.mp4(?:$|\?)|/projects(?:$|\?)|project-showcase',url,re.I))
 
+def provider_link(url):
+ """Recognize an external procurement platform without fetching it."""
+ try:
+  host = up.urlparse(url).hostname or ''
+  return any(host == domain or host.endswith('.' + domain)
+             for domain in EXTERNAL_PROVIDER_HOSTS)
+ except ValueError:
+  return False
+
+
 def allowed_link(url,base):
- host=up.urlparse(url).hostname or ''
- if up.urlparse(url).scheme not in ('http','https'):return False
- return host==up.urlparse(base).hostname or any(host==x or host.endswith('.'+x) for x in ('bonfirehub.com','bidnetdirect.com','pennbid.net','publicpurchase.com'))
+ """Detail extraction is same-host until an explicit provider adapter is approved.
+
+ A county linking to a hosted vendor portal does not authorize this scanner
+ to retrieve that provider's individual solicitations. Robots alone is not
+ sufficient proof of provider permission.
+ """
+ try:
+  parsed, origin = up.urlparse(url), up.urlparse(base)
+  return (parsed.scheme in ('http','https') and parsed.hostname is not None
+          and parsed.hostname == origin.hostname)
+ except ValueError:
+  return False
 
 def safe_detail_url(origin, href):
  """Reject malformed, off-host, credentialed and non-web detail links before fetch.
@@ -404,7 +429,7 @@ def metadata_description(body):
 
 
 def scan_direct(src):
- base=src['url'];name=src['name'];found={};visited=set();errors=[];pdfs=0;pdfs_skipped=0;nested_listing_pages=0;metadata_details=0
+ base=src['url'];name=src['name'];found={};visited=set();errors=[];pdfs=0;pdfs_skipped=0;provider_skips=0;nested_listing_pages=0;metadata_details=0
  html,ctype,final=fetch(base)
  if 'html' not in ctype and not html.lstrip().startswith('<'):return [],'unsupported content type'
  page=parse_html(html)
@@ -436,7 +461,11 @@ def scan_direct(src):
   if name in public_pages.PUBLIC_LISTINGS and public_pages.pagination_label(title):
    continue
   url=safe_detail_url(origin,href)
-  if not url:continue
+  if not url:
+   try:
+    if provider_link(up.urljoin(origin,href)):provider_skips+=1
+   except (TypeError,ValueError):pass
+   continue
   # Follow only same-host notices and explicitly permitted platform links.
   same_host=up.urlparse(url).hostname==up.urlparse(origin).hostname
   context=context[:1500]
@@ -538,7 +567,7 @@ def scan_direct(src):
   except Exception as e:errors.append(type(e).__name__)
 
  rendering='; dynamic/login portal: extraction incomplete' if not page.rows and any(x in html.lower() for x in ('enable javascript','ng-app','id="app"','id="root"','sign in','log in')) else ''
- return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {metadata_details} individual bid details fetched; {pdfs} PDFs checked; {pdfs_skipped} PDF requests skipped at budget; {len(found)} candidates; {nested_listing_pages} nested listing pages excluded as notices'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
+ return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {metadata_details} individual bid details fetched; {pdfs} PDFs checked; {pdfs_skipped} PDF requests skipped at budget; {provider_skips} external provider links skipped (access required); {len(found)} candidates; {nested_listing_pages} nested listing pages excluded as notices'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
 
 def scan_news(src):
  name=src['name'];query=src.get('discovery_query',name);q='"'+query.replace('"','')+'" ("tree removal" OR "tree trimming" OR "vegetation management" OR "land clearing" OR "forestry mulching" OR "storm cleanup" OR "brush clearing" OR "storm debris") (bid OR RFP OR contract OR procurement)'
@@ -563,10 +592,13 @@ def error_label(error):
 def run(src):
  statuses=[];leads=[]
  if src.get('url') and src.get('mode')=='direct_page':
-  try:
-   items,st=scan_direct(src);leads.extend(items);statuses.append(st)
-  except robots_policy.RobotsDenied as e:statuses.append('direct blocked by robots policy: '+str(e))
-  except Exception as e:statuses.append('direct error: '+error_label(e))
+  if src['name'] in UNCONNECTED_PLATFORMS:
+   statuses.append('direct access required: individual listing ingestion not connected; provider-approved feed/access not established')
+  else:
+   try:
+    items,st=scan_direct(src);leads.extend(items);statuses.append(st)
+   except robots_policy.RobotsDenied as e:statuses.append('direct blocked by robots policy: '+str(e))
+   except Exception as e:statuses.append('direct error: '+error_label(e))
  if src['name']=='Elmira Next local bids':
   try:
    xml,ctype,_=fetch(local_bid_rss.FEED_URL)
