@@ -9,8 +9,9 @@ const element = selector => {
 };
 element('#sort').value = 'new';
 const feed = JSON.parse(fs.readFileSync('data/opportunities.json', 'utf8'));
-const fixture = {title: '<script>unsafe</script> Tree removal bid', summary: 'Tree removal', category: 'Tree removal', source: 'Chemung', location: 'Elmira', published: '2026-10-28', url: 'https://example.org/bid', review_score: 84, review_priority: 'high', status: 'unverified'};
-const context = vm.createContext({document: {querySelector: element}, fetch: async (url) => ({ok: true, json: async () => url.includes('staged_probes.json') ? ({updated: '2026-10-29T06:50:00+00:00', staged_entrypoints: 3, probes: [{name: 'Yates County', state: 'notice_format_confirmed_terms_review_required', sample_notice_temporal_evidence: 'deadline_passed'}]}) : ({...feed, source_coverage: {direct_fetched: 3, pending_direct: 84}, source_health: {counts: {configured_direct: 18, configured_access_required: 2, configured_fetch_targets: 16, fetched_unverified: 15, robots_blocked: 1, access_required: 1, staged_official_url: 3, indirect_robots_blocked: 102, individual_bid_details_fetched: 1, detail_robots_blocked_sources: 1, detail_errors: 2, pdf_budget_skips: 3}, sources: [{name: 'Yates County', direct_state: 'staged_official_url', indirect_state: 'robots_blocked', staged_official_url: 'https://www.yatescountyny.gov/bids.aspx', diagnostic: 'Indirect robots blocked', activation_gate: 'Verify robots before activation', individual_bid_details_fetched: 0}, {name: 'Chemung County', direct_state: 'fetched_unverified', indirect_state: 'not_run', diagnostic: '1 individual bid details fetched; 2 detail errors: RobotsDenied,ValueError', individual_bid_details_fetched: 1, detail_access_state: 'robots_blocked', detail_errors: 2, pdf_budget_skips: 3, activation_gate: ''}, {name: '<script>bad source</script>', direct_state: 'robots_blocked', indirect_state: 'not_run', diagnostic: 'Robots blocked', activation_gate: ''}]}, opportunities: [fixture]})})});
+const fixture = {url: 'javascript:alert(1)', title: '<script>unsafe</script> Tree removal bid', summary: 'Tree removal', category: 'Tree removal', source: 'Chemung', location: 'Elmira', published: '2026-10-28', review_score: 84, review_priority: 'high', status: 'unverified'};
+const savedFixture = {opportunities: [{title: '<script>saved</script>', agency: 'Agency', solicitation: 'TEST', category: 'Tree removal', notes: 'Review only', official_url: 'javascript:alert(1)', deadline_reported: '2026-11-09'}]};
+const context = vm.createContext({document: {querySelector: element}, fetch: async (url) => ({ok: true, json: async () => url.includes('saved_opportunities.json') ? savedFixture : url.includes('staged_probes.json') ? ({updated: '2026-10-29T06:50:00+00:00', staged_entrypoints: 3, probes: [{name: 'Yates County', state: 'notice_format_confirmed_terms_review_required', sample_notice_temporal_evidence: 'deadline_passed'}]}) : ({...feed, source_coverage: {direct_fetched: 3, pending_direct: 84}, source_health: {counts: {configured_direct: 18, configured_access_required: 2, configured_fetch_targets: 16, fetched_unverified: 15, robots_blocked: 1, access_required: 1, staged_official_url: 3, indirect_robots_blocked: 102, individual_bid_details_fetched: 1, detail_robots_blocked_sources: 1, detail_errors: 2, pdf_budget_skips: 3}, sources: [{name: 'Yates County', direct_state: 'staged_official_url', indirect_state: 'robots_blocked', staged_official_url: 'https://www.yatescountyny.gov/bids.aspx', diagnostic: 'Indirect robots blocked', activation_gate: 'Verify robots before activation', individual_bid_details_fetched: 0}, {name: 'Chemung County', direct_state: 'fetched_unverified', indirect_state: 'not_run', diagnostic: '1 individual bid details fetched; 2 detail errors: RobotsDenied,ValueError', individual_bid_details_fetched: 1, detail_access_state: 'robots_blocked', detail_errors: 2, pdf_budget_skips: 3, activation_gate: ''}, {name: '<script>bad source</script>', direct_state: 'robots_blocked', indirect_state: 'not_run', diagnostic: 'Robots blocked', activation_gate: ''}]}, opportunities: [fixture]})})});
 const html = fs.readFileSync('index.html', 'utf8');
 vm.runInContext(html.split('<script>')[1].split('</script>')[0], context);
 setImmediate(() => {
@@ -18,6 +19,12 @@ setImmediate(() => {
   assert.ok(element('#cards').innerHTML.includes('&lt;script&gt;'));
   assert.ok(!element('#cards').innerHTML.includes('<script>'));
   assert.ok(element('#cards').innerHTML.includes('Review high (84/100; not verified)'));
+  assert.ok(element('#cards').innerHTML.includes('href="#"'));
+  assert.ok(!element('#cards').innerHTML.includes('javascript:'));
+  assert.ok(element('#saved-cards').innerHTML.includes('&lt;script&gt;saved'));
+  assert.ok(element('#saved-cards').innerHTML.includes('Saved — not verified open'));
+  assert.ok(element('#saved-cards').innerHTML.includes('href="#"'));
+  assert.ok(!element('#saved-cards').innerHTML.includes('javascript:'));
   element('#sort').value = 'priority';
   vm.runInContext('render()', context);
   assert.equal(element('#count').textContent, 1);
@@ -55,5 +62,5 @@ setImmediate(() => {
   element('#q').value = 'unrelated';
   vm.runInContext('render()', context);
   assert.equal(element('#count').textContent, 0);
-  console.log('Dashboard feed, escaping, service filter, search, and source count passed');
+  console.log('Dashboard feed, saved bookmarks, safe URLs, escaping, service filter, search, and source count passed');
 });

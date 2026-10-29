@@ -55,6 +55,22 @@ class SourceHealthTests(unittest.TestCase):
         self.assertEqual(source_health.classify(src, "direct error: TimeoutError")["direct_state"], "fetch_error")
         self.assertEqual(source_health.classify(src, "")["direct_state"], "not_fetched")
 
+    def test_official_feed_and_authorized_api_are_direct_modes(self):
+        sources = [
+            {"name": "Feed", "mode": "official_feed", "url": "https://county.example/feed.xml",
+             "verified_url": True},
+            {"name": "API", "mode": "authorized_api", "url": "https://county.example/api/bids",
+             "verified_url": True},
+        ]
+        summary = source_health.summarize(sources, {
+            "Feed": "direct fetched; 1 listing pages; 0 individual bid details fetched",
+            "API": "direct error: TimeoutError",
+        })
+        self.assertEqual(summary["counts"]["configured_direct"], 2)
+        self.assertEqual(summary["counts"]["fetched_unverified"], 1)
+        self.assertEqual(summary["counts"]["fetch_error"], 1)
+        self.assertEqual(summary["counts"]["not_configured"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()
