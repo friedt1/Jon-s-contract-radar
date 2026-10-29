@@ -66,5 +66,9 @@ jobs:
           git add data/opportunities.json data/history.json
           if ! git diff --cached --quiet; then
             git commit -m 'Update contract leads and history'
-            git push
+            # A staged probe or another workflow may have updated main while
+            # this scan ran. Rebase rather than losing the scheduled result to
+            # a non-fast-forward push; genuine data conflicts still fail closed.
+            git pull --rebase origin main
+            git push origin HEAD:main
           fi
