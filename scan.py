@@ -6,7 +6,7 @@ import concurrent.futures as cf
 import datetime as dt
 import email.utils
 from zoneinfo import ZoneInfo
-import hashlib
+import notice_identity
 from html.parser import HTMLParser
 import json
 import pathlib
@@ -136,9 +136,9 @@ def pdf_text(blob):
 def add_lead(out,source,title,url,description='',kind='direct bid candidate',evidence=None):
  text=norm(evidence if evidence is not None else title+' '+description)
  cat=category(text)
- if not cat or not eligible(text,source) or not eligible(norm(title+' '+description),source) or not url.startswith(('http://','https://')) or not up.urlparse(url).hostname:return
- url=url.split('#')[0]
- uid=hashlib.sha256(url.encode()).hexdigest()[:16]
+ url=notice_identity.canonical_url(url)
+ if not cat or not eligible(text,source) or not eligible(norm(title+' '+description),source) or not url:return
+ uid=notice_identity.notice_id(url)
  lead={'id':uid,'title':norm(title)[:220] or 'Possible tree-service contract','summary':norm(description)[:550], 'url':url,'source':source,'location':'NY/PA target area — driving time from Elmira unverified','category':cat,'deadline':deadline(text),'published':'','status':'unverified','lead_type':kind,'deadline_status':'date extracted; confirm time and amendments' if deadline(text) else 'unknown — verify original posting'}
  if uid not in out or len(lead['summary'])>len(out[uid]['summary']):out[uid]=lead
 
@@ -258,7 +258,7 @@ def scan_civicplus(src, listing_pages, page_errors):
   if due:
    summary += ' Due date: ' + due
   add_lead(found, name, row['title'], row['url'], summary, 'individual county bid candidate', evidence=evidence)
-  uid = hashlib.sha256(row['url'].encode()).hexdigest()[:16]
+  uid = notice_identity.notice_id(row['url'])
   if uid in found:
    found[uid].update({
     'agency': name.replace(' bids', '') + ' (issuing authority)',
@@ -338,7 +338,7 @@ def scan_direct(src):
     if pdfs>=MAX_PDF:continue
     pdfs+=1;text=pdf_text(blob)
     if closed(text) or (deadline(text) and deadline(text)<NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat()):
-     found.pop(hashlib.sha256(url.split('#')[0].encode()).hexdigest()[:16],None);continue
+     found.pop(notice_identity.notice_id(url),None);continue
     if category(text) and (bidlike(title+' '+url) or bidlike(text[:3000])):
      key=category(text);p=text.lower().find(next((t for t in CATEGORIES[key] if t in text.lower()),''))
      snippet=text[max(0,p-150):p+500]
@@ -349,7 +349,7 @@ def scan_direct(src):
     # A listing containing many bids must be handled as separate rows.
     records=p.rows if p.rows else [body]
     if not p.rows and (closed(body) or (deadline(body) and deadline(body)<NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat())):
-     found.pop(hashlib.sha256(url.split('#')[0].encode()).hexdigest()[:16],None);continue
+     found.pop(notice_identity.notice_id(url),None);continue
     if not p.rows and category(body) and eligible(body,name):
      key=category(body);match=next((t for t in CATEGORIES[key] if t in body.lower()),'')
      ix=body.lower().find(match);snippet=body[max(0,ix-160):ix+520]
@@ -380,7 +380,7 @@ def scan_news(src):
   if date is None or not 0 <= (NOW.date()-date).days <= 90:continue
   add_lead(found,name,title,(item.findtext('link') or '').strip(),summary,'indirect news candidate')
   if date:
-   uid=hashlib.sha256(((item.findtext('link') or '').strip().split('#')[0]).encode()).hexdigest()[:16]
+   uid=notice_identity.notice_id((item.findtext('link') or '').strip())
    if uid in found: found[uid]['published']=date.isoformat()
  return list(found.values())
 
