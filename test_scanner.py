@@ -103,7 +103,7 @@ class RegressionTests(unittest.TestCase):
         self.assertEqual(leads[0]['url'],'https://example.org/bid/1')
 
     def test_platform_host_boundary(self):
-        self.assertTrue(scanner.allowed_link('https://pennbid.bonfirehub.com/opportunities/1','https://example.org'))
+        self.assertFalse(scanner.allowed_link('https://pennbid.bonfirehub.com/opportunities/1','https://example.org'))
         self.assertFalse(scanner.allowed_link('https://bonfirehub.com.evil.test/1','https://example.org'))
         self.assertFalse(scanner.allowed_link('javascript:alert(1)','https://example.org'))
 
@@ -122,7 +122,12 @@ class RegressionTests(unittest.TestCase):
             with self.subTest(source=src['name']):
                 with patch.object(scanner,'scan_direct',return_value=([], 'direct fetched')) as d, patch.object(scanner,'scan_news',return_value=[]) as n:
                     name,status,leads=scanner.run(src)
-                d.assert_called_once_with(src);n.assert_called_once_with(src)
+                if src['name'] in scanner.UNCONNECTED_PLATFORMS:
+                    d.assert_not_called()
+                    self.assertIn('direct access required',status)
+                else:
+                    d.assert_called_once_with(src)
+                n.assert_called_once_with(src)
                 self.assertEqual(name,src['name']);self.assertIn('indirect RSS ok',status)
 
     def test_direct_failure_preserves_news_discovery(self):
