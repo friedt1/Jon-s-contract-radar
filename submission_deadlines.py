@@ -75,8 +75,10 @@ def submission_deadline(text):
 
 # A submission *date* alone cannot establish that a same-day bid has closed.
 # Extract a clock time only when adjacent to the same validated submission label.
-_CLOCK = r"(?:0?[1-9]|1[0-2])(?::[0-5]\d)?\s*[AP]\.?M\.?"
-_AFTER_DATE = re.compile(r"^\s*(?:,\s*|at\s+)?(?P<clock>" + _CLOCK + r")\b", re.I)
+_CLOCK = r"(?:0?[1-9]|1[0-2])(?::[0-5]\d)?[ \t]*[AP]\.?[ \t]*M\.?"
+# Accept "due DATE at 1:30 P.M." and "due DATE, at 1:30 P.M.".
+# A word boundary after the final dot in P.M. would reject the clock.
+_AFTER_DATE = re.compile(r"^[ \t]*(?:,[ \t]*)?(?:at[ \t]+)?(?P<clock>" + _CLOCK + r")(?=$|[ \t,;.)])", re.I)
 _BEFORE_DATE = re.compile(r"(?P<clock>" + _CLOCK + r")\s*(?:on\s+)?$", re.I)
 
 # Some official notices place the clock before the date and include a mailing
@@ -93,8 +95,18 @@ _RECEIPT_BEFORE_DATE = re.compile(
 )
 
 
+
+# The ordinary label/date parser deliberately does not cross sentence dots.
+# Match a clock BEFORE the date separately, including dotted "P.M.".
+_DUE_BEFORE_DATE = re.compile(
+    r"\b(?:sealed\s+)?(?:bids?|proposals?|quotes?|responses?)\s+"
+    r"(?:due|must\s+be\s+submitted\s+by)\s+(?:at\s+)?"
+    r"(?P<clock>" + _CLOCK + r")\s+(?:on\s+)?" + _DATE, re.I,
+)
+
 def _receipt_before_date_matches(text):
-    for match in _RECEIPT_BEFORE_DATE.finditer(text):
+    for match in (m for pattern in (_RECEIPT_BEFORE_DATE, _DUE_BEFORE_DATE)
+                  for m in pattern.finditer(text)):
         prefix = re.split(r"[.;\n]", text[max(0, match.start()-80):match.start()])[-1]
         if _OTHER_MILESTONE_END.search(prefix):
             continue
@@ -103,6 +115,7 @@ def _receipt_before_date_matches(text):
             continue
         clock = re.sub(r"\.", "", match.group("clock").upper())
         clock = re.sub(r"\s+", " ", clock).strip()
+        clock = re.sub(r"([AP])\s+(?=M\b)", r"\1", clock)
         if ":" not in clock:
             clock = re.sub(r"^(\d{1,2})", r"\1:00", clock)
         try:
@@ -136,7 +149,8 @@ def submission_deadline_details(text):
         raw = (after or before)
         clock = ""
         if raw:
-            value = re.sub(r"\s+", " ", raw.group("clock").upper()).strip()
+            value = re.sub(r"\s+", " ", re.sub(r"\.", "", raw.group("clock").upper())).strip()
+            value = re.sub(r"([AP])\s+(?=M\b)", r"\1", value)
             if ":" not in value:
                 value = re.sub(r"^(\d{1,2})", r"\1:00", value)
             try:
