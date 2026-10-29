@@ -26,7 +26,7 @@ _OTHER_MILESTONE = re.compile(
 _OTHER_MILESTONE_END = re.compile(
     r"(?:questions?|q\s*&\s*a|inquir(?:y|ies)|clarifications?|"
     r"rfis?|answers?|addenda|addendums?|meetings?|conferences?|"
-    r"site\s+visits?|walk[- ]?throughs?)\s*$",
+    r"site\s+visits?|walk[- ]?throughs?)(?:\s+(?:about|regarding|concerning))?\s*$",
     re.I,
 )
 
