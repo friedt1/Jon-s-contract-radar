@@ -81,6 +81,21 @@ class StagedProbeTests(unittest.TestCase):
         self.assertEqual(row["sample_notice_listing_status"], "closed")
         self.assertEqual(row["sample_notice_temporal_evidence"], "closed_or_awarded")
 
+    def test_closed_and_awarded_are_not_false_availability_conflicts(self):
+        html = ('<article><a href="/Bids.aspx?bidID=4">Tree removal</a>'
+                '<p>Status: Closed</p></article>')
+        notice = ('<h1>Bid Title: Tree removal</h1><p>Bid Number: 4</p>'
+                  '<p>Description: Removal work</p><p>Status: Awarded</p>')
+
+        def fetch(url, binary=False):
+            return ((html, "text/html", url) if url == ENTRY else
+                    (notice.encode(), "text/html", url))
+
+        row = staged.probe(SOURCE, fetch=fetch)
+        self.assertEqual(row["sample_notice_status"], "awarded")
+        self.assertFalse(row["sample_notice_status_conflict"])
+        self.assertEqual(row["sample_notice_temporal_evidence"], "closed_or_awarded")
+
     def test_robots_blocked_never_fetches_notice(self):
         fetch = Mock(side_effect=robots_policy.RobotsDenied("disallowed"))
         row = staged.probe(SOURCE, fetch=fetch)
