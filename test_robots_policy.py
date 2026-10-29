@@ -40,7 +40,7 @@ class RobotsPolicyTests(unittest.TestCase):
             self.assertIn("unavailable", reason)
 
     def test_robots_policy_is_cached_per_origin(self):
-        with patch.object(robots_policy, "urlopen", return_value=io.BytesIO(
+        with patch.object(robots_policy, "urlopen", return_value=RobotsResponse(
                 b"User-agent: *\nDisallow: /private\n")) as download:
             self.assertTrue(robots_policy.allowed("https://agency.example/Bids.aspx")[0])
             self.assertFalse(robots_policy.allowed("https://agency.example/private")[0])
