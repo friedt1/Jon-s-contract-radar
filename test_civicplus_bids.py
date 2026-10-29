@@ -23,6 +23,35 @@ class CivicPlusTests(unittest.TestCase):
         clock.start()
         self.addCleanup(clock.stop)
 
+    def test_named_month_and_iso_closing_fields(self):
+        for text, expected in (
+            ("Status: Closes: Open 2026-11-17 at 2:30 PM", ("2026-11-17", "2:30 PM")),
+            ("Status: Closes: Open November 17, 2026 at 2:30 PM", ("2026-11-17", "2:30 PM")),
+            ("Status: Closes: Open Oct 22, 2026 2:30 PM", ("2026-10-22", "2:30 PM")),
+            ("Status: Closes: Open 11/17/2026 2:30 PM", ("2026-11-17", "2:30 PM")),
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(civic.closing_of(text), expected)
+        for text, expected in (
+            ("Closing Date/Time: November 17, 2026 at 1:45 PM", ("2026-11-17", "1:45 PM")),
+            ("Closing Date/Time: 2026-11-17 1:45 PM", ("2026-11-17", "1:45 PM")),
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(civic.detail_closing_of(text), expected)
+        self.assertEqual(civic.closing_of("Publication Date/Time: November 17, 2026"), ("", ""))
+        self.assertEqual(civic.detail_closing_of("Pre-bid meeting: 2026-11-17"), ("", ""))
+
+    def test_expired_iso_detail_overrides_future_listing(self):
+        html = card(90, "Tree removal bid", "Open", "11/19/2026")
+        def fake(url, binary=False):
+            body = ("<p>Status: Open</p><p>Description: Tree removal</p>"
+                    "<p>Closing Date/Time: 2026-10-22 at 2:30 PM</p>") if binary else html
+            return (body.encode() if binary else body, "text/html", url)
+        with patch.object(scan, "fetch", side_effect=fake):
+            leads, status = scan.scan_direct(SOURCE)
+        self.assertEqual(leads, [])
+        self.assertIn("1 expired", status)
+
     def test_separate_bid_records_and_deduplication(self):
         html = ('<p>Show Closed/Awarded/Cancelled Bids</p>'
                 + card(10, "Tree removal bid", "Closed", "10/22/2026")
