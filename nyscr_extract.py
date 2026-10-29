@@ -21,6 +21,30 @@ NUMBER = re.compile(r"^\d{6,9}$")
 DATE = re.compile(r"^\d{1,2}/\d{1,2}/\d{4}$")
 
 
+def _title_index(lines, marker, previous_marker):
+    """Locate a notice title even when a Note precedes its CR number.
+
+    On NYSCR's text layout, the preceding notice's 'Ad type' value ends
+    immediately before the next notice's title. Without that marker, a
+    pre-CR Note or subcontracting banner can still identify the title.
+    """
+    lower = marker - 1
+    if previous_marker is not None:
+        for i in range(marker - 1, previous_marker + 1, -1):
+            if lines[i].lower().startswith("ad type:"):
+                inline = lines[i].partition(":")[2].strip()
+                candidate = i + (1 if inline else 2)
+                if candidate < marker:
+                    return candidate
+    floor = previous_marker + 2 if previous_marker is not None else 0
+    for i in range(marker - 1, floor, -1):
+        if lines[i].lower().startswith("note:"):
+            return i - 1
+    if lower > floor and lines[lower].lower() == "this is a subcontracting opportunity":
+        return lower - 1
+    return lower
+
+
 def extract(text):
     """Yield record dictionaries; distinct CR numbers are record boundaries.
 
@@ -33,13 +57,17 @@ def extract(text):
     markers = [i for i in range(1, len(lines)-1)
                if lines[i] == "CR#:" and NUMBER.fullmatch(lines[i+1])]
     label_pattern = re.compile(r"^(" + "|".join(re.escape(label) for label in LABELS) + r"):\s*(.*)$", re.I)
+    titles = [_title_index(lines, marker, markers[n-1] if n else None)
+              for n, marker in enumerate(markers)]
     for n, marker in enumerate(markers):
         number = lines[marker+1]
         if number in seen or marker == 0:
             continue
         seen.add(number)
         start = marker + 2
-        stop = markers[n+1]-1 if n+1 < len(markers) else len(lines)
+        # Stop at the NEXT title, not its CR number: otherwise a multiline
+        # Description can absorb the next notice's title and Note.
+        stop = titles[n+1] if n+1 < len(markers) else len(lines)
         fields = {}
         for i in range(start, stop):
             match = label_pattern.fullmatch(lines[i])
@@ -60,9 +88,18 @@ def extract(text):
             elif not value and i + 1 < stop and not label_pattern.fullmatch(lines[i+1]):
                 value = lines[i+1]
             fields[label] = value
-        title = lines[marker-1]
-        scope = fields.get("Description") or title
-        if not WORK.search(title + " " + scope):
+        title = lines[titles[n]]
+        pre_cr = lines[titles[n]+1:marker]
+        note = ""
+        for j, line in enumerate(pre_cr):
+            if line.lower().startswith("note:"):
+                note_lines = [line.partition(":")[2].strip()]
+                note_lines.extend(value for value in pre_cr[j+1:]
+                                  if value.lower() != "this is a subcontracting opportunity")
+                note = " ".join(part for part in note_lines if part).strip()[:2000]
+                break
+        scope = fields.get("Description") or note or title
+        if not WORK.search(title + " " + scope + " " + note):
             continue
         link = fields.get("Detail URL") or fields.get("Solicitation URL") or ""
         parsed = urlparse(link)
@@ -84,6 +121,7 @@ def extract(text):
             "status": "research_only",
             "open_status": "unknown",
             "scope": scope,
+            "note": note,
             "deadline_time": "",
             "deadline_timezone": "unverified",
             "location_verified": False,
