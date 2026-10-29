@@ -35,7 +35,7 @@ class OpportunityTriageTests(unittest.TestCase):
                 "deadline": "", "status": "unverified"}
         result = review_assessment(lead, self.TODAY)
         self.assertIn("submission deadline unknown", result["review_factors"])
-        self.assertNotIn("deadline", lead)
+        self.assertEqual(lead["deadline"], "")
         self.assertEqual(lead["status"], "unverified")
 
     def test_expired_candidate_is_not_prioritized(self):
