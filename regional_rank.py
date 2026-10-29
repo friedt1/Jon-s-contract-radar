@@ -15,7 +15,8 @@ from notice_identity import canonical_url
 import civicplus_bids
 
 KEYWORDS = ("debris removal", "disaster debris", "emergency tree", "vegetation management",
-            "right-of-way", "tree removal", "land clearing", "storm cleanup",
+            "right-of-way", "tree removal", "stump removal", "stump grinding",
+            "tree and stump removal", "tree & stump removal", "land clearing", "storm cleanup",
             "brush clearing", "forestry mulching", "hazard tree", "debris hauling", "road clearing", "roadside clearing",
             "highway clearing", "roadway debris", "blocked road", "downed trees",
             "line clearance", "line clearing", "power line clearing", "powerline clearing",
