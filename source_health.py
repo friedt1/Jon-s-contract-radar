@@ -13,7 +13,8 @@ def _number(pattern, status):
 
 def classify(source, status):
     mode = source.get("mode", "discovery_pending")
-    configured = (mode == "direct_page" and source.get("verified_url") is True
+    configured = (mode in {"direct_page", "official_feed", "authorized_api"}
+                  and source.get("verified_url") is True
                   and bool(source.get("url")))
     if not configured:
         direct_state = "staged_official_url" if source.get("candidate_official_url") else "not_configured"
