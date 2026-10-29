@@ -44,6 +44,58 @@ class StagedProbeTests(unittest.TestCase):
         self.assertEqual(len(calls), 2)
         self.assertNotIn("opportunities", result)
 
+    def test_listing_detail_status_conflict_requires_review(self):
+        # An old "Open" listing can coexist with a closed individual notice,
+        # or a detail can appear open while its listing says closed.
+        for listed, detailed in (("Open", "Closed"), ("Closed", "Open")):
+            with self.subTest(listed=listed, detailed=detailed):
+                html = ('<article><a href="/Bids.aspx?bidID=4">Tree removal</a>'
+                        f'<p>Status: {listed}</p><p>Closes: 11/17/2026 10:00 AM</p>'
+                        '</article>')
+                notice = ('<h1>Bid Title: Tree removal</h1><p>Bid Number: 4</p>'
+                          '<p>Description: Removal work</p>'
+                          f'<p>Status: {detailed}</p>'
+                          '<p>Closing Date/Time: 11/17/2026 10:00 AM</p>')
+
+                def fetch(url, binary=False):
+                    if url == ENTRY:
+                        return html, "text/html", url
+                    return notice.encode(), "text/html", url
+
+                row = staged.probe(SOURCE, fetch=fetch, now=staged.dt.datetime(
+                    2026, 10, 29, tzinfo=staged.dt.timezone.utc))
+                self.assertEqual(row["state"], "notice_format_confirmed_terms_review_required")
+                self.assertEqual(row["sample_notice_listing_status"], listed.lower())
+                self.assertEqual(row["sample_notice_status"], detailed.lower())
+                self.assertTrue(row["sample_notice_status_conflict"])
+                self.assertEqual(row["sample_notice_temporal_evidence"],
+                                 "conflicting_status_unverified")
+                self.assertFalse(row["direct_monitoring_activated"])
+
+    def test_agreeing_status_does_not_create_false_conflict(self):
+        row = staged.probe(SOURCE, fetch=lambda url, binary=False: (
+            (listing(), "text/html", url) if url == ENTRY else
+            (detail().encode(), "text/html", url)
+        ))
+        self.assertFalse(row["sample_notice_status_conflict"])
+        self.assertEqual(row["sample_notice_listing_status"], "closed")
+        self.assertEqual(row["sample_notice_temporal_evidence"], "closed_or_awarded")
+
+    def test_closed_and_awarded_are_not_false_availability_conflicts(self):
+        html = ('<article><a href="/Bids.aspx?bidID=4">Tree removal</a>'
+                '<p>Status: Closed</p></article>')
+        notice = ('<h1>Bid Title: Tree removal</h1><p>Bid Number: 4</p>'
+                  '<p>Description: Removal work</p><p>Status: Awarded</p>')
+
+        def fetch(url, binary=False):
+            return ((html, "text/html", url) if url == ENTRY else
+                    (notice.encode(), "text/html", url))
+
+        row = staged.probe(SOURCE, fetch=fetch)
+        self.assertEqual(row["sample_notice_status"], "awarded")
+        self.assertFalse(row["sample_notice_status_conflict"])
+        self.assertEqual(row["sample_notice_temporal_evidence"], "closed_or_awarded")
+
     def test_robots_blocked_never_fetches_notice(self):
         fetch = Mock(side_effect=robots_policy.RobotsDenied("disallowed"))
         row = staged.probe(SOURCE, fetch=fetch)
