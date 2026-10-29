@@ -13,6 +13,25 @@ def validate(root=scan.ROOT):
         raise ValueError('Feed must report all 102 targets and deferred SAM.gov')
     if data['source_status']['SAM.gov'] != 'deferred':
         raise ValueError('SAM.gov must remain deferred')
+    coverage = data.get('source_coverage')
+    if coverage is not None:
+        direct = {s['name'] for s in sources if s.get('mode') == 'direct_page'
+                  and s.get('verified_url') is True and s.get('url')}
+        fetched = sum('direct fetched' in data['source_status'][name] for name in direct)
+        checks = {
+            'total_targets': len(sources),
+            'direct_configured': len(direct),
+            'pending_direct': len(sources) - len(direct),
+            'direct_fetched': fetched,
+            'direct_not_fetched': len(direct) - fetched,
+            'indirect_rss_succeeded': sum('indirect RSS ok' in status
+                                          for status in data['source_status'].values()),
+            'verified_open_contracts': sum(lead.get('status') == 'verified'
+                                           and lead.get('open_status') == 'verified_open'
+                                           for lead in data['opportunities']),
+        }
+        if any(coverage.get(key) != expected for key, expected in checks.items()):
+            raise ValueError('Inconsistent direct source coverage metrics')
     if not isinstance(data['opportunities'], list) or not isinstance(history['opportunities'], dict):
         raise ValueError('Invalid opportunity/history containers')
     ids = set()
