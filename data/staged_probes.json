@@ -1,0 +1,136 @@
+{
+  "updated": "2026-10-29T05:55:45.316660+00:00",
+  "configured_targets": 102,
+  "staged_entrypoints": 11,
+  "probes": [
+    {
+      "name": "Broome County",
+      "official_entrypoint": "https://www.broomecountyny.gov/purchasing/open-solicitations",
+      "state": "listing_fetch_error",
+      "listing_retrieved": false,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "activation_gate": "Official county page delegates bid documents to BidNet; provider-approved individual-notice access and robots policy review required.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false,
+      "error_type": "HTTPError"
+    },
+    {
+      "name": "Cortland County",
+      "official_entrypoint": "https://www.cortlandcountyny.gov/Bids.aspx",
+      "state": "listing_reachable_no_bidid_records",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "activation_gate": "Official CivicPlus listing confirmed; verify robots policy and live bidID detail extraction before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Yates County",
+      "official_entrypoint": "https://www.yatescountyny.gov/bids.aspx",
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "activation_gate": "Official CivicPlus listing confirmed; verify robots policy and live bidID detail extraction before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Ontario County",
+      "official_entrypoint": "https://www.ontariocountyny.gov/2291/Current-Bids-RFPs-and-Results",
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "activation_gate": "Official county page delegates current solicitations to OpenGov; verify permitted portal listing and individual notice extraction.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Seneca County",
+      "official_entrypoint": "https://www.senecacountyny.gov/bids.aspx",
+      "state": "notice_format_confirmed_terms_review_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": true,
+      "individual_records_discovered": 1,
+      "activation_gate": "Official CivicPlus bidID listing confirmed; verify robots policy and live individual notice extraction before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false,
+      "sample_notice_url": "https://www.senecacountyny.gov/bids.aspx?bidID=4",
+      "sample_notice_status": "open"
+    },
+    {
+      "name": "Allegany County",
+      "official_entrypoint": "https://www.alleganyco.gov/departments/public-works/bids-awards/",
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "activation_gate": "Official DPW bid specifications/awards page confirmed; verify robots policy and isolate current individual bid documents from past awards.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Livingston County",
+      "official_entrypoint": "https://www.livingstoncountyny.gov/Bids.aspx",
+      "state": "notice_format_confirmed_terms_review_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": true,
+      "individual_records_discovered": 1,
+      "activation_gate": "Official county CivicPlus bid listings exist, but county also directs vendors to BidNet. Verify robots and publisher terms, same-host individual bidID extraction, and current listing completeness before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false,
+      "sample_notice_url": "https://www.livingstoncountyny.gov/bids.aspx?bidID=361",
+      "sample_notice_status": "open"
+    },
+    {
+      "name": "Wayne County",
+      "official_entrypoint": "https://www.waynecountyny.gov/745/Purchasing",
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "activation_gate": "Official county purchasing page announces OpenGov transition and vendor enrollment; identify current authoritative portal and permitted notice extraction.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Wyoming County",
+      "official_entrypoint": "https://www.wyomingcountyny.gov/Bids.aspx",
+      "state": "notice_format_confirmed_terms_review_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": true,
+      "individual_records_discovered": 1,
+      "activation_gate": "Official county CivicPlus bid listings confirmed. Verify robots, terms, and individual bidID extraction before activation; currently listed food/janitorial RFQ is unrelated to tree work.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false,
+      "sample_notice_url": "https://www.wyomingcountyny.gov/bids.aspx?bidID=203",
+      "sample_notice_status": "open"
+    },
+    {
+      "name": "Bradford County PA",
+      "official_entrypoint": "https://www.bradfordcountypa.gov/bids.aspx",
+      "state": "listing_reachable_no_bidid_records",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "activation_gate": "Official Bradford County PA CivicPlus bid postings page confirmed; currently reports no open bids. Review robots/terms and verify live same-host individual bidID detail extraction before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Susquehanna County",
+      "official_entrypoint": "https://www.susqco.com/departments/county-commissioners/current-bid-specifications",
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "activation_gate": "Official county current bid specifications page confirmed. Distinguish service procurement from Municibid surplus auctions; verify robots/terms and isolate individual current solicitations before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    }
+  ],
+  "warning": "Diagnostic only: no source is activated by these probes. A fetched page or parsed historical notice is not an open bid. Review publisher terms, individual extraction, and live scan before changing discovery_pending."
+}
