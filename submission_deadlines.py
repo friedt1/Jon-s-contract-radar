@@ -11,10 +11,17 @@ _DATE = (r"(?P<date>(?:\d{4}-\d{1,2}-\d{1,2})|"
          r"(?:(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|"
          r"May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|"
          r"Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2}(?:st|nd|rd|th)?,?\s*\d{4}))")
-_LABEL = (r"(?P<label>due(?:\s+date)?|closing(?:\s+date(?:/time)?)?|"
-          r"bids?\s+(?:due|received|(?:must|will|shall)\s+be\s+received)|"
-          r"proposals?\s+(?:(?:must|will|shall)\s+be\s+)?submitted|"
-          r"submit(?:ted)?\s+(?:by|until)|deadline)")
+_LABEL = (
+    r"(?P<label>\b(?:due(?:\s+date)?|closing(?:\s+date(?:/time)?)?|"
+    r"(?:sealed\s+)?bids?\s+(?:due|received|submitted|"
+    r"(?:must|will|shall)\s+be\s+(?:received|submitted))|"
+    r"(?:sealed\s+)?proposals?\s+(?:due|received|submitted|"
+    r"(?:must|will|shall)\s+be\s+(?:received|submitted))|"
+    r"(?:quotes?|responses?)\s+(?:due|received|submitted|"
+    r"(?:must|will|shall)\s+be\s+(?:received|submitted))|"
+    r"(?:bid|proposal|quote|response)\s+(?:submission\s+)?deadline|"
+    r"submission\s+deadline|submit(?:ted)?\s+(?:by|until)|deadline))"
+)
 _CANDIDATE = re.compile(_LABEL + r"(?P<between>[^.;\n]{0,65}?)" + _DATE, re.I)
 _OTHER_MILESTONE = re.compile(
     r"(?:questions?|q\s*&\s*a|inquir(?:y|ies)|clarifications?|"
@@ -26,7 +33,8 @@ _OTHER_MILESTONE = re.compile(
 _OTHER_MILESTONE_END = re.compile(
     r"(?:questions?|q\s*&\s*a|inquir(?:y|ies)|clarifications?|"
     r"rfis?|answers?|addenda|addendums?|meetings?|conferences?|"
-    r"site\s+visits?|walk[- ]?throughs?)(?:\s+(?:about|regarding|concerning))?\s*$",
+    r"site\s+visits?|walk[- ]?throughs?)(?:\s+(?:about|regarding|concerning)"
+    r"(?:\s+(?:bids?|proposals?|quotes?|responses?))?)?\s*$",
     re.I,
 )
 
@@ -76,7 +84,8 @@ _BEFORE_DATE = re.compile(r"(?P<clock>" + _CLOCK + r")\s*(?:on\s+)?$", re.I)
 # Require the receipt verb, "until", clock and date together; a bid-opening
 # time or a question deadline must never substitute for the submission cutoff.
 _RECEIPT_BEFORE_DATE = re.compile(
-    r"\b(?:sealed\s+)?bids?\s+(?:(?:will|shall|must)\s+be\s+)?received\b"
+    r"\b(?:sealed\s+)?(?:bids?|proposals?|quotes?|responses?)\s+"
+    r"(?:(?:will|shall|must)\s+be\s+)?received\b"
     r"[^\n]{0,260}?\buntil\s+(?P<clock>" + _CLOCK + r")\s+"
     r"(?:local\s+time\s+)?on\s+"
     r"(?:(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+)?"
