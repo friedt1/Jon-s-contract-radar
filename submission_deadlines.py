@@ -10,7 +10,7 @@ _DATE = (r"(?P<date>(?:\d{4}-\d{1,2}-\d{1,2})|"
          r"(?:\d{1,2}/\d{1,2}/\d{2,4})|"
          r"(?:(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|"
          r"May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|"
-         r"Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},?\s+\d{4}))")
+         r"Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2}(?:st|nd|rd|th)?,?\s*\d{4}))")
 _LABEL = (r"(?P<label>due(?:\s+date)?|closing(?:\s+date(?:/time)?)?|"
           r"bids?\s+(?:due|received|(?:must|will|shall)\s+be\s+received)|"
           r"proposals?\s+(?:(?:must|will|shall)\s+be\s+)?submitted|"
@@ -34,7 +34,9 @@ _OTHER_MILESTONE_END = re.compile(
 def _date(value):
     for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y", "%B %d %Y", "%b %d %Y"):
         try:
-            return dt.datetime.strptime(value.replace(",", ""), fmt).date()
+            cleaned = re.sub(r"(?<=\d)(?:st|nd|rd|th)(?=,?\s*\d{4}$)", "", value, flags=re.I)
+            cleaned = re.sub(r",\s*(?=\d{4}$)", " ", cleaned)
+            return dt.datetime.strptime(cleaned.replace(",", ""), fmt).date()
         except ValueError:
             continue
     return None
@@ -59,14 +61,47 @@ def submission_deadline(text):
         parsed = _date(match.group("date"))
         if parsed:
             dates.append(parsed)
+    dates.extend(date for date, _ in _receipt_before_date_matches(text))
     return max(dates).isoformat() if dates else ""
 
 
 # A submission *date* alone cannot establish that a same-day bid has closed.
 # Extract a clock time only when adjacent to the same validated submission label.
-_CLOCK = r"(?:0?[1-9]|1[0-2])(?::[0-5]\d)?\s*[AP]M"
+_CLOCK = r"(?:0?[1-9]|1[0-2])(?::[0-5]\d)?\s*[AP]\.?M\.?"
 _AFTER_DATE = re.compile(r"^\s*(?:,\s*|at\s+)?(?P<clock>" + _CLOCK + r")\b", re.I)
 _BEFORE_DATE = re.compile(r"(?P<clock>" + _CLOCK + r")\s*(?:on\s+)?$", re.I)
+
+# Some official notices place the clock before the date and include a mailing
+# address: "Sealed bids will be received in ... until 1:45 P.M. on Oct 23,2025".
+# Require the receipt verb, "until", clock and date together; a bid-opening
+# time or a question deadline must never substitute for the submission cutoff.
+_RECEIPT_BEFORE_DATE = re.compile(
+    r"\b(?:sealed\s+)?bids?\s+(?:(?:will|shall|must)\s+be\s+)?received\b"
+    r"[^\n]{0,260}?\buntil\s+(?P<clock>" + _CLOCK + r")\s+"
+    r"(?:local\s+time\s+)?on\s+"
+    r"(?:(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+)?"
+    + _DATE, re.I,
+)
+
+
+def _receipt_before_date_matches(text):
+    for match in _RECEIPT_BEFORE_DATE.finditer(text):
+        prefix = re.split(r"[.;\n]", text[max(0, match.start()-80):match.start()])[-1]
+        if _OTHER_MILESTONE_END.search(prefix):
+            continue
+        date = _date(match.group("date"))
+        if date is None:
+            continue
+        clock = re.sub(r"\.", "", match.group("clock").upper())
+        clock = re.sub(r"\s+", " ", clock).strip()
+        if ":" not in clock:
+            clock = re.sub(r"^(\d{1,2})", r"\1:00", clock)
+        try:
+            clock = dt.datetime.strptime(clock, "%I:%M %p").strftime("%I:%M %p").lstrip("0")
+        except ValueError:
+            continue
+        yield date, clock
+
 
 
 def submission_deadline_details(text):
@@ -100,6 +135,7 @@ def submission_deadline_details(text):
             except ValueError:
                 pass
         matches.append((date, clock))
+    matches.extend(_receipt_before_date_matches(text))
     if not matches:
         return "", ""
     latest = max(date for date, _ in matches)
