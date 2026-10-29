@@ -340,6 +340,23 @@ def assemble(sources, previous, now, getter=None, pause=None):
             links = {x['url']: x for x in existing.get('source_links', []) + lead['source_links']}
             lead.update(source_links=list(links.values()), first_seen=existing.get('first_seen', now.isoformat(timespec='seconds')), last_seen=now.isoformat(timespec='seconds'))
             found[uid] = lead
+    # A news article can reuse the headline of a customer request while
+    # omitting the original request body. Our strict request fingerprint
+    # deliberately distinguishes customers by body; suppress matching news
+    # separately so it cannot create a second apparent opportunity, even
+    # when the news source is processed before the request source.
+    def headline_key(item):
+        return (re.sub(r'\W+', ' ', item['title'].lower()).strip(),
+                item['location'], item['published'][:10])
+    request_headlines = {
+        headline_key(item) for item in list(old.values()) + list(found.values())
+        if item.get('lead_type') == 'service_request'
+    }
+    found = {
+        uid: item for uid, item in found.items()
+        if item['lead_type'] != 'news_context'
+        or headline_key(item) not in request_headlines
+    }
     if not successful: raise RuntimeError('All local sources failed; previous feed and history preserved: ' + json.dumps(status))
     # News is context, not evidence that request discovery is healthy. If all
     # configured request feeds fail, publishing a news-only scan would clear
