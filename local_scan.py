@@ -214,8 +214,18 @@ def records(source, getter=None):
         # Only operator-reviewed public feeds; honor robots and fail closed.
         if source.get('public_feed_reviewed') is not True: raise ValueError('review public feed terms before enabling')
         root = up.urlsplit(url)
+        robots_body = getter(f'{root.scheme}://{root.netloc}/robots.txt')
+        # A login page, proxy error, or HTML 200 response is not a robots
+        # policy. RobotFileParser otherwise treats unknown content as allow-all.
+        # Require an actual user-agent group for explicitly reviewed RSS feeds;
+        # unavailable/ambiguous policy means no automated collection.
+        robots_lines = robots_body.splitlines()
+        if (re.search(r'<\\s*(?:!doctype|html|head|body|script)\\b', robots_body, re.I)
+                or not any(re.match(r'^\\s*user-agent\\s*:\\s*\\S+', line, re.I)
+                           for line in robots_lines)):
+            raise ValueError('robots policy missing or invalid; feed not fetched')
         robots = urllib.robotparser.RobotFileParser()
-        robots.parse(getter(f'{root.scheme}://{root.netloc}/robots.txt').splitlines())
+        robots.parse(robots_lines)
         if not robots.can_fetch(USER_AGENT, url): raise ValueError('robots disallows feed')
         delay = max(1, robots.crawl_delay(USER_AGENT) or 0)
         rate = robots.request_rate(USER_AGENT)
