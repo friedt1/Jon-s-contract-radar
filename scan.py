@@ -215,6 +215,24 @@ def is_individual_notice_link(url):
   return False
 
 
+
+def navigation_only_detail_link(title, context, url):
+ """Do not spend the bounded detail budget on generic navigation links.
+
+ A bare 'View details' link is not evidence of a bid. Retain bid-shaped URLs,
+ isolated listing-row scope, and procurement-path entrypoints so that generic
+ labels on actual individual notices or nested bid indexes still work.
+ """
+ label = norm(title).lower()
+ generic = {'view', 'view details', 'details', 'read more', 'more info',
+            'learn more', 'click here', 'view more', 'view page'}
+ if label not in generic or is_individual_notice_link(url):
+  return False
+ path = up.unquote(up.urlparse(url).path)
+ return not (category(context) or bidlike(context) or category(path)
+             or bidlike(path) or re.search(r'/purchasing(?:/|$)', path, re.I))
+
+
 def scan_civicplus(src, listing_pages, page_errors):
  """Only individual public bidID notices; never treat the whole listing as a bid."""
  name = src['name']
@@ -384,6 +402,8 @@ def scan_direct(src):
   # Listing rows stay isolated; detail pages supply missing scope and deadlines.
   # A listing row is discovery evidence only. Never publish its link until
   # the corresponding individual notice has actually been fetched and parsed.
+  if navigation_only_detail_link(title, context, url):
+   continue
   if not excluded_url(url) and (any(x in (title+' '+href).lower() for x in FOLLOW_HINTS) or (category(descriptor) and same_host)) and url!=origin:
    # A generic 'Details' label can still point directly to a bid notice.
    # Prioritize its URL shape before unrelated purchasing/navigation links.
