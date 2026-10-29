@@ -141,6 +141,30 @@ def allowed_link(url,base):
  if up.urlparse(url).scheme not in ('http','https'):return False
  return host==up.urlparse(base).hostname or any(host==x or host.endswith('.'+x) for x in ('bonfirehub.com','bidnetdirect.com','pennbid.net','publicpurchase.com'))
 
+def safe_detail_url(origin, href):
+ """Reject malformed, off-host, credentialed and non-web detail links before fetch.
+
+ A malformed URL should not consume the bounded detail budget or turn a
+ public-source scan into an accidental request to an unrelated host.
+ """
+ if not isinstance(href, str) or not href or any(ord(c) < 33 or ord(c) == 127 or c == '\\' for c in href):
+  return ''
+ if re.search(r'%(?:0[0-9a-f]|1[0-9a-f]|7f)', href, re.I):
+  return ''
+ try:
+  url = up.urljoin(origin, href)
+  parsed = up.urlsplit(url)
+  if parsed.scheme not in ('http', 'https') or not parsed.hostname:
+   return ''
+  if parsed.username is not None or parsed.password is not None:
+   return ''
+  if parsed.port not in (None, 80, 443):
+   return ''
+  return url if allowed_link(url, origin) else ''
+ except ValueError:
+  return ''
+
+
 def scan_civicplus(src, listing_pages, page_errors):
  """Only individual public bidID notices; never treat the whole listing as a bid."""
  name = src['name']
@@ -271,13 +295,10 @@ def scan_direct(src):
  listing_links=[(title,href,pos,p.link_rows.get(href,title),origin)
                 for p,origin in listing_pages for title,href,pos in p.links]
  for title,href,pos,context,origin in listing_links:
-  if not href or href.startswith(BAD_LINKS):continue
-  url=up.urljoin(origin,href)
-  if up.urlparse(url).scheme not in ('http','https'):continue
-  # Avoid unrelated off-site links, but allow bid platform destinations.
+  url=safe_detail_url(origin,href)
+  if not url:continue
+  # Follow only same-host notices and explicitly permitted platform links.
   same_host=up.urlparse(url).hostname==up.urlparse(origin).hostname
-  platform=allowed_link(url,origin)
-  if not (same_host or platform):continue
   context=context[:1500]
   descriptor=title+' '+context
   # Listing rows stay isolated; detail pages supply missing scope and deadlines.
@@ -316,8 +337,8 @@ def scan_direct(src):
      add_lead(found,name,title if category(title) else snippet[:130],final_url,snippet+' '+('Deadline: '+deadline(body) if deadline(body) else ''),'direct detail candidate',evidence=body)
     for label,href,_ in p.links:
      row=p.link_rows.get(href,label)
-     target=up.urljoin(final_url,href)
-     if href and not excluded_url(target) and allowed_link(target,final_url):
+     target=safe_detail_url(final_url,href)
+     if target and not excluded_url(target):
       if eligible(row,name):add_lead(found,name,label if category(label) else row[:130],target,row)
       if len(candidates)<max_details*4 and target not in visited and (category(row) or bidlike(label+' '+href)):
        candidates.append((0,target,label,row))
