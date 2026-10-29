@@ -21,7 +21,7 @@ import public_bid_pagination as public_pages
 import civicplus_bids
 import robots_policy
 import source_health
-from submission_deadlines import submission_deadline
+from submission_deadlines import submission_deadline, submission_deadline_details, explicit_closing_passed
 
 ROOT = pathlib.Path(__file__).resolve().parent
 SOURCES = ROOT / 'sources.json'
@@ -150,6 +150,19 @@ def add_lead(out,source,title,url,description='',kind='direct bid candidate',evi
  uid=notice_identity.notice_id(url)
  lead={'id':uid,'title':norm(title)[:220] or 'Possible tree-service contract','summary':norm(description)[:550], 'url':url,'source':source,'location':'NY/PA target area — driving time from Elmira unverified','category':cat,'deadline':deadline(text),'published':'','status':'unverified','lead_type':kind,'deadline_status':'date extracted; confirm time and amendments' if deadline(text) else 'unknown — verify original posting'}
  if uid not in out or len(lead['summary'])>len(out[uid]['summary']):out[uid]=lead
+
+def annotate_explicit_closing(out, url, text):
+ """Preserve an observed submission time, never a questions/site-visit time."""
+ uid = notice_identity.notice_id(url)
+ if uid not in out:
+  return
+ date, clock = submission_deadline_details(text)
+ if date and clock:
+  out[uid]['deadline'] = date
+  out[uid]['deadline_time'] = clock
+  out[uid]['deadline_timezone'] = 'America/New_York (NY/PA agency-local assumption)'
+  out[uid]['deadline_status'] = 'explicit submission date/time; timezone assumed from issuing authority'
+
 
 def excluded_url(url):
  return bool(re.search(r'archive|bid[-_ ]?results|bid[-_ ]?recordings|award|\.mp4(?:$|\?)|/projects(?:$|\?)|project-showcase',url,re.I))
@@ -389,18 +402,19 @@ def scan_direct(src):
    if 'pdf' in kind or url.lower().split('?')[0].endswith('.pdf'):
     if pdfs>=MAX_PDF:continue
     pdfs+=1;text=pdf_text(blob)
-    if closed(text) or (deadline(text) and deadline(text)<NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat()):
+    if closed(text) or (deadline(text) and deadline(text)<NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat()) or explicit_closing_passed(text,NOW):
      found.pop(notice_identity.notice_id(url),None);continue
     if category(text) and (bidlike(title+' '+url) or bidlike(text[:3000])):
      key=category(text);p=text.lower().find(next((t for t in CATEGORIES[key] if t in text.lower()),''))
      snippet=text[max(0,p-150):p+500]
      if eligible(text,name):
       add_lead(found,name,title if category(title) else snippet[:130],final_url,snippet+' '+('Deadline: '+deadline(text) if deadline(text) else ''),'PDF bid candidate',evidence=text)
+      annotate_explicit_closing(found,final_url,text)
    elif 'html' in kind or blob.lstrip().startswith(b'<'):
     p=parse_html(blob.decode('utf-8','replace'));body=norm(' '.join(p.parts))[:20000]
     # A listing containing many bids must be handled as separate rows.
     records=p.rows if p.rows else [body]
-    if (not p.rows or individual_metadata_notice(body, final_url)) and (closed(body) or (deadline(body) and deadline(body)<NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat())):
+    if (not p.rows or individual_metadata_notice(body, final_url)) and (closed(body) or (deadline(body) and deadline(body)<NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat()) or explicit_closing_passed(body,NOW)):
      found.pop(notice_identity.notice_id(url),None);continue
     nested_notice_links = False
     nested_candidates = []
@@ -429,10 +443,11 @@ def scan_direct(src):
     # A single notice's metadata rows are not a listing of separate bids.
     # Only the Description field, never navigation text, establishes relevance.
     scope = metadata_description(body) if metadata_notice else body
-    if (not p.rows or metadata_notice) and not nested_notice_links and category(scope) and eligible(scope + (' bid' if metadata_notice else '') + (' Due date: ' + deadline(body) if deadline(body) else ''), name) and not closed(body):
+    if (not p.rows or metadata_notice) and not nested_notice_links and category(scope) and eligible(scope + (' bid' if metadata_notice else '') + (' Due date: ' + deadline(body) if deadline(body) else ''), name) and not closed(body) and not explicit_closing_passed(body,NOW):
      key=category(scope);match=next((t for t in CATEGORIES[key] if t in scope.lower()),'')
      ix=scope.lower().find(match);snippet=scope[max(0,ix-160):ix+520]
      add_lead(found,name,title if category(title) else snippet[:130],final_url,('Bid description: ' if metadata_notice else '')+snippet+' '+('Deadline: '+deadline(body) if deadline(body) else ''),'individual metadata bid candidate' if metadata_notice else 'direct detail candidate',evidence=body)
+     annotate_explicit_closing(found,final_url,body)
   except Exception as e:errors.append(type(e).__name__)
 
  rendering='; dynamic/login portal: extraction incomplete' if not page.rows and any(x in html.lower() for x in ('enable javascript','ng-app','id="app"','id="root"','sign in','log in')) else ''
