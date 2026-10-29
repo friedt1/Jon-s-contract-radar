@@ -36,6 +36,12 @@ class CivicPlusTests(unittest.TestCase):
         self.assertEqual(records[1]["deadline_time"], "1:45 PM")
         self.assertNotIn("Closed/Awarded/Cancelled", records[1]["description"])
 
+    def test_pager_label_with_bidid_is_not_an_individual_bid(self):
+        html = ('<a href="/Bids.aspx?page=2&bidID=999">Next</a>'
+                + card(18, "Tree removal bid", "Open", "11/19/2026"))
+        records = civic.listing_records(scan.parse_html(html), BASE)
+        self.assertEqual([row["url"] for row in records], [BASE + "?bidID=18"])
+
     def test_live_scan_shape_excludes_closed_and_unrelated(self):
         html = (card(10, "Tree removal bid", "Closed", "11/20/2026")
                 + card(11, "Tree trimming bid", "Open", "11/19/2026", repeat=True)
