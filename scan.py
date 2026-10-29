@@ -222,7 +222,8 @@ def allowed_link(url,base):
  try:
   parsed, origin = up.urlparse(url), up.urlparse(base)
   return (parsed.scheme in ('http','https') and parsed.hostname is not None
-          and parsed.hostname == origin.hostname)
+          and parsed.hostname == origin.hostname
+          and not (origin.scheme == 'https' and parsed.scheme != 'https'))
  except ValueError:
   return False
 
