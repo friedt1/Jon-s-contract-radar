@@ -166,6 +166,29 @@ def submission_deadline_details(text):
     return latest.isoformat(), (times[-1] if times else "")
 
 
+
+def eastern_deadline_timezone(value):
+    """Recognize only explicit NY/PA Eastern timezone labels.
+
+    Missing labels retain the existing NY/PA issuing-authority assumption.
+    An explicit non-Eastern, negated or unknown label must never be
+    interpreted as Eastern simply because it contains that word.
+    """
+    if value is None or value == "":
+        return True
+    if not isinstance(value, str):
+        return False
+    zone = value.strip().lower()
+    if not zone:
+        return True
+    return zone in {
+        "et", "est", "edt", "eastern", "eastern time",
+        "eastern standard time", "eastern daylight time",
+        "us/eastern", "america/new_york",
+        "america/new_york (ny/pa agency-local assumption)",
+    }
+
+
 def explicit_closing_passed(text, now):
     """Check explicit submission time against NY/PA agency-local Eastern time.
 
