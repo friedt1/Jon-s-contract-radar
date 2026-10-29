@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 
 from notice_identity import canonical_url
 import civicplus_bids
+from submission_deadlines import eastern_deadline_timezone
 
 KEYWORDS = ("debris removal", "disaster debris", "emergency tree", "vegetation management",
             "right-of-way", "tree removal", "stump removal", "stump grinding",
@@ -67,8 +68,7 @@ def _deadline_state(notice, today, now=None):
         return "invalid"
     if due < today:
         return "expired"
-    timezone = str(notice.get("deadline_timezone") or "").strip().lower()
-    eastern = not timezone or "eastern" in timezone or "new_york" in timezone
+    eastern = eastern_deadline_timezone(notice.get("deadline_timezone"))
     if (due == today and eastern and isinstance(now, dt.datetime)
             and now.tzinfo is not None and now.utcoffset() is not None
             and now.astimezone(ZoneInfo("America/New_York")).date() == today
