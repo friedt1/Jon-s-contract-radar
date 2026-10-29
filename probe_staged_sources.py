@@ -63,9 +63,19 @@ def probe(source, fetch=scan.fetch, now=None):
                 r"\b(?:bids?|rfps?|rfqs?|procurement|solicitations?|"
                 r"request\s+for\s+(?:proposals?|qualifications?))\b",
                 listing_text, re.I))
-            result["state"] = ("listing_reachable_adapter_required"
-                               if has_procurement_evidence else
-                               "official_page_reachable_no_procurement_evidence")
+            # A public agency may only link to a registration-gated bid
+            # platform. Reading its announcement page is not direct access
+            # to individual solicitations on that platform.
+            delegated_to_provider = bool(re.search(
+                r"\b(?:BidNet|Empire State Purchasing Group)\b", listing_text, re.I)
+                and re.search(r"\b(?:bid|rfp|rfq|solicitation|packet)s?\b",
+                              listing_text, re.I))
+            result["state"] = (
+                "listing_reachable_external_provider_access_required"
+                if delegated_to_provider else
+                "listing_reachable_adapter_required" if has_procurement_evidence else
+                "official_page_reachable_no_procurement_evidence"
+            )
             return result
         records = adapter.listing_records(scan.parse_html(html), final)
         result["individual_records_discovered"] = len(records)

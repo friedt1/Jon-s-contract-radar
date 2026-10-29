@@ -324,7 +324,9 @@
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://townithacany.gov/home/bid-anouncements/",
+    "activation_gate": "Official Town of Ithaca Bid/RFP Announcements page directs bid/RFP/RFQ packets to BidNet or the Town Clerk. BidNet individual notices require registration/provider-approved access; no permitted per-notice adapter is established. Keep discovery_pending."
   },
   {
     "name": "City of Binghamton",

@@ -35,6 +35,28 @@ class MunicipalStagingTests(unittest.TestCase):
                 self.assertFalse(entry.get("url"))
         self.assertTrue({"Village of Horseheads", "City of Cortland"} <= civicplus_bids.SOURCES)
 
+    def test_town_of_ithaca_bidnet_delegation_is_not_direct_monitoring(self):
+        records = json.loads((pathlib.Path(__file__).parent / "sources.json").read_text())
+        row = next(x for x in records if x["name"] == "Town of Ithaca")
+        self.assertEqual(row["mode"], "discovery_pending")
+        self.assertFalse(row["verified_url"])
+        self.assertFalse(row["url"])
+        self.assertEqual(row["candidate_official_url"],
+                         "https://townithacany.gov/home/bid-anouncements/")
+        self.assertIn("BidNet", row["activation_gate"])
+        html = ('<h1>Bid/RFP Announcements</h1>'
+                '<p>All Bid/RFP/RFQ Packets are available from BidNet or '
+                'from the Town Clerk.</p>'
+                '<p>The Town of Ithaca has partnered with the '
+                'Empire State Purchasing Group to publish solicitations.</p>')
+        probe = staged.probe(row, fetch=lambda url: (html, "text/html", url), now=NOW)
+        self.assertEqual(probe["state"],
+                         "listing_reachable_external_provider_access_required")
+        self.assertTrue(probe["listing_retrieved"])
+        self.assertFalse(probe["individual_notice_retrieved"])
+        self.assertFalse(probe["direct_monitoring_activated"])
+        self.assertNotIn("opportunities", probe)
+
     def test_binghamton_official_granicus_index_is_staged_only(self):
         # Official city purchasing index has individual /Home/Components/RFP/RFP/
         # records, but this project has not established permission or a parser.
