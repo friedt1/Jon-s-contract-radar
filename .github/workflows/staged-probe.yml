@@ -9,6 +9,7 @@ on:
       - probe_staged_sources.py
       - test_staged_probes.py
       - test_staged_municipal_sources.py
+      - test_waverly_staging.py
       - '.github/workflows/staged-probe.yml'
       - sources.json
 
@@ -33,7 +34,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      - run: python -m unittest test_staged_probes test_staged_municipal_sources -v
+      - run: python -m unittest test_staged_probes test_staged_municipal_sources test_waverly_staging -v
 
   probe:
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
