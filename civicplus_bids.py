@@ -13,7 +13,8 @@ from zoneinfo import ZoneInfo
 SOURCES = frozenset({"Chemung County bids", "Steuben County bids",
                      "Town of Horseheads", "City of Ithaca",
                      "Cortland County", "Yates County", "Seneca County",
-                     "Bradford County PA", "Livingston County", "Wyoming County"})
+                     "Bradford County PA", "Livingston County", "Wyoming County",
+                     "Village of Horseheads", "City of Cortland"})
 MAX_DETAILS = 36
 DATE = re.compile(r"\b(\d{1,2}/\d{1,2}/\d{4})(?:\s+(\d{1,2}:\d{2}\s*[AP]M))?\b", re.I)
 STATUS = re.compile(r"\bStatus\s*:\s*(?:Closes\s*:\s*)?(Open|Closed|Awarded|Cancelled|Canceled)\b", re.I)
