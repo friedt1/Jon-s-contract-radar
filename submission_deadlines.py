@@ -95,8 +95,18 @@ _RECEIPT_BEFORE_DATE = re.compile(
 )
 
 
+
+# The ordinary label/date parser deliberately does not cross sentence dots.
+# Match a clock BEFORE the date separately, including dotted "P.M.".
+_DUE_BEFORE_DATE = re.compile(
+    r"\b(?:sealed\s+)?(?:bids?|proposals?|quotes?|responses?)\s+"
+    r"(?:due|must\s+be\s+submitted\s+by)\s+(?:at\s+)?"
+    r"(?P<clock>" + _CLOCK + r")\s+(?:on\s+)?" + _DATE, re.I,
+)
+
 def _receipt_before_date_matches(text):
-    for match in _RECEIPT_BEFORE_DATE.finditer(text):
+    for match in (m for pattern in (_RECEIPT_BEFORE_DATE, _DUE_BEFORE_DATE)
+                  for m in pattern.finditer(text)):
         prefix = re.split(r"[.;\n]", text[max(0, match.start()-80):match.start()])[-1]
         if _OTHER_MILESTONE_END.search(prefix):
             continue
