@@ -359,7 +359,11 @@ def scan_direct(src):
       page_errors.append('unsupported pagination content');continue
      listing_pages.append((parse_html(extra),extra_final))
     except Exception as e:page_errors.append(error_label(e))
- if name in civicplus_bids.SOURCES and any(civicplus_bids.listing_records(p, origin) for p, origin in listing_pages):
+ # A CivicPlus Bids.aspx page with zero bidID records is NOT a generic
+ # solicitation page. Never fall back to navigation or promotional text.
+ if name in civicplus_bids.SOURCES and up.urlparse(base).path.lower().endswith('/bids.aspx'):
+  if not up.urlparse(final).path.lower().endswith('/bids.aspx'):
+   return [], 'direct fetched; CivicPlus listing redirected away from Bids.aspx; no individual bid records verified'
   return scan_civicplus(src, listing_pages, page_errors)
  # Keep each table/list record isolated from neighboring bid scopes and dates.
  max_details=public_pages.MAX_PUBLIC_DETAILS if name in public_pages.PUBLIC_LISTINGS else MAX_DETAIL
