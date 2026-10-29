@@ -98,6 +98,64 @@ class RegionalRankTests(unittest.TestCase):
         self.assertEqual(next(x for x in result if "bidID=12" in x["url"])["priority_score"], 3)
         self.assertTrue(all(x["status"] == "review required" for x in result))
 
+
+    def test_same_day_explicit_eastern_cutoff_is_excluded_from_review(self):
+        # Synthetic historical Erie-style fixture; never a live contract.
+        import datetime as dt
+        today = dt.date(2026, 10, 29)
+        erie = {"title": "Tree and stump removal", "url": "https://county.example/bids/12",
+                "deadline": "2026-10-29", "deadline_time": "9:00 AM",
+                "status": "unverified"}
+        before = dt.datetime(2026, 10, 29, 12, 59, tzinfo=dt.timezone.utc)
+        cutoff = dt.datetime(2026, 10, 29, 13, 0, tzinfo=dt.timezone.utc)
+        self.assertEqual(classify(erie, today=today, now=before)["status"], "review required")
+        self.assertIsNone(classify(erie, today=today, now=cutoff))
+        self.assertEqual(build([erie], today=today, now=cutoff)["opportunities"], [])
+
+    def test_unknown_clock_timezone_or_naive_now_does_not_invent_expiry(self):
+        import datetime as dt
+        today = dt.date(2026, 10, 29)
+        after = dt.datetime(2026, 10, 29, 14, tzinfo=dt.timezone.utc)
+        base = {"title": "Tree removal", "url": "https://county.example/bids/13",
+                "deadline": "2026-10-29"}
+        for field in ({}, {"deadline_time": "time unknown"},
+                      {"deadline_time": "9:00 AM", "deadline_timezone": "Pacific"}):
+            with self.subTest(field=field):
+                item = classify(dict(base, **field), today=today, now=after)
+                self.assertEqual(item["deadline_status"], "stated_unverified")
+                self.assertEqual(item["status"], "review required")
+        naive = dt.datetime(2026, 10, 29, 14)
+        self.assertIsNotNone(classify(dict(base, deadline_time="9:00 AM"),
+                                      today=today, now=naive))
+
+    def test_future_cutoff_remains_review_only_and_eastern_dst_is_honored(self):
+        import datetime as dt
+        today = dt.date(2026, 10, 29)
+        now = dt.datetime(2026, 10, 29, 20, tzinfo=dt.timezone.utc)
+        future = {"title": "Storm cleanup", "url": "https://county.example/bids/14",
+                  "deadline": "2026-10-30", "deadline_time": "9:00 AM"}
+        self.assertEqual(classify(future, today=today, now=now)["deadline_status"],
+                         "stated_unverified")
+        # On October 29 EDT, 13:00 UTC is 9:00 AM local; not 8:00 or 10:00.
+        local = dt.datetime(2026, 10, 29, 13, tzinfo=dt.timezone.utc)
+        same_day = dict(future, deadline="2026-10-29")
+        self.assertIsNone(classify(same_day, today=today, now=local))
+
+    def test_stump_removal_wording_is_relevant_but_never_verified(self):
+        import datetime as dt
+        today = dt.date(2026, 10, 29)
+        for title in ("Tree & Stump Removal", "Tree and Stump Removal",
+                      "Stump Grinding"):
+            with self.subTest(title=title):
+                notice = {"title": title, "url": "https://county.example/bids/20",
+                          "deadline": "2026-11-01"}
+                item = classify(notice, today=today)
+                self.assertIsNotNone(item)
+                self.assertEqual(item["status"], "review required")
+                self.assertEqual(item["deadline_status"], "stated_unverified")
+                self.assertIsNone(classify(dict(notice, deadline="2026-10-28"),
+                                           today=today))
+
     def test_no_invented_notices(self):
         self.assertEqual(build([])["opportunities"],[])
 if __name__ == "__main__": unittest.main()
