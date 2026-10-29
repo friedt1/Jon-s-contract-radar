@@ -57,8 +57,8 @@ def probe(source, fetch=scan.fetch, now=None):
             # claiming that a notice adapter is the only missing piece.
             listing_text = " ".join(scan.parse_html(html).parts)
             has_procurement_evidence = bool(re.search(
-                r"\\b(?:bids?|rfps?|rfqs?|procurement|solicitations?|"
-                r"request\\s+for\\s+(?:proposals?|qualifications?))\\b",
+                r"\b(?:bids?|rfps?|rfqs?|procurement|solicitations?|"
+                r"request\s+for\s+(?:proposals?|qualifications?))\b",
                 listing_text, re.I))
             result["state"] = ("listing_reachable_adapter_required"
                                if has_procurement_evidence else
