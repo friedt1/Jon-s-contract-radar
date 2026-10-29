@@ -43,6 +43,41 @@ class CoverageAuditTests(unittest.TestCase):
         self.assertTrue(result["sources"][2]["direct_fetch_target"])
         self.assertFalse(result["sources"][3]["direct_fetch_target"])
 
+    def test_staged_urls_are_not_active_connections(self):
+        result = audit([
+            {"name": "Staged", "mode": "discovery_pending", "url": "",
+             "verified_url": False, "candidate_official_url": "https://county.example/bids",
+             "activation_gate": "Review robots and individual bid extraction"},
+            {"name": "Unknown", "mode": "discovery_pending", "url": "",
+             "verified_url": False},
+            {"name": "Broken direct", "mode": "direct_page", "url": "",
+             "verified_url": True},
+        ])
+        self.assertEqual(result["not_directly_monitored"], 3)
+        self.assertEqual(result["official_urls_staged"], 1)
+        self.assertEqual(result["discovery_required"], 1)
+        self.assertEqual(result["invalid_direct_configurations"], 1)
+        self.assertFalse(result["sources"][0]["direct_fetch_target"])
+        self.assertIn("not verified", result["sources"][0]["status"])
+        self.assertEqual(result["sources"][0]["candidate_official_url"],
+                         "https://county.example/bids")
+        self.assertIn("robots", result["sources"][0]["activation_gate"])
+
+    def test_current_102_source_inventory_is_accounted_for(self):
+        import json
+        from pathlib import Path
+        sources = json.loads((Path(__file__).parent / "sources.json").read_text())
+        result = audit(sources)
+        self.assertEqual(result["total"], 102)
+        self.assertEqual(
+            result["direct_configured"] + result["official_urls_staged"]
+            + result["invalid_direct_configurations"] + result["discovery_required"],
+            102,
+        )
+        self.assertEqual(result["not_directly_monitored"],
+                         result["official_urls_staged"] + result["invalid_direct_configurations"]
+                         + result["discovery_required"])
+
 
 if __name__ == "__main__":
     unittest.main()
