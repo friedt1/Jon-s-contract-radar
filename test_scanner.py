@@ -115,7 +115,9 @@ class RegressionTests(unittest.TestCase):
     def test_all_configurations_use_direct_and_discovery(self):
         sources=scanner.json.loads(scanner.SOURCES.read_text())
         direct=[s for s in sources if s.get('mode')=='direct_page']
-        self.assertEqual(len(direct),15)
+        self.assertEqual(len(sources), 102)
+        # New official integrations must not break regression coverage.
+        self.assertGreaterEqual(len(direct), 15)
         for src in direct:
             with self.subTest(source=src['name']):
                 with patch.object(scanner,'scan_direct',return_value=([], 'direct fetched')) as d, patch.object(scanner,'scan_news',return_value=[]) as n:
