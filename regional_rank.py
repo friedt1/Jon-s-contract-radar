@@ -14,6 +14,7 @@ from zoneinfo import ZoneInfo
 from notice_identity import canonical_url
 import civicplus_bids
 from submission_deadlines import eastern_deadline_timezone
+from publisher_status import publisher_closed
 
 KEYWORDS = ("debris removal", "disaster debris", "emergency tree", "vegetation management",
             "right-of-way", "tree removal", "stump removal", "stump grinding",
@@ -38,16 +39,8 @@ def finite_number(value):
     return number if math.isfinite(number) else None
 
 
-_CLOSED = frozenset({"closed", "awarded", "cancelled", "canceled", "withdrawn", "expired"})
-
-
 def _closed_by_publisher(notice):
-    for field in ("status", "open_status"):
-        state = str(notice.get(field) or "").strip().lower()
-        for prefix in ("", "listing_", "detail_listed_"):
-            if state.startswith(prefix) and state[len(prefix):] in _CLOSED:
-                return True
-    return False
+    return publisher_closed(notice)
 
 
 def _deadline_state(notice, today, now=None):
