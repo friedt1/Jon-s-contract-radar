@@ -4,11 +4,11 @@
     "BidNet Direct": "not connected: individual bid listing interface/permission not established",
     "PennBid": "not connected: individual bid listing interface/permission not established"
   },
-  "updated": "2026-10-28T23:29:24+00:00",
+  "updated": "2026-10-29T00:09:21+00:00",
   "opportunities": [],
   "source_status": {
-    "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 0 relevant details checked; 0 unverified candidates; 0 closed; 0 expired; indirect RSS ok; 0 candidates",
-    "Steuben County bids": "direct fetched; 1 listing pages; 7 individual bid records; 0 relevant details checked; 0 unverified candidates; 0 closed; 0 expired; indirect RSS ok; 0 candidates",
+    "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 2 relevant details checked; 0 unverified candidates; 0 closed; 0 expired; indirect RSS ok; 0 candidates",
+    "Steuben County bids": "direct fetched; 1 listing pages; 7 individual bid records; 7 relevant details checked; 0 unverified candidates; 0 closed; 0 expired; indirect RSS ok; 0 candidates",
     "Schuyler County purchasing": "direct fetched; 1 listing pages; 36 details checked; 1 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
     "Tompkins County purchasing": "direct fetched; 1 listing pages; 36 details checked; 1 PDFs checked; 0 candidates; 1 detail errors: ValueError; indirect RSS ok; 0 candidates",
     "Elmira City bids": "direct fetched; 1 listing pages; 2 details checked; 1 PDFs checked; 0 candidates; indirect RSS ok; 0 candidates",
