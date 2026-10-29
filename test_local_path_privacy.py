@@ -25,6 +25,20 @@ class PathPrivacyTests(unittest.TestCase):
                 }
                 self.assertIsNone(radar.candidate(record, SOURCE, NOW))
 
+    def test_nested_percent_encoded_contacts_are_rejected(self):
+        # One decode pass leaves %2B, %40, or %20 in these URLs. A
+        # downstream web server may decode again before displaying the path.
+        for url in (
+            "https://social.example/post/%252B16075550199",
+            "https://social.example/post/contact%2540example.org",
+            "https://social.example/post/123%2520Main%2520Street",
+            "https://social.example/post/2156?ref=owner%2540example.org",
+            "https://social.example/post/2156?ref=123%2520Main%2520Street",
+            "https://social.example/post/2156?%2565mail=owner",
+        ):
+            with self.subTest(url=url):
+                self.assertEqual(radar.canonical(url), "")
+
     def test_safe_opaque_permalink_remains_usable(self):
         url = "https://social.example/@homeowner/1099999999999"
         self.assertEqual(radar.canonical(url), url)
