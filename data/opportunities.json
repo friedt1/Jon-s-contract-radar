@@ -1462,7 +1462,7 @@
     ],
     "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Staged URLs are not monitored; all leads remain unverified."
   },
-  "updated": "2026-10-29T08:21:40+00:00",
+  "updated": "2026-10-29T09:17:51+00:00",
   "opportunities": [],
   "source_status": {
     "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 2 relevant details checked; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
