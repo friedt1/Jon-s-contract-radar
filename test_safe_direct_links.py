@@ -12,13 +12,12 @@ SOURCE = {"name": "Test County", "url": BASE, "mode": "direct_page"}
 
 
 class SafeDirectLinksTests(unittest.TestCase):
-    def test_accepts_valid_relative_same_host_and_explicit_platform_links(self):
+    def test_accepts_valid_relative_same_host_but_not_unconnected_platforms(self):
         self.assertEqual(scan.safe_detail_url(BASE, "/bid/123"),
                          "https://example.gov/bid/123")
         self.assertEqual(scan.safe_detail_url(BASE, "?page=2"),
                          "https://example.gov/bids?page=2")
-        self.assertEqual(scan.safe_detail_url(BASE, "https://pennbid.net/bid/123"),
-                         "https://pennbid.net/bid/123")
+        self.assertEqual(scan.safe_detail_url(BASE, "https://pennbid.net/bid/123"), "")
 
     def test_rejects_malformed_untrusted_or_credentialed_links(self):
         invalid = [
