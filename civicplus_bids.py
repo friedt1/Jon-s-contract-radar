@@ -117,8 +117,8 @@ def listing_records(page, origin):
         card_text = page.link_rows.get(href, "") if href else ""
         if card_text and title.strip().lower() in generic_labels:
             prefix = re.split(
-                r"\\b(?:Bid\\s+No\\.?|Status|Closes|Publication Date/Time|"
-                r"Closing Date/Time|Read on|Read more|View details)\\b",
+                r"\b(?:Bid\s+No\.?|Status|Closes|Publication Date/Time|"
+                r"Closing Date/Time|Read on|Read more|View details)\b",
                 card_text, maxsplit=1, flags=re.I,
             )[0].strip(" :-")
             if prefix and prefix.lower() not in generic_labels:
