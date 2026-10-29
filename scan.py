@@ -19,6 +19,7 @@ import xml.etree.ElementTree as ET
 import local_bid_rss
 import public_bid_pagination as public_pages
 import civicplus_bids
+import robots_policy
 
 ROOT = pathlib.Path(__file__).resolve().parent
 SOURCES = ROOT / 'sources.json'
@@ -77,9 +78,16 @@ def eligible(text, source='', today=None):
  if source in BROAD_SOURCES and not local_evidence(text): return False
  return True
 
+class RobotsAwareRedirect(ur.HTTPRedirectHandler):
+ def redirect_request(self, req, fp, code, msg, headers, newurl):
+  robots_policy.assert_allowed(newurl)
+  return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
 def fetch(url, binary=False):
+ robots_policy.assert_allowed(url)
  req=ur.Request(url,headers={'User-Agent':'Mozilla/5.0 (compatible; JonsContractRadar/5.0; public listings)','Accept':'text/html,application/rss+xml,application/xml,application/pdf;q=0.8,*/*;q=0.4'})
- with ur.urlopen(req,timeout=14) as r:
+ with ur.build_opener(RobotsAwareRedirect()).open(req,timeout=14) as r:
   if r.status!=200: raise ValueError('HTTP '+str(r.status))
   content=r.read(MAX_BYTES+1)
   if len(content)>MAX_BYTES: raise ValueError('page too large')
@@ -351,6 +359,7 @@ def run(src):
  if src.get('url') and src.get('mode')=='direct_page':
   try:
    items,st=scan_direct(src);leads.extend(items);statuses.append(st)
+  except robots_policy.RobotsDenied as e:statuses.append('direct blocked by robots policy: '+str(e))
   except Exception as e:statuses.append('direct error: '+error_label(e))
  if src['name']=='Elmira Next local bids':
   try:
