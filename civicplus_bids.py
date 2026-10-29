@@ -18,7 +18,28 @@ SOURCES = frozenset({"Chemung County bids", "Steuben County bids",
                      "Bradford County PA", "Livingston County", "Wyoming County",
                      "Village of Horseheads", "City of Cortland"})
 MAX_DETAILS = 36
-DATE = re.compile(r"\b(\d{1,2}/\d{1,2}/\d{4})(?:\s+(\d{1,2}:\d{2}\s*[AP]M))?\b", re.I)
+_DATE_TEXT = (
+    r"(?:\d{1,2}/\d{1,2}/\d{4}|\d{4}-\d{2}-\d{2}|"
+    r"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|"
+    r"Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|"
+    r"Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},?\s+\d{4})"
+)
+# These are closing-field dates only; publication and meeting dates are not
+# submission cutoffs. Keep the clock attached to the same field.
+DATE = re.compile(
+    r"\b(" + _DATE_TEXT + r")(?:\s*(?:,\s*)?(?:at\s+)?(\d{1,2}:\d{2}\s*[AP]M))?\b",
+    re.I,
+)
+
+
+def _closing_date(value):
+    cleaned = " ".join(value.replace(",", " ").split())
+    for fmt in ("%m/%d/%Y", "%Y-%m-%d", "%B %d %Y", "%b %d %Y"):
+        try:
+            return dt.datetime.strptime(cleaned, fmt).date().isoformat()
+        except ValueError:
+            continue
+    return ""
 STATUS = re.compile(r"\bStatus\s*:\s*(?:Closes\s*:\s*)?(Open|Closed|Awarded|Cancelled|Canceled)\b", re.I)
 CLOSED = frozenset({"closed", "awarded", "cancelled", "canceled"})
 
@@ -63,11 +84,8 @@ def closing_of(text):
                           + DATE.pattern, text, re.I)
     if not match:
         return "", ""
-    try:
-        date = dt.datetime.strptime(match.group(1), "%m/%d/%Y").date().isoformat()
-    except ValueError:
-        return "", ""
-    return date, (match.group(2) or "").strip()
+    date = _closing_date(match.group(1))
+    return date, (match.group(2) or "").strip() if date else ""
 
 
 
@@ -80,11 +98,8 @@ def detail_closing_of(text):
     match = re.search(r"\bClosing\s+Date(?:/Time|\s+and\s+Time)?\s*:\s*" + DATE.pattern, text, re.I)
     if not match:
         return "", ""
-    try:
-        due = dt.datetime.strptime(match.group(1), "%m/%d/%Y").date().isoformat()
-    except ValueError:
-        return "", ""
-    return due, (match.group(2) or "").strip()
+    due = _closing_date(match.group(1))
+    return due, (match.group(2) or "").strip() if due else ""
 
 
 
