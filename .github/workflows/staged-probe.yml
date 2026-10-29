@@ -4,6 +4,17 @@ on:
   schedule:
     - cron: '21 5 * * *'
   workflow_dispatch:
+  # Refresh staged-source diagnostics whenever the source registry or adapter changes.
+  # Do not include data/staged_probes.json: probe commits must not retrigger probes.
+  push:
+    branches: [main]
+    paths:
+      - sources.json
+      - probe_staged_sources.py
+      - civicplus_bids.py
+      - granicus_rfps.py
+      - robots_policy.py
+      - '.github/workflows/staged-probe.yml'
   pull_request:
     paths:
       - probe_staged_sources.py
@@ -42,7 +53,7 @@ jobs:
       - run: python -m unittest test_staged_probes test_staged_municipal_sources test_waverly_staging test_granicus_rfps test_civicplus_bids -v
 
   probe:
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push')
     needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 20
