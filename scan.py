@@ -60,7 +60,7 @@ def local_evidence(text):
 def deadline(text):
  """Only dates explicitly labeled as submission deadlines, never posting dates."""
  dates=[]
- pattern=r"(?:due(?: date)?|closing(?: date)?|bids? (?:due|received)|submit(?:ted)? (?:by|until)|deadline)[^.;\n]{0,65}?((?:\d{4}-\d{1,2}-\d{1,2})|(?:\d{1,2}/\d{1,2}/\d{2,4})|(?:(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},?\s+\d{4}))"
+ pattern=r"(?:due(?: date)?|closing(?:\s+date(?:/time)?)?|bids? (?:due|received)|submit(?:ted)? (?:by|until)|deadline)[^.;\n]{0,65}?((?:\d{4}-\d{1,2}-\d{1,2})|(?:\d{1,2}/\d{1,2}/\d{2,4})|(?:(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},?\s+\d{4}))"
  for value in re.findall(pattern,text,re.I):
   for fmt in ('%Y-%m-%d','%m/%d/%Y','%m/%d/%y','%B %d %Y','%b %d %Y'):
    try: dates.append(dt.datetime.strptime(value.replace(',',''),fmt).date());break
@@ -318,8 +318,29 @@ def scan_civicplus(src, listing_pages, page_errors):
  return list(found.values()), status
 
 
+def individual_metadata_notice(body, url):
+ """Require bid-specific fields before treating a metadata table as one notice.
+
+ A table of many solicitations, a homepage, or a navigation menu must not
+ become an individual bid merely because it mentions tree removal.
+ """
+ return (is_individual_notice_link(url)
+         and bool(re.search(r'\b(?:Bid\s+(?:Number|No\.?)|Solicitation\s+(?:Number|ID))\s*:', body, re.I))
+         and bool(re.search(r'\bDescription\s*:', body, re.I)))
+
+
+def metadata_description(body):
+ """Isolate the solicitation description from subsequent metadata fields."""
+ match = re.search(
+  r'\bDescription\s*:\s*(.+?)(?=\b(?:Closing\s+Date(?:/Time)?|'
+  r'Bid\s+(?:Number|No\.?|Title)|Solicitation\s+(?:Number|ID)|'
+  r'Status|Contact|Related\s+Documents|Publication\s+Date)\s*:|$)',
+  body, re.I | re.S)
+ return norm(match.group(1))[:1200] if match else ''
+
+
 def scan_direct(src):
- base=src['url'];name=src['name'];found={};visited=set();errors=[];pdfs=0;nested_listing_pages=0
+ base=src['url'];name=src['name'];found={};visited=set();errors=[];pdfs=0;nested_listing_pages=0;metadata_details=0
  html,ctype,final=fetch(base)
  if 'html' not in ctype and not html.lstrip().startswith('<'):return [],'unsupported content type'
  page=parse_html(html)
@@ -381,7 +402,7 @@ def scan_direct(src):
     p=parse_html(blob.decode('utf-8','replace'));body=norm(' '.join(p.parts))[:20000]
     # A listing containing many bids must be handled as separate rows.
     records=p.rows if p.rows else [body]
-    if not p.rows and (closed(body) or (deadline(body) and deadline(body)<NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat())):
+    if (not p.rows or individual_metadata_notice(body, final_url)) and (closed(body) or (deadline(body) and deadline(body)<NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat())):
      found.pop(notice_identity.notice_id(url),None);continue
     nested_notice_links = False
     for label,href,_ in p.links:
@@ -399,14 +420,20 @@ def scan_direct(src):
        candidates.append((0,target,label,row))
     if nested_notice_links and not p.rows:
      nested_listing_pages += 1
-    if not p.rows and not nested_notice_links and category(body) and eligible(body,name):
-     key=category(body);match=next((t for t in CATEGORIES[key] if t in body.lower()),'')
-     ix=body.lower().find(match);snippet=body[max(0,ix-160):ix+520]
-     add_lead(found,name,title if category(title) else snippet[:130],final_url,snippet+' '+('Deadline: '+deadline(body) if deadline(body) else ''),'direct detail candidate',evidence=body)
+    metadata_notice = individual_metadata_notice(body, final_url) and not nested_notice_links
+    if metadata_notice:
+     metadata_details += 1
+    # A single notice's metadata rows are not a listing of separate bids.
+    # Only the Description field, never navigation text, establishes relevance.
+    scope = metadata_description(body) if metadata_notice else body
+    if (not p.rows or metadata_notice) and not nested_notice_links and category(scope) and eligible(scope+' bid '+('Due date: '+deadline(body) if deadline(body) else ''),name) and not closed(body):
+     key=category(scope);match=next((t for t in CATEGORIES[key] if t in scope.lower()),'')
+     ix=scope.lower().find(match);snippet=scope[max(0,ix-160):ix+520]
+     add_lead(found,name,title if category(title) else snippet[:130],final_url,('Bid description: ' if metadata_notice else '')+snippet+' '+('Deadline: '+deadline(body) if deadline(body) else ''),'individual metadata bid candidate' if metadata_notice else 'direct detail candidate',evidence=body)
   except Exception as e:errors.append(type(e).__name__)
 
  rendering='; dynamic/login portal: extraction incomplete' if not page.rows and any(x in html.lower() for x in ('enable javascript','ng-app','id="app"','id="root"','sign in','log in')) else ''
- return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {pdfs} PDFs checked; {len(found)} candidates; {nested_listing_pages} nested listing pages excluded as notices'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
+ return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {metadata_details} individual bid details fetched; {pdfs} PDFs checked; {len(found)} candidates; {nested_listing_pages} nested listing pages excluded as notices'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
 
 def scan_news(src):
  name=src['name'];query=src.get('discovery_query',name);q='"'+query.replace('"','')+'" ("tree removal" OR "tree trimming" OR "vegetation management" OR "land clearing" OR "forestry mulching" OR "storm cleanup" OR "brush clearing" OR "storm debris") (bid OR RFP OR contract OR procurement)'
