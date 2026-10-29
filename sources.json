@@ -251,7 +251,9 @@
     "type": "PA counties",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.lackawannacounty.org/government/departments/rfp_rfq.php",
+    "activation_gate": "Official county RFP/RFQ listing verified 2026-10-29; individual bid_detail_T17_R*.php links sampled returned HTTP 404. Do not activate until publisher access terms/robots, stable individual detail retrieval, closing dates, and Elmira travel qualification are validated. Historic and unrelated listings are not open tree bids."
   },
   {
     "name": "Wyoming County PA",
