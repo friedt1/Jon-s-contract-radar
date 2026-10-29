@@ -309,5 +309,25 @@ class StagedProbeTests(unittest.TestCase):
         self.assertFalse(row["individual_notice_retrieved"])
 
 
+    def test_withdrawn_or_expired_sample_is_historical_not_available(self):
+        for state in ("Withdrawn", "Expired"):
+            with self.subTest(state=state):
+                html = ('<article><a href="/Bids.aspx?bidID=4">Tree and stump removal</a>'
+                        f'<p>Status: {state}</p><p>Closes: 11/17/2026</p></article>')
+                notice = ('<h1>Bid Title: Tree and stump removal</h1>'
+                          '<p>Bid Number: 4</p><p>Description: Removal work</p>'
+                          f'<p>Status: {state}</p>'
+                          '<p>Closing Date/Time: 11/17/2026</p>')
+                def fetch(url, binary=False):
+                    if url == ENTRY:
+                        return html, "text/html", url
+                    return notice.encode(), "text/html", url
+                row = staged.probe(SOURCE, fetch=fetch)
+                self.assertEqual(row["sample_notice_status"], state.lower())
+                self.assertEqual(row["sample_notice_temporal_evidence"], "closed_or_awarded")
+                self.assertFalse(row["direct_monitoring_activated"])
+
+
+
 if __name__ == "__main__":
     unittest.main()
