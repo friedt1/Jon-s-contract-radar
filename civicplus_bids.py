@@ -106,10 +106,25 @@ def listing_records(page, origin):
             first[url] = (position, label)
     unique = sorted(((position, label, url) for url, (position, label) in first.items()))
     records = []
+    generic_labels = {"read on", "read more", "details", "view details",
+                      "view bid", "view", "more info", "learn more", "click here"}
     for i, (start, title, url) in enumerate(unique):
         stop = unique[i + 1][0] if i + 1 < len(unique) else len(page.parts)
+        # A public bid card often puts the title BEFORE its generic "Read on"
+        # link. Use the isolated article/list/table row, never the prior card.
+        href = next((href for label, href, pos in page.links
+                     if pos == start and individual_url(href, origin) == url), "")
+        card_text = page.link_rows.get(href, "") if href else ""
+        if card_text and title.strip().lower() in generic_labels:
+            prefix = re.split(
+                r"\\b(?:Bid\\s+No\\.?|Status|Closes|Publication Date/Time|"
+                r"Closing Date/Time|Read on|Read more|View details)\\b",
+                card_text, maxsplit=1, flags=re.I,
+            )[0].strip(" :-")
+            if prefix and prefix.lower() not in generic_labels:
+                title = prefix[:220]
         # Bound each record even if the site adds a long unrelated footer.
-        text = " ".join(page.parts[start:min(stop, start + 180)])
+        text = card_text[:1600] if card_text else " ".join(page.parts[start:min(stop, start + 180)])
         status = status_of(text)
         due, due_time = closing_of(text)
         number = re.search(r"\bBid\s+No\.?\s*:?\s*([A-Za-z0-9-]+)", text, re.I)
