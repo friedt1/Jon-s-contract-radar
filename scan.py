@@ -510,7 +510,7 @@ def scan_direct(src):
     # URL; a tree-work mention in a menu or an undated listing is insufficient.
     heading_scope = next((heading for heading in p.headings
                           if category(heading) and bidlike(heading)
-                          and not re.search(r'\b(?:listing|list of|all bids|current bids|bid opportunities)\b',
+                          and not re.search(r'\b(?:listings?|list of|all bids|current bids|bid opportunities)\b',
                                             heading, re.I)), '')
     heading_notice = (not nested_notice_links and bool(heading_scope)
                       and is_individual_notice_link(final_url)
