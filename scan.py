@@ -666,7 +666,7 @@ def main():
  except (ValueError,OSError):historical={}
  local_today=NOW.astimezone(ZoneInfo('America/New_York')).date()
  for uid,lead in found.items():
-  lead.update(opportunity_triage.review_assessment(lead, local_today))
+  lead.update(opportunity_triage.review_assessment(lead, local_today, now=NOW))
   old=historical.get(uid,{})
   old.pop('excluded_reason',None)
   historical[uid]={**old,**lead,'first_seen':old.get('first_seen',NOW.isoformat(timespec='seconds')),'last_seen':NOW.isoformat(timespec='seconds')}
