@@ -9,6 +9,9 @@ import datetime as dt
 import json
 import pathlib
 import math
+from zoneinfo import ZoneInfo
+
+from notice_identity import canonical_url
 
 KEYWORDS = ("debris removal", "disaster debris", "emergency tree", "vegetation management",
             "right-of-way", "tree removal", "land clearing", "storm cleanup",
@@ -32,13 +35,48 @@ def finite_number(value):
     return number if math.isfinite(number) else None
 
 
-def classify(notice):
+_CLOSED = frozenset({"closed", "awarded", "cancelled", "canceled", "withdrawn", "expired"})
+
+
+def _closed_by_publisher(notice):
+    for field in ("status", "open_status"):
+        state = str(notice.get(field) or "").strip().lower()
+        for prefix in ("", "listing_", "detail_listed_"):
+            if state.startswith(prefix) and state[len(prefix):] in _CLOSED:
+                return True
+    return False
+
+
+def _deadline_state(notice, today):
+    """A date is not evidence that a bid is open; reject only known past dates."""
+    raw = notice.get("deadline")
+    if raw in (None, ""):
+        return "unknown"
+    if not isinstance(raw, str):
+        return "invalid"
+    try:
+        due = dt.date.fromisoformat(raw)
+    except ValueError:
+        return "invalid"
+    return "expired" if due < today else "stated_unverified"
+
+
+def classify(notice, today=None):
+    if not isinstance(notice, dict):
+        return None
+    # NY/PA bid dates are assessed using the local calendar, not UTC midnight.
+    today = today or dt.datetime.now(ZoneInfo("America/New_York")).date()
+    if _closed_by_publisher(notice):
+        return None
+    deadline_state = _deadline_state(notice, today)
+    if deadline_state == "expired":
+        return None
     title = str(notice.get("title") or "")
     description = str(notice.get("summary") or "")
     content = (title + " " + description).lower()
     if not any(term in content for term in KEYWORDS):
         return None
-    url = str(notice.get("url") or "")
+    url = canonical_url(notice.get("url"))
     if not url.startswith("https://"):
         return None
     hours = finite_number(notice.get("drive_hours"))
@@ -61,6 +99,8 @@ def classify(notice):
     if any(term in content for term in AGENCIES): score += 1
     if notice.get("subcontracting_available") is True: score += 1
     result = dict(notice)
+    result["url"] = url
+    result["deadline_status"] = deadline_state
     result["drive_hours"] = hours
     result["travel_verified"] = travel_verified
     result["priority_score"] = score
@@ -69,11 +109,24 @@ def classify(notice):
     result["status"] = "review required"
     return result
 
-def build(notices):
-    results = [x for n in notices if (x := classify(n)) is not None]
-    results.sort(key=lambda n: (-n["priority_score"], str(n.get("title", ""))))
+def build(notices, today=None):
+    # One public notice may appear through several marketing/tracking URLs.
+    # Keep substantive query keys (including bid IDs) so distinct bids survive.
+    by_url = {}
+    for notice in notices:
+        item = classify(notice, today=today)
+        if item is None:
+            continue
+        key = item["url"]
+        previous = by_url.get(key)
+        quality = lambda n: (n["priority_score"], bool(n.get("deadline")),
+                             len(str(n.get("summary") or "")))
+        if previous is None or quality(item) > quality(previous):
+            by_url[key] = item
+    results = sorted(by_url.values(), key=lambda n: (-n["priority_score"], str(n.get("title", ""))))
     return {"updated": dt.datetime.now(dt.timezone.utc).isoformat(),
-            "coverage_note": "Candidate notices only; bid status, eligibility and drive time must be verified at source.",
+            "coverage_note": ("Review-only candidates; past deadlines and publisher-closed notices excluded. "
+                              "Unknown deadlines, bid status, eligibility and travel require verification."),
             "opportunities": results}
 
 def main():
