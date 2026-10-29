@@ -28,6 +28,9 @@
       "individual_bid_records_found": 12,
       "detail_fetches_attempted": 204,
       "individual_bid_details_fetched": 12,
+      "detail_errors": 2,
+      "detail_robots_blocked_sources": 1,
+      "pdf_budget_skips": 182,
       "unverified_candidates": 0
     },
     "sources": [
@@ -42,6 +45,9 @@
         "individual_bid_records_found": 2,
         "detail_fetches_attempted": 2,
         "individual_bid_details_fetched": 2,
+        "detail_errors": 0,
+        "detail_access_state": "retrieved_unverified",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "direct fetched; 1 listing pages; 2 individual bid records; 2 relevant details checked; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied"
       },
@@ -56,6 +62,9 @@
         "individual_bid_records_found": 7,
         "detail_fetches_attempted": 7,
         "individual_bid_details_fetched": 7,
+        "detail_errors": 0,
+        "detail_access_state": "retrieved_unverified",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "direct fetched; 1 listing pages; 7 individual bid records; 7 relevant details checked; 7 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied"
       },
@@ -70,8 +79,11 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 36,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "attempted_unverified",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 2 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 2 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Tompkins County purchasing",
@@ -84,8 +96,11 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 36,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 1,
+        "detail_access_state": "fetch_error",
+        "pdf_budget_skips": 30,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 5 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 5 PDFs checked; 30 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Elmira City bids",
@@ -98,8 +113,11 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 2,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "attempted_unverified",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Elmira Next local bids",
@@ -112,8 +130,11 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 18,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "attempted_unverified",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 1 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 1 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Lycoming County bids",
@@ -126,8 +147,11 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 6,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 1,
+        "detail_access_state": "robots_blocked",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 6 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: RobotsDenied; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 6 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: RobotsDenied; indirect RSS error: RobotsDenied"
       },
       {
         "name": "PA procurement opportunities",
@@ -140,8 +164,11 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 18,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "attempted_unverified",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "PA DGS construction bids",
@@ -154,8 +181,11 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 18,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "attempted_unverified",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Tioga Bradford Housing Authority",
@@ -168,8 +198,11 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 2,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "attempted_unverified",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Chemung County purchasing",
@@ -182,8 +215,11 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 18,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "attempted_unverified",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "PennBid platform",
@@ -196,6 +232,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "direct blocked by robots policy: robots disallows requested path; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established"
       },
@@ -210,8 +249,11 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 18,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "attempted_unverified",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established"
       },
       {
         "name": "Tioga County NY",
@@ -224,8 +266,11 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 18,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "attempted_unverified",
+        "pdf_budget_skips": 152,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 5 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 5 PDFs checked; 152 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Broome County",
@@ -238,6 +283,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -252,6 +300,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -266,6 +317,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -280,6 +334,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -294,6 +351,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -308,6 +368,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -322,6 +385,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -336,6 +402,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -350,6 +419,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -364,6 +436,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -378,6 +453,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -392,6 +470,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -406,6 +487,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -420,6 +504,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -434,6 +521,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -448,6 +538,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -462,6 +555,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -476,8 +572,11 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 2,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "attempted_unverified",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Village of Horseheads",
@@ -490,6 +589,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -504,6 +606,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -518,6 +623,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -532,6 +640,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -546,6 +657,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -560,6 +674,9 @@
         "individual_bid_records_found": 3,
         "detail_fetches_attempted": 3,
         "individual_bid_details_fetched": 3,
+        "detail_errors": 0,
+        "detail_access_state": "retrieved_unverified",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "direct fetched; 1 listing pages; 3 individual bid records; 3 relevant details checked; 3 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied"
       },
@@ -574,6 +691,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -588,6 +708,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -602,6 +725,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -616,6 +742,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -630,6 +759,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -644,6 +776,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -658,6 +793,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -672,6 +810,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -686,6 +827,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -700,6 +844,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -714,6 +861,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -728,6 +878,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -742,6 +895,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -756,6 +912,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -770,6 +929,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -784,6 +946,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -798,6 +963,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -812,6 +980,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -826,6 +997,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -840,6 +1014,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -854,6 +1031,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -868,6 +1048,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -882,6 +1065,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -896,6 +1082,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -910,6 +1099,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -924,6 +1116,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -938,6 +1133,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -952,6 +1150,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -966,6 +1167,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -980,6 +1184,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -994,6 +1201,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1008,6 +1218,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1022,6 +1235,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1036,6 +1252,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1050,6 +1269,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1064,6 +1286,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1078,6 +1303,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1092,6 +1320,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1106,6 +1337,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1120,6 +1354,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1134,6 +1371,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1148,6 +1388,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1162,6 +1405,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1176,6 +1422,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "direct blocked by robots policy: robots disallows requested path; indirect RSS error: RobotsDenied"
       },
@@ -1190,6 +1439,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1204,8 +1456,11 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 0 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 0 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "PennDOT District 4",
@@ -1218,6 +1473,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1232,6 +1490,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1246,6 +1507,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1260,6 +1524,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1274,6 +1541,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1288,6 +1558,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1302,6 +1575,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1316,6 +1592,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1330,6 +1609,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1344,6 +1626,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1358,6 +1643,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1372,6 +1660,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1386,6 +1677,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1400,6 +1694,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1414,6 +1711,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1428,6 +1728,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1442,6 +1745,9 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       },
@@ -1456,29 +1762,32 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
+        "detail_errors": 0,
+        "detail_access_state": "not_attempted",
+        "pdf_budget_skips": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
       }
     ],
-    "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Staged URLs are not monitored; all leads remain unverified."
+    "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Individual-detail robots blocks and errors are reported separately. Staged URLs are not monitored; all leads remain unverified."
   },
-  "updated": "2026-10-29T11:50:44+00:00",
+  "updated": "2026-10-29T12:35:28+00:00",
   "opportunities": [],
   "source_status": {
     "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 2 relevant details checked; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
     "Steuben County bids": "direct fetched; 1 listing pages; 7 individual bid records; 7 relevant details checked; 7 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
-    "Schuyler County purchasing": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 2 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Tompkins County purchasing": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 5 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied",
-    "Elmira City bids": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Elmira Next local bids": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 1 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied",
-    "Lycoming County bids": "direct fetched; 1 listing pages; 6 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: RobotsDenied; indirect RSS error: RobotsDenied",
-    "PA procurement opportunities": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "PA DGS construction bids": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Tioga Bradford Housing Authority": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Chemung County purchasing": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "Schuyler County purchasing": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 2 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "Tompkins County purchasing": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 5 PDFs checked; 30 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied",
+    "Elmira City bids": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "Elmira Next local bids": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 1 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied",
+    "Lycoming County bids": "direct fetched; 1 listing pages; 6 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: RobotsDenied; indirect RSS error: RobotsDenied",
+    "PA procurement opportunities": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "PA DGS construction bids": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "Tioga Bradford Housing Authority": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "Chemung County purchasing": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "PennBid platform": "direct blocked by robots policy: robots disallows requested path; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established",
-    "BidNet NY platform": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established",
-    "Tioga County NY": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 5 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "BidNet NY platform": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established",
+    "Tioga County NY": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 5 PDFs checked; 152 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "Broome County": "indirect RSS error: RobotsDenied",
     "Cortland County": "indirect RSS error: RobotsDenied",
     "Yates County": "indirect RSS error: RobotsDenied",
@@ -1496,7 +1805,7 @@
     "Potter County PA": "indirect RSS error: RobotsDenied",
     "Lackawanna County": "indirect RSS error: RobotsDenied",
     "Wyoming County PA": "indirect RSS error: RobotsDenied",
-    "Town of Horseheads": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "Town of Horseheads": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "Village of Horseheads": "indirect RSS error: RobotsDenied",
     "Town of Big Flats": "indirect RSS error: RobotsDenied",
     "Town of Elmira": "indirect RSS error: RobotsDenied",
@@ -1548,7 +1857,7 @@
     "NYSEG": "indirect RSS error: RobotsDenied",
     "New York State DOT Region 6": "direct blocked by robots policy: robots disallows requested path; indirect RSS error: RobotsDenied",
     "New York State DOT Region 9": "indirect RSS error: RobotsDenied",
-    "PennDOT District 3": "direct fetched; 1 listing pages; 0 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "PennDOT District 3": "direct fetched; 1 listing pages; 0 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "PennDOT District 4": "indirect RSS error: RobotsDenied",
     "Pennsylvania American Water": "indirect RSS error: RobotsDenied",
     "Corning Natural Gas": "indirect RSS error: RobotsDenied",
