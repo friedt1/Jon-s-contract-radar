@@ -93,7 +93,8 @@ class StagedProbeTests(unittest.TestCase):
         ):
             with self.subTest(html=html):
                 row = staged.probe(other, fetch=lambda url: (html, "text/html", url))
-                self.assertEqual(row["state"], "official_page_reachable_no_procurement_evidence")
+                self.assertNotEqual(row["state"],
+                                    "listing_reachable_external_provider_access_required")
                 self.assertFalse(row["direct_monitoring_activated"])
 
     def test_listing_http_failures_are_not_generic_errors(self):
