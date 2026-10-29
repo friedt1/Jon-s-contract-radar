@@ -429,7 +429,7 @@ def scan_direct(src):
     if (not p.rows or metadata_notice) and not nested_notice_links and category(scope) and eligible(scope+' bid '+('Due date: '+deadline(body) if deadline(body) else ''),name) and not closed(body):
      key=category(scope);match=next((t for t in CATEGORIES[key] if t in scope.lower()),'')
      ix=scope.lower().find(match);snippet=scope[max(0,ix-160):ix+520]
-     add_lead(found,name,title if category(title) else snippet[:130],final_url,snippet+' '+('Deadline: '+deadline(body) if deadline(body) else ''),'individual metadata bid candidate' if metadata_notice else 'direct detail candidate',evidence=body)
+     add_lead(found,name,title if category(title) else snippet[:130],final_url,('Bid description: ' if metadata_notice else '')+snippet+' '+('Deadline: '+deadline(body) if deadline(body) else ''),'individual metadata bid candidate' if metadata_notice else 'direct detail candidate',evidence=body)
   except Exception as e:errors.append(type(e).__name__)
 
  rendering='; dynamic/login portal: extraction incomplete' if not page.rows and any(x in html.lower() for x in ('enable javascript','ng-app','id="app"','id="root"','sign in','log in')) else ''
