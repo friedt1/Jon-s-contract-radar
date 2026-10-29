@@ -233,7 +233,9 @@
     "type": "PA counties",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.clintoncountypa.gov/about-us/rfps",
+    "activation_gate": "Official county RFP index confirmed; some listings still display Open without a closing date despite old start dates. Verify robots and site terms, build CivicPlus RFP component-list/detail adapter (not bidID), reject expired individual notices, and confirm worksite travel time before direct activation."
   },
   {
     "name": "Potter County PA",
