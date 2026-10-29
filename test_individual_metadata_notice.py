@@ -40,7 +40,13 @@ class IndividualMetadataTests(unittest.TestCase):
   manual={}
   scan.add_lead(manual,'Test County','Hazardous tree removal bid',NOTICE,scope+' Deadline: 2026-11-19',evidence=body)
   self.assertEqual(len(manual),1,msg=str(manual))
-  self.assertEqual(len(leads),1,msg=status)
+  parsed=scan.norm(' '.join(scan.parse_html(TABLE_NOTICE).parts))
+  parsed_scope=scan.metadata_description(parsed)
+  flags={'metadata':scan.individual_metadata_notice(parsed,NOTICE),
+         'scope':parsed_scope,'category':scan.category(parsed_scope),
+         'deadline':scan.deadline(parsed),'closed':scan.closed(parsed),
+         'eligible':scan.eligible(parsed_scope+' bid '+('Due date: '+scan.deadline(parsed) if scan.deadline(parsed) else ''),'Test County')}
+  self.assertEqual(len(leads),1,msg=status+' '+str(flags))
   self.assertEqual(leads[0]['url'],NOTICE)
   self.assertEqual(leads[0]['deadline'],'2026-11-19')
   self.assertEqual(leads[0]['status'],'unverified')
