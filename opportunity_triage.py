@@ -6,6 +6,8 @@ Never use this module to promote a source or verify an opportunity.
 """
 import datetime as dt
 
+import civicplus_bids
+
 CATEGORY_POINTS = {
     "Tree removal": 30,
     "Storm cleanup": 30,
@@ -23,7 +25,7 @@ EVIDENCE_POINTS = {
 }
 
 
-def review_assessment(lead, today=None):
+def review_assessment(lead, today=None, now=None):
     """Add transparent triage metadata; leave original status untouched."""
     today = today or dt.date.today()
     score = CATEGORY_POINTS.get(lead.get("category"), 0)
@@ -44,10 +46,33 @@ def review_assessment(lead, today=None):
         parsed = dt.date.fromisoformat(due) if due else None
     except (ValueError, TypeError):
         parsed = None
-    if parsed and parsed < today:
+    # Do not prioritize a notice that the publisher explicitly marks closed,
+    # even if its original deadline was later extended or is still in the future.
+    closed_states = {"closed", "awarded", "cancelled", "canceled",
+                     "detail_listed_closed", "listing_closed",
+                     "detail_listed_awarded", "listing_awarded",
+                     "detail_listed_cancelled", "listing_cancelled"}
+    if any(str(lead.get(key, "")).strip().lower() in closed_states
+           for key in ("status", "open_status")):
         return {
             "review_score": 0, "review_priority": "expired_check",
-            "review_factors": factors + ["stated deadline has passed; exclude from active review"],
+            "review_factors": factors + ["publisher indicates closed/awarded/cancelled; exclude from active review"],
+            "review_disclaimer": "Triage only; not an open-contract or travel verification",
+        }
+
+    # A same-day submission time can already have passed. Evaluate it only
+    # when the caller supplies an aware scan timestamp; never infer a time
+    # from a date-only notice or assume a timezone for a naive timestamp.
+    time_passed = (parsed is not None and now is not None
+                   and isinstance(now, dt.datetime) and now.tzinfo is not None
+                   and now.utcoffset() is not None
+                   and bool(lead.get("deadline_time"))
+                   and civicplus_bids.closing_passed(
+                       parsed.isoformat(), str(lead["deadline_time"]), now))
+    if parsed and (parsed < today or time_passed):
+        return {
+            "review_score": 0, "review_priority": "expired_check",
+            "review_factors": factors + ["stated submission cutoff has passed; exclude from active review"],
             "review_disclaimer": "Triage only; not an open-contract or travel verification",
         }
     if parsed:
