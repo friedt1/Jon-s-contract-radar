@@ -27,7 +27,8 @@ class PaStagingTests(unittest.TestCase):
         self.assertIn("Bradford County PA", civicplus_bids.SOURCES)
         self.assertNotIn("Susquehanna County", civicplus_bids.SOURCES)
         self.assertEqual(sum(x["mode"] == "direct_page" for x in sources), 18)
-        self.assertEqual(sum(bool(x.get("candidate_official_url")) for x in sources), 9)
+        # Other regions may add staged official sources without changing PA gates.
+        self.assertGreaterEqual(sum(bool(x.get("candidate_official_url")) for x in sources), 9)
 
 
 if __name__ == "__main__":
