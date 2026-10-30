@@ -5,7 +5,7 @@ crawler is authorized. A staged official URL never counts as a live adapter.
 """
 import re
 
-from source_config import direct_configured, valid_public_https_url
+from source_config import direct_configured, direct_fetch_target, valid_public_https_url
 
 
 def _number(pattern, status):
@@ -33,6 +33,9 @@ def classify(source, status):
         direct_state = "robots_blocked"
     elif provider_access_required:
         direct_state = "access_required"
+    elif not direct_fetch_target(source):
+        # Feed/API configuration is not operational until its own adapter exists.
+        direct_state = "adapter_not_implemented"
     # An HTTP refusal, rejected redirect, and rate limit are not ordinary
     # transient fetch errors or successful individual-notice ingestion.
     # A 403 may be anti-bot protection rather than a login requirement:
@@ -139,15 +142,18 @@ def summarize(sources, statuses):
     states = ("fetched_unverified", "robots_blocked", "access_required",
               "http_blocked", "redirect_blocked", "rate_limited",
               "unsupported_content", "fetch_error", "not_fetched",
-              "staged_official_url", "not_configured")
+              "staged_official_url", "not_configured", "adapter_not_implemented")
     counts = {state: sum(row["direct_state"] == state for row in rows) for state in states}
     counts["configured_direct"] = sum(bool(row["direct_url"]) for row in rows)
     # Landing-page configuration is not a working provider integration.
     # These are potential fetch targets, not proof of permitted extraction.
     counts["configured_access_required"] = sum(
         row["provider_access_required"] for row in rows)
-    counts["configured_fetch_targets"] = (
-        counts["configured_direct"] - counts["configured_access_required"])
+    counts["configured_unimplemented_adapters"] = sum(
+        row["direct_state"] == "adapter_not_implemented" for row in rows)
+    counts["configured_fetch_targets"] = sum(
+        direct_fetch_target(src) and not row["provider_access_required"]
+        for src, row in zip(sources, rows))
     counts["indirect_robots_blocked"] = sum(row["indirect_state"] == "robots_blocked" for row in rows)
     counts["individual_bid_records_found"] = sum(row["individual_bid_records_found"] for row in rows)
     counts["detail_fetches_attempted"] = sum(row["detail_fetches_attempted"] for row in rows)
@@ -190,7 +196,8 @@ def summarize(sources, statuses):
                     "Generic candidates are not verified individual solicitations. "
                     "External provider links require an approved adapter and are not followed. "
                     "Provider-access requirements persist even when a scan has no status. " 
-                    "Configured access-required portals are not direct fetch targets. "
+                     "Configured access-required portals and unimplemented feed/API adapters "
+                    "are not direct fetch targets. "
                     "HTTP refusals, unsafe redirects, rate limits and unsupported "
                     "content are distinguished from transient fetch errors. "
                     "Staged URLs are not monitored; all leads remain unverified.")
