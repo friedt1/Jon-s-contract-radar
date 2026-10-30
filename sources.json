@@ -494,7 +494,9 @@
     "type": "PA municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.wellsboroborough.com/blank-12",
+    "activation_gate": "Official borough Bids & Bid Packets page reports No Current Open Bids (2026-10-30). Verify robots/publisher terms and permitted individual PDF/notice extraction when new bids appear; archived 2025 street-tree and mowing solicitations are expired, not live."
   },
   {
     "name": "Troy Borough",
