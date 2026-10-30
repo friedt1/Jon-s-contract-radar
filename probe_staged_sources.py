@@ -164,6 +164,34 @@ def probe(source, fetch=scan.fetch, now=None):
             })
             if has_procurement_evidence and off_host_pdf_hosts:
                 result["off_host_pdf_hosts_unverified"] = off_host_pdf_hosts
+            # An issuer's explicit empty-bids message is useful diagnostic
+            # evidence, but only for the visible listing at probe time. Do not
+            # infer that other procurement channels are empty. If the page
+            # also links to potential individual notices, prefer adapter review
+            # rather than treating a stale empty-state banner as authoritative.
+            no_open_bids_reported = bool(re.search(
+                r"\\bno\\s+(?:current(?:ly)?\\s+)?open\\s+bids?\\b",
+                listing_text, re.I))
+            possible_notice_links = any(
+                href and (
+                    re.search(r"\\.pdf(?:$|[?#])", href, re.I)
+                    or (re.search(
+                        r"\\b(?:bids?|rfps?|rfqs?|proposals?|solicitations?|"
+                        r"quotes?|trees?|stumps?)\\b", label, re.I)
+                        and urlparse(href).path not in (
+                            "", "/", urlparse(final).path)))
+                for label, href, _ in page.links
+            )
+            empty_bids_listing = (
+                has_procurement_evidence and no_open_bids_reported
+                and not possible_notice_links
+                and not (delegated_to_provider or provider_link)
+            )
+            if empty_bids_listing:
+                result["section_note"] = (
+                    "Issuer's visible bid listing reports no current open bids "
+                    "at probe time; other channels and individual notice "
+                    "access remain unverified")
             # Some municipal homepages have an explicit RFP section that
             # currently says "None at this time". This is evidence about that
             # section only, not proof that no bids exist on other pages or
@@ -179,6 +207,7 @@ def probe(source, fetch=scan.fetch, now=None):
                 "listing_reachable_external_provider_access_required"
                 if delegated_to_provider or provider_link else
                 "listing_reachable_rfp_section_reports_none" if rfp_section_empty else
+                "listing_reachable_no_open_bids_reported" if empty_bids_listing else
                 "listing_reachable_off_host_documents_review_required"
                 if has_procurement_evidence and off_host_pdf_hosts else
                 "listing_reachable_adapter_required" if has_procurement_evidence else
