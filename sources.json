@@ -97,6 +97,7 @@
     "url": "https://pennbid.bonfirehub.com",
     "mode": "direct_page",
     "verified_url": true,
+    "provider_access_required": true,
     "discovery_query": "PennBid",
     "require_local_evidence": true
   },
@@ -106,6 +107,7 @@
     "url": "https://www.bidnetdirect.com/new-york",
     "mode": "direct_page",
     "verified_url": true,
+    "provider_access_required": true,
     "discovery_query": "BidNet New York",
     "require_local_evidence": true
   },
@@ -212,7 +214,10 @@
     "type": "PA counties",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.tiogacountypa.us/departments/commissioners",
+    "official_page_role": "publisher_entrypoint_only",
+    "activation_gate": "Official Tioga County PA Commissioners page confirmed 2026-10-30; this is an agency entrypoint, NOT a central bid listing. Locate a permitted current individual-solicitation index and verify publisher terms, deadline, worksite and adapter before activating."
   },
   {
     "name": "Susquehanna County",
@@ -246,7 +251,10 @@
     "type": "PA counties",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.pottercountypa.gov/",
+    "official_page_role": "publisher_entrypoint_only",
+    "activation_gate": "Official Potter County PA website confirmed 2026-10-30; homepage is NOT a verified bid listing. Find a current official solicitation index and verify permitted individual notice extraction and terms before activating."
   },
   {
     "name": "Lackawanna County",
@@ -262,7 +270,10 @@
     "type": "PA counties",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://wyomingcountypa.gov/",
+    "official_page_role": "publisher_entrypoint_only",
+    "activation_gate": "Official Wyoming County PA website confirmed 2026-10-30; homepage is NOT a verified bid listing. Find current county bid notices, permitted individual listing extraction and publisher terms before activating."
   },
   {
     "name": "Town of Horseheads",
