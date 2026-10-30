@@ -536,7 +536,7 @@ def metadata_description(body):
 
 
 def scan_direct(src):
- base=src['url'];name=src['name'];found={};visited=set();errors=[];pdfs=0;pdf_attempts=0;pdfs_skipped=0;budget_skipped_urls=set();result_links_skipped=0;provider_skips=set();nested_listing_pages=0;metadata_details=0
+ base=src['url'];name=src['name'];found={};visited=set();errors=[];pdfs=0;pdf_attempts=0;pdfs_skipped=0;budget_skipped_urls=set();result_links_skipped=0;provider_skips=set();nested_listing_pages=0;metadata_details=0;detail_budget_skipped=set()
  html,ctype,final=fetch(base)
  if 'html' not in ctype and not html.lstrip().startswith('<'):return [],'unsupported content type'
  page=parse_html(html)
@@ -605,7 +605,7 @@ def scan_direct(src):
   # parameters or fragments. Deduplicate network attempts by notice identity,
   # while retaining substantive bid IDs and signed URL query strings.
   identity_url=notice_identity.canonical_url(url) or url
-  if identity_url in visited or len(visited)>=max_details:continue
+  if identity_url in visited:continue
   # A PDF URL can be identified before downloading its bytes. Once the
   # extractor budget is exhausted, skip it without spending another request
   # or consuming the remaining individual-notice detail budget.
@@ -617,6 +617,11 @@ def scan_direct(src):
    if identity_url not in budget_skipped_urls:
     budget_skipped_urls.add(identity_url)
     pdfs_skipped+=1
+   continue
+  # Distinguish unfetched generic candidates from PDF-budget skips.
+  # Neither category proves that an individual bid exists or remains open.
+  if len(visited)>=max_details:
+   detail_budget_skipped.add(identity_url)
    continue
   if pdf_hint:pdf_attempts+=1
   visited.add(identity_url)
@@ -718,7 +723,7 @@ def scan_direct(src):
   except Exception as e:errors.append(error_label(e))
 
  rendering='; dynamic/login portal: extraction incomplete' if not page.rows and any(x in html.lower() for x in ('enable javascript','ng-app','id="app"','id="root"','sign in','log in')) else ''
- return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {metadata_details} individual bid details fetched; {pdfs} PDFs checked; {pdf_attempts} PDF-shaped requests attempted; {pdfs_skipped} PDF requests skipped at budget; {result_links_skipped} result/award links excluded; {len(provider_skips)} external provider links skipped (access required); {len(found)} candidates; {nested_listing_pages} nested listing pages excluded as notices'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
+ return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {len(detail_budget_skipped)} detail candidates deferred at request budget; {metadata_details} individual bid details fetched; {pdfs} PDFs checked; {pdf_attempts} PDF-shaped requests attempted; {pdfs_skipped} PDF requests skipped at budget; {result_links_skipped} result/award links excluded; {len(provider_skips)} external provider links skipped (access required); {len(found)} candidates; {nested_listing_pages} nested listing pages excluded as notices'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
 
 def scan_news(src):
  name=src['name'];query=src.get('discovery_query',name);q='"'+query.replace('"','')+'" ("tree removal" OR "tree trimming" OR "vegetation management" OR "land clearing" OR "forestry mulching" OR "storm cleanup" OR "brush clearing" OR "storm debris") (bid OR RFP OR contract OR procurement)'
