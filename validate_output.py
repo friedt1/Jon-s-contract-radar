@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 import scan
+from source_config import direct_configured
 
 
 def validate(root=scan.ROOT):
@@ -16,7 +17,7 @@ def validate(root=scan.ROOT):
     coverage = data.get('source_coverage')
     if coverage is not None:
         direct = {s['name'] for s in sources if s.get('mode') == 'direct_page'
-                  and s.get('verified_url') is True and s.get('url')}
+                  and direct_configured(s)}
         fetched = sum('direct fetched' in data['source_status'][name] for name in direct)
         checks = {
             'total_targets': len(sources),
@@ -41,7 +42,9 @@ def validate(root=scan.ROOT):
         if counts.get('configured_direct') != coverage['direct_configured']:
             raise ValueError('Source health direct configuration disagrees with coverage')
         states = ('fetched_unverified', 'robots_blocked', 'access_required',
-                  'fetch_error', 'not_fetched', 'staged_official_url', 'not_configured')
+                  'http_blocked', 'redirect_blocked', 'rate_limited',
+                  'unsupported_content', 'fetch_error', 'not_fetched',
+                  'staged_official_url', 'not_configured')
         if sum(counts.get(key, 0) for key in states) != len(sources):
             raise ValueError('Source health states do not account for all targets')
         if counts.get('individual_bid_details_fetched', 0) != sum(
@@ -51,8 +54,9 @@ def validate(root=scan.ROOT):
             fetched = row.get('individual_bid_details_fetched', 0)
             if not isinstance(fetched, int) or fetched < 0 or fetched > row.get('detail_fetches_attempted', 0):
                 raise ValueError('Individual bid detail count exceeds attempted fetches')
-            if fetched > row.get('individual_bid_records_found', 0):
-                raise ValueError('Individual bid detail count exceeds discovered records')
+            # Generic same-host notice extraction may fetch detail pages
+            # without CivicPlus bidID listing cards. These counters describe
+            # different extraction paths and must not be compared.
             if row['direct_state'] == 'staged_official_url' and row.get('direct_url'):
                 raise ValueError('Staged official URLs cannot count as active monitoring')
     if not isinstance(data['opportunities'], list) or not isinstance(history['opportunities'], dict):
