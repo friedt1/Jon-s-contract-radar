@@ -16,13 +16,22 @@ def _number(pattern, status):
 def classify(source, status):
     mode = source.get("mode", "discovery_pending")
     configured = direct_configured(source)
+    # Access requirements are configuration facts, not dependent on a
+    # successful scanner run. Preserve them when the feed is stale or a
+    # source is robots-blocked; never count a provider gateway as an
+    # operational direct-fetch target merely because its status is missing.
+    provider_access_required = configured and (
+        source.get("provider_access_required") is True
+        or bool(source.get("delegated_provider"))
+        or "individual listing ingestion not connected" in status
+    )
     if not configured:
         direct_state = ("staged_official_url" if mode == "discovery_pending" and
                         valid_public_https_url(source.get("candidate_official_url"))
                         else "not_configured")
     elif "direct blocked by robots policy" in status:
         direct_state = "robots_blocked"
-    elif "individual listing ingestion not connected" in status:
+    elif provider_access_required:
         direct_state = "access_required"
     # An HTTP refusal, rejected redirect, and rate limit are not ordinary
     # transient fetch errors or successful individual-notice ingestion.
@@ -98,6 +107,7 @@ def classify(source, status):
         "name": source["name"],
         "mode": mode,
         "direct_state": direct_state,
+        "provider_access_required": provider_access_required,
         "indirect_state": indirect_state,
         "direct_url": source.get("url", "") if configured else "",
         "staged_official_url": source.get("candidate_official_url", "") if not configured else "",
@@ -133,7 +143,7 @@ def summarize(sources, statuses):
     # Landing-page configuration is not a working provider integration.
     # These are potential fetch targets, not proof of permitted extraction.
     counts["configured_access_required"] = sum(
-        bool(row["direct_url"]) and row["direct_state"] == "access_required" for row in rows)
+        row["provider_access_required"] for row in rows)
     counts["configured_fetch_targets"] = (
         counts["configured_direct"] - counts["configured_access_required"])
     counts["indirect_robots_blocked"] = sum(row["indirect_state"] == "robots_blocked" for row in rows)
@@ -172,6 +182,7 @@ def summarize(sources, statuses):
                     "Listing pagination failures and deferred bid records at the detail budget "
                     "mean the listing may be incomplete. "
                     "External provider links require an approved adapter and are not followed. "
+                    "Provider-access requirements persist even when a scan has no status. " 
                     "Configured access-required portals are not direct fetch targets. "
                     "HTTP refusals, unsafe redirects, rate limits and unsupported "
                     "content are distinguished from transient fetch errors. "
