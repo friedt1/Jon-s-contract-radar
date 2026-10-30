@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-30T15:41:29.356014+00:00",
+  "updated": "2026-10-30T18:38:32.789831+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 28,
   "probes": [
@@ -90,8 +90,8 @@
     {
       "name": "Allegany County",
       "official_entrypoint": "https://www.alleganyco.gov/departments/public-works/bids-awards/",
-      "state": "listing_reachable_adapter_required",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -342,18 +342,15 @@
     {
       "name": "City of Hornell",
       "official_entrypoint": "https://www.cityofhornell.gov/upcoming-bid-projects",
-      "state": "listing_reachable_off_host_documents_review_required",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official City of Hornell Upcoming Bid Projects page observed 2026-10-30 with PDF bid documents on external irp.cdn-website.com. Stage only: review robots, publisher and CDN terms; implement permitted per-document retrieval, distinguish upcoming from past bids, verify scope/deadline/status and worksite before activation. No off-host PDF is fetched by staging.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false,
-      "off_host_pdf_hosts_unverified": [
-        "irp.cdn-website.com"
-      ]
+      "direct_monitoring_activated": false
     },
     {
       "name": "City of Geneva",
