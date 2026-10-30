@@ -297,14 +297,18 @@
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.bigflatsny.gov/",
+    "activation_gate": "Official Town of Big Flats homepage verified 2026-10-30. No dedicated current bid listing or stable individual-solicitation links established; identify authoritative procurement index, review robots/publisher terms, and verify per-notice scope/deadline/worksite before activation. A town homepage is not a bid feed."
   },
   {
     "name": "Town of Elmira",
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://townofelmira.gov/",
+    "activation_gate": "Official Town of Elmira homepage verified 2026-10-30. A town-hosted concession-stand RFP closed March 9, 2026, demonstrating occasional individual PDFs, but no stable current bid index or permitted recurring extraction verified. Find authoritative listing and review robots/terms, individual notice deadlines and worksite before activation; do not treat the expired unrelated RFP as live."
   },
   {
     "name": "City of Corning",
@@ -441,7 +445,9 @@
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://townofsouthportny.gov/post.php?pid=44",
+    "activation_gate": "Official Town of Southport Legal Notice index verified 2026-10-30; currently displays truck financing, budget, and hearing notices, not an individual tree-service bid. Mixed legal notices are not a dedicated bid feed. Review robots/terms and verify stable current individual procurement notices, scope, deadline and worksite before activation."
   },
   {
     "name": "Town of Ashland NY",
