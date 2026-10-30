@@ -381,14 +381,18 @@
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.cityofhornell.gov/upcoming-bid-projects",
+    "activation_gate": "Official City of Hornell Upcoming Bid Projects page observed 2026-10-30 with PDF bid documents on external irp.cdn-website.com. Stage only: review robots, publisher and CDN terms; implement permitted per-document retrieval, distinguish upcoming from past bids, verify scope/deadline/status and worksite before activation. No off-host PDF is fetched by staging."
   },
   {
     "name": "City of Geneva",
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://cityofgenevany.gov/Bids.aspx",
+    "activation_gate": "Official City of Geneva CivicPlus Bid Postings page observed 2026-10-30 with no open postings. Stage only: review robots/publisher terms and verify future individual bidID detail extraction, status, closing dates, and Elmira drive time before direct activation. A no-open message is not proof of complete procurement coverage."
   },
   {
     "name": "City of Cortland",
