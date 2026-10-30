@@ -27,8 +27,9 @@ _DATE_TEXT = (
 )
 # These are closing-field dates only; publication and meeting dates are not
 # submission cutoffs. Keep the clock attached to the same field.
+_CLOCK_TEXT = r"(?:0?[1-9]|1[0-2])(?::[0-5]\d)?\s*[AP]\.?\s*M\.?"
 DATE = re.compile(
-    r"\b(" + _DATE_TEXT + r")(?:\s*(?:,\s*)?(?:at\s+)?(\d{1,2}:\d{2}\s*[AP]M))?\b",
+    r"\b(" + _DATE_TEXT + r")(?:\s*(?:,\s*)?(?:at\s+)?(" + _CLOCK_TEXT + r"))?(?![A-Za-z0-9])",
     re.I,
 )
 
@@ -41,6 +42,21 @@ def _closing_date(value):
         except ValueError:
             continue
     return ""
+def _clock(value):
+    """Normalize explicit 12-hour clock text; never infer a missing time."""
+    if not value:
+        return ""
+    cleaned = re.sub(r"\.", "", value.upper())
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    cleaned = re.sub(r"([AP])\s+(?=M$)", r"\1", cleaned)
+    if ":" not in cleaned:
+        cleaned = re.sub(r"^(\d{1,2})", r"\1:00", cleaned)
+    try:
+        return dt.datetime.strptime(cleaned, "%I:%M %p").strftime("%I:%M %p").lstrip("0")
+    except ValueError:
+        return ""
+
+
 STATUS = re.compile(r"\bStatus\s*:\s*(?:Closes\s*:\s*)?(Open|Closed|Awarded|Cancelled|Canceled|Withdrawn|Expired|Reopened)\b", re.I)
 CLOSED = frozenset({"closed", "awarded", "cancelled", "canceled", "withdrawn", "expired"})
 # A closed question period does not close submission of bids.
@@ -97,7 +113,7 @@ def closing_of(text):
     if not match:
         return "", ""
     date = _closing_date(match.group(1))
-    return date, (match.group(2) or "").strip() if date else ""
+    return date, _clock(match.group(2)) if date else ""
 
 
 
@@ -111,7 +127,7 @@ def detail_closing_of(text):
     if not match:
         return "", ""
     due = _closing_date(match.group(1))
-    return due, (match.group(2) or "").strip() if due else ""
+    return due, _clock(match.group(2)) if due else ""
 
 
 
@@ -130,10 +146,10 @@ def closing_passed(date, time, now):
         return True
     if date > today or not time:
         return False
-    try:
-        closing = dt.datetime.strptime(" ".join(time.upper().split()), "%I:%M %p").time()
-    except ValueError:
+    normalized = _clock(time)
+    if not normalized:
         return False
+    closing = dt.datetime.strptime(normalized, "%I:%M %p").time()
     return local.time().replace(tzinfo=None) >= closing
 
 
