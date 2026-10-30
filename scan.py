@@ -212,8 +212,8 @@ def published_result_link(title):
  This excludes only explicit result/award labels, never a bid proposal.
  """
  return bool(re.search(
-  r'\\b(?:bids?|contracts?|solicitations?)\\s+(?:results?|tab(?:ulation)?s?|awards?|awarded)\\b'
-  r'|\\b(?:notice\\s+of\\s+award|award\\s+notice|results?\\s+of\\s+(?:the\\s+)?bids?)\\b',
+  r'\b(?:bids?|contracts?|solicitations?)\s+(?:results?|tab(?:ulation)?s?|awards?|awarded)\b'
+  r'|\b(?:notice\s+of\s+award|award\s+notice|results?\s+of\s+(?:the\s+)?bids?)\b',
   norm(title), re.I))
 
 
@@ -221,7 +221,7 @@ def pdf_listing_recency(title, url, year):
  """Order bounded PDF checks; a year is NOT proof a solicitation is open."""
  if not up.urlsplit(url).path.lower().endswith('.pdf'):
   return 0
- years=[int(y) for y in re.findall(r'(?<!\\d)20\\d{2}(?!\\d)', norm(title))]
+ years=[int(y) for y in re.findall(r'(?<!\d)20\d{2}(?!\d)', norm(title))]
  if not years:
   return 0
  latest=max(years)
