@@ -194,6 +194,60 @@ class RegionalRankTests(unittest.TestCase):
                  "deadline": "2026-11-13"}
         self.assertEqual(build([owego], today=today)["opportunities"], [])
 
+    def test_duplicate_future_deadlines_are_flagged_not_silently_selected(self):
+        # Synthetic Erie-style notices only; these are not real open bids.
+        import datetime as dt
+        today = dt.date(2026, 10, 29)
+        old = {"title": "Tree and stump removal",
+               "url": "https://county.example/bids?bidID=91",
+               "deadline": "2026-11-05",
+               "estimated_value_usd": 500000}
+        amended = dict(old, url=old["url"] + "&utm_source=mail",
+                       deadline="2026-11-20", estimated_value_usd=0)
+        for notices in ([old, amended], [amended, old]):
+            with self.subTest(first=notices[0]["deadline"]):
+                items = build(notices, today=today)["opportunities"]
+                self.assertEqual(len(items), 1)
+                item = items[0]
+                self.assertEqual(item["deadline_status"], "conflicting_unverified")
+                self.assertEqual(item["deadline"], "")
+                self.assertEqual(item["deadline_time"], "")
+                self.assertEqual(item["deadline_conflict"],
+                                 ["2026-11-05", "2026-11-20"])
+                self.assertEqual(item["status"], "review required")
+
+    def test_duplicate_same_day_clock_conflict_is_review_only(self):
+        import datetime as dt
+        today = dt.date(2026, 10, 29)
+        before = dt.datetime(2026, 10, 29, 12, tzinfo=dt.timezone.utc)
+        first = {"title": "Vegetation management",
+                 "url": "https://county.example/bids?bidID=92",
+                 "deadline": "2026-10-29", "deadline_time": "9:00 AM"}
+        second = dict(first, deadline_time="2:00 PM")
+        items = build([first, second], today=today, now=before)["opportunities"]
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["deadline"], "2026-10-29")
+        self.assertEqual(items[0]["deadline_time"], "")
+        self.assertEqual(items[0]["deadline_status"], "conflicting_unverified")
+        self.assertEqual(items[0]["deadline_conflict"], ["2:00 pm", "9:00 am"])
+        self.assertEqual(items[0]["status"], "review required")
+
+    def test_distinct_bid_ids_do_not_create_false_deadline_conflicts(self):
+        import datetime as dt
+        today = dt.date(2026, 10, 29)
+        first = {"title": "Tree removal", "deadline": "2026-11-05",
+                 "url": "https://county.example/bids?bidID=93"}
+        second = dict(first, deadline="2026-11-20",
+                      url="https://county.example/bids?bidID=94")
+        items = build([first, second], today=today)["opportunities"]
+        self.assertEqual(len(items), 2)
+        self.assertTrue(all(x["deadline_status"] == "stated_unverified" for x in items))
+        self.assertTrue(all("deadline_conflict" not in x for x in items))
+        owego = {"title": "Owego demolition rebid",
+                 "url": "https://county.example/bids?bidID=95",
+                 "deadline": "2026-11-13"}
+        self.assertEqual(build([owego], today=today)["opportunities"], [])
+
     def test_no_invented_notices(self):
         self.assertEqual(build([])["opportunities"],[])
 if __name__ == "__main__": unittest.main()
