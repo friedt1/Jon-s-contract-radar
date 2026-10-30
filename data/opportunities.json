@@ -30,7 +30,7 @@
       "individual_bid_records_found": 11,
       "detail_fetches_attempted": 147,
       "individual_bid_details_fetched": 11,
-      "detail_errors": 1,
+      "detail_errors": 2,
       "detail_robots_blocked_sources": 0,
       "pdf_budget_skips": 182,
       "external_provider_links_skipped": 8,
@@ -138,12 +138,12 @@
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 10,
         "individual_bid_details_fetched": 0,
-        "detail_errors": 0,
-        "detail_access_state": "attempted_unverified",
+        "detail_errors": 1,
+        "detail_access_state": "fetch_error",
         "pdf_budget_skips": 0,
         "external_provider_links_skipped": 1,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 10 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 1 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 10 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: HTTPError; local bid RSS fetched; 1 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Lycoming County bids",
@@ -1876,7 +1876,7 @@
     ],
     "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Individual-detail robots blocks and errors are reported separately. External provider links require an approved adapter and are not followed. Configured access-required portals are not direct fetch targets. Staged URLs are not monitored; all leads remain unverified."
   },
-  "updated": "2026-10-30T01:32:02+00:00",
+  "updated": "2026-10-30T02:22:21+00:00",
   "opportunities": [],
   "source_status": {
     "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 2 relevant details checked; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
@@ -1884,7 +1884,7 @@
     "Schuyler County purchasing": "direct fetched; 1 listing pages; 7 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "Tompkins County purchasing": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 5 PDFs checked; 30 PDF requests skipped at budget; 3 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied",
     "Elmira City bids": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Elmira Next local bids": "direct fetched; 1 listing pages; 10 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 1 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied",
+    "Elmira Next local bids": "direct fetched; 1 listing pages; 10 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: HTTPError; local bid RSS fetched; 1 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied",
     "Lycoming County bids": "direct fetched; 1 listing pages; 5 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "PA procurement opportunities": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "PA DGS construction bids": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
