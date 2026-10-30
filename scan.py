@@ -77,7 +77,7 @@ def closed(text):
  not evidence that bids are closed. An explicit bid-closure field still is.
  """
  text = norm(text)
- if re.fullmatch(r'(?:closed|awarded|cancelled|canceled|expired)', text, re.I):
+ if re.fullmatch(r'(?:closed|awarded|cancelled|canceled|expired|withdrawn|rescinded)', text, re.I):
   return True
  question_only = (r'[\s:;,()\-–—/]+(?:(?:for|to)\s+)?'
                   r'(?:questions?|q\s*&\s*a|inquir(?:y|ies)|'
@@ -88,7 +88,13 @@ def closed(text):
   r'|\b(?:bids?|bidding|solicitation|rfp|rfq|contract|opportunity)'
   r'\s+(?:(?:is|are)\s+)?(?:now\s+)?closed\b'
   r'|\bstatus\s*(?::|(?:is|are))\s*closed\b(?!' + question_only + r')'
-  r'|\bclosed\s+(?:for|to)\s+(?:bids?|proposals?|submissions?)\b',
+  r'|\bclosed\s+(?:for|to)\s+(?:bids?|proposals?|submissions?)\b'
+  # A withdrawn solicitation is closed; a contractor withdrawing its own
+  # offer is not evidence that the issuing agency cancelled procurement.
+  r'|\b(?:status|solicitation\s+status|bid\s+status)\s*(?::|(?:is|are))\s*(?:withdrawn|rescinded)\b'
+  r'|\b(?:bids?|solicitation|rfp|rfq|invitation\s+to\s+bid|procurement\s+notice)\s+'
+  r'(?:(?:has\s+been|was|is)\s+)?(?:withdrawn|rescinded)\b'
+  r'|\b(?:withdrawn|rescinded)\s+(?:solicitation|rfp|rfq|procurement\s+notice)\b',
   text, re.I))
 
 def eligible(text, source='', today=None):
