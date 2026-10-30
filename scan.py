@@ -399,10 +399,22 @@ def scan_civicplus(src, listing_pages, page_errors):
  errors = []
  closed_count = 0
  expired_count = 0
- # Prioritize listing matches, but also inspect generic bid titles: the tree-work
- # scope may exist only on the individual detail page. Keep the 36-detail cap.
- prioritized = sorted(records.values(), key=lambda row:
-                      0 if category(row['title'] + ' ' + row['description']) else 1)
+ # A CivicPlus archive may label years of expired bids "Open". With a
+ # bounded detail budget, inspect future-dated listings before undated ones,
+ # and undated ones before already elapsed cutoffs. This is ONLY request
+ # ordering: neither a future date nor a listing "Open" label verifies a bid.
+ # Inspect generic titles too; tree-work scope may exist only in the detail.
+ def notice_priority(row):
+  due = row.get('deadline', '')
+  timing = (1 if not due else
+            2 if civicplus_bids.closing_passed(due, row.get('deadline_time', ''), NOW)
+            else 0)
+  relevant = 0 if category(row['title'] + ' ' + row['description']) else 1
+  return (timing, relevant)
+ prioritized = sorted(records.values(), key=notice_priority)
+ eligible_count = sum(row['open_status'] not in civicplus_bids.CLOSED
+                      for row in prioritized)
+ deferred_at_budget = max(0, eligible_count - civicplus_bids.MAX_DETAILS)
  for row in prioritized:
   if row['open_status'] in civicplus_bids.CLOSED:
    closed_count += 1
@@ -488,6 +500,7 @@ def scan_civicplus(src, listing_pages, page_errors):
    })
  status = (f'direct fetched; {len(listing_pages)} listing pages; '
            f'{len(records)} individual bid records; {checked} relevant details checked; '
+            f'{deferred_at_budget} individual bid records deferred at detail budget; '
            f'{individual_details_fetched} individual bid details fetched; '
            f'{len(found)} unverified candidates; {closed_count} closed; {expired_count} expired')
  if errors:
