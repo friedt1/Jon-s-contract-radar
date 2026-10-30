@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 import scan
+import notice_identity
 from source_config import direct_configured
 from publisher_status import publisher_closed
 from submission_deadlines import eastern_deadline_timezone
@@ -88,7 +89,10 @@ def validate(root=scan.ROOT):
             raise ValueError('Invalid or duplicate lead')
         if not scan.eligible(lead['title'] + ' ' + lead['summary'], lead['source']):
             raise ValueError('Ineligible lead: ' + lead['id'])
-        if not lead['url'].startswith(('https://', 'http://')) or lead['id'] not in history['opportunities']:
+        # Do not trust a URL merely because it starts with http(s):
+        # malformed ports, embedded credentials and control characters can
+        # otherwise survive the final publication gate if upstream regresses.
+        if not notice_identity.canonical_url(lead['url']) or lead['id'] not in history['opportunities']:
             raise ValueError('Invalid URL or missing history')
         if lead['deadline'] and lead['deadline'] < scan.NOW.astimezone(scan.ZoneInfo('America/New_York')).date().isoformat():
             raise ValueError('Expired deadline: ' + lead['id'])
