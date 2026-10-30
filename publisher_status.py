@@ -12,8 +12,8 @@ _CLOSED = re.compile(
 # Only strip an explicit status-field label, not arbitrary scope prose.
 # Publishers sometimes store "Bid Status: Awarded" as the field value.
 _LABELED_STATUS = re.compile(
-    r"^(?:(?:bid|solicitation|notice|procurement|current)\\s+)?"
-    r"status\\s*[:\\-–—]\\s*", re.I
+    r"^(?:(?:bid|solicitation|notice|procurement|current)\s+)?"
+    r"status\s*[:\-–—]\s*", re.I
 )
 _QUESTION_ONLY = re.compile(
     # Publisher labels such as "Closed - for questions" and "Closed: Q&A"
