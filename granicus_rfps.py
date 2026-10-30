@@ -42,6 +42,33 @@ def _date(match):
     return date, (match.group(2) or "").strip()
 
 
+def listing_closing_of(row):
+    """Require a closing-field label when a row has extra date evidence.
+
+    A two-date Granicus table row ordinarily shows start then close. If a
+    question deadline, pre-bid meeting, or third date appears, position alone
+    cannot identify the submission cutoff. An explicit Close Date/Closes
+    field takes precedence; ambiguous rows remain unknown and unverified.
+    """
+    close_label = (
+        r"\\b(?:Close(?:ing)?\\s+Date(?:/Time)?|Closes|"
+        r"Bid(?:ding)?\\s+(?:Due|Deadline)|Submission\\s+Deadline|"
+        r"Proposals?\\s+Due)\\s*:"
+    )
+    labelled = re.search(close_label + r"\\s*" + DATE.pattern, row, re.I)
+    if labelled:
+        return _date(labelled)
+    if re.search(close_label, row, re.I):
+        return "", ""  # Malformed closing field must not borrow another date.
+    dates = list(DATE.finditer(row))
+    if len(dates) != 2 or re.search(
+        r"\\b(?:questions?|q\\s*&\\s*a|inquir(?:y|ies)|pre[- ]?bid|"
+        r"site\\s+visit|clarifications?|addenda)\\b", row, re.I
+    ):
+        return "", ""
+    return _date(dates[1])
+
+
 def listing_records(page, origin):
     """Read individual Granicus RFP rows; never infer deadline from start date."""
     found = {}
@@ -50,10 +77,7 @@ def listing_records(page, origin):
         if not url or url in found:
             continue
         row = page.link_rows.get(href, "")
-        dates = list(DATE.finditer(row))
-        # Granicus rows contain Start Date then Close Date. One date alone
-        # cannot safely be interpreted as a submission deadline.
-        due, clock = _date(dates[1]) if len(dates) > 1 else ("", "")
+        due, clock = listing_closing_of(row)
         status_match = re.search(r"\b(Open|Closed|Awarded|Cancelled|Canceled)\s*$", row, re.I)
         found[url] = {
             "title": title.strip()[:220], "url": url,
