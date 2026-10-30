@@ -22,6 +22,18 @@ def classify(source, status):
         direct_state = "robots_blocked"
     elif "individual listing ingestion not connected" in status:
         direct_state = "access_required"
+    # An HTTP refusal, rejected redirect, and rate limit are not ordinary
+    # transient fetch errors or successful individual-notice ingestion.
+    # A 403 may be anti-bot protection rather than a login requirement:
+    # label it as HTTP-blocked, not "credentials required".
+    elif re.search(r"\\bdirect error: HTTPError HTTP (?:401|403)\\b", status):
+        direct_state = "http_blocked"
+    elif "direct error: UnsafeRedirect" in status:
+        direct_state = "redirect_blocked"
+    elif "direct error: HTTPError HTTP 429" in status:
+        direct_state = "rate_limited"
+    elif "unsupported content type" in status:
+        direct_state = "unsupported_content"
     elif "direct fetched;" in status:
         direct_state = "fetched_unverified"
     elif "direct error:" in status:
@@ -83,7 +95,9 @@ def classify(source, status):
 def summarize(sources, statuses):
     rows = [classify(src, statuses.get(src["name"], "")) for src in sources]
     states = ("fetched_unverified", "robots_blocked", "access_required",
-              "fetch_error", "not_fetched", "staged_official_url", "not_configured")
+              "http_blocked", "redirect_blocked", "rate_limited",
+              "unsupported_content", "fetch_error", "not_fetched",
+              "staged_official_url", "not_configured")
     counts = {state: sum(row["direct_state"] == state for row in rows) for state in states}
     counts["configured_direct"] = sum(bool(row["direct_url"]) for row in rows)
     # Landing-page configuration is not a working provider integration.
@@ -114,5 +128,7 @@ def summarize(sources, statuses):
                     "Individual-detail robots blocks and errors are reported separately. "
                     "External provider links require an approved adapter and are not followed. "
                     "Configured access-required portals are not direct fetch targets. "
+                    "HTTP refusals, unsafe redirects, rate limits and unsupported "
+                    "content are distinguished from transient fetch errors. "
                     "Staged URLs are not monitored; all leads remain unverified.")
     }
