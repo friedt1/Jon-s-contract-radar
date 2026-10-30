@@ -3,6 +3,24 @@ import json
 from pathlib import Path
 import scan
 from source_config import direct_configured
+from publisher_status import publisher_closed
+from submission_deadlines import eastern_deadline_timezone
+
+
+def validate_active_notice(lead, now):
+    """Fail closed on publisher closure or a known elapsed submission cutoff.
+
+    This validates an existing feed; it never establishes that a bid is open.
+    A date-only notice or a non-Eastern timezone cannot be given an invented
+    same-day closing time. Synthetic tests exercise this safety boundary.
+    """
+    if publisher_closed(lead) or lead.get('review_priority') == 'expired_check':
+        raise ValueError('Closed/expired notice in active feed: ' + str(lead.get('id', '')))
+    due = lead.get('deadline')
+    clock = lead.get('deadline_time')
+    if (due and clock and eastern_deadline_timezone(lead.get('deadline_timezone'))
+            and scan.civicplus_bids.closing_passed(due, str(clock), now)):
+        raise ValueError('Elapsed submission cutoff in active feed: ' + str(lead.get('id', '')))
 
 
 def validate(root=scan.ROOT):
@@ -42,6 +60,7 @@ def validate(root=scan.ROOT):
         if counts.get('configured_direct') != coverage['direct_configured']:
             raise ValueError('Source health direct configuration disagrees with coverage')
         states = ('fetched_unverified', 'robots_blocked', 'access_required',
+                  'adapter_not_implemented',
                   'http_blocked', 'redirect_blocked', 'rate_limited',
                   'unsupported_content', 'fetch_error', 'not_fetched',
                   'staged_official_url', 'not_configured')
@@ -63,6 +82,7 @@ def validate(root=scan.ROOT):
         raise ValueError('Invalid opportunity/history containers')
     ids = set()
     for lead in data['opportunities']:
+        validate_active_notice(lead, scan.NOW)
         required = {'id', 'title', 'summary', 'url', 'source', 'location', 'category', 'published', 'status', 'lead_type', 'deadline', 'deadline_status'}
         if not required <= lead.keys() or lead['id'] in ids:
             raise ValueError('Invalid or duplicate lead')
