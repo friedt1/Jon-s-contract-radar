@@ -104,6 +104,8 @@ def classify(source, status):
         "activation_gate": source.get("activation_gate", ""),
         "individual_bid_records_found": _number(r"\b(\d+) individual bid records\b", status),
         "detail_fetches_attempted": detail_checked,
+        "detail_budget_deferred": _number(
+            r"\b(\d+) individual bid records deferred at detail budget\b", status),
         "individual_bid_details_fetched": details_fetched,
         "detail_errors": detail_errors,
         "pagination_errors": pagination_errors,
@@ -137,6 +139,9 @@ def summarize(sources, statuses):
     counts["indirect_robots_blocked"] = sum(row["indirect_state"] == "robots_blocked" for row in rows)
     counts["individual_bid_records_found"] = sum(row["individual_bid_records_found"] for row in rows)
     counts["detail_fetches_attempted"] = sum(row["detail_fetches_attempted"] for row in rows)
+    counts["detail_budget_deferred"] = sum(row["detail_budget_deferred"] for row in rows)
+    counts["detail_budget_incomplete_sources"] = sum(
+        row["detail_budget_deferred"] > 0 for row in rows)
     counts["individual_bid_details_fetched"] = sum(row["individual_bid_details_fetched"] for row in rows)
     counts["detail_errors"] = sum(row["detail_errors"] for row in rows)
     counts["pagination_errors"] = sum(row["pagination_errors"] for row in rows)
@@ -164,7 +169,8 @@ def summarize(sources, statuses):
                     "individual details fetched prove retrieval, not open status. "
                     "Individual-detail robots blocks, HTTP refusals, redirects, rate limits "
                     "and other errors are reported separately. "
-                    "Listing pagination failures mean the listing may be incomplete. "
+                    "Listing pagination failures and deferred bid records at the detail budget "
+                    "mean the listing may be incomplete. "
                     "External provider links require an approved adapter and are not followed. "
                     "Configured access-required portals are not direct fetch targets. "
                     "HTTP refusals, unsafe redirects, rate limits and unsupported "
