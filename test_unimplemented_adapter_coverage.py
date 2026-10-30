@@ -55,6 +55,17 @@ class UnimplementedAdapterCoverageTests(unittest.TestCase):
         self.assertEqual([row["direct_state"] for row in health["sources"]],
                          ["adapter_not_implemented", "adapter_not_implemented"])
 
+    def test_access_required_and_unimplemented_are_independent_blockers(self):
+        source = dict(self.sources[0], delegated_provider="External platform")
+        audit = audit_source_coverage.audit([source])
+        self.assertEqual(audit["configured_provider_access_required"], 1)
+        self.assertEqual(audit["configured_unimplemented_adapters"], 1)
+        self.assertEqual(audit["direct_fetch_targets"], 0)
+        health = source_health.summarize([source], {})
+        self.assertEqual(health["counts"]["configured_unimplemented_adapters"], 1)
+        self.assertEqual(health["counts"]["configured_access_required"], 1)
+        self.assertEqual(health["counts"]["configured_fetch_targets"], 0)
+
     def test_implemented_page_still_eligible_for_direct_fetch(self):
         source = {"name": "Synthetic county", "mode": "direct_page",
                   "url": "https://county.example/Bids.aspx", "verified_url": True}
