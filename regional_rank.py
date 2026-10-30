@@ -238,16 +238,20 @@ def build(notices, today=None, now=None):
         elif len(dates) == 1:
             due = next(iter(dates))
             clocks = clocks_by_url.get((key, due), set())
-            if len(clocks) > 1 or (due == today.isoformat()
-                                   and key in elapsed_same_day_clocks):
-                # A duplicate with no time (or an incompatible timezone)
-                # cannot erase a publisher-stated cutoff already elapsed.
-                # Preserve the conflicting evidence for manual amendment
-                # verification instead of displaying a potentially live bid.
-                evidence = set(clocks)
-                if len(evidence) <= 1 and key in elapsed_same_day_clocks:
-                    evidence.add("later cutoff not independently confirmed")
-                item["deadline_conflict"] = sorted(evidence)
+            if len(clocks) > 1:
+                # Preserve the existing same-day clock-conflict behavior:
+                # the date itself agrees, only the time is disputed.
+                item["deadline_conflict"] = sorted(clocks)
+                item["deadline_time"] = ""
+                item["deadline_timezone"] = ""
+                item["deadline_status"] = "conflicting_unverified"
+            elif due == today.isoformat() and key in elapsed_same_day_clocks:
+                # A date-only or timezone-incompatible duplicate cannot
+                # erase a publisher-stated cutoff that already elapsed.
+                # Unlike two explicit conflicting clocks, the surviving
+                # notice provides no independently confirmed later cutoff.
+                item["deadline_conflict"] = sorted(
+                    set(clocks) | {"later cutoff not independently confirmed"})
                 item["deadline"] = ""
                 item["deadline_time"] = ""
                 item["deadline_timezone"] = ""
