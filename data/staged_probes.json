@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-30T05:33:14.770677+00:00",
+  "updated": "2026-10-30T05:38:46.552915+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 22,
+  "staged_entrypoints": 23,
   "probes": [
     {
       "name": "Broome County",
@@ -160,8 +160,8 @@
     {
       "name": "Bradford County PA",
       "official_entrypoint": "https://www.bradfordcountypa.gov/bids.aspx",
-      "state": "listing_reachable_no_open_bids",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -343,6 +343,20 @@
       "activation_gate": "Official CivicPlus Bids & RFPs page confirmed; currently may show no open postings. Check robots, publisher terms, and individual bidID extraction before activating.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
+    },
+    {
+      "name": "Village of Montour Falls",
+      "official_entrypoint": "https://www.villageofmontourfalls.gov/",
+      "state": "listing_reachable_rfp_section_reports_none",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official village homepage has a dedicated Request for Proposals section, reporting 'None at this time' on 2026-10-30. This does not establish complete bid coverage. Verify robots and publisher terms, identify stable individual notice URLs and deadline/status fields, and build permitted listing/detail extraction before activating; do not classify historical or unrelated notices as open tree bids.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false,
+      "section_note": "RFP section reports none at probe time; other bid channels and individual notice access remain unverified"
     }
   ],
   "warning": "Diagnostic only: no source is activated by these probes. A fetched page or parsed historical notice is not an open bid. Sample 'Open' labels can be stale; inspect temporal evidence. Review publisher terms, individual extraction, and live scan before changing discovery_pending."
