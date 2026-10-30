@@ -180,11 +180,11 @@ class PdfArchivePriorityTests(unittest.TestCase):
         # Synthetic archive: labels do not contain dates, but directory paths do.
         # Current-year proposals must be checked before expired archived packets.
         older = "".join(
-            '<a href="/archive/2024/tree-%d.pdf">Tree removal bid proposal</a>' % n
+            '<a href="/bids/2024/tree-%d.pdf">Tree removal bid proposal</a>' % n
             for n in range(7)
         )
-        current = "https://example.gov/archive/2026/tree-packet.pdf"
-        listing = older + '<a href="/archive/2026/tree-packet.pdf">Tree removal bid proposal</a>'
+        current = "https://example.gov/bids/2026/tree-packet.pdf"
+        listing = older + '<a href="/bids/2026/tree-packet.pdf">Tree removal bid proposal</a>'
         requested = []
 
         def fake_fetch(url, binary=False):
@@ -193,7 +193,7 @@ class PdfArchivePriorityTests(unittest.TestCase):
                 return listing, "text/html", url
             if url == current:
                 return b"CURRENT", "application/pdf", url
-            if "/archive/2024/" in url:
+            if "/bids/2024/" in url:
                 return b"OLD", "application/pdf", url
             raise AssertionError("Unexpected URL: " + url)
 
@@ -221,7 +221,7 @@ class PdfArchivePriorityTests(unittest.TestCase):
         # An explicit publisher label takes precedence over a path year.
         self.assertEqual(scan.pdf_listing_recency(
             "Tree removal bid 2024 proposal",
-            "https://example.gov/archive/2026/tree-packet.pdf", 2026), -6)
+            "https://example.gov/bids/2026/tree-packet.pdf", 2026), -6)
 
 
 if __name__ == "__main__":
