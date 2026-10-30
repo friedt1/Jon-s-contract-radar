@@ -21,8 +21,8 @@
       "access_required": 2,
       "fetch_error": 0,
       "not_fetched": 0,
-      "staged_official_url": 22,
-      "not_configured": 62,
+      "staged_official_url": 23,
+      "not_configured": 61,
       "configured_direct": 18,
       "configured_access_required": 2,
       "configured_fetch_targets": 16,
@@ -143,7 +143,7 @@
         "pdf_budget_skips": 0,
         "external_provider_links_skipped": 1,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 10 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 1 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 10 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 2 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Lycoming County bids",
@@ -922,11 +922,11 @@
       {
         "name": "Village of Montour Falls",
         "mode": "discovery_pending",
-        "direct_state": "not_configured",
+        "direct_state": "staged_official_url",
         "indirect_state": "robots_blocked",
         "direct_url": "",
-        "staged_official_url": "",
-        "activation_gate": "",
+        "staged_official_url": "https://www.villageofmontourfalls.gov/",
+        "activation_gate": "Official village homepage has a dedicated Request for Proposals section, reporting 'None at this time' on 2026-10-30. This does not establish complete bid coverage. Verify robots and publisher terms, identify stable individual notice URLs and deadline/status fields, and build permitted listing/detail extraction before activating; do not classify historical or unrelated notices as open tree bids.",
         "individual_bid_records_found": 0,
         "detail_fetches_attempted": 0,
         "individual_bid_details_fetched": 0,
@@ -1876,7 +1876,7 @@
     ],
     "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Individual-detail robots blocks and errors are reported separately. External provider links require an approved adapter and are not followed. Configured access-required portals are not direct fetch targets. Staged URLs are not monitored; all leads remain unverified."
   },
-  "updated": "2026-10-30T05:34:51+00:00",
+  "updated": "2026-10-30T06:19:13+00:00",
   "opportunities": [],
   "source_status": {
     "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 2 relevant details checked; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
@@ -1884,7 +1884,7 @@
     "Schuyler County purchasing": "direct fetched; 1 listing pages; 7 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "Tompkins County purchasing": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 5 PDFs checked; 30 PDF requests skipped at budget; 3 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied",
     "Elmira City bids": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Elmira Next local bids": "direct fetched; 1 listing pages; 10 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 1 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied",
+    "Elmira Next local bids": "direct fetched; 1 listing pages; 10 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 2 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied",
     "Lycoming County bids": "direct fetched; 1 listing pages; 5 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "PA procurement opportunities": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "PA DGS construction bids": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
