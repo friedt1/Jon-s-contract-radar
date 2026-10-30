@@ -140,7 +140,8 @@ def detail_description(text):
     """Extract actual notice scope without treating unrelated page chrome as scope."""
     match = re.search(
         r"\bDescription\s*:\s*(.+?)(?=\b(?:Related Documents|Contact Us|"
-        r"Return To Main Bid Postings Page|Publication Date/Time|Closing Date/Time|Project Location|Work Location|Worksite|Site Location)\s*:|$)",
+        r"Return To Main Bid Postings Page|Publication Date/Time|Closing Date/Time|"
+        r"Status|Bid\s+(?:Number|Title)|Project Location|Work Location|Worksite|Site Location)\s*:|$)",
         text, re.I | re.S,
     )
     return " ".join(match.group(1).split())[:1200] if match else ""
@@ -150,7 +151,8 @@ def detail_worksite(text):
     """Only explicit worksite labels count; a purchasing office is not a job site."""
     match = re.search(
         r"\b(?:Project Location|Work Location|Worksite|Site Location)\s*:\s*"
-        r"(.{1,180}?)(?=\b(?:Description|Status|Closing Date/Time|Related Documents)\s*:|$)",
+        r"(.{1,180}?)(?=\b(?:Description|Status|Closing Date/Time|"
+        r"Bid\s+(?:Number|Title)|Publication Date/Time|Related Documents)\s*:|$)",
         text, re.I | re.S,
     )
     return " ".join(match.group(1).split())[:180] if match else ""

@@ -71,6 +71,30 @@ class CivicPlusDetailTests(unittest.TestCase):
         self.assertEqual(civic.detail_closing_of("Closing Date/Time: 11/19/2026 1:30 PM"),
                          ("2026-11-19", "1:30 PM"))
 
+    def test_detail_description_stops_before_later_status_and_bid_metadata(self):
+        # Synthetic notice with publisher fields after the scope. They must
+        # not leak into the description used for relevance or closing checks.
+        body = ("Bid Number: RFB-81 Description: Remove hazardous trees "
+                "and grind stumps. Status: Open Closing Date/Time: "
+                "11/19/2026 1:30 PM Project Location: Elmira, NY "
+                "Bid Title: Roadside tree removal Related Documents: packet")
+        self.assertEqual(civic.detail_description(body),
+                         "Remove hazardous trees and grind stumps.")
+        self.assertEqual(civic.detail_worksite(body), "Elmira, NY")
+
+    def test_scan_does_not_mix_status_or_other_fields_into_scope(self):
+        body = ("<p>Bid Number: RFB-81</p><p>Bid Title: Tree removal</p>"
+                "<p>Description: Remove hazardous trees and grind stumps.</p>"
+                "<p>Status: Open</p><p>Closing Date/Time: 11/19/2026 1:30 PM</p>"
+                "<p>Project Location: Elmira, NY</p>"
+                "<p>Bid Title: Roadside tree removal</p>")
+        leads, _ = self.run_scan(listing("11/19/2026"), body)
+        self.assertEqual(len(leads), 1)
+        self.assertEqual(leads[0]["scope"], "Remove hazardous trees and grind stumps.")
+        self.assertEqual(leads[0]["location"], "Elmira, NY")
+        self.assertNotIn("Status:", leads[0]["summary"])
+        self.assertEqual(leads[0]["status"], "unverified")
+
     def test_purchasing_office_not_assumed_to_be_worksite(self):
         self.assertEqual(civic.detail_worksite("Description: Contact Purchasing at 150 Lake Street Elmira NY"), "")
         leads, _ = self.run_scan(listing("11/19/2026"), detail())
