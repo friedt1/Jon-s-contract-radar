@@ -342,7 +342,9 @@
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.vestalny.gov/page/bids-and-rfps-requested",
+    "activation_gate": "Official Town of Vestal Bids and RFPs Requested page confirmed (Apptegy). Page availability does not prove active solicitations. Verify robots and publisher terms, identify individual bid notices and deadlines, and implement a permitted Apptegy-specific listing/detail adapter before activation; never infer no open bids from a blank page."
   },
   {
     "name": "Village of Owego",

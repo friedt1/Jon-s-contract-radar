@@ -127,6 +127,12 @@ def classify(notice, today=None, now=None):
     return result
 
 def build(notices, today=None, now=None):
+    # Resolve a single Eastern reference date for every duplicate in this batch.
+    if today is None:
+        today = (now.astimezone(ZoneInfo("America/New_York")).date()
+                 if isinstance(now, dt.datetime) and now.tzinfo is not None
+                 and now.utcoffset() is not None
+                 else dt.datetime.now(ZoneInfo("America/New_York")).date())
     # One public notice may appear through several marketing/tracking URLs.
     # Keep substantive query keys (including bid IDs) so distinct bids survive.
     # A publisher-closed copy must not be silently discarded before dedup:
@@ -148,6 +154,28 @@ def build(notices, today=None, now=None):
             if closed_url.startswith("https://"):
                 publisher_closed_urls.add(closed_url)
             continue
+        # Preserve valid Eastern same-day clock evidence *before* classify()
+        # discards an already elapsed copy. Otherwise a 9 AM copy disappears
+        # at 11 AM and a duplicate claiming 2 PM looks uncontested.
+        # This never revives an elapsed notice: it only marks a surviving
+        # duplicate's deadline as conflicting and unverified.
+        candidate_url = canonical_url(notice.get("url"))
+        candidate_date = notice.get("deadline")
+        candidate_text = (str(notice.get("title") or "") + " " +
+                          str(notice.get("summary") or "")).lower()
+        if (candidate_url.startswith("https://")
+                and isinstance(candidate_date, str)
+                and candidate_date == today.isoformat()
+                and eastern_deadline_timezone(notice.get("deadline_timezone"))
+                and any(term in candidate_text for term in KEYWORDS)):
+            candidate_clock = " ".join(str(notice.get("deadline_time") or "").lower().split())
+            try:
+                dt.datetime.strptime(candidate_clock.upper(), "%I:%M %p")
+            except ValueError:
+                pass
+            else:
+                clocks_by_url.setdefault((candidate_url, candidate_date), set()).add(
+                    candidate_clock)
         item = classify(notice, today=today, now=now)
         if item is None:
             continue

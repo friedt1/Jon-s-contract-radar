@@ -268,6 +268,40 @@ class RegionalRankTests(unittest.TestCase):
                  "deadline": "2026-11-13"}
         self.assertEqual(build([owego], today=today)["opportunities"], [])
 
+    def test_elapsed_same_day_duplicate_clock_does_not_hide_conflict(self):
+        # Synthetic Erie-style tree/stump case, never a real open bid.
+        import datetime as dt
+        today = dt.date(2026, 10, 29)
+        at_11am_eastern = dt.datetime(2026, 10, 29, 15,
+                                      tzinfo=dt.timezone.utc)
+        early = {"title": "Tree and stump removal",
+                 "url": "https://county.example/Bids.aspx?bidID=200",
+                 "deadline": "2026-10-29", "deadline_time": "9:00 AM"}
+        later = dict(early, url=early["url"] + "&utm_source=mail",
+                     deadline_time="2:00 PM")
+        self.assertIsNone(classify(early, today=today, now=at_11am_eastern))
+        for pair in ([early, later], [later, early]):
+            with self.subTest(order=pair[0]["deadline_time"]):
+                items = build(pair, today=today, now=at_11am_eastern)["opportunities"]
+                self.assertEqual(len(items), 1)
+                self.assertEqual(items[0]["deadline_status"], "conflicting_unverified")
+                self.assertEqual(items[0]["deadline_time"], "")
+                self.assertEqual(items[0]["deadline_conflict"], ["2:00 pm", "9:00 am"])
+                self.assertEqual(items[0]["status"], "review required")
+        self.assertEqual(build([early], today=today,
+                               now=at_11am_eastern)["opportunities"], [])
+        # A different bid number must not inherit the first bid's cutoff.
+        separate = dict(later, url="https://county.example/Bids.aspx?bidID=201")
+        items = build([early, separate], today=today,
+                      now=at_11am_eastern)["opportunities"]
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["deadline_status"], "stated_unverified")
+        owego = {"title": "Owego demolition rebid",
+                 "url": "https://county.example/Bids.aspx?bidID=202",
+                 "deadline": "2026-11-13"}
+        self.assertEqual(build([owego], today=today,
+                               now=at_11am_eastern)["opportunities"], [])
+
     def test_no_invented_notices(self):
         self.assertEqual(build([])["opportunities"],[])
 if __name__ == "__main__": unittest.main()

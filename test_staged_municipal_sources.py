@@ -122,6 +122,27 @@ class MunicipalStagingTests(unittest.TestCase):
         self.assertFalse(row["direct_monitoring_activated"])
         self.assertNotIn("opportunities", row)
 
+    def test_vestal_official_apptegy_page_requires_adapter_not_activation(self):
+        records = json.loads((pathlib.Path(__file__).parent / "sources.json").read_text())
+        row = next(x for x in records if x["name"] == "Town of Vestal")
+        self.assertEqual(len(records), 102)
+        self.assertEqual(row["mode"], "discovery_pending")
+        self.assertFalse(row["url"])
+        self.assertFalse(row["verified_url"])
+        self.assertEqual(row["candidate_official_url"],
+                         "https://www.vestalny.gov/page/bids-and-rfps-requested")
+        self.assertIn("Apptegy", row["activation_gate"])
+        # A blank current listing does NOT prove there are no open bids.
+        # The Apptegy page is not a CivicPlus bidID feed.
+        html = "<h1>Bids and RFPS Requested</h1><p>Town of Vestal</p>"
+        result = staged.probe(row, fetch=lambda url: (html, "text/html", url),
+                              now=NOW)
+        self.assertEqual(result["state"], "listing_reachable_adapter_required")
+        self.assertTrue(result["listing_retrieved"])
+        self.assertFalse(result["individual_notice_retrieved"])
+        self.assertFalse(result["direct_monitoring_activated"])
+        self.assertNotIn("opportunities", result)
+
     def test_generic_listing_does_not_become_no_open_bids(self):
         entry = "https://www.cortlandny.gov/Bids.aspx"
         row = staged.probe(source("City of Cortland", entry),
