@@ -173,7 +173,7 @@ def probe(source, fetch=scan.fetch, now=None):
                       if parsed is not None]
             provider_link = any(
                 scan.provider_link(parsed.geturl())
-                and re.search(r"\\b(?:bids?|rfps?|rfqs?|solicitations?|procurement|proposals?)\\b",
+                and re.search(r"\b(?:bids?|rfps?|rfqs?|solicitations?|procurement|proposals?)\b",
                               label, re.I)
                 for label, parsed in linked
             )
@@ -200,8 +200,8 @@ def probe(source, fetch=scan.fetch, now=None):
             possible_notice_links = any(
                 parsed.path.lower().endswith(".pdf")
                 or (re.search(
-                    r"\\b(?:bids?|rfps?|rfqs?|proposals?|solicitations?|"
-                    r"quotes?|trees?|stumps?)\\b", label, re.I)
+                    r"\b(?:bids?|rfps?|rfqs?|proposals?|solicitations?|"
+                    r"quotes?|trees?|stumps?)\b", label, re.I)
                     and parsed.path not in ("", "/", urlparse(final).path))
                 for label, parsed in linked
             )
