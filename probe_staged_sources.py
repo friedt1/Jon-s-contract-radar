@@ -69,7 +69,7 @@ def _safe_link(base, href):
     provider redirect or externally hosted bid PDF.
     """
     if not isinstance(href, str) or not href or any(
-        ord(ch) < 33 or ord(ch) == 127 or ch == "\\\\" for ch in href
+        ord(ch) < 33 or ord(ch) == 127 or ord(ch) == 92 for ch in href
     ):
         return None
     try:
