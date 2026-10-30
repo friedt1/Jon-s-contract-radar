@@ -6,8 +6,8 @@ means no robots policy is published, per robots conventions.
 """
 from threading import Lock
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlparse
-from urllib.request import Request, urlopen
+from urllib.parse import urlparse, urlsplit
+from urllib.request import Request, HTTPRedirectHandler, build_opener
 from urllib.robotparser import RobotFileParser
 
 USER_AGENT = "JonsContractRadar"
@@ -18,6 +18,36 @@ _LOCK = Lock()
 
 class RobotsDenied(PermissionError):
     """The requested path is disallowed or robots policy could not be verified."""
+
+class _SameOriginRobotsRedirect(HTTPRedirectHandler):
+    """Fail closed before a robots.txt redirect can reach another origin.
+
+    A redirected policy must not silently authorize a different publisher.
+    Redirects to login pages, non-robots paths, insecure URLs and ports are
+    rejected without making the destination request.
+    """
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        try:
+            original, target = urlsplit(req.full_url), urlsplit(newurl)
+            original_port = original.port or (443 if original.scheme == "https" else 80)
+            target_port = target.port or (443 if target.scheme == "https" else 80)
+            if (target.scheme != original.scheme
+                    or not original.hostname or not target.hostname
+                    or target.hostname != original.hostname
+                    or target_port != original_port
+                    or target.username is not None or target.password is not None
+                    or target.path != "/robots.txt" or target.query or target.fragment):
+                raise RobotsDenied("robots redirect blocked: different origin or policy path")
+        except ValueError as error:
+            raise RobotsDenied("robots redirect blocked: malformed destination") from error
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def urlopen(request, timeout):
+    """Read robots policy with a per-request, redirect-restricted opener."""
+    return build_opener(_SameOriginRobotsRedirect()).open(request, timeout=timeout)
+
 
 
 def _policy(origin):
@@ -36,6 +66,8 @@ def _policy(origin):
         if error.code in (404, 410):
             return ("allow", "robots policy absent")
         return ("deny", "robots HTTP " + str(error.code))
+    except RobotsDenied as error:
+        return ("deny", str(error))
     except (URLError, OSError, TimeoutError, ValueError) as error:
         return ("deny", "robots policy unavailable: " + type(error).__name__)
     parser = RobotFileParser()

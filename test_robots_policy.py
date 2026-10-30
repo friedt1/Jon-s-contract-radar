@@ -46,6 +46,50 @@ class RobotsPolicyTests(unittest.TestCase):
             self.assertFalse(robots_policy.allowed("https://agency.example/private")[0])
             self.assertEqual(download.call_count, 1)
 
+    def test_robots_redirect_rejects_unapproved_destinations_before_fetch(self):
+        handler = robots_policy._SameOriginRobotsRedirect()
+        original = Request("https://agency.example/robots.txt")
+        for target in (
+            "https://other.example/robots.txt",
+            "http://agency.example/robots.txt",
+            "https://agency.example/private",
+            "https://agency.example/Account/Login",
+            "https://agency.example/robots.txt?redirect=1",
+            "https://agency.example/robots.txt#section",
+            "https://user:secret@agency.example/robots.txt",
+            "https://agency.example:8443/robots.txt",
+            "https://agency.example:broken/robots.txt",
+        ):
+            with self.subTest(target=target):
+                with self.assertRaisesRegex(
+                        robots_policy.RobotsDenied, "robots redirect blocked"):
+                    handler.redirect_request(
+                        original, None, 302, "Found", {}, target)
+
+    def test_same_origin_robots_redirect_can_be_followed(self):
+        handler = robots_policy._SameOriginRobotsRedirect()
+        request = handler.redirect_request(
+            Request("https://agency.example/robots.txt"),
+            None, 301, "Moved", {},
+            "https://agency.example:443/robots.txt")
+        self.assertEqual(request.full_url, "https://agency.example:443/robots.txt")
+
+    def test_redirect_rejection_remains_a_distinct_robots_block(self):
+        with patch.object(robots_policy, "urlopen", side_effect=(
+                robots_policy.RobotsDenied("robots redirect blocked: different origin"))):
+            ok, reason = robots_policy.allowed("https://agency.example/Bids.aspx")
+        self.assertFalse(ok)
+        self.assertIn("robots redirect blocked", reason)
+
+    def test_policy_uses_restricted_redirect_handler(self):
+        with patch.object(robots_policy, "build_opener") as builder:
+            builder.return_value.open.return_value = RobotsResponse(
+                b"User-agent: *\\nAllow: /\\n")
+            ok, _ = robots_policy.allowed("https://agency.example/Bids.aspx")
+        self.assertTrue(ok)
+        self.assertIsInstance(builder.call_args.args[0],
+                              robots_policy._SameOriginRobotsRedirect)
+
     def test_fetch_never_opens_disallowed_url(self):
         with patch.object(robots_policy, "assert_allowed",
                           side_effect=robots_policy.RobotsDenied("blocked")):
