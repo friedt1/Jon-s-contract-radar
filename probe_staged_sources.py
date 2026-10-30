@@ -149,6 +149,21 @@ def probe(source, fetch=scan.fetch, now=None):
                               label, re.I)
                 for label, href, _ in page.links
             )
+            # A municipality may publish bid packets on a separate HTTPS
+            # document CDN. The official listing alone does not authorize
+            # off-host retrieval, establish a deadline, or prove the documents
+            # are still open. Report the hosts without fetching them.
+            off_host_pdf_hosts = sorted({
+                parsed.hostname.lower()
+                for _label, href, _pos in page.links
+                for parsed in [urlparse(href)]
+                if parsed.scheme.lower() == "https"
+                and parsed.hostname
+                and parsed.hostname.lower() != urlparse(final).hostname.lower()
+                and parsed.path.lower().endswith(".pdf")
+            })
+            if has_procurement_evidence and off_host_pdf_hosts:
+                result["off_host_pdf_hosts_unverified"] = off_host_pdf_hosts
             # Some municipal homepages have an explicit RFP section that
             # currently says "None at this time". This is evidence about that
             # section only, not proof that no bids exist on other pages or
@@ -164,6 +179,8 @@ def probe(source, fetch=scan.fetch, now=None):
                 "listing_reachable_external_provider_access_required"
                 if delegated_to_provider or provider_link else
                 "listing_reachable_rfp_section_reports_none" if rfp_section_empty else
+                "listing_reachable_off_host_documents_review_required"
+                if has_procurement_evidence and off_host_pdf_hosts else
                 "listing_reachable_adapter_required" if has_procurement_evidence else
                 "official_page_reachable_no_procurement_evidence"
             )
