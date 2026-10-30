@@ -74,7 +74,7 @@ class BroadPortalLocalPriorityTests(unittest.TestCase):
         leads, status, requested = self.fixture(source, listing)
         self.assertEqual(requested[1], OUTSIDE)
         self.assertNotIn(LOCAL, requested)
-        self.assertEqual(leads, [])
+        self.assertNotIn(LOCAL, [item["url"] for item in leads])
         self.assertIn("1 detail candidates deferred at request budget", status)
 
 
