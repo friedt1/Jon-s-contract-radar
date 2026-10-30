@@ -83,7 +83,7 @@ class FeedValidationRegressions(unittest.TestCase):
         urls = (
             "https://user:pass@county.example/Bids.aspx?bidID=321",
             "https://county.example:bad/Bids.aspx?bidID=321",
-            "https://county.example/Bids.aspx?bidID=321\\nX-Injected:yes",
+            "https://county.example/Bids.aspx?bidID=321" + chr(10) + "X-Injected:yes",
             "javascript:alert(1)",
             "https://[broken/Bids.aspx?bidID=321",
         )
