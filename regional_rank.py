@@ -146,6 +146,10 @@ def build(notices, today=None, now=None):
     # supersedes a different publisher cutoff.
     dates_by_url = {}
     clocks_by_url = {}
+    # A same-day elapsed clock can be lost when classify() rejects that copy.
+    # Retain its evidence so a duplicate without a clock cannot appear
+    # uncontested or implicitly reopen an already elapsed submission cutoff.
+    elapsed_same_day_clocks = {}
     for notice in notices:
         if not isinstance(notice, dict):
             continue
@@ -177,6 +181,13 @@ def build(notices, today=None, now=None):
                 pass
             else:
                 dates_by_url.setdefault(candidate_url, set()).add(candidate_date)
+        if (candidate_url.startswith("https://")
+                and isinstance(candidate_date, str)
+                and candidate_date == today.isoformat()
+                and any(term in candidate_text for term in KEYWORDS)
+                and _deadline_state(notice, today, now=now) == "expired"):
+            elapsed_same_day_clocks.setdefault(candidate_url, set()).add(
+                " ".join(str(notice.get("deadline_time") or "").lower().split()))
         if (candidate_url.startswith("https://")
                 and isinstance(candidate_date, str)
                 and candidate_date == today.isoformat()
@@ -227,8 +238,17 @@ def build(notices, today=None, now=None):
         elif len(dates) == 1:
             due = next(iter(dates))
             clocks = clocks_by_url.get((key, due), set())
-            if len(clocks) > 1:
-                item["deadline_conflict"] = sorted(clocks)
+            if len(clocks) > 1 or (due == today.isoformat()
+                                   and key in elapsed_same_day_clocks):
+                # A duplicate with no time (or an incompatible timezone)
+                # cannot erase a publisher-stated cutoff already elapsed.
+                # Preserve the conflicting evidence for manual amendment
+                # verification instead of displaying a potentially live bid.
+                evidence = set(clocks)
+                if len(evidence) <= 1 and key in elapsed_same_day_clocks:
+                    evidence.add("later cutoff not independently confirmed")
+                item["deadline_conflict"] = sorted(evidence)
+                item["deadline"] = ""
                 item["deadline_time"] = ""
                 item["deadline_timezone"] = ""
                 item["deadline_status"] = "conflicting_unverified"
