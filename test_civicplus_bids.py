@@ -266,11 +266,14 @@ class CivicPlusTests(unittest.TestCase):
 
     def test_closed_question_period_is_not_a_closed_solicitation(self):
         for label in ("Closed for questions", "Closed to inquiries",
-                      "Closed for RFIs", "Closed for addenda"):
+                      "Closed for RFIs", "Closed for addenda",
+                      "Closed - for questions", "Closed: Q&A",
+                      "Closed (questions)", "Closed – to inquiries"):
             with self.subTest(label=label):
                 self.assertEqual(civic.status_of("Status: " + label), "unknown")
         self.assertEqual(civic.status_of("Status: Reopened"), "reopened")
         self.assertEqual(civic.status_of("Status: Closed"), "closed")
+        self.assertEqual(civic.status_of("Status: Closed - no longer accepting bids"), "closed")
         # The Owego demolition regression remains unrelated and cannot enter
         # a tree-work feed merely because its question period is closed.
         self.assertFalse(scan.category("Owego building demolition and site restoration"))
