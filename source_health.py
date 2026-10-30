@@ -187,7 +187,7 @@ def summarize(sources, statuses):
                     "and other errors are reported separately. "
                     "Listing pagination failures, deferred individual bid records, and "
                     "unfetched generic detail candidates mean extraction coverage may be incomplete. "
-                    "Generic candidates are not verified individual solicitations. 
+                    "Generic candidates are not verified individual solicitations. "
                     "External provider links require an approved adapter and are not followed. "
                     "Provider-access requirements persist even when a scan has no status. " 
                     "Configured access-required portals are not direct fetch targets. "
