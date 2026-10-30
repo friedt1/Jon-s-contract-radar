@@ -108,6 +108,26 @@ class SourceDiagnosticsTests(unittest.TestCase):
         self.assertEqual(row["external_provider_links_skipped"], 3)
         self.assertFalse(row["error"])
 
+    def test_partial_listing_pagination_counts_as_error(self):
+        payload = {
+            "source_status": {
+                "County": ("direct fetched; 1 listing pages; 1 individual bid records; "
+                           "1 pagination errors: TimeoutError")
+            },
+            "source_health": {"sources": [{
+                "name": "County", "direct_state": "fetched_unverified",
+                "indirect_state": "ok", "detail_errors": 0,
+                "pagination_errors": 1,
+                "pagination_access_state": "partial_listing_errors",
+            }]},
+            "opportunities": [],
+        }
+        row = source_diagnostics.report(payload)["sources"][0]
+        self.assertFalse(row["direct_error"])
+        self.assertTrue(row["error"])
+        self.assertEqual(row["pagination_errors"], 1)
+        self.assertEqual(row["pagination_access_state"], "partial_listing_errors")
+
     def test_historical_status_without_structured_health(self):
         payload = {
             "source_status": {
