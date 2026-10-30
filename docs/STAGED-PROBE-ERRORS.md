@@ -13,6 +13,20 @@ for listing pages and individual notice pages. It preserves the HTTP status
 without storing response bodies, credentials, or speculative explanations.
 Robots denial remains a separate state.
 
+The fetcher also refuses redirects to unapproved hosts, insecure HTTP
+endpoints, or different solicitation identities **before** making the
+redirected request. These refusals are recorded as
+`listing_redirect_blocked` / `individual_notice_redirect_blocked`, or
+`listing_insecure_redirect` / `individual_notice_insecure_redirect`
+for HTTPS downgrades. These states do not prove the destination was fetched
+or that a provider granted access.
+
+An individual bid can be sign-in-gated even when its listing is public.
+A same-host sign-in landing or a password form with a login heading is
+recorded as `individual_notice_authentication_required`, rather than a
+broken parser. An ordinary login link on an otherwise readable notice does
+not establish an authentication wall. No credential attempt is made.
+
 Public agency pages that delegate procurement to BidNet, OpenGov, Bonfire,
 PennBid, or Public Purchase are marked as requiring provider-approved
 individual-notice access. The agency's public announcement page is **not**
