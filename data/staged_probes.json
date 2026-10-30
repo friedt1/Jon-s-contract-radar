@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-30T08:52:48.973731+00:00",
+  "updated": "2026-10-30T12:42:36.499763+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 26,
+  "staged_entrypoints": 27,
   "probes": [
     {
       "name": "Broome County",
@@ -328,6 +328,19 @@
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official Village of Waverly homepage publishes a contractor RFQ (New York Forward Small Project Fund) with a September 15, 2026 application deadline; this is unrelated building work and past deadline. No stable public individual-bid listing adapter or permitted recurring extraction verified. Review robots/publisher terms, notice listing format, individual scope/deadlines, and live extraction before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Village of Watkins Glen",
+      "official_entrypoint": "https://watkinsglen.us/public-legal-noticeshearings.php",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official village Public-Legal Notices/Hearings page verified 2026-10-30; currently displays an April 2026 budget hearing, not a procurement listing. Review robots and publisher terms, identify stable individual bid notices and submission deadlines, and validate permitted extraction before activation. Tree-removal permits and tree-replacement programs are not paid tree-service bids.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     },
