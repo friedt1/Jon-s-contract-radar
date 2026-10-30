@@ -51,6 +51,78 @@ class SourceDiagnosticsTests(unittest.TestCase):
         self.assertEqual(result["source_coverage"]["total_targets"], 3)
         self.assertEqual(result["verified_open_opportunities"], 0)
 
+    def test_direct_access_failures_are_not_hidden_by_indirect_success(self):
+        # Synthetic publisher states, not real contract opportunities.
+        statuses = {
+            "Denied": ("http_blocked", "direct error: HTTPError HTTP 403"),
+            "Redirect": ("redirect_blocked", "direct error: UnsafeRedirect"),
+            "Rate": ("rate_limited", "direct error: HTTPError HTTP 429"),
+            "NonHTML": ("unsupported_content", "unsupported content type"),
+            "Robots": ("robots_blocked", "direct blocked by robots policy"),
+            "Timeout": ("fetch_error", "direct error: TimeoutError"),
+            "Portal": ("access_required", "individual listing ingestion not connected"),
+            "Working": ("fetched_unverified", "direct fetched; 1 listing pages"),
+        }
+        payload = {
+            "source_status": {
+                name: message + "; indirect RSS ok; 0 candidates"
+                for name, (_, message) in statuses.items()
+            },
+            "source_health": {
+                "sources": [
+                    {"name": name, "direct_state": state,
+                     "indirect_state": "ok", "detail_errors": 0}
+                    for name, (state, _) in statuses.items()
+                ]
+            },
+            "opportunities": [],
+        }
+        rows = {row["source"]: row for row in source_diagnostics.report(payload)["sources"]}
+        for name in ("Denied", "Redirect", "Rate", "NonHTML", "Robots", "Timeout"):
+            with self.subTest(source=name):
+                self.assertTrue(rows[name]["direct_error"])
+                self.assertTrue(rows[name]["error"])
+                self.assertFalse(rows[name]["indirect_error"])
+        for name in ("Portal", "Working"):
+            with self.subTest(source=name):
+                self.assertFalse(rows[name]["direct_error"])
+                self.assertFalse(rows[name]["error"])
+        self.assertTrue(rows["Portal"]["access_required"])
+
+    def test_pdf_budget_and_provider_skips_visible_per_source(self):
+        payload = {
+            "source_status": {"Tioga test fixture": "direct fetched; 0 candidates"},
+            "source_health": {"sources": [{
+                "name": "Tioga test fixture", "direct_state": "fetched_unverified",
+                "indirect_state": "not_run", "detail_errors": 0,
+                "pdf_fetch_attempts": 5, "pdf_budget_skips": 31,
+                "result_award_links_excluded": 22,
+                "external_provider_links_skipped": 3,
+            }]},
+            "opportunities": [],
+        }
+        row = source_diagnostics.report(payload)["sources"][0]
+        self.assertEqual(row["pdf_fetch_attempts"], 5)
+        self.assertEqual(row["pdf_budget_skips"], 31)
+        self.assertEqual(row["result_award_links_excluded"], 22)
+        self.assertEqual(row["external_provider_links_skipped"], 3)
+        self.assertFalse(row["error"])
+
+    def test_historical_status_without_structured_health(self):
+        payload = {
+            "source_status": {
+                "Legacy non-HTML": "unsupported content type; indirect RSS ok",
+                "Legacy denied": "direct error: HTTPError HTTP 403",
+                "Legacy indirect": "direct fetched; indirect RSS error: RobotsDenied",
+            },
+            "opportunities": [],
+        }
+        rows = {r["source"]: r for r in source_diagnostics.report(payload)["sources"]}
+        self.assertTrue(rows["Legacy non-HTML"]["direct_error"])
+        self.assertTrue(rows["Legacy denied"]["direct_error"])
+        self.assertFalse(rows["Legacy indirect"]["direct_error"])
+        self.assertTrue(rows["Legacy indirect"]["indirect_error"])
+
     def test_rejects_invalid_source_health_schema(self):
         with self.assertRaises(ValueError):
             source_diagnostics.report({
