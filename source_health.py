@@ -150,7 +150,7 @@ def summarize(sources, statuses):
     counts["configured_access_required"] = sum(
         row["provider_access_required"] for row in rows)
     counts["configured_unimplemented_adapters"] = sum(
-        row["direct_state"] == "adapter_not_implemented" for row in rows)
+        direct_configured(src) and not direct_fetch_target(src) for src in sources)
     counts["configured_fetch_targets"] = sum(
         direct_fetch_target(src) and not row["provider_access_required"]
         for src, row in zip(sources, rows))
