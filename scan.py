@@ -204,6 +204,30 @@ def annotate_explicit_closing(out, url, text):
   out[uid]['deadline_status'] = 'explicit submission date/time; timezone assumed from issuing authority'
 
 
+def published_result_link(title):
+ """Do not mistake bid tabulations, awards or results for open bid notices.
+
+ Public Works pages may expose many historical PDFs behind opaque /media/
+ URLs. Link labels are publisher evidence even when the filename is not.
+ This excludes only explicit result/award labels, never a bid proposal.
+ """
+ return bool(re.search(
+  r'\\b(?:bids?|contracts?|solicitations?)\\s+(?:results?|tab(?:ulation)?s?|awards?|awarded)\\b'
+  r'|\\b(?:notice\\s+of\\s+award|award\\s+notice|results?\\s+of\\s+(?:the\\s+)?bids?)\\b',
+  norm(title), re.I))
+
+
+def pdf_listing_recency(title, url, year):
+ """Order bounded PDF checks; a year is NOT proof a solicitation is open."""
+ if not up.urlsplit(url).path.lower().endswith('.pdf'):
+  return 0
+ years=[int(y) for y in re.findall(r'(?<!\\d)20\\d{2}(?!\\d)', norm(title))]
+ if not years:
+  return 0
+ latest=max(years)
+ return 3 if latest==year else 1 if latest>year else -6
+
+
 def excluded_url(url):
  return bool(re.search(r'archive|bid[-_ ]?results|bid[-_ ]?recordings|award|\.mp4(?:$|\?)|/projects(?:$|\?)|project-showcase',url,re.I))
 
@@ -457,7 +481,7 @@ def metadata_description(body):
 
 
 def scan_direct(src):
- base=src['url'];name=src['name'];found={};visited=set();errors=[];pdfs=0;pdfs_skipped=0;provider_skips=set();nested_listing_pages=0;metadata_details=0
+ base=src['url'];name=src['name'];found={};visited=set();errors=[];pdfs=0;pdfs_skipped=0;result_links_skipped=0;provider_skips=set();nested_listing_pages=0;metadata_details=0
  html,ctype,final=fetch(base)
  if 'html' not in ctype and not html.lstrip().startswith('<'):return [],'unsupported content type'
  page=parse_html(html)
@@ -494,6 +518,11 @@ def scan_direct(src):
     if provider_link(up.urljoin(origin,href)):provider_skips.add(up.urljoin(origin,href))
    except (TypeError,ValueError):pass
    continue
+  # Results and award tabs are historical evidence, not solicitations. Many
+  # county PDF links have opaque URLs, so inspect the publisher's link label.
+  if published_result_link(title):
+   result_links_skipped+=1
+   continue
   # Follow only same-host notices and explicitly permitted platform links.
   same_host=up.urlparse(url).hostname==up.urlparse(origin).hostname
   context=context[:1500]
@@ -507,6 +536,10 @@ def scan_direct(src):
    # A generic 'Details' label can still point directly to a bid notice.
    # Prioritize its URL shape before unrelated purchasing/navigation links.
    score=(6 if is_individual_notice_link(url) else 0)+(4 if category(title) else 0)+(3 if bidlike(title+' '+href) else 0)+(1 if category(context) else 0)
+   # A 2024 PDF must not consume the five-PDF budget ahead of a
+   # 2026 document on the same county archive page. A year only changes
+   # retrieval order; the fetched notice must still pass all evidence gates.
+   score+=pdf_listing_recency(title,url,NOW.astimezone(ZoneInfo('America/New_York')).year)
    candidates.append((score,url,title,context))
  # Row parsing is used to discover relevant detail URLs, not to invent bid links.
  candidates.sort(key=lambda x:-x[0])
@@ -602,7 +635,7 @@ def scan_direct(src):
   except Exception as e:errors.append(type(e).__name__)
 
  rendering='; dynamic/login portal: extraction incomplete' if not page.rows and any(x in html.lower() for x in ('enable javascript','ng-app','id="app"','id="root"','sign in','log in')) else ''
- return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {metadata_details} individual bid details fetched; {pdfs} PDFs checked; {pdfs_skipped} PDF requests skipped at budget; {len(provider_skips)} external provider links skipped (access required); {len(found)} candidates; {nested_listing_pages} nested listing pages excluded as notices'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
+ return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {metadata_details} individual bid details fetched; {pdfs} PDFs checked; {pdfs_skipped} PDF requests skipped at budget; {result_links_skipped} result/award links excluded; {len(provider_skips)} external provider links skipped (access required); {len(found)} candidates; {nested_listing_pages} nested listing pages excluded as notices'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
 
 def scan_news(src):
  name=src['name'];query=src.get('discovery_query',name);q='"'+query.replace('"','')+'" ("tree removal" OR "tree trimming" OR "vegetation management" OR "land clearing" OR "forestry mulching" OR "storm cleanup" OR "brush clearing" OR "storm debris") (bid OR RFP OR contract OR procurement)'
