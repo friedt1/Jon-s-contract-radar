@@ -112,5 +112,69 @@ class PdfArchivePriorityTests(unittest.TestCase):
         self.assertIn("1 result/award links excluded", status)
 
 
+    def test_opaque_media_pdfs_respect_budget_and_current_year_priority(self):
+        # Synthetic Tioga-style opaque URLs; not real solicitations.
+        current = "https://example.gov/media/current-document"
+        old = ["https://example.gov/media/opaque-" + str(n) for n in range(7)]
+        listing = "".join(
+            '<a href="/media/opaque-%d">Tree removal bid 2024 proposal %d</a>' % (n, n)
+            for n in range(7)
+        ) + '<a href="/media/current-document">Tree removal bid 2026 proposal</a>'
+        requested = []
+
+        def fake_fetch(url, binary=False):
+            requested.append(url)
+            if url == SOURCE["url"]:
+                return listing, "text/html", url
+            if url == current:
+                return b"CURRENT", "application/pdf", url
+            if url in old:
+                return b"OLD", "application/pdf", url
+            raise AssertionError("Unexpected URL: " + url)
+
+        def fake_pdf_text(blob):
+            if blob == b"CURRENT":
+                return "Tree removal bid due November 19, 2026"
+            return "Tree removal bid due April 17, 2024"
+
+        with patch.object(scan, "fetch", side_effect=fake_fetch), patch.object(
+            scan, "pdf_text", side_effect=fake_pdf_text
+        ):
+            leads, status = scan.scan_direct(SOURCE)
+
+        self.assertEqual(requested[1], current)
+        self.assertEqual(len(requested), 1 + scan.MAX_PDF)
+        self.assertEqual([lead["url"] for lead in leads], [current])
+        self.assertEqual(leads[0]["status"], "unverified")
+        self.assertIn("3 PDF requests skipped at budget", status)
+
+    def test_documentcenter_opaque_pdfs_do_not_bypass_request_cap(self):
+        # Common municipal DocumentCenter/View/123 URLs lack a .pdf suffix.
+        links = "".join(
+            '<a href="/DocumentCenter/View/%d">Tree removal bid 2024 packet</a>' % n
+            for n in range(7)
+        )
+        requested = []
+
+        def fake_fetch(url, binary=False):
+            requested.append(url)
+            if url == SOURCE["url"]:
+                return links, "text/html", url
+            return b"OLD", "application/pdf", url
+
+        with patch.object(scan, "fetch", side_effect=fake_fetch), patch.object(
+            scan, "pdf_text", return_value="Tree removal bid due April 17, 2024"
+        ):
+            leads, status = scan.scan_direct(SOURCE)
+
+        self.assertEqual(leads, [])
+        self.assertEqual(len(requested), 1 + scan.MAX_PDF)
+        self.assertIn("2 PDF requests skipped at budget", status)
+        self.assertTrue(scan.likely_pdf_link(
+            "https://example.gov/DocumentCenter/View/123", "Tree removal bid packet"))
+        self.assertFalse(scan.likely_pdf_link(
+            "https://example.gov/purchasing", "Current bids"))
+
+
 if __name__ == "__main__":
     unittest.main()
