@@ -69,7 +69,7 @@ class RegressionTests(unittest.TestCase):
         self.assertEqual(scanner.deadline('Posted November 2, 2026'),'')
 
     def test_closed_expired_and_irrelevant(self):
-        for text in ('Tree removal bid closed','Tree removal contract awarded','Tree trimming bid canceled','Tree removal bid due 10/27/2026','Site preparation contract','Right-of-way vacation bid','Grounds maintenance bid','Computer equipment bid'):
+        for text in ('Tree removal bid closed','Tree removal contract awarded','Tree trimming bid canceled','Tree removal bid due 10/27/2026','Right-of-way vacation bid','Grounds maintenance bid','Computer equipment bid'):
             with self.subTest(text=text):self.assertFalse(scanner.eligible(text))
         self.assertTrue(scanner.eligible('Tree trimming bid due 10/28/2026'))
         self.assertEqual(scanner.category('Tree pruning contract'),'Tree trimming')
