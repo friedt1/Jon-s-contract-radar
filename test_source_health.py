@@ -154,8 +154,12 @@ class SourceHealthTests(unittest.TestCase):
             "API": "direct error: TimeoutError",
         })
         self.assertEqual(summary["counts"]["configured_direct"], 2)
-        self.assertEqual(summary["counts"]["fetched_unverified"], 1)
-        self.assertEqual(summary["counts"]["fetch_error"], 1)
+        # A stale/handcrafted status must not make an unimplemented adapter
+        # appear to have fetched individual listings.
+        self.assertEqual(summary["counts"]["fetched_unverified"], 0)
+        self.assertEqual(summary["counts"]["fetch_error"], 0)
+        self.assertEqual(summary["counts"]["adapter_not_implemented"], 2)
+        self.assertEqual(summary["counts"]["configured_fetch_targets"], 0)
         self.assertEqual(summary["counts"]["not_configured"], 0)
 
 

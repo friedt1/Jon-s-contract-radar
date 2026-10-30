@@ -747,11 +747,14 @@ def error_label(error):
 
 def run(src):
  statuses=[];leads=[]
- if src.get('mode')=='direct_page':
+ if src.get('mode') in source_config.DIRECT_MODES:
   if not source_config.direct_configured(src):
    statuses.append('direct not configured: verified public HTTPS source URL required')
-  elif src['name'] in UNCONNECTED_PLATFORMS:
+  elif (src['name'] in UNCONNECTED_PLATFORMS or src.get('provider_access_required') is True
+        or bool(src.get('delegated_provider'))):
    statuses.append('direct access required: individual listing ingestion not connected; provider-approved feed/access not established')
+  elif not source_config.direct_fetch_target(src):
+   statuses.append('direct adapter not implemented: feed/API URL configured but individual-listing ingestion not connected')
   else:
    try:
     items,st=scan_direct(src);leads.extend(items);statuses.append(st)
