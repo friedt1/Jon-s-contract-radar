@@ -45,6 +45,13 @@ setImmediate(() => {
   assert.ok(element('#health-summary').textContent.includes('1 sources with individual-notice robots blocks'));
   assert.ok(element('#health-summary').textContent.includes('3 PDF requests skipped at budget'));
   assert.ok(element('#health-summary').textContent.includes('7 result/award links excluded before download'));
+  for (const state of ['http_blocked', 'redirect_blocked', 'rate_limited', 'unsupported_content']) {
+    assert.ok(html.includes('<option value="' + state + '">'));
+  }
+  assert.ok(element('#health-summary').textContent.includes('0 HTTP access blocks (401/403)'));
+  assert.ok(element('#health-summary').textContent.includes('0 unsafe redirects rejected'));
+  assert.ok(element('#health-summary').textContent.includes('0 rate-limited sources (429)'));
+  assert.ok(element('#health-summary').textContent.includes('0 unsupported source formats'));
   assert.ok(element('#health-list').innerHTML.includes('Individual notice access: robots blocked'));
   assert.ok(element('#health-list').innerHTML.includes('2 detail errors'));
   assert.ok(element('#health-list').innerHTML.includes('3 PDF requests skipped at budget'));
