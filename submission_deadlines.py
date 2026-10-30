@@ -131,7 +131,7 @@ def submission_deadline_details(text):
 
     A question, walkthrough, or pre-bid date cannot supply the closing time.
     For revised deadlines, the latest submission date wins; on a tied date,
-    the last explicit time is used. No time is inferred from a date alone.
+    the last submission statement controls its own clock; a later date-only\n    amendment must not inherit a stale time. No time is inferred.
     """
     if not isinstance(text, str):
         return "", ""
@@ -162,8 +162,12 @@ def submission_deadline_details(text):
     if not matches:
         return "", ""
     latest = max(date for date, _ in matches)
-    times = [clock for date, clock in matches if date == latest and clock]
-    return latest.isoformat(), (times[-1] if times else "")
+    # A later amendment may restate the same date without a clock. Do not
+    # carry an earlier (possibly superseded) cutoff into that notice: the
+    # latest matching submission statement controls its own time evidence.
+    latest_statement = next((clock for date, clock in reversed(matches)
+                             if date == latest), "")
+    return latest.isoformat(), latest_statement
 
 
 
