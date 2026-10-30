@@ -71,20 +71,23 @@ def deadline(text):
  return submission_deadline(text)
 
 def closed(text):
- """Recognize closed solicitations, not ordinary worksite road closures.
+ """Recognize actual closed solicitations, not Q&A-only status labels.
 
- A notice about removing trees on a closed road is not a closed bid.
- Bare 'Closed' is still accepted for explicit status-only fields.
+ A notice about trees on a closed road or a closed question period is
+ not evidence that bids are closed. An explicit bid-closure field still is.
  """
  text = norm(text)
  if re.fullmatch(r'(?:closed|awarded|cancelled|canceled|expired)', text, re.I):
   return True
+ question_only = (r'[\s:;,()\-–—/]+(?:(?:for|to)\s+)?'
+                  r'(?:questions?|q\s*&\s*a|inquir(?:y|ies)|'
+                  r'clarifications?|rfis?|addenda)\b')
  return bool(re.search(
   r'\b(?:awarded|cancelled|canceled|expired|bid results|award notice|'
   r'no (?:open|current|active) bids)\b'
-  r'|\b(?:bid(?:ding)?|solicitation|rfp|rfq|contract|opportunity|status)'
-  r'\s+(?:is\s+)?(?:now\s+)?closed\b'
-  r'|\bstatus\s*:\s*closed\b'
+  r'|\b(?:bids?|bidding|solicitation|rfp|rfq|contract|opportunity)'
+  r'\s+(?:(?:is|are)\s+)?(?:now\s+)?closed\b'
+  r'|\bstatus\s*(?::|(?:is|are))\s*closed\b(?!' + question_only + r')'
   r'|\bclosed\s+(?:for|to)\s+(?:bids?|proposals?|submissions?)\b',
   text, re.I))
 
