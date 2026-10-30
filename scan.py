@@ -75,6 +75,22 @@ def local_evidence(text):
 def deadline(text):
  return submission_deadline(text)
 
+def listing_deadline_priority(text, now):
+ """Order bounded detail requests using *listing-row* submission evidence.
+
+ A publisher may label old bids Open. An expired/closed listing is only
+ deprioritized, never discarded: an amendment on its individual notice may
+ change the deadline. A future date is also only a request-order hint, not
+ verification of the notice, worksite, or current publisher status.
+ """
+ if closed(text):
+  return -10
+ due=deadline(text)
+ if not due:
+  return 0
+ today=now.astimezone(ZoneInfo('America/New_York')).date().isoformat()
+ return -10 if due<today or explicit_closing_passed(text,now) else 8
+
 def closed(text):
  """Recognize actual closed solicitations, not Q&A-only status labels.
 
@@ -595,6 +611,10 @@ def scan_direct(src):
    # 2026 document on the same county archive page. A year only changes
    # retrieval order; the fetched notice must still pass all evidence gates.
    score+=pdf_listing_recency(title,url,NOW.astimezone(ZoneInfo('America/New_York')).year)
+   # Unlike a document's publication year, a row-specific submission cutoff
+   # directly distinguishes current from stale bid-listing links. Never use
+   # the page-wide body: neighboring rows have unrelated dates.
+   score+=listing_deadline_priority(context,NOW)
    # Statewide procurement indexes expose far more candidates than our bounded
    # detail budget. Prefer links with an explicit regional place in their own
    # listing row, so unrelated statewide bids cannot starve local notices.
