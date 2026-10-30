@@ -8,7 +8,7 @@ import datetime as dt
 import json
 import pathlib
 import re
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 from urllib.error import HTTPError
 
 import civicplus_bids
@@ -59,6 +59,28 @@ def _blocked_redirect_state(exc, scope):
     # Never imply that an external provider was actually accessed.
     return (f"{scope}_insecure_redirect" if "HTTPS downgrade" in str(exc)
             else f"{scope}_redirect_blocked")
+
+
+def _safe_link(base, href):
+    """Resolve public page links for diagnostics only; never fetch the target.
+
+    Protocol-relative links are common on municipal pages. Reject malformed,
+    credentialed, insecure and non-HTTPS destinations before classifying a
+    provider redirect or externally hosted bid PDF.
+    """
+    if not isinstance(href, str) or not href or any(
+        ord(ch) < 33 or ord(ch) == 127 or ch == "\\\\" for ch in href
+    ):
+        return None
+    try:
+        parsed = urlparse(urljoin(base, href))
+        if (parsed.scheme.lower() != "https" or not parsed.hostname
+                or parsed.username is not None or parsed.password is not None
+                or parsed.port not in (None, 443)):
+            return None
+        return parsed
+    except ValueError:
+        return None
 
 
 def _sample_priority(record, now):
@@ -142,12 +164,18 @@ def probe(source, fetch=scan.fetch, now=None):
             # Many agencies label the outbound link "View Bids" without
             # spelling out OpenGov/BidNet in visible page text. Inspect only
             # links explicitly labeled as procurement, never follow them.
+            # Resolve protocol-relative links against the actual official
+            # listing URL. These are *diagnostics*, not requests to the
+            # destination. A provider lookalike must never match.
+            linked = [(label, parsed)
+                      for label, href, _ in page.links
+                      for parsed in [_safe_link(final, href)]
+                      if parsed is not None]
             provider_link = any(
-                re.search(r"(?:^|\.)(?:opengov\.com|bonfirehub\.com|bidnetdirect\.com|pennbid\.net|publicpurchase\.com)$",
-                          (urlparse(href).hostname or "").lower())
-                and re.search(r"\b(?:bids?|rfps?|rfqs?|solicitations?|procurement|proposals?)\b",
+                scan.provider_link(parsed.geturl())
+                and re.search(r"\\b(?:bids?|rfps?|rfqs?|solicitations?|procurement|proposals?)\\b",
                               label, re.I)
-                for label, href, _ in page.links
+                for label, parsed in linked
             )
             # A municipality may publish bid packets on a separate HTTPS
             # document CDN. The official listing alone does not authorize
@@ -155,11 +183,8 @@ def probe(source, fetch=scan.fetch, now=None):
             # are still open. Report the hosts without fetching them.
             off_host_pdf_hosts = sorted({
                 parsed.hostname.lower()
-                for _label, href, _pos in page.links
-                for parsed in [urlparse(href)]
-                if parsed.scheme.lower() == "https"
-                and parsed.hostname
-                and parsed.hostname.lower() != urlparse(final).hostname.lower()
+                for _label, parsed in linked
+                if parsed.hostname.lower() != urlparse(final).hostname.lower()
                 and parsed.path.lower().endswith(".pdf")
             })
             if has_procurement_evidence and off_host_pdf_hosts:
