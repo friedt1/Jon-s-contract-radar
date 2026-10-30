@@ -34,11 +34,18 @@ def report(payload):
         detail_errors = row.get("detail_errors", 0)
         # An indirect RSS robots error must not turn a successful direct
         # fetch into a direct-source failure.
-        direct_error = direct in {"robots_blocked", "fetch_error"}
+        # HTTP denials, unsafe redirects, rate limits, and unsupported
+        # responses are direct-source failures too. Keep access-required
+        # portals separate: missing authorization is not a transient error.
+        direct_error = direct in {
+            "robots_blocked", "http_blocked", "redirect_blocked",
+            "rate_limited", "unsupported_content", "fetch_error",
+        }
         indirect_error = indirect in {"robots_blocked", "error"}
         if not row:  # Backward-compatible fallback for historical feeds.
             direct_error = ("direct error:" in low or "direct blocked" in low
-                            or low.startswith("blocked:"))
+                            or low.startswith("blocked:")
+                            or "unsupported content type" in low)
             indirect_error = "indirect rss error:" in low
         results.append({
             "source": name,
@@ -57,6 +64,10 @@ def report(payload):
             "direct_error": direct_error,
             "indirect_error": indirect_error,
             "detail_errors": detail_errors,
+            "pdf_fetch_attempts": row.get("pdf_fetch_attempts", 0),
+            "pdf_budget_skips": row.get("pdf_budget_skips", 0),
+            "result_award_links_excluded": row.get("result_award_links_excluded", 0),
+            "external_provider_links_skipped": row.get("external_provider_links_skipped", 0),
             "error": direct_error or bool(detail_errors),
             "raw_status": message,
         })
