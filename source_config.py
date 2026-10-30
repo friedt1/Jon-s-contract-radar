@@ -7,6 +7,9 @@ import re
 from urllib.parse import urlsplit
 
 DIRECT_MODES = frozenset({"direct_page", "official_feed", "authorized_api"})
+# Only HTML direct_page has a live ingestion path in scan.run. A declared
+# official_feed or authorized_api URL is configuration, not a working adapter.
+IMPLEMENTED_DIRECT_MODES = frozenset({"direct_page"})
 _HOST_LABEL = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$", re.I)
 _ENCODED_CONTROL = re.compile(r"%(?:0[0-9a-f]|1[0-9a-f]|7f)", re.I)
 
@@ -42,3 +45,13 @@ def direct_configured(source):
     return (source.get("mode") in DIRECT_MODES
             and source.get("verified_url") is True
             and valid_public_https_url(source.get("url")))
+
+
+def direct_fetch_target(source):
+    """A configured URL with an implemented direct scanner adapter.
+
+    Provider authorization is an additional gate evaluated by the caller.
+    A configured feed/API URL must never count as a fetch target until its
+    dedicated adapter exists and is tested.
+    """
+    return direct_configured(source) and source.get("mode") in IMPLEMENTED_DIRECT_MODES
