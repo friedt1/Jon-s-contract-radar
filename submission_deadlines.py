@@ -104,7 +104,7 @@ _DUE_BEFORE_DATE = re.compile(
     r"(?P<clock>" + _CLOCK + r")\s+(?:on\s+)?" + _DATE, re.I,
 )
 
-def _receipt_before_date_matches(text):
+def _receipt_before_date_matches(text, with_position=False):
     for match in (m for pattern in (_RECEIPT_BEFORE_DATE, _DUE_BEFORE_DATE)
                   for m in pattern.finditer(text)):
         prefix = re.split(r"[.;\n]", text[max(0, match.start()-80):match.start()])[-1]
@@ -122,7 +122,7 @@ def _receipt_before_date_matches(text):
             clock = dt.datetime.strptime(clock, "%I:%M %p").strftime("%I:%M %p").lstrip("0")
         except ValueError:
             continue
-        yield date, clock
+        yield (date, clock, match.start()) if with_position else (date, clock)
 
 
 
@@ -157,15 +157,16 @@ def submission_deadline_details(text):
                 clock = dt.datetime.strptime(value, "%I:%M %p").strftime("%I:%M %p").lstrip("0")
             except ValueError:
                 pass
-        matches.append((date, clock))
-    matches.extend(_receipt_before_date_matches(text))
+        matches.append((date, clock, match.start()))
+    matches.extend(_receipt_before_date_matches(text, with_position=True))
     if not matches:
         return "", ""
-    latest = max(date for date, _ in matches)
+    latest = max(date for date, _, _ in matches)
+    matches.sort(key=lambda item: item[2])
     # A later amendment may restate the same date without a clock. Do not
     # carry an earlier (possibly superseded) cutoff into that notice: the
     # latest matching submission statement controls its own time evidence.
-    latest_statement = next((clock for date, clock in reversed(matches)
+    latest_statement = next((clock for date, clock, _ in reversed(matches)
                              if date == latest), "")
     return latest.isoformat(), latest_statement
 
