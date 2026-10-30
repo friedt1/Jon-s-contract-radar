@@ -240,10 +240,25 @@ def likely_pdf_link(url, title=''):
 
 
 def pdf_listing_recency(title, url, year):
- """Order bounded PDF checks; a year is NOT proof a solicitation is open."""
+ """Order bounded PDF checks; a year is NOT proof a solicitation is open.
+
+ An archive can label every link "Bid proposal" while the document path
+ contains the year. Use year tokens in the *path* only when the link label
+ supplies none. Never infer a year from query parameters or an opaque numeric
+ DocumentCenter/View identifier (which could happen to equal 2026).
+ """
  if not likely_pdf_link(url, title):
   return 0
  years=[int(y) for y in re.findall(r'(?<!\d)20\d{2}(?!\d)', norm(title))]
+ if not years:
+  path=up.urlsplit(url).path
+  parts=path.strip('/').split('/')
+  years.extend(int(segment) for segment in parts[:-1]
+               if re.fullmatch(r'20\d{2}', segment))
+  filename=parts[-1]
+  if not re.fullmatch(r'20\d{2}', filename):
+   years.extend(int(y) for y in re.findall(
+    r'(?<![A-Za-z0-9])20\d{2}(?![A-Za-z0-9])', filename))
  if not years:
   return 0
  latest=max(years)
