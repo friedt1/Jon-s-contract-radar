@@ -70,6 +70,7 @@ def classify(source, status):
         "detail_errors": detail_errors,
         "detail_access_state": detail_access_state,
         "pdf_budget_skips": _number(r"\b(\d+) PDF requests skipped at budget\b", status),
+        "result_award_links_excluded": _number(r"\b(\d+) result/award links excluded\b", status),
         "external_provider_links_skipped": _number(
             r"\b(\d+) external provider links skipped \(access required\)", status),
         "unverified_candidates": _number(r"\b(\d+) unverified candidates\b", status)
@@ -97,6 +98,8 @@ def summarize(sources, statuses):
     counts["detail_errors"] = sum(row["detail_errors"] for row in rows)
     counts["detail_robots_blocked_sources"] = sum(row["detail_access_state"] == "robots_blocked" for row in rows)
     counts["pdf_budget_skips"] = sum(row["pdf_budget_skips"] for row in rows)
+    counts["result_award_links_excluded"] = sum(
+        row["result_award_links_excluded"] for row in rows)
     counts["external_provider_links_skipped"] = sum(
         row["external_provider_links_skipped"] for row in rows)
     counts["unverified_candidates"] = sum(row["unverified_candidates"] for row in rows)
