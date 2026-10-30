@@ -595,6 +595,13 @@ def scan_direct(src):
    # 2026 document on the same county archive page. A year only changes
    # retrieval order; the fetched notice must still pass all evidence gates.
    score+=pdf_listing_recency(title,url,NOW.astimezone(ZoneInfo('America/New_York')).year)
+   # Statewide procurement indexes expose far more candidates than our bounded
+   # detail budget. Prefer links with an explicit regional place in their own
+   # listing row, so unrelated statewide bids cannot starve local notices.
+   # This is request ordering only: place text does NOT verify worksite, route,
+   # publisher status, permission, or an open solicitation.
+   if name in BROAD_SOURCES and local_evidence(title+' '+context):
+    score+=7
    candidates.append((score,url,title,context))
  # Row parsing is used to discover relevant detail URLs, not to invent bid links.
  candidates.sort(key=lambda x:-x[0])
