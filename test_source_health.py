@@ -100,6 +100,33 @@ class SourceHealthTests(unittest.TestCase):
         self.assertEqual(counts["configured_direct"], 4)
         self.assertEqual(counts["fetched_unverified"], 0)
 
+    def test_pagination_failure_is_not_complete_coverage(self):
+        src = {"name": "Tioga fixture", "mode": "direct_page",
+               "url": "https://county.example/bids", "verified_url": True}
+        status = ("direct fetched; 2 listing pages; 4 individual bid records; "
+                  "1 individual bid details fetched; "
+                  "2 pagination errors: RobotsDenied,TimeoutError")
+        row = source_health.classify(src, status)
+        self.assertEqual(row["direct_state"], "fetched_unverified")
+        self.assertEqual(row["pagination_errors"], 2)
+        self.assertEqual(row["pagination_access_state"], "robots_blocked")
+        self.assertEqual(row["individual_bid_details_fetched"], 1)
+        counts = source_health.summarize([src], {src["name"]: status})["counts"]
+        self.assertEqual(counts["pagination_errors"], 2)
+        self.assertEqual(counts["pagination_incomplete_sources"], 1)
+        self.assertEqual(counts["pagination_robots_blocked_sources"], 1)
+
+    def test_partial_pagination_failure_without_robots(self):
+        src = {"name": "County", "mode": "direct_page",
+               "url": "https://county.example/bids", "verified_url": True}
+        row = source_health.classify(
+            src, "direct fetched; 1 listing pages; 1 pagination errors: TimeoutError")
+        self.assertEqual(row["pagination_access_state"], "partial_listing_errors")
+        self.assertEqual(row["pagination_errors"], 1)
+        clean = source_health.classify(src, "direct fetched; 1 listing pages")
+        self.assertEqual(clean["pagination_errors"], 0)
+        self.assertEqual(clean["pagination_access_state"], "no_reported_errors")
+
     def test_official_feed_and_authorized_api_are_direct_modes(self):
         sources = [
             {"name": "Feed", "mode": "official_feed", "url": "https://county.example/feed.xml",
