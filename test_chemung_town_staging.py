@@ -55,7 +55,8 @@ class ChemungTownStagingTests(unittest.TestCase):
                     _, status, leads = scan.run(row)
                 direct.assert_not_called()
                 self.assertEqual(leads, [])
-                self.assertIn("direct not configured", status)
+                self.assertIn("indirect RSS ok", status)
+                self.assertNotIn("direct fetched", status)
 
     def test_audit_keeps_102_sources_and_no_new_direct_integrations(self):
         audit = audit_source_coverage.audit(self.sources)
