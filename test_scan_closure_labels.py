@@ -50,7 +50,7 @@ class ScannerClosureLabelTests(unittest.TestCase):
             "RFP was rescinded by the issuing agency",
             "Withdrawn solicitation",
             "Bid withdrawn",
-            "Rescinded",
+            "Status: Rescinded",
         ):
             with self.subTest(label=label):
                 self.assertTrue(scan.closed(label))
@@ -59,6 +59,7 @@ class ScannerClosureLabelTests(unittest.TestCase):
                     source="Test County", today=self.TODAY))
 
     def test_one_vendor_withdrawing_offer_does_not_close_procurement(self):
+        self.assertTrue(scan.closed("Rescinded"))
         text = ("Tree removal bid due November 13, 2026. "
                 "Contractor A withdrew its bid; agency is still accepting offers.")
         self.assertFalse(scan.closed(text))
