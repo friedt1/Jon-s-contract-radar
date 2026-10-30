@@ -34,6 +34,27 @@ class NoticeIdentityTests(unittest.TestCase):
         self.assertEqual(len({notice_identity.notice_id(x) for x in (a, b, c)}), 3)
         self.assertIn("ref=vendor", notice_identity.canonical_url(a))
 
+    def test_distinct_query_key_order_deduplicates_same_bid(self):
+        first = "https://county.example/Bids.aspx?bidID=416&ref=vendor"
+        second = "https://COUNTY.example/Bids.aspx?ref=vendor&utm_source=mail&bidID=416"
+        self.assertEqual(notice_identity.notice_id(first),
+                         notice_identity.notice_id(second))
+        self.assertEqual(notice_identity.canonical_url(second),
+                         "https://county.example/Bids.aspx?bidID=416&ref=vendor")
+
+    def test_repeated_query_keys_preserve_order_and_bid_identity(self):
+        first = "https://county.example/bids?bidID=12&bidID=13"
+        second = "https://county.example/bids?bidID=13&bidID=12"
+        self.assertNotEqual(notice_identity.notice_id(first),
+                            notice_identity.notice_id(second))
+        self.assertEqual(notice_identity.canonical_url(first), first)
+        self.assertEqual(notice_identity.canonical_url(second), second)
+
+    def test_signed_notice_urls_are_not_rewritten(self):
+        signed = ("https://county.example/bid?z=1&X-Amz-Signature=abc"
+                  "&bidID=12&utm_source=mail")
+        self.assertEqual(notice_identity.canonical_url(signed), signed)
+
     def test_rejects_malformed_or_credentialed_urls(self):
         for url in ("", "https://user:pass@county.example/bid",
                     "javascript:alert(1)", "https://[bad/bid",

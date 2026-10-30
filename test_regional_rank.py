@@ -248,6 +248,26 @@ class RegionalRankTests(unittest.TestCase):
                  "deadline": "2026-11-13"}
         self.assertEqual(build([owego], today=today)["opportunities"], [])
 
+    def test_permuted_query_keys_cannot_leave_stale_open_bid_in_review(self):
+        # Synthetic Erie-style tree/stump notices; not live opportunities.
+        import datetime as dt
+        today = dt.date(2026, 10, 29)
+        open_copy = {"title": "Tree and stump removal",
+                     "url": "https://county.example/bids?bidID=12&ref=vendor",
+                     "deadline": "2026-11-20", "open_status": "listing_open"}
+        closed_copy = dict(open_copy,
+                           url="https://county.example/bids?ref=vendor&bidID=12&utm_source=mail",
+                           open_status="detail_listed_awarded")
+        for pair in ([open_copy, closed_copy], [closed_copy, open_copy]):
+            self.assertEqual(build(pair, today=today)["opportunities"], [])
+        distinct = dict(open_copy, url="https://county.example/bids?bidID=13&ref=vendor")
+        self.assertEqual(len(build([open_copy, closed_copy, distinct],
+                                   today=today)["opportunities"]), 1)
+        owego = {"title": "Owego demolition rebid",
+                 "url": "https://county.example/bids?bidID=14&ref=vendor",
+                 "deadline": "2026-11-13"}
+        self.assertEqual(build([owego], today=today)["opportunities"], [])
+
     def test_no_invented_notices(self):
         self.assertEqual(build([])["opportunities"],[])
 if __name__ == "__main__": unittest.main()
