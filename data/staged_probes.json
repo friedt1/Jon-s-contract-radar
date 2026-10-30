@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-30T18:38:32.789831+00:00",
+  "updated": "2026-10-30T18:41:22.239477+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 28,
+  "staged_entrypoints": 31,
   "probes": [
     {
       "name": "Broome County",
@@ -90,8 +90,8 @@
     {
       "name": "Allegany County",
       "official_entrypoint": "https://www.alleganyco.gov/departments/public-works/bids-awards/",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -162,6 +162,19 @@
       "direct_monitoring_activated": false
     },
     {
+      "name": "Tioga County PA",
+      "official_entrypoint": "https://www.tiogacountypa.us/departments/commissioners",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Tioga County PA Commissioners page confirmed 2026-10-30; this is an agency entrypoint, NOT a central bid listing. Locate a permitted current individual-solicitation index and verify publisher terms, deadline, worksite and adapter before activating.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
       "name": "Susquehanna County",
       "official_entrypoint": "https://www.susqco.com/departments/county-commissioners/current-bid-specifications",
       "state": "listing_reachable_adapter_required",
@@ -201,6 +214,19 @@
       "direct_monitoring_activated": false
     },
     {
+      "name": "Potter County PA",
+      "official_entrypoint": "https://www.pottercountypa.gov/",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Potter County PA website confirmed 2026-10-30; homepage is NOT a verified bid listing. Find a current official solicitation index and verify permitted individual notice extraction and terms before activating.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
       "name": "Lackawanna County",
       "official_entrypoint": "https://www.lackawannacounty.org/government/departments/rfp_rfq.php",
       "state": "listing_robots_blocked",
@@ -210,6 +236,19 @@
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official county RFP/RFQ listing verified 2026-10-29; individual bid_detail_T17_R*.php links sampled returned HTTP 404. Do not activate until publisher access terms/robots, stable individual detail retrieval, closing dates, and Elmira travel qualification are validated. Historic and unrelated listings are not open tree bids.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Wyoming County PA",
+      "official_entrypoint": "https://wyomingcountypa.gov/",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Wyoming County PA website confirmed 2026-10-30; homepage is NOT a verified bid listing. Find current county bid notices, permitted individual listing extraction and publisher terms before activating.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     },
@@ -342,15 +381,18 @@
     {
       "name": "City of Hornell",
       "official_entrypoint": "https://www.cityofhornell.gov/upcoming-bid-projects",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "listing_reachable_off_host_documents_review_required",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official City of Hornell Upcoming Bid Projects page observed 2026-10-30 with PDF bid documents on external irp.cdn-website.com. Stage only: review robots, publisher and CDN terms; implement permitted per-document retrieval, distinguish upcoming from past bids, verify scope/deadline/status and worksite before activation. No off-host PDF is fetched by staging.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false
+      "direct_monitoring_activated": false,
+      "off_host_pdf_hosts_unverified": [
+        "irp.cdn-website.com"
+      ]
     },
     {
       "name": "City of Geneva",
