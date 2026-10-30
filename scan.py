@@ -698,7 +698,7 @@ def scan_direct(src):
      ix=scope.lower().find(match);snippet=scope[max(0,ix-160):ix+520]
      add_lead(found,name,title if category(title) else snippet[:130],final_url,('Bid description: ' if metadata_notice else '')+snippet+' '+('Deadline: '+deadline(body) if deadline(body) else ''),'individual metadata bid candidate' if metadata_notice else 'direct detail candidate',evidence=body)
      annotate_explicit_closing(found,final_url,body)
-  except Exception as e:errors.append(type(e).__name__)
+  except Exception as e:errors.append(error_label(e))
 
  rendering='; dynamic/login portal: extraction incomplete' if not page.rows and any(x in html.lower() for x in ('enable javascript','ng-app','id="app"','id="root"','sign in','log in')) else ''
  return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {metadata_details} individual bid details fetched; {pdfs} PDFs checked; {pdf_attempts} PDF-shaped requests attempted; {pdfs_skipped} PDF requests skipped at budget; {result_links_skipped} result/award links excluded; {len(provider_skips)} external provider links skipped (access required); {len(found)} candidates; {nested_listing_pages} nested listing pages excluded as notices'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
