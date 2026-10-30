@@ -33,10 +33,24 @@ def canonical_url(url):
         query = parts.query
         if query:
             pairs = parse_qsl(query, keep_blank_values=True)
-            filtered = [(key, value) for key, value in pairs
-                        if not (key.lower().startswith("utm_") or key.lower() in _TRACKING_KEYS)]
-            if len(filtered) != len(pairs):
-                query = urlencode(filtered)
+            # Signed and token-bearing URLs can be order- and byte-sensitive.
+            # Do not rewrite their query strings, even to remove tracking.
+            protected = any(
+                key.lower() in {"sig", "signature", "token", "auth", "api_key"}
+                or key.lower().startswith(("x-amz-", "x-goog-"))
+                for key, _ in pairs
+            )
+            if not protected:
+                filtered = [(key, value) for key, value in pairs
+                            if not (key.lower().startswith("utm_")
+                                    or key.lower() in _TRACKING_KEYS)]
+                # Ordinary distinct query keys are order-independent for
+                # notice identity. Repeated keys may be order-sensitive:
+                # retain their original order so different bids cannot merge.
+                if len({key.lower() for key, _ in filtered}) == len(filtered):
+                    filtered.sort(key=lambda pair: pair[0])
+                if filtered != pairs:
+                    query = urlencode(filtered)
         return urlunsplit((parts.scheme.lower(), netloc, parts.path, query, ""))
     except (ValueError, TypeError):
         return ""
