@@ -149,9 +149,21 @@ def probe(source, fetch=scan.fetch, now=None):
                               label, re.I)
                 for label, href, _ in page.links
             )
+            # Some municipal homepages have an explicit RFP section that
+            # currently says "None at this time". This is evidence about that
+            # section only, not proof that no bids exist on other pages or
+            # portals. Do not confuse it with a missing extraction adapter.
+            rfp_section_empty = bool(re.search(
+                r"\\b(?:Request\\s+for\\s+Proposals?|RFPs?)\\s*:\\s*"
+                r"None\\s+at\\s+this\\s+time\\b", listing_text, re.I))
+            if rfp_section_empty:
+                result["section_note"] = (
+                    "RFP section reports none at probe time; other bid "
+                    "channels and individual notice access remain unverified")
             result["state"] = (
                 "listing_reachable_external_provider_access_required"
                 if delegated_to_provider or provider_link else
+                "listing_reachable_rfp_section_reports_none" if rfp_section_empty else
                 "listing_reachable_adapter_required" if has_procurement_evidence else
                 "official_page_reachable_no_procurement_evidence"
             )
