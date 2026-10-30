@@ -57,7 +57,18 @@ EXTERNAL_PROVIDER_HOSTS = ('bonfirehub.com', 'bidnetdirect.com',
 def norm(s): return re.sub(r'\s+',' ',re.sub(r'<[^>]*>',' ',s or '')).strip()
 def category(s):
  t=norm(s).lower()
- return next((k for k,v in CATEGORIES.items() if any(x in t for x in v)),None)
+ core=next((k for k,v in CATEGORIES.items() if any(x in t for x in v)),None)
+ if core:
+  return core
+ # Site preparation is adjacent work, not a tree-service solicitation.
+ # Require an explicit site-work phrase, and never admit demolition-only
+ # scopes (including the historical Owego demolition regression).
+ if not re.search(r'\b(?:site prep(?:aration)?|site grading|earthwork and grading|grading and grubbing)\b',t):
+  return None
+ if (re.search(r'\b(?:demolition|demolish(?:ing|ed)?|razing)\b',t)
+     and not re.search(r'\b(?:trees?|stumps?|brush|vegetation|clearing|grubbing)\b',t)):
+  return None
+ return 'Related site prep'
 def bidlike(s):
  return bool(re.search(r"\b(?:bids?|rf[qp]|solicitations?|tender|proposals?|contracts?|procurement|quotes?)\b|bidid=|invitation to|request for", s, re.I))
 
