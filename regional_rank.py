@@ -135,6 +135,11 @@ def build(notices, today=None, now=None):
     # An old date alone does not trigger this gate (amendments can extend bids).
     by_url = {}
     publisher_closed_urls = set()
+    # Keep all independently stated submission cutoffs for the same notice.
+    # A higher-value or longer duplicate is not evidence that its deadline
+    # supersedes a different publisher cutoff.
+    dates_by_url = {}
+    clocks_by_url = {}
     for notice in notices:
         if not isinstance(notice, dict):
             continue
@@ -147,6 +152,18 @@ def build(notices, today=None, now=None):
         if item is None:
             continue
         key = item["url"]
+        due = item.get("deadline")
+        if isinstance(due, str):
+            try:
+                dt.date.fromisoformat(due)
+            except ValueError:
+                pass
+            else:
+                dates_by_url.setdefault(key, set()).add(due)
+                clock = str(item.get("deadline_time") or "").strip().lower()
+                if clock:
+                    clocks_by_url.setdefault((key, due), set()).add(
+                        " ".join(clock.split()))
         previous = by_url.get(key)
         quality = lambda n: (n["priority_score"], bool(n.get("deadline")),
                              len(str(n.get("summary") or "")))
@@ -154,6 +171,25 @@ def build(notices, today=None, now=None):
             by_url[key] = item
     for closed_url in publisher_closed_urls:
         by_url.pop(closed_url, None)
+    for key, item in by_url.items():
+        dates = dates_by_url.get(key, set())
+        if len(dates) > 1:
+            # Do not publish one arbitrarily selected deadline as if it were
+            # the current cutoff. Keep the notice review-only and expose the
+            # conflicting date evidence for a human to check.
+            item["deadline_conflict"] = sorted(dates)
+            item["deadline"] = ""
+            item["deadline_time"] = ""
+            item["deadline_timezone"] = ""
+            item["deadline_status"] = "conflicting_unverified"
+        elif len(dates) == 1:
+            due = next(iter(dates))
+            clocks = clocks_by_url.get((key, due), set())
+            if len(clocks) > 1:
+                item["deadline_conflict"] = sorted(clocks)
+                item["deadline_time"] = ""
+                item["deadline_timezone"] = ""
+                item["deadline_status"] = "conflicting_unverified"
     results = sorted(by_url.values(), key=lambda n: (-n["priority_score"], str(n.get("title", ""))))
     return {"updated": dt.datetime.now(dt.timezone.utc).isoformat(),
             "coverage_note": ("Review-only candidates; past deadlines and publisher-closed notices excluded. "
