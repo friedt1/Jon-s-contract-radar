@@ -13,6 +13,13 @@ def report(payload):
     leads = payload.get("opportunities", [])
     if not isinstance(sources, dict) or not isinstance(leads, list):
         raise ValueError("invalid published scan schema")
+    health = payload.get("source_health", {})
+    if health is None:
+        health = {}
+    if not isinstance(health, dict) or not isinstance(health.get("sources", []), list):
+        raise ValueError("invalid source health schema")
+    by_name = {row["name"]: row for row in health.get("sources", [])
+               if isinstance(row, dict) and isinstance(row.get("name"), str)}
     results = []
     for name, status in sorted(sources.items()):
         message = str(status)
@@ -21,13 +28,36 @@ def report(payload):
         def count(pattern):
             match = re.search(pattern, low)
             return int(match.group(1)) if match else None
+        row = by_name.get(name, {})
+        direct = row.get("direct_state", "unknown")
+        indirect = row.get("indirect_state", "unknown")
+        detail_errors = row.get("detail_errors", 0)
+        # An indirect RSS robots error must not turn a successful direct
+        # fetch into a direct-source failure.
+        direct_error = direct in {"robots_blocked", "fetch_error"}
+        indirect_error = indirect in {"robots_blocked", "error"}
+        if not row:  # Backward-compatible fallback for historical feeds.
+            direct_error = ("direct error:" in low or "direct blocked" in low
+                            or low.startswith("blocked:"))
+            indirect_error = "indirect rss error:" in low
         results.append({
             "source": name,
             "listing_pages": count(r"(\d+) listing pages"),
-            "individual_records": count(r"(\d+) individual bid records"),
-            "details_checked": count(r"(\d+) (?:relevant )?details checked"),
-            "candidates": count(r"(\d+) (?:unverified )?candidates"),
-            "error": ("error" in low or "failed" in low or "blocked" in low),
+            "individual_records": row.get("individual_bid_records_found",
+                                          count(r"(\d+) individual bid records")),
+            "details_checked": row.get("detail_fetches_attempted",
+                                       count(r"(\d+) (?:relevant )?details checked")),
+            "candidates": row.get("unverified_candidates",
+                                  count(r"(\d+) (?:unverified )?candidates")),
+            "direct_state": direct,
+            "indirect_state": indirect,
+            "detail_access_state": row.get("detail_access_state", "unknown"),
+            "access_required": direct == "access_required" or
+                               (not row and "access required" in low),
+            "direct_error": direct_error,
+            "indirect_error": indirect_error,
+            "detail_errors": detail_errors,
+            "error": direct_error or bool(detail_errors),
             "raw_status": message,
         })
     return {
@@ -37,8 +67,12 @@ def report(payload):
             1 for x in leads if isinstance(x, dict) and
             x.get("status") == "verified" and x.get("open_status") == "verified_open"
         ),
+        "source_coverage": payload.get("source_coverage", {}),
+        "health_counts": health.get("counts", {}),
         "sources": results,
-        "warning": "A successful fetch or unverified candidate is not a verified open contract."
+        "warning": ("Direct fetch, indirect RSS, provider access and individual-detail "
+                    "failures are separate. A fetched page or unverified candidate "
+                    "is not a verified open contract.")
     }
 
 
