@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-30T12:42:36.499763+00:00",
+  "updated": "2026-10-30T14:41:12.200757+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 27,
+  "staged_entrypoints": 28,
   "probes": [
     {
       "name": "Broome County",
@@ -138,24 +138,15 @@
     {
       "name": "Wyoming County",
       "official_entrypoint": "https://www.wyomingcountyny.gov/Bids.aspx",
-      "state": "notice_format_confirmed_terms_review_required",
+      "state": "listing_reachable_no_open_bids",
       "listing_retrieved": true,
-      "individual_notice_retrieved": true,
-      "individual_records_discovered": 1,
-      "individual_samples_attempted": 1,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official county CivicPlus bid listings confirmed. Verify robots, terms, and individual bidID extraction before activation; currently listed food/janitorial RFQ is unrelated to tree work.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false,
-      "sample_notice_url": "https://www.wyomingcountyny.gov/bids.aspx?bidID=203",
-      "sample_notice_status": "open",
-      "sample_notice_listing_status": "open",
-      "sample_notice_status_conflict": false,
-      "sample_notice_status_source": "individual_notice",
-      "sample_notice_deadline": "2026-10-30",
-      "sample_notice_deadline_time": "10:00 AM",
-      "sample_notice_deadline_conflict": false,
-      "sample_notice_temporal_evidence": "deadline_not_passed_unverified"
+      "direct_monitoring_activated": false
     },
     {
       "name": "Bradford County PA",
@@ -225,24 +216,15 @@
     {
       "name": "Village of Horseheads",
       "official_entrypoint": "https://www.villageofhorseheads.gov/Bids.aspx",
-      "state": "notice_format_confirmed_terms_review_required",
+      "state": "listing_reachable_no_open_bids",
       "listing_retrieved": true,
-      "individual_notice_retrieved": true,
-      "individual_records_discovered": 1,
-      "individual_samples_attempted": 1,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official CivicPlus bid-postings page confirmed; check robots, publisher terms, same-host bidID detail extraction, and stale 'Open' labels before activating.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false,
-      "sample_notice_url": "https://www.villageofhorseheads.gov/bids.aspx?bidID=2",
-      "sample_notice_status": "open",
-      "sample_notice_listing_status": "open",
-      "sample_notice_status_conflict": false,
-      "sample_notice_status_source": "individual_notice",
-      "sample_notice_deadline": "2026-10-30",
-      "sample_notice_deadline_time": "10:00 AM",
-      "sample_notice_deadline_conflict": false,
-      "sample_notice_temporal_evidence": "deadline_not_passed_unverified"
+      "direct_monitoring_activated": false
     },
     {
       "name": "City of Corning",
@@ -315,6 +297,19 @@
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official Town of Vestal Bids and RFPs Requested page confirmed (Apptegy). Page availability does not prove active solicitations. Verify robots and publisher terms, identify individual bid notices and deadlines, and implement a permitted Apptegy-specific listing/detail adapter before activation; never infer no open bids from a blank page.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Village of Owego",
+      "official_entrypoint": "https://villageofowegony.gov/newslist.php",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official village Newslist linked from the government homepage, but no individual procurement notices are visible in the public page response. Review robots/terms and verify an authorized individual-notice listing adapter; do not treat this page as a direct bid feed.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     },
