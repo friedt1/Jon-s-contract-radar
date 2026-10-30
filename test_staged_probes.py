@@ -240,6 +240,60 @@ class StagedProbeTests(unittest.TestCase):
                 self.assertFalse(row["individual_notice_retrieved"])
                 self.assertFalse(row["direct_monitoring_activated"])
 
+    def test_individual_notice_login_wall_is_not_confirmed_notice(self):
+        # A listing may be public even when each notice is login-gated.
+        login = (b'<html><h1>Sign In</h1><form>'
+                 b'<input type="password" name="password"></form></html>')
+        for final in (ENTRY.replace("Bids.aspx", "Bids.aspx?bidID=4"),
+                      "https://county.example/Account/Login?ReturnUrl=%2FBids.aspx"):
+            with self.subTest(final=final):
+                def fetch(url, binary=False):
+                    if url == ENTRY:
+                        return listing(), "text/html", url
+                    return login, "text/html", final
+                row = staged.probe(SOURCE, fetch=fetch)
+                self.assertEqual(row["state"], "individual_notice_authentication_required")
+                self.assertFalse(row["individual_notice_retrieved"])
+                self.assertFalse(row["direct_monitoring_activated"])
+                self.assertEqual(row["individual_samples_attempted"], 1)
+
+    def test_public_individual_notice_with_login_link_remains_parseable(self):
+        def fetch(url, binary=False):
+            if url == ENTRY:
+                return listing(), "text/html", url
+            return (detail() + '<a href="/Account/Login">Sign In</a>').encode(), "text/html", url
+        row = staged.probe(SOURCE, fetch=fetch)
+        self.assertEqual(row["state"], "notice_format_confirmed_terms_review_required")
+        self.assertTrue(row["individual_notice_retrieved"])
+        self.assertFalse(row["direct_monitoring_activated"])
+
+    def test_fetcher_blocked_redirect_is_not_generic_listing_error(self):
+        for message, state in (
+            ("cross-host redirect requires an approved source adapter", "listing_redirect_blocked"),
+            ("HTTPS downgrade redirect", "listing_insecure_redirect"),
+        ):
+            with self.subTest(message=message):
+                row = staged.probe(SOURCE, fetch=Mock(side_effect=staged.scan.UnsafeRedirect(message)))
+                self.assertEqual(row["state"], state)
+                self.assertFalse(row["listing_retrieved"])
+                self.assertFalse(row["direct_monitoring_activated"])
+
+    def test_fetcher_blocked_detail_redirect_is_not_generic_fetch_error(self):
+        for message, state in (
+            ("redirect changed solicitation identity", "individual_notice_redirect_blocked"),
+            ("HTTPS downgrade redirect", "individual_notice_insecure_redirect"),
+        ):
+            with self.subTest(message=message):
+                def fetch(url, binary=False):
+                    if url == ENTRY:
+                        return listing(), "text/html", url
+                    raise staged.scan.UnsafeRedirect(message)
+                row = staged.probe(SOURCE, fetch=fetch)
+                self.assertEqual(row["state"], state)
+                self.assertEqual(row["individual_sample_failures"][0]["state"], state)
+                self.assertFalse(row["individual_notice_retrieved"])
+                self.assertFalse(row["direct_monitoring_activated"])
+
     def test_future_deadline_sample_precedes_stale_open_notice(self):
         html = (
             '<article><a href="/Bids.aspx?bidID=4">Old tree bid</a>'
