@@ -47,9 +47,9 @@ def _authentication_landing(html, final):
     login_path = bool(re.search(
         r"/(?:log-?in|sign-?in)(?:/|$)", urlparse(final).path, re.I))
     login_form = bool(
-        re.search(r"""<input\\b[^>]*\\btype\\s*=\\s*['"]?password\\b""", html, re.I)
+        re.search(r"""<input\b[^>]*\btype\s*=\s*['"]?password\b""", html, re.I)
         and re.search(
-            r"<(?:title|h[12])\\b[^>]*>\\s*(?:log\\s*in|sign\\s*in|login)\\b",
+            r"<(?:title|h[12])\b[^>]*>\s*(?:log\s*in|sign\s*in|login)\b",
             html, re.I))
     return login_path or login_form
 
