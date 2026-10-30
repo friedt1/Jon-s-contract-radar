@@ -72,6 +72,11 @@ def probe(source, fetch=scan.fetch, now=None):
     }
     try:
         html, kind, final = fetch(url)
+        # A redirected listing must remain on HTTPS. An HTTP downgrade is
+        # not evidence of a working public procurement entrypoint.
+        if urlparse(final).scheme.lower() != "https":
+            result["state"] = "listing_insecure_redirect"
+            return result
         if urlparse(final).hostname != urlparse(url).hostname:
             # A county may redirect its bids page directly to an external
             # procurement provider. That is not an activated individual-notice
@@ -85,6 +90,20 @@ def probe(source, fetch=scan.fetch, now=None):
             return result
         if "html" not in kind and not html.lstrip().startswith("<"):
             result["state"] = "unsupported_listing_content_type"
+            return result
+        # Some official bid URLs redirect to a same-host login page (or
+        # serve a login form at the original URL). Do not mistake a 200 OK
+        # authentication wall for a reachable public bid listing. A mere
+        # login link on an otherwise public page is not sufficient.
+        login_path = bool(re.search(
+            r"/(?:log-?in|sign-?in)(?:/|$)", urlparse(final).path, re.I))
+        login_form = bool(
+            re.search(r"<input\\b[^>]*\\btype\\s*=\\s*['\\\"]?password\\b", html, re.I)
+            and re.search(
+                r"<(?:title|h[12])\\b[^>]*>\\s*(?:log\\s*in|sign\\s*in|login)\\b",
+                html, re.I))
+        if login_path or login_form:
+            result["state"] = "listing_authentication_required"
             return result
         result["listing_retrieved"] = True
         if source["name"] in civicplus_bids.SOURCES:
