@@ -69,6 +69,7 @@ def classify(source, status):
         "individual_bid_details_fetched": details_fetched,
         "detail_errors": detail_errors,
         "detail_access_state": detail_access_state,
+        "pdf_fetch_attempts": _number(r"\b(\d+) PDF-shaped requests attempted\b", status),
         "pdf_budget_skips": _number(r"\b(\d+) PDF requests skipped at budget\b", status),
         "result_award_links_excluded": _number(r"\b(\d+) result/award links excluded\b", status),
         "external_provider_links_skipped": _number(
@@ -97,6 +98,7 @@ def summarize(sources, statuses):
     counts["individual_bid_details_fetched"] = sum(row["individual_bid_details_fetched"] for row in rows)
     counts["detail_errors"] = sum(row["detail_errors"] for row in rows)
     counts["detail_robots_blocked_sources"] = sum(row["detail_access_state"] == "robots_blocked" for row in rows)
+    counts["pdf_fetch_attempts"] = sum(row["pdf_fetch_attempts"] for row in rows)
     counts["pdf_budget_skips"] = sum(row["pdf_budget_skips"] for row in rows)
     counts["result_award_links_excluded"] = sum(
         row["result_award_links_excluded"] for row in rows)
