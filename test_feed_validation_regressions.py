@@ -78,6 +78,28 @@ class FeedValidationRegressions(unittest.TestCase):
             self.validate_fixture(self.notice(
                 deadline="2026-11-05", deadline_time="", review_priority="expired_check"))
 
+    def test_malformed_or_credentialed_notice_urls_cannot_be_published(self):
+        # No production records: synthetic feed/history in a temporary folder.
+        urls = (
+            "https://user:pass@county.example/Bids.aspx?bidID=321",
+            "https://county.example:bad/Bids.aspx?bidID=321",
+            "https://county.example/Bids.aspx?bidID=321\\nX-Injected:yes",
+            "javascript:alert(1)",
+            "https://[broken/Bids.aspx?bidID=321",
+        )
+        for url in urls:
+            with self.subTest(url=url):
+                with self.assertRaisesRegex(ValueError, "Invalid URL"):
+                    self.validate_fixture(self.notice(
+                        url=url, deadline="2026-11-05", deadline_time=""))
+
+    def test_valid_http_and_https_notice_urls_remain_unverified(self):
+        for url in ("http://county.example/Bids.aspx?bidID=321",
+                    "https://county.example/Bids.aspx?bidID=321"):
+            with self.subTest(url=url):
+                self.validate_fixture(self.notice(
+                    url=url, deadline="2026-11-05", deadline_time=""))
+
     def test_owego_demolition_without_tree_scope_is_still_ineligible(self):
         with self.assertRaisesRegex(ValueError, "Ineligible lead"):
             self.validate_fixture(self.notice(
