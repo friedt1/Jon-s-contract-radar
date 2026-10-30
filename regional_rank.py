@@ -129,8 +129,20 @@ def classify(notice, today=None, now=None):
 def build(notices, today=None, now=None):
     # One public notice may appear through several marketing/tracking URLs.
     # Keep substantive query keys (including bid IDs) so distinct bids survive.
+    # A publisher-closed copy must not be silently discarded before dedup:
+    # an otherwise-open duplicate may be stale. Withhold the conflicting
+    # identity from active review until its current publisher status is checked.
+    # An old date alone does not trigger this gate (amendments can extend bids).
     by_url = {}
+    publisher_closed_urls = set()
     for notice in notices:
+        if not isinstance(notice, dict):
+            continue
+        if publisher_closed(notice):
+            closed_url = canonical_url(notice.get("url"))
+            if closed_url.startswith("https://"):
+                publisher_closed_urls.add(closed_url)
+            continue
         item = classify(notice, today=today, now=now)
         if item is None:
             continue
@@ -140,6 +152,8 @@ def build(notices, today=None, now=None):
                              len(str(n.get("summary") or "")))
         if previous is None or quality(item) > quality(previous):
             by_url[key] = item
+    for closed_url in publisher_closed_urls:
+        by_url.pop(closed_url, None)
     results = sorted(by_url.values(), key=lambda n: (-n["priority_score"], str(n.get("title", ""))))
     return {"updated": dt.datetime.now(dt.timezone.utc).isoformat(),
             "coverage_note": ("Review-only candidates; past deadlines and publisher-closed notices excluded. "

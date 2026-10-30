@@ -156,6 +156,44 @@ class RegionalRankTests(unittest.TestCase):
                 self.assertIsNone(classify(dict(notice, deadline="2026-10-28"),
                                            today=today))
 
+    def test_publisher_closed_duplicate_withholds_stale_open_copy(self):
+        # Synthetic Erie-style tree/stump records, NOT actual live bids.
+        import datetime as dt
+        today = dt.date(2026, 10, 29)
+        open_copy = {"title": "Tree and stump removal",
+                     "url": "https://county.example/bids?bidID=12",
+                     "deadline": "2026-11-20",
+                     "open_status": "listing_open"}
+        closed_copy = dict(open_copy,
+                           url="https://county.example/bids?utm_source=mail&bidID=12",
+                           open_status="detail_listed_awarded")
+        for notices in ([open_copy, closed_copy], [closed_copy, open_copy]):
+            with self.subTest(order=notices[0]["open_status"]):
+                self.assertEqual(build(notices, today=today)["opportunities"], [])
+        # An unrelated bid number must not be suppressed by a closure.
+        other_bid = dict(open_copy, url="https://county.example/bids?bidID=13")
+        retained = build([open_copy, closed_copy, other_bid], today=today)["opportunities"]
+        self.assertEqual(len(retained), 1)
+        self.assertIn("bidID=13", retained[0]["url"])
+        self.assertEqual(retained[0]["status"], "review required")
+
+    def test_expired_duplicate_does_not_override_later_deadline(self):
+        # An older deadline alone is not a publisher cancellation or award.
+        import datetime as dt
+        today = dt.date(2026, 10, 29)
+        old = {"title": "Tree removal",
+               "url": "https://county.example/bids?bidID=22",
+               "deadline": "2026-10-28"}
+        amended = dict(old, deadline="2026-11-20")
+        retained = build([old, amended], today=today)["opportunities"]
+        self.assertEqual(len(retained), 1)
+        self.assertEqual(retained[0]["deadline"], "2026-11-20")
+        # Owego demolition is unrelated regardless of publisher status.
+        owego = {"title": "Owego demolition rebid",
+                 "url": "https://county.example/bids?bidID=23",
+                 "deadline": "2026-11-13"}
+        self.assertEqual(build([owego], today=today)["opportunities"], [])
+
     def test_no_invented_notices(self):
         self.assertEqual(build([])["opportunities"],[])
 if __name__ == "__main__": unittest.main()
