@@ -45,6 +45,33 @@ class SameDayDeadlineTests(unittest.TestCase):
         self.assertFalse(civicplus_bids.closing_passed("2026-12-01", "1:30 PM", before))
         self.assertTrue(civicplus_bids.closing_passed("2026-12-01", "1:30 PM", after))
 
+    def test_dotted_meridiem_and_hour_only_deadlines(self):
+        # Synthetic NY/PA notices; explicit clocks must not be silently lost.
+        for text, expected in (
+            ("Closes: 10/30/2026 at 2 PM", ("2026-10-30", "2:00 PM")),
+            ("Status: Closes: Open Oct 30, 2026 at 2 P.M.", ("2026-10-30", "2:00 PM")),
+            ("Closes: 10/30/2026 11 A.M.", ("2026-10-30", "11:00 AM")),
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(civicplus_bids.closing_of(text), expected)
+        self.assertEqual(
+            civicplus_bids.detail_closing_of("Closing Date/Time: October 30, 2026 at 2:30 P.M."),
+            ("2026-10-30", "2:30 PM"),
+        )
+        self.assertEqual(
+            civicplus_bids.detail_closing_of("Publication Date/Time: October 30, 2026 at 2 PM"),
+            ("", ""),
+        )
+
+    def test_dotted_and_hour_only_cutoff_is_enforced(self):
+        before = dt.datetime(2026, 10, 30, 17, 59, tzinfo=dt.timezone.utc)
+        after = dt.datetime(2026, 10, 30, 18, 0, tzinfo=dt.timezone.utc)
+        for clock in ("2 PM", "2 P.M.", "2:00 P.M.", "2:00 PM"):
+            with self.subTest(clock=clock):
+                self.assertFalse(civicplus_bids.closing_passed("2026-10-30", clock, before))
+                self.assertTrue(civicplus_bids.closing_passed("2026-10-30", clock, after))
+        self.assertFalse(civicplus_bids.closing_passed("2026-10-30", "TBD", after))
+
     def test_missing_or_bad_time_does_not_invent_cutoff(self):
         now = dt.datetime(2026, 10, 29, 23, 0, tzinfo=dt.timezone.utc)
         self.assertFalse(civicplus_bids.closing_passed("2026-10-29", "", now))
