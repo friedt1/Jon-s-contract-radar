@@ -177,18 +177,35 @@ class RegionalRankTests(unittest.TestCase):
         self.assertIn("bidID=13", retained[0]["url"])
         self.assertEqual(retained[0]["status"], "review required")
 
-    def test_expired_duplicate_does_not_override_later_deadline(self):
-        # An older deadline alone is not a publisher cancellation or award.
+    def test_expired_duplicate_cannot_make_later_deadline_look_uncontested(self):
+        # Synthetic Erie-style tree/stump records, not live solicitations.
+        # An older cutoff may have been amended, but neither copy proves it.
         import datetime as dt
         today = dt.date(2026, 10, 29)
-        old = {"title": "Tree removal",
+        old = {"title": "Tree and stump removal",
                "url": "https://county.example/bids?bidID=22",
                "deadline": "2026-10-28"}
-        amended = dict(old, deadline="2026-11-20")
-        retained = build([old, amended], today=today)["opportunities"]
-        self.assertEqual(len(retained), 1)
-        self.assertEqual(retained[0]["deadline"], "2026-11-20")
-        # Owego demolition is unrelated regardless of publisher status.
+        amended = dict(old, url=old["url"] + "&utm_source=mail",
+                       deadline="2026-11-20")
+        for pair in ([old, amended], [amended, old]):
+            with self.subTest(order=pair[0]["deadline"]):
+                retained = build(pair, today=today)["opportunities"]
+                self.assertEqual(len(retained), 1)
+                self.assertEqual(retained[0]["deadline"], "")
+                self.assertEqual(retained[0]["deadline_status"],
+                                 "conflicting_unverified")
+                self.assertEqual(retained[0]["deadline_conflict"],
+                                 ["2026-10-28", "2026-11-20"])
+                self.assertEqual(retained[0]["status"], "review required")
+        # A lone expired notice is never restored by conflict tracking.
+        self.assertEqual(build([old], today=today)["opportunities"], [])
+        # Another bid ID retains its own independent future deadline.
+        distinct = dict(amended, url="https://county.example/bids?bidID=24")
+        kept = build([old, distinct], today=today)["opportunities"]
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(kept[0]["deadline"], "2026-11-20")
+        self.assertNotIn("deadline_conflict", kept[0])
+        # Unrelated Owego demolition is never admitted to the tree feed.
         owego = {"title": "Owego demolition rebid",
                  "url": "https://county.example/bids?bidID=23",
                  "deadline": "2026-11-13"}
