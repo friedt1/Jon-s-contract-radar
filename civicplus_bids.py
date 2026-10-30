@@ -43,7 +43,11 @@ def _closing_date(value):
 STATUS = re.compile(r"\bStatus\s*:\s*(?:Closes\s*:\s*)?(Open|Closed|Awarded|Cancelled|Canceled|Withdrawn|Expired|Reopened)\b", re.I)
 CLOSED = frozenset({"closed", "awarded", "cancelled", "canceled", "withdrawn", "expired"})
 # A closed question period does not close submission of bids.
-QUESTION_ONLY = re.compile(r"\s+(?:for|to)\s+(?:questions?|inquir(?:y|ies)|clarifications?|rfis?|addenda)\b", re.I)
+QUESTION_ONLY = re.compile(
+    r"[\s:;,()\-–—/]+(?:(?:for|to)\s+)?"
+    r"(?:questions?|q\s*&\s*a|inquir(?:y|ies)|clarifications?|rfis?|addenda)\b",
+    re.I,
+)
 
 
 def individual_url(href, origin):

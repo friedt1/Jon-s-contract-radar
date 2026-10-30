@@ -26,6 +26,8 @@ class PublisherStatusTests(unittest.TestCase):
             "Open", "Reopened", "unverified", "Closed for questions",
             "Closed to inquiries", "listing_closed_for_questions",
             "Questions closed; bids remain open", "Not closed",
+            "Closed - for questions", "Closed: Q&A", "Closed (questions)",
+            "Closed – to inquiries", "listing_closed_-_for_questions",
             "award recommendation pending",
         ):
             with self.subTest(state=state):
