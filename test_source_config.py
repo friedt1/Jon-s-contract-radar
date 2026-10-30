@@ -28,6 +28,14 @@ class SourceConfigurationTests(unittest.TestCase):
             "https://county..example/bids",
             "https://county.example./bids",
             "https://county.example:broken/bids",
+            "https://127.0.0.1/bids",
+            "https://10.0.0.8/bids",
+            "https://169.254.169.254/latest/meta-data/",
+            "https://192.168.1.2/bids",
+            "https://203.0.113.10/bids",
+            "https://bids.local/solicitations",
+            "https://bids.internal/solicitations",
+            "https://bids.localhost/solicitations",
             "javascript:alert(1)",
         ):
             with self.subTest(url=url):

@@ -26,6 +26,12 @@ def valid_public_https_url(value):
                 or parsed.fragment):
             return False
         labels = host.split(".")
+        # Numeric IPv4 literals and private-use DNS suffixes cannot be
+        # official public procurement hostnames. Do not count or fetch them
+        # even when an inventory row incorrectly claims verified_url=True.
+        if (all(label.isascii() and label.isdecimal() for label in labels)
+                or host.lower().endswith((".localhost", ".local", ".internal"))):
+            return False
         return (len(labels) >= 2 and all(_HOST_LABEL.fullmatch(label) for label in labels)
                 and host.lower() != "localhost")
     except ValueError:
