@@ -411,7 +411,9 @@
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.villageofmontourfalls.gov/",
+    "activation_gate": "Official village homepage has a dedicated Request for Proposals section, reporting 'None at this time' on 2026-10-30. This does not establish complete bid coverage. Verify robots and publisher terms, identify stable individual notice URLs and deadline/status fields, and build permitted listing/detail extraction before activating; do not classify historical or unrelated notices as open tree bids."
   },
   {
     "name": "Town of Southport",
