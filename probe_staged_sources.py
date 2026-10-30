@@ -42,6 +42,25 @@ def _http_failure(code, scope):
     return f"{scope}_http_error"
 
 
+def _authentication_landing(html, final):
+    """Identify an actual sign-in destination, not an ordinary login link."""
+    login_path = bool(re.search(
+        r"/(?:log-?in|sign-?in)(?:/|$)", urlparse(final).path, re.I))
+    login_form = bool(
+        re.search(r"""<input\\b[^>]*\\btype\\s*=\\s*['"]?password\\b""", html, re.I)
+        and re.search(
+            r"<(?:title|h[12])\\b[^>]*>\\s*(?:log\\s*in|sign\\s*in|login)\\b",
+            html, re.I))
+    return login_path or login_form
+
+
+def _blocked_redirect_state(exc, scope):
+    # The fetcher blocks redirects *before* requesting their destinations.
+    # Never imply that an external provider was actually accessed.
+    return (f"{scope}_insecure_redirect" if "HTTPS downgrade" in str(exc)
+            else f"{scope}_redirect_blocked")
+
+
 def _sample_priority(record, now):
     # Prefer a listing with a future closing date over a stale "Open" label.
     # A sampled notice is NEVER an actionable or verified contract.
@@ -95,14 +114,7 @@ def probe(source, fetch=scan.fetch, now=None):
         # serve a login form at the original URL). Do not mistake a 200 OK
         # authentication wall for a reachable public bid listing. A mere
         # login link on an otherwise public page is not sufficient.
-        login_path = bool(re.search(
-            r"/(?:log-?in|sign-?in)(?:/|$)", urlparse(final).path, re.I))
-        login_form = bool(
-            re.search(r"""<input\b[^>]*\btype\s*=\s*['"]?password\b""", html, re.I)
-            and re.search(
-                r"<(?:title|h[12])\b[^>]*>\s*(?:log\s*in|sign\s*in|login)\b",
-                html, re.I))
-        if login_path or login_form:
+        if _authentication_landing(html, final):
             result["state"] = "listing_authentication_required"
             return result
         result["listing_retrieved"] = True
@@ -170,6 +182,10 @@ def probe(source, fetch=scan.fetch, now=None):
                 failure["state"] = "individual_notice_robots_blocked"
                 result["individual_sample_failures"].append(failure)
                 continue
+            except scan.UnsafeRedirect as exc:
+                failure["state"] = _blocked_redirect_state(exc, "individual_notice")
+                result["individual_sample_failures"].append(failure)
+                continue
             except HTTPError as exc:
                 failure["state"] = _http_failure(exc.code, "individual_notice")
                 failure["http_status"] = exc.code
@@ -180,12 +196,21 @@ def probe(source, fetch=scan.fetch, now=None):
                 failure["error_type"] = _error(exc)
                 result["individual_sample_failures"].append(failure)
                 continue
-            if (adapter.individual_url(detail_final, final) != detail_url
-                    or ("html" not in ctype and not blob.lstrip().startswith(b"<"))):
+            if "html" not in ctype and not blob.lstrip().startswith(b"<"):
                 failure["state"] = "individual_notice_redirect_or_type_mismatch"
                 result["individual_sample_failures"].append(failure)
                 continue
-            body = " ".join(scan.parse_html(blob.decode("utf-8", "replace")).parts)
+            detail_html = blob.decode("utf-8", "replace")
+            if (urlparse(detail_final).hostname == urlparse(final).hostname
+                    and _authentication_landing(detail_html, detail_final)):
+                failure["state"] = "individual_notice_authentication_required"
+                result["individual_sample_failures"].append(failure)
+                continue
+            if adapter.individual_url(detail_final, final) != detail_url:
+                failure["state"] = "individual_notice_redirect_or_type_mismatch"
+                result["individual_sample_failures"].append(failure)
+                continue
+            body = " ".join(scan.parse_html(detail_html).parts)
             if adapter is civicplus_bids:
                 valid_shape = (re.search(r"\bBid\s+(?:Number|Title)\s*:", body, re.I)
                                and re.search(r"\b(?:Description|Closing\s+Date/Time|Status)\s*:", body, re.I))
@@ -246,6 +271,8 @@ def probe(source, fetch=scan.fetch, now=None):
         return result
     except robots_policy.RobotsDenied:
         result["state"] = "listing_robots_blocked"
+    except scan.UnsafeRedirect as exc:
+        result["state"] = _blocked_redirect_state(exc, "listing")
     except HTTPError as exc:
         result["state"] = _http_failure(exc.code, "listing")
         result["http_status"] = exc.code
