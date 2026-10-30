@@ -154,8 +154,8 @@ def probe(source, fetch=scan.fetch, now=None):
             # section only, not proof that no bids exist on other pages or
             # portals. Do not confuse it with a missing extraction adapter.
             rfp_section_empty = bool(re.search(
-                r"\\b(?:Request\\s+for\\s+Proposals?|RFPs?)\\s*:\\s*"
-                r"None\\s+at\\s+this\\s+time\\b", listing_text, re.I))
+                r"\b(?:Request\s+for\s+Proposals?|RFPs?)\s*:\s*"
+                r"None\s+at\s+this\s+time\b", listing_text, re.I))
             if rfp_section_empty:
                 result["section_note"] = (
                     "RFP section reports none at probe time; other bid "
