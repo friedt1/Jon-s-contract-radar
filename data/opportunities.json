@@ -32,7 +32,8 @@
       "individual_bid_details_fetched": 11,
       "detail_errors": 1,
       "detail_robots_blocked_sources": 0,
-      "pdf_budget_skips": 182,
+      "pdf_budget_skips": 189,
+      "result_award_links_excluded": 117,
       "external_provider_links_skipped": 8,
       "unverified_candidates": 0
     },
@@ -51,6 +52,7 @@
         "detail_errors": 0,
         "detail_access_state": "retrieved_unverified",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "direct fetched; 1 listing pages; 2 individual bid records; 2 relevant details checked; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied"
@@ -69,6 +71,7 @@
         "detail_errors": 0,
         "detail_access_state": "retrieved_unverified",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "direct fetched; 1 listing pages; 6 individual bid records; 6 relevant details checked; 6 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied"
@@ -87,9 +90,10 @@
         "detail_errors": 0,
         "detail_access_state": "attempted_unverified",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 1,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 7 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 7 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Tompkins County purchasing",
@@ -105,9 +109,10 @@
         "detail_errors": 1,
         "detail_access_state": "fetch_error",
         "pdf_budget_skips": 30,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 3,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 5 PDFs checked; 30 PDF requests skipped at budget; 3 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 5 PDFs checked; 30 PDF requests skipped at budget; 0 result/award links excluded; 3 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Elmira City bids",
@@ -123,9 +128,10 @@
         "detail_errors": 0,
         "detail_access_state": "attempted_unverified",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Elmira Next local bids",
@@ -141,9 +147,10 @@
         "detail_errors": 0,
         "detail_access_state": "attempted_unverified",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 1,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 10 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 2 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 10 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 2 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Lycoming County bids",
@@ -159,9 +166,10 @@
         "detail_errors": 0,
         "detail_access_state": "attempted_unverified",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 1,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 5 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 5 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "PA procurement opportunities",
@@ -177,9 +185,10 @@
         "detail_errors": 0,
         "detail_access_state": "attempted_unverified",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "PA DGS construction bids",
@@ -195,9 +204,10 @@
         "detail_errors": 0,
         "detail_access_state": "attempted_unverified",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 95,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 95 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Tioga Bradford Housing Authority",
@@ -213,9 +223,10 @@
         "detail_errors": 0,
         "detail_access_state": "attempted_unverified",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Chemung County purchasing",
@@ -231,9 +242,10 @@
         "detail_errors": 0,
         "detail_access_state": "attempted_unverified",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 2,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 2 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 2 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "PennBid platform",
@@ -249,6 +261,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established"
@@ -267,6 +280,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established"
@@ -284,10 +298,11 @@
         "individual_bid_details_fetched": 0,
         "detail_errors": 0,
         "detail_access_state": "attempted_unverified",
-        "pdf_budget_skips": 152,
+        "pdf_budget_skips": 159,
+        "result_award_links_excluded": 22,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 5 PDFs checked; 152 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 5 PDFs checked; 159 PDF requests skipped at budget; 22 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Broome County",
@@ -303,6 +318,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -321,6 +337,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -339,6 +356,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -357,6 +375,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -375,6 +394,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -393,6 +413,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -411,6 +432,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -429,6 +451,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -447,6 +470,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -465,6 +489,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -483,6 +508,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -501,6 +527,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -519,6 +546,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -537,6 +565,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -555,6 +584,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -573,6 +603,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -591,6 +622,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -609,9 +641,10 @@
         "detail_errors": 0,
         "detail_access_state": "attempted_unverified",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Village of Horseheads",
@@ -627,6 +660,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -645,6 +679,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -663,6 +698,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -681,6 +717,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -699,6 +736,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -717,6 +755,7 @@
         "detail_errors": 0,
         "detail_access_state": "retrieved_unverified",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "direct fetched; 1 listing pages; 3 individual bid records; 3 relevant details checked; 3 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied"
@@ -735,6 +774,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -753,6 +793,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -771,6 +812,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -789,6 +831,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -807,6 +850,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -825,6 +869,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -843,6 +888,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -861,6 +907,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -879,6 +926,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -897,6 +945,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -915,6 +964,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -933,6 +983,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -951,6 +1002,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -969,6 +1021,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -987,6 +1040,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1005,6 +1059,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1023,6 +1078,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1041,6 +1097,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1059,6 +1116,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1077,6 +1135,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1095,6 +1154,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1113,6 +1173,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1131,6 +1192,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1149,6 +1211,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1167,6 +1230,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1185,6 +1249,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1203,6 +1268,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1221,6 +1287,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1239,6 +1306,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1257,6 +1325,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1275,6 +1344,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1293,6 +1363,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1311,6 +1382,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1329,6 +1401,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1347,6 +1420,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1365,6 +1439,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1383,6 +1458,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1401,6 +1477,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1419,6 +1496,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1437,6 +1515,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1455,6 +1534,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1473,6 +1553,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1491,6 +1572,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1509,6 +1591,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "direct blocked by robots policy: robots disallows requested path; indirect RSS error: RobotsDenied"
@@ -1527,6 +1610,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1545,9 +1629,10 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 0 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 0 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "PennDOT District 4",
@@ -1563,6 +1648,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1581,6 +1667,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1599,6 +1686,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1617,6 +1705,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1635,6 +1724,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1653,6 +1743,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1671,6 +1762,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1689,6 +1781,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1707,6 +1800,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1725,6 +1819,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1743,6 +1838,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1761,6 +1857,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1779,6 +1876,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1797,6 +1895,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1815,6 +1914,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1833,6 +1933,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1851,6 +1952,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1869,6 +1971,7 @@
         "detail_errors": 0,
         "detail_access_state": "not_attempted",
         "pdf_budget_skips": 0,
+        "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
         "diagnostic": "indirect RSS error: RobotsDenied"
@@ -1876,23 +1979,23 @@
     ],
     "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Individual-detail robots blocks and errors are reported separately. External provider links require an approved adapter and are not followed. Configured access-required portals are not direct fetch targets. Staged URLs are not monitored; all leads remain unverified."
   },
-  "updated": "2026-10-30T08:26:53+00:00",
+  "updated": "2026-10-30T09:23:05+00:00",
   "opportunities": [],
   "source_status": {
     "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 2 relevant details checked; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
     "Steuben County bids": "direct fetched; 1 listing pages; 6 individual bid records; 6 relevant details checked; 6 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
-    "Schuyler County purchasing": "direct fetched; 1 listing pages; 7 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Tompkins County purchasing": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 5 PDFs checked; 30 PDF requests skipped at budget; 3 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied",
-    "Elmira City bids": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Elmira Next local bids": "direct fetched; 1 listing pages; 10 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 2 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied",
-    "Lycoming County bids": "direct fetched; 1 listing pages; 5 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "PA procurement opportunities": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "PA DGS construction bids": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Tioga Bradford Housing Authority": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Chemung County purchasing": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 2 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "Schuyler County purchasing": "direct fetched; 1 listing pages; 7 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "Tompkins County purchasing": "direct fetched; 1 listing pages; 36 details checked; 0 individual bid details fetched; 5 PDFs checked; 30 PDF requests skipped at budget; 0 result/award links excluded; 3 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied",
+    "Elmira City bids": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "Elmira Next local bids": "direct fetched; 1 listing pages; 10 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 2 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied",
+    "Lycoming County bids": "direct fetched; 1 listing pages; 5 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "PA procurement opportunities": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "PA DGS construction bids": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 4 PDFs checked; 0 PDF requests skipped at budget; 95 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "Tioga Bradford Housing Authority": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "Chemung County purchasing": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 1 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 2 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "PennBid platform": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established",
     "BidNet NY platform": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established",
-    "Tioga County NY": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 5 PDFs checked; 152 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "Tioga County NY": "direct fetched; 1 listing pages; 18 details checked; 0 individual bid details fetched; 5 PDFs checked; 159 PDF requests skipped at budget; 22 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "Broome County": "indirect RSS error: RobotsDenied",
     "Cortland County": "indirect RSS error: RobotsDenied",
     "Yates County": "indirect RSS error: RobotsDenied",
@@ -1910,7 +2013,7 @@
     "Potter County PA": "indirect RSS error: RobotsDenied",
     "Lackawanna County": "indirect RSS error: RobotsDenied",
     "Wyoming County PA": "indirect RSS error: RobotsDenied",
-    "Town of Horseheads": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "Town of Horseheads": "direct fetched; 1 listing pages; 2 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "Village of Horseheads": "indirect RSS error: RobotsDenied",
     "Town of Big Flats": "indirect RSS error: RobotsDenied",
     "Town of Elmira": "indirect RSS error: RobotsDenied",
@@ -1962,7 +2065,7 @@
     "NYSEG": "indirect RSS error: RobotsDenied",
     "New York State DOT Region 6": "direct blocked by robots policy: robots disallows requested path; indirect RSS error: RobotsDenied",
     "New York State DOT Region 9": "indirect RSS error: RobotsDenied",
-    "PennDOT District 3": "direct fetched; 1 listing pages; 0 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "PennDOT District 3": "direct fetched; 1 listing pages; 0 details checked; 0 individual bid details fetched; 0 PDFs checked; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "PennDOT District 4": "indirect RSS error: RobotsDenied",
     "Pennsylvania American Water": "indirect RSS error: RobotsDenied",
     "Corning Natural Gas": "indirect RSS error: RobotsDenied",
