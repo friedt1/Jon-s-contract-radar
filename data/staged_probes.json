@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-30T02:32:09.733201+00:00",
+  "updated": "2026-10-30T03:13:03.773475+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 21,
   "probes": [
@@ -90,8 +90,8 @@
     {
       "name": "Allegany County",
       "official_entrypoint": "https://www.alleganyco.gov/departments/public-works/bids-awards/",
-      "state": "listing_reachable_adapter_required",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
