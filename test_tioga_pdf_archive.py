@@ -115,7 +115,7 @@ class PdfArchivePriorityTests(unittest.TestCase):
     def test_opaque_media_pdfs_respect_budget_and_current_year_priority(self):
         # Synthetic Tioga-style opaque URLs; not real solicitations.
         current = "https://example.gov/media/current-document"
-        old = ["https://example.gov/media/archive-" + str(n) for n in range(7)]
+        old = ["https://example.gov/media/opaque-" + str(n) for n in range(7)]
         listing = "".join(
             '<a href="/media/opaque-%d">Tree removal bid 2024 proposal %d</a>' % (n, n)
             for n in range(7)
