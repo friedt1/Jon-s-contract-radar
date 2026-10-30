@@ -103,3 +103,31 @@ robots-blocked direct pages, 1 access-required portal, 7 staged official URLs,
 attempts, and 0 candidates. All 102 indirect news searches were robots-blocked.
 These are historical diagnostics, not a new live scan or proof of complete
 individual-bid extraction.
+
+## October 29: Broome County canonical entrypoint and diagnostic separation
+
+The latest staged probe reported `listing_not_found` (HTTP 404) for
+`https://www.broomecountyny.gov/purchasing/open-solicitations`. Broome County's
+own *Open Solicitations* page is published at
+`https://broomecountyny.gov/purchasing/open-solicitations` (without `www`).
+The county states that official solicitation documents are provided through
+BidNet Direct / Empire State Purchasing Group; copies from other sources are
+not official. The staged URL now uses the county's published host.
+
+**Evidence:** Broome County official pages:
+- https://broomecountyny.gov/purchasing/open-solicitations
+- https://broomecountyny.gov/purchasing/vendor-registration
+
+This is **not** a new direct integration: Broome remains
+`discovery_pending` with `verified_url=false`. Provider-approved individual
+notice access and publisher/robots review remain required. A successful
+county-page probe cannot establish complete BidNet coverage.
+
+`source_diagnostics.py` now separates direct-fetch failures, indirect RSS
+errors, provider access requirements, and individual-detail errors using the
+published `source_health` rows. Previously an indirect RSS robots failure
+could mark a successfully fetched direct county page as an overall error.
+Historical feeds without structured source health remain readable.
+Synthetic regression tests assert the separation and prevent promoting
+the Broome page into a live opportunity or direct adapter. The change does
+not insert or verify any bid, including Syracuse #6314622.
