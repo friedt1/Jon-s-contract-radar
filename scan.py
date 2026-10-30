@@ -568,7 +568,11 @@ def scan_direct(src):
  # Nested bid links must be examined before unrelated siblings exhaust the
  # bounded detail budget. Python's list iterator visits inserted entries next.
  for candidate_index, (_,url,title,context) in enumerate(candidates):
-  if url in visited or len(visited)>=max_details:continue
+  # A publisher can link the same PDF/notice with different marketing query
+  # parameters or fragments. Deduplicate network attempts by notice identity,
+  # while retaining substantive bid IDs and signed URL query strings.
+  identity_url=notice_identity.canonical_url(url) or url
+  if identity_url in visited or len(visited)>=max_details:continue
   # A PDF URL can be identified before downloading its bytes. Once the
   # extractor budget is exhausted, skip it without spending another request
   # or consuming the remaining individual-notice detail budget.
@@ -577,12 +581,12 @@ def scan_direct(src):
   # full of broken links to bypass the intended network request budget.
   pdf_hint=likely_pdf_link(url,title)
   if pdf_hint and pdf_attempts>=MAX_PDF:
-   if url not in budget_skipped_urls:
-    budget_skipped_urls.add(url)
+   if identity_url not in budget_skipped_urls:
+    budget_skipped_urls.add(identity_url)
     pdfs_skipped+=1
    continue
   if pdf_hint:pdf_attempts+=1
-  visited.add(url)
+  visited.add(identity_url)
   try:
    blob,kind,final_url=fetch(url,binary=True)
    # Redirects must not turn a permitted source link into an untrusted host.
