@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-30T06:33:40.493341+00:00",
+  "updated": "2026-10-30T06:41:22.991558+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 25,
+  "staged_entrypoints": 26,
   "probes": [
     {
       "name": "Broome County",
@@ -386,6 +386,19 @@
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false,
       "section_note": "RFP section reports none at probe time; other bid channels and individual notice access remain unverified"
+    },
+    {
+      "name": "Wellsboro Borough",
+      "official_entrypoint": "https://www.wellsboroborough.com/blank-12",
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official borough Bids & Bid Packets page reports No Current Open Bids (2026-10-30). Verify robots/publisher terms and permitted individual PDF/notice extraction when new bids appear; archived 2025 street-tree and mowing solicitations are expired, not live.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
     }
   ],
   "warning": "Diagnostic only: no source is activated by these probes. A fetched page or parsed historical notice is not an open bid. Sample 'Open' labels can be stale; inspect temporal evidence. Review publisher terms, individual extraction, and live scan before changing discovery_pending."
