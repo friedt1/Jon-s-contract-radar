@@ -16,6 +16,8 @@ CATEGORY_POINTS = {
     "Tree trimming": 28,
     "Vegetation management": 23,
     "Land clearing": 20,
+    # Adjacent site-prep work is intentionally ranked below tree/clearing.
+    "Related site prep": 10,
 }
 EVIDENCE_POINTS = {
     "individual county bid candidate": 32,
