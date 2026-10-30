@@ -170,14 +170,14 @@ def probe(source, fetch=scan.fetch, now=None):
             # also links to potential individual notices, prefer adapter review
             # rather than treating a stale empty-state banner as authoritative.
             no_open_bids_reported = bool(re.search(
-                r"\\bno\\s+(?:current(?:ly)?\\s+)?open\\s+bids?\\b",
+                r"\bno\s+(?:current(?:ly)?\s+)?open\s+bids?\b",
                 listing_text, re.I))
             possible_notice_links = any(
                 href and (
-                    re.search(r"\\.pdf(?:$|[?#])", href, re.I)
+                    re.search(r"\.pdf(?:$|[?#])", href, re.I)
                     or (re.search(
-                        r"\\b(?:bids?|rfps?|rfqs?|proposals?|solicitations?|"
-                        r"quotes?|trees?|stumps?)\\b", label, re.I)
+                        r"\b(?:bids?|rfps?|rfqs?|proposals?|solicitations?|"
+                        r"quotes?|trees?|stumps?)\b", label, re.I)
                         and urlparse(href).path not in (
                             "", "/", urlparse(final).path)))
                 for label, href, _ in page.links
