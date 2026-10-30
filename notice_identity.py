@@ -5,7 +5,11 @@ and unknown query parameters are retained; those may identify different notices.
 This module never claims a notice is open, current, or geographically eligible.
 """
 import hashlib
+import ipaddress
+import re
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+
+_HOST_LABEL = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$", re.I)
 
 _TRACKING_KEYS = frozenset({
     "fbclid", "gclid", "gbraid", "wbraid", "msclkid",
@@ -24,8 +28,19 @@ def canonical_url(url):
             return ""
         port = parts.port
         host = parts.hostname.lower()
-        if ":" in host:
-            host = "[" + host + "]"
+        # Notice links are published on public DNS names. Reject malformed
+        # hosts and IP literals (including loopback/metadata endpoints), even
+        # if a future scanner path passes a URL through without source checks.
+        try:
+            ipaddress.ip_address(host)
+        except ValueError:
+            pass
+        else:
+            return ""
+        labels = host.split(".")
+        if (len(labels) < 2 or host.endswith((".local", ".internal", ".localhost"))
+                or not all(_HOST_LABEL.fullmatch(label) for label in labels)):
+            return ""
         default = 443 if parts.scheme.lower() == "https" else 80
         netloc = host + (":" + str(port) if port is not None and port != default else "")
         # Leave all substantive query parameters intact, including duplicate
@@ -49,9 +64,6 @@ def canonical_url(url):
                 # retain their original order so different bids cannot merge.
                 if len({key.lower() for key, _ in filtered}) == len(filtered):
                     filtered.sort(key=lambda pair: pair[0])
-                # Normalize ordinary parameter order even when there are no
-                # tracking parameters to remove. Previously, query variants
-                # without utm_* were not deduplicated at all.
                 if filtered != pairs:
                     query = urlencode(filtered)
         return urlunsplit((parts.scheme.lower(), netloc, parts.path, query, ""))
