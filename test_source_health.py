@@ -55,6 +55,51 @@ class SourceHealthTests(unittest.TestCase):
         self.assertEqual(source_health.classify(src, "direct error: TimeoutError")["direct_state"], "fetch_error")
         self.assertEqual(source_health.classify(src, "")["direct_state"], "not_fetched")
 
+    def test_http_denials_are_not_reported_as_successful_or_generic_errors(self):
+        src = {"name": "County", "mode": "direct_page",
+               "url": "https://county.example/bids", "verified_url": True}
+        for code in (401, 403):
+            with self.subTest(code=code):
+                row = source_health.classify(src, f"direct error: HTTPError HTTP {code}; indirect RSS ok; 0 candidates")
+                self.assertEqual(row["direct_state"], "http_blocked")
+                self.assertEqual(row["indirect_state"], "ok")
+        # A 404 is not evidence that credentials are required.
+        self.assertEqual(source_health.classify(src, "direct error: HTTPError HTTP 404")["direct_state"],
+                         "fetch_error")
+
+    def test_redirect_rate_limit_and_non_html_are_distinct_states(self):
+        src = {"name": "County", "mode": "direct_page",
+               "url": "https://county.example/bids", "verified_url": True}
+        cases = {
+            "direct error: UnsafeRedirect": "redirect_blocked",
+            "direct error: HTTPError HTTP 429": "rate_limited",
+            "unsupported content type; indirect RSS ok; 0 candidates": "unsupported_content",
+            "direct error: TimeoutError": "fetch_error",
+        }
+        for status, expected in cases.items():
+            with self.subTest(status=status):
+                self.assertEqual(source_health.classify(src, status)["direct_state"], expected)
+
+    def test_diagnostic_states_counted_without_activating_staged_sources(self):
+        names = ["Denied", "Redirect", "Rate", "NonHTML", "Staged"]
+        sources = [{"name": n, "mode": "direct_page", "verified_url": True,
+                    "url": "https://county.example/bids"} for n in names[:4]]
+        sources.append({"name": "Staged", "mode": "discovery_pending", "verified_url": False,
+                        "candidate_official_url": "https://county.example/bids"})
+        statuses = {
+            "Denied": "direct error: HTTPError HTTP 403",
+            "Redirect": "direct error: UnsafeRedirect",
+            "Rate": "direct error: HTTPError HTTP 429",
+            "NonHTML": "unsupported content type",
+            "Staged": "indirect RSS ok; 0 candidates",
+        }
+        counts = source_health.summarize(sources, statuses)["counts"]
+        for state in ("http_blocked", "redirect_blocked", "rate_limited",
+                      "unsupported_content", "staged_official_url"):
+            self.assertEqual(counts[state], 1)
+        self.assertEqual(counts["configured_direct"], 4)
+        self.assertEqual(counts["fetched_unverified"], 0)
+
     def test_official_feed_and_authorized_api_are_direct_modes(self):
         sources = [
             {"name": "Feed", "mode": "official_feed", "url": "https://county.example/feed.xml",
