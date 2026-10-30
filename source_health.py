@@ -116,6 +116,8 @@ def classify(source, status):
         "detail_fetches_attempted": detail_checked,
         "detail_budget_deferred": _number(
             r"\b(\d+) individual bid records deferred at detail budget\b", status),
+        "detail_candidates_deferred": _number(
+            r"\b(\d+) detail candidates deferred at request budget\b", status),
         "individual_bid_details_fetched": details_fetched,
         "detail_errors": detail_errors,
         "pagination_errors": pagination_errors,
@@ -152,6 +154,10 @@ def summarize(sources, statuses):
     counts["detail_budget_deferred"] = sum(row["detail_budget_deferred"] for row in rows)
     counts["detail_budget_incomplete_sources"] = sum(
         row["detail_budget_deferred"] > 0 for row in rows)
+    counts["detail_candidates_deferred"] = sum(
+        row["detail_candidates_deferred"] for row in rows)
+    counts["detail_candidate_incomplete_sources"] = sum(
+        row["detail_candidates_deferred"] > 0 for row in rows)
     counts["individual_bid_details_fetched"] = sum(row["individual_bid_details_fetched"] for row in rows)
     counts["detail_errors"] = sum(row["detail_errors"] for row in rows)
     counts["pagination_errors"] = sum(row["pagination_errors"] for row in rows)
@@ -179,8 +185,9 @@ def summarize(sources, statuses):
                     "individual details fetched prove retrieval, not open status. "
                     "Individual-detail robots blocks, HTTP refusals, redirects, rate limits "
                     "and other errors are reported separately. "
-                    "Listing pagination failures and deferred bid records at the detail budget "
-                    "mean the listing may be incomplete. "
+                    "Listing pagination failures, deferred individual bid records, and "
+                    "unfetched generic detail candidates mean extraction coverage may be incomplete. "
+                    "Generic candidates are not verified individual solicitations. "
                     "External provider links require an approved adapter and are not followed. "
                     "Provider-access requirements persist even when a scan has no status. " 
                     "Configured access-required portals are not direct fetch targets. "

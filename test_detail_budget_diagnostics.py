@@ -54,6 +54,37 @@ class PdfRequestBudgetTests(unittest.TestCase):
         self.assertIn("6 details checked", status)
 
 
+    def test_generic_detail_budget_reports_unique_unfetched_urls(self):
+        # An archive can expose more same-host links than the bounded request
+        # budget. They are only candidate URLs, not verified individual bids.
+        links = "".join(
+            '<a href="/bid/tree-removal-%d">Tree removal bid %d</a>' % (n, n)
+            for n in range(scan.MAX_DETAIL + 2)
+        )
+        links += '<a href="/bid/tree-removal-0">Duplicate tree removal bid</a>'
+        fetched = []
+
+        def fake_fetch(url, binary=False):
+            fetched.append(url)
+            if url == SOURCE["url"]:
+                return links, "text/html", url
+            return b"<html><h1>Unrelated historical notice</h1></html>", "text/html", url
+
+        with patch.object(scan, "fetch", side_effect=fake_fetch):
+            leads, status = scan.scan_direct(SOURCE)
+
+        self.assertEqual(leads, [])
+        self.assertEqual(len(fetched), scan.MAX_DETAIL + 1)
+        self.assertIn("2 detail candidates deferred at request budget", status)
+        self.assertIn("0 PDF requests skipped at budget", status)
+        row = source_health.classify(SOURCE, status)
+        self.assertEqual(row["detail_candidates_deferred"], 2)
+        self.assertEqual(row["detail_budget_deferred"], 0)
+        summary = source_health.summarize([SOURCE], {SOURCE["name"]: status})
+        self.assertEqual(summary["counts"]["detail_candidates_deferred"], 2)
+        self.assertEqual(summary["counts"]["detail_candidate_incomplete_sources"], 1)
+
+
 class DetailAccessHealthTests(unittest.TestCase):
     def test_listing_success_does_not_hide_detail_robots_block(self):
         status = ("direct fetched; 1 listing pages; 4 details checked; "
