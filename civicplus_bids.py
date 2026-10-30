@@ -16,7 +16,8 @@ SOURCES = frozenset({"Chemung County bids", "Steuben County bids",
                      "Town of Horseheads", "City of Ithaca",
                      "Cortland County", "Yates County", "Seneca County",
                      "Bradford County PA", "Livingston County", "Wyoming County",
-                     "Village of Horseheads", "City of Cortland"})
+                     "Village of Horseheads", "City of Cortland",
+                     "City of Geneva"})
 MAX_DETAILS = 36
 _DATE_TEXT = (
     r"(?:\d{1,2}/\d{1,2}/\d{4}|\d{4}-\d{2}-\d{2}|"
