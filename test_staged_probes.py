@@ -115,6 +115,35 @@ class StagedProbeTests(unittest.TestCase):
         row = staged.probe(other, fetch=lambda url: ("<h1>County bids</h1>", "text/html", url))
         self.assertEqual(row["state"], "listing_reachable_adapter_required")
 
+    def test_official_listing_redirect_to_provider_requires_adapter(self):
+        # A public county bids URL can redirect directly to a hosted provider.
+        # This is not evidence of permission or a working per-notice feed.
+        source = dict(SOURCE, name="Ontario County")
+        calls = []
+        def fetch(url, binary=False):
+            calls.append(url)
+            return "<h1>Solicitations</h1>", "text/html", (
+                "https://procurement.opengov.com/portal/agency")
+        row = staged.probe(source, fetch=fetch)
+        self.assertEqual(row["state"],
+                         "listing_redirected_to_external_provider_access_required")
+        self.assertEqual(row["external_provider_host"], "procurement.opengov.com")
+        self.assertFalse(row["listing_retrieved"])
+        self.assertFalse(row["individual_notice_retrieved"])
+        self.assertFalse(row["direct_monitoring_activated"])
+        self.assertEqual(calls, [ENTRY])
+
+    def test_unrelated_or_lookalike_listing_redirect_is_not_provider(self):
+        source = dict(SOURCE, name="Ontario County")
+        for target in ("https://other.example/bids",
+                       "https://procurement.opengov.com.evil.example/bids"):
+            with self.subTest(target=target):
+                row = staged.probe(source, fetch=lambda url: (
+                    "<h1>Solicitations</h1>", "text/html", target))
+                self.assertEqual(row["state"], "listing_redirected_off_official_host")
+                self.assertNotIn("external_provider_host", row)
+                self.assertFalse(row["direct_monitoring_activated"])
+
     def test_opengov_delegation_requires_provider_access(self):
         other = dict(SOURCE, name="Ontario County")
         row = staged.probe(other, fetch=lambda url: (

@@ -73,7 +73,15 @@ def probe(source, fetch=scan.fetch, now=None):
     try:
         html, kind, final = fetch(url)
         if urlparse(final).hostname != urlparse(url).hostname:
-            result["state"] = "listing_redirected_off_official_host"
+            # A county may redirect its bids page directly to an external
+            # procurement provider. That is not an activated individual-notice
+            # adapter, and must not be mistaken for an arbitrary off-site
+            # redirect. Host matching is exact/subdomain-only (no lookalikes).
+            if scan.provider_link(final):
+                result["state"] = "listing_redirected_to_external_provider_access_required"
+                result["external_provider_host"] = urlparse(final).hostname
+            else:
+                result["state"] = "listing_redirected_off_official_host"
             return result
         if "html" not in kind and not html.lstrip().startswith("<"):
             result["state"] = "unsupported_listing_content_type"
