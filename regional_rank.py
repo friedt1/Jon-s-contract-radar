@@ -146,6 +146,10 @@ def build(notices, today=None, now=None):
     # supersedes a different publisher cutoff.
     dates_by_url = {}
     clocks_by_url = {}
+    # A same-day elapsed clock can be lost when classify() rejects that copy.
+    # Retain its evidence so a duplicate without a clock cannot appear
+    # uncontested or implicitly reopen an already elapsed submission cutoff.
+    elapsed_same_day_clocks = {}
     for notice in notices:
         if not isinstance(notice, dict):
             continue
@@ -177,6 +181,13 @@ def build(notices, today=None, now=None):
                 pass
             else:
                 dates_by_url.setdefault(candidate_url, set()).add(candidate_date)
+        if (candidate_url.startswith("https://")
+                and isinstance(candidate_date, str)
+                and candidate_date == today.isoformat()
+                and any(term in candidate_text for term in KEYWORDS)
+                and _deadline_state(notice, today, now=now) == "expired"):
+            elapsed_same_day_clocks.setdefault(candidate_url, set()).add(
+                " ".join(str(notice.get("deadline_time") or "").lower().split()))
         if (candidate_url.startswith("https://")
                 and isinstance(candidate_date, str)
                 and candidate_date == today.isoformat()
@@ -228,7 +239,20 @@ def build(notices, today=None, now=None):
             due = next(iter(dates))
             clocks = clocks_by_url.get((key, due), set())
             if len(clocks) > 1:
+                # Preserve the existing same-day clock-conflict behavior:
+                # the date itself agrees, only the time is disputed.
                 item["deadline_conflict"] = sorted(clocks)
+                item["deadline_time"] = ""
+                item["deadline_timezone"] = ""
+                item["deadline_status"] = "conflicting_unverified"
+            elif due == today.isoformat() and key in elapsed_same_day_clocks:
+                # A date-only or timezone-incompatible duplicate cannot
+                # erase a publisher-stated cutoff that already elapsed.
+                # Unlike two explicit conflicting clocks, the surviving
+                # notice provides no independently confirmed later cutoff.
+                item["deadline_conflict"] = sorted(
+                    set(clocks) | {"later cutoff not independently confirmed"})
+                item["deadline"] = ""
                 item["deadline_time"] = ""
                 item["deadline_timezone"] = ""
                 item["deadline_status"] = "conflicting_unverified"
