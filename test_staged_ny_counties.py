@@ -25,6 +25,27 @@ class NewYorkStagedCountyTests(unittest.TestCase):
                 self.assertTrue(row["activation_gate"])
                 self.assertIn(name, civicplus_bids.SOURCES)
 
+    def test_broome_canonical_official_page_delegates_to_bidnet(self):
+        sources = json.loads(probe_staged_sources.SOURCES.read_text(encoding="utf-8"))
+        row = next(x for x in sources if x["name"] == "Broome County")
+        self.assertEqual(row["candidate_official_url"],
+                         "https://broomecountyny.gov/purchasing/open-solicitations")
+        self.assertEqual(row["mode"], "discovery_pending")
+        self.assertFalse(row["verified_url"])
+        self.assertEqual(row["url"], "")
+
+        # Synthetic official-page shape, not a live bid or authorization.
+        def fetch(url, binary=False):
+            return ('<h1>Open Solicitations</h1><p>Bid documents are available '
+                    'on BidNet Direct. Register to view official bids.</p>',
+                    "text/html", url)
+
+        result = probe_staged_sources.probe(row, fetch=fetch)
+        self.assertEqual(result["state"],
+                         "listing_reachable_external_provider_access_required")
+        self.assertFalse(result["individual_notice_retrieved"])
+        self.assertFalse(result["direct_monitoring_activated"])
+
     def test_staged_probe_never_promotes_even_when_notice_parses(self):
         def fake_fetch(url, binary=False):
             if not binary:
