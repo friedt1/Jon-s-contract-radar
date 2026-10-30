@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-30T14:41:12.200757+00:00",
+  "updated": "2026-10-30T15:41:29.356014+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 28,
   "probes": [
@@ -203,8 +203,8 @@
     {
       "name": "Lackawanna County",
       "official_entrypoint": "https://www.lackawannacounty.org/government/departments/rfp_rfq.php",
-      "state": "listing_reachable_adapter_required",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -303,8 +303,8 @@
     {
       "name": "Village of Owego",
       "official_entrypoint": "https://villageofowegony.gov/newslist.php",
-      "state": "official_page_reachable_no_procurement_evidence",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
