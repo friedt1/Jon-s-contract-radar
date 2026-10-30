@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-30T18:41:22.239477+00:00",
+  "updated": "2026-10-30T19:42:03.361482+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 31,
+  "staged_entrypoints": 34,
   "probes": [
     {
       "name": "Broome County",
@@ -266,6 +266,32 @@
       "direct_monitoring_activated": false
     },
     {
+      "name": "Town of Big Flats",
+      "official_entrypoint": "https://www.bigflatsny.gov/",
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Town of Big Flats homepage verified 2026-10-30. No dedicated current bid listing or stable individual-solicitation links established; identify authoritative procurement index, review robots/publisher terms, and verify per-notice scope/deadline/worksite before activation. A town homepage is not a bid feed.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Town of Elmira",
+      "official_entrypoint": "https://townofelmira.gov/",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Town of Elmira homepage verified 2026-10-30. A town-hosted concession-stand RFP closed March 9, 2026, demonstrating occasional individual PDFs, but no stable current bid index or permitted recurring extraction verified. Find authoritative listing and review robots/terms, individual notice deadlines and worksite before activation; do not treat the expired unrelated RFP as live.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
       "name": "City of Corning",
       "official_entrypoint": "https://cityofcorningny.gov/index.asp?SEC=07CB95A9-0A8E-4D9D-B22C-7B8C866B36E5",
       "state": "listing_reachable_adapter_required",
@@ -433,6 +459,19 @@
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false,
       "section_note": "RFP section reports none at probe time; other bid channels and individual notice access remain unverified"
+    },
+    {
+      "name": "Town of Southport",
+      "official_entrypoint": "https://townofsouthportny.gov/post.php?pid=44",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Town of Southport Legal Notice index verified 2026-10-30; currently displays truck financing, budget, and hearing notices, not an individual tree-service bid. Mixed legal notices are not a dedicated bid feed. Review robots/terms and verify stable current individual procurement notices, scope, deadline and worksite before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
     },
     {
       "name": "Wellsboro Borough",
