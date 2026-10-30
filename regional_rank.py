@@ -163,6 +163,20 @@ def build(notices, today=None, now=None):
         candidate_date = notice.get("deadline")
         candidate_text = (str(notice.get("title") or "") + " " +
                           str(notice.get("summary") or "")).lower()
+        # Record every independently stated valid submission date before
+        # classify() drops an expired copy. An older cutoff may have been
+        # superseded by an amendment, but the surviving later date is not
+        # independently verified while those copies disagree. Withhold the
+        # selected deadline and show both dates for review instead.
+        if (candidate_url.startswith("https://")
+                and isinstance(candidate_date, str)
+                and any(term in candidate_text for term in KEYWORDS)):
+            try:
+                dt.date.fromisoformat(candidate_date)
+            except ValueError:
+                pass
+            else:
+                dates_by_url.setdefault(candidate_url, set()).add(candidate_date)
         if (candidate_url.startswith("https://")
                 and isinstance(candidate_date, str)
                 and candidate_date == today.isoformat()
