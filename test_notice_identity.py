@@ -42,6 +42,31 @@ class NoticeIdentityTests(unittest.TestCase):
         self.assertEqual(notice_identity.canonical_url(second),
                          "https://county.example/Bids.aspx?bidID=416&ref=vendor")
 
+    def test_ordinary_query_order_without_tracking_is_same_notice(self):
+        first = "https://county.example/Bids.aspx?bidID=416&ref=vendor"
+        second = "https://county.example/Bids.aspx?ref=vendor&bidID=416"
+        self.assertEqual(notice_identity.notice_id(first),
+                         notice_identity.notice_id(second))
+
+    def test_invalid_public_notice_hosts_rejected(self):
+        # Synthetic URLs only; no live bids or provider requests.
+        for url in (
+            "https://county..example/Bids.aspx?bidID=416",
+            "https://county.example./Bids.aspx?bidID=416",
+            "https://bad_host.example/Bids.aspx?bidID=416",
+            "https://localhost/Bids.aspx?bidID=416",
+            "https://bids.local/Bids.aspx?bidID=416",
+            "https://bids.internal/Bids.aspx?bidID=416",
+            "https://127.0.0.1/Bids.aspx?bidID=416",
+            "https://10.0.0.8/Bids.aspx?bidID=416",
+            "https://169.254.169.254/latest/meta-data/",
+            "https://[::1]/Bids.aspx?bidID=416",
+            "https://county.example%2f.evil/Bids.aspx",
+        ):
+            with self.subTest(url=url):
+                self.assertEqual(notice_identity.canonical_url(url), "")
+                self.assertEqual(notice_identity.notice_id(url), "")
+
     def test_repeated_query_keys_preserve_order_and_bid_identity(self):
         first = "https://county.example/bids?bidID=12&bidID=13"
         second = "https://county.example/bids?bidID=13&bidID=12"
