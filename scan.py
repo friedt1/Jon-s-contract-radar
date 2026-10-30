@@ -43,9 +43,13 @@ MAX_DETAIL = 18
 MAX_PDF = 5
 MAX_BYTES = 2_500_000
 
-# These providers have no approved individual-listing integration. Their public
-# landing pages and county outbound links are not permission to crawl notices.
-UNCONNECTED_PLATFORMS = frozenset({'BidNet NY platform', 'PennBid platform'})
+# These providers or provider-delegated county pages have no approved
+# individual-listing integration. A public purchasing homepage does not
+# authorize crawling its BidNet/PennBid notices or archived PDFs.
+# Tompkins County's current official purchasing page delegates open bids to
+# BidNet Direct, rather than publishing current individual notices itself.
+UNCONNECTED_PLATFORMS = frozenset({'BidNet NY platform', 'PennBid platform',
+                                   'Tompkins County purchasing'})
 EXTERNAL_PROVIDER_HOSTS = ('bonfirehub.com', 'bidnetdirect.com',
                            'pennbid.net', 'publicpurchase.com', 'opengov.com')
 

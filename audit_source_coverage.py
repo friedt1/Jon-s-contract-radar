@@ -65,7 +65,8 @@ def main():
     args = parser.parse_args()
     results = audit(json.loads(Path(args.sources).read_text(encoding="utf-8")))
     print(json.dumps(results, indent=2))
-    return 1 if args.strict and results["not_directly_monitored"] else 0
+    return 1 if args.strict and (results["not_directly_monitored"] or
+                                 results["configured_provider_access_required"]) else 0
 
 
 if __name__ == "__main__":

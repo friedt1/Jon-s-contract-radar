@@ -29,7 +29,9 @@
     "url": "https://www.tompkinscountyny.gov/All-Departments/Finance-Department/Purchasing-Division",
     "mode": "direct_page",
     "verified_url": true,
-    "discovery_query": "Tompkins County NY"
+    "discovery_query": "Tompkins County NY",
+    "delegated_provider": "BidNet Direct",
+    "activation_gate": "Official Tompkins Purchasing Division says current solicitations and specifications are on BidNet Direct; authorized individual-listing feed or permission is required before activation. County page and archived PDFs are not an individual-bid feed."
   },
   {
     "name": "Elmira City bids",
