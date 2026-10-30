@@ -176,5 +176,53 @@ class PdfArchivePriorityTests(unittest.TestCase):
             "https://example.gov/purchasing", "Current bids"))
 
 
+    def test_undated_archive_labels_use_document_path_year_not_opaque_id(self):
+        # Synthetic archive: labels do not contain dates, but directory paths do.
+        # Current-year proposals must be checked before expired archived packets.
+        older = "".join(
+            '<a href="/bids/2024/tree-%d.pdf">Tree removal bid proposal</a>' % n
+            for n in range(7)
+        )
+        current = "https://example.gov/bids/2026/tree-packet.pdf"
+        listing = older + '<a href="/bids/2026/tree-packet.pdf">Tree removal bid proposal</a>'
+        requested = []
+
+        def fake_fetch(url, binary=False):
+            requested.append(url)
+            if url == SOURCE["url"]:
+                return listing, "text/html", url
+            if url == current:
+                return b"CURRENT", "application/pdf", url
+            if "/bids/2024/" in url:
+                return b"OLD", "application/pdf", url
+            raise AssertionError("Unexpected URL: " + url)
+
+        def fake_pdf_text(blob):
+            return ("Tree removal bid due November 19, 2026" if blob == b"CURRENT"
+                    else "Tree removal bid due April 17, 2024")
+
+        with patch.object(scan, "fetch", side_effect=fake_fetch), patch.object(
+            scan, "pdf_text", side_effect=fake_pdf_text
+        ):
+            leads, status = scan.scan_direct(SOURCE)
+
+        self.assertEqual(requested[1], current)
+        self.assertEqual([lead["url"] for lead in leads], [current])
+        self.assertEqual(leads[0]["status"], "unverified")
+        self.assertIn("3 PDF requests skipped at budget", status)
+        self.assertEqual(len(requested), 1 + scan.MAX_PDF)
+        # A numeric document ID or bidID query parameter is not a year.
+        self.assertEqual(scan.pdf_listing_recency(
+            "Tree removal bid packet",
+            "https://example.gov/DocumentCenter/View/2026", 2026), 0)
+        self.assertEqual(scan.pdf_listing_recency(
+            "Tree removal bid packet",
+            "https://example.gov/media/opaque?bidID=2026", 2026), 0)
+        # An explicit publisher label takes precedence over a path year.
+        self.assertEqual(scan.pdf_listing_recency(
+            "Tree removal bid 2024 proposal",
+            "https://example.gov/bids/2026/tree-packet.pdf", 2026), -6)
+
+
 if __name__ == "__main__":
     unittest.main()
