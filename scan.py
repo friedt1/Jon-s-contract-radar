@@ -634,6 +634,8 @@ def scan_direct(src):
      found.pop(notice_identity.notice_id(url),None);continue
     nested_notice_links = False
     nested_candidates = []
+    nested_seen = set()
+    listing_identity = notice_identity.canonical_url(final_url)
     for label,href,_ in p.links:
      row=p.link_rows.get(href,label)
      target=safe_detail_url(final_url,href)
@@ -644,17 +646,27 @@ def scan_direct(src):
        external=up.urljoin(final_url,href)
        if provider_link(external):provider_skips.add(external)
       except (TypeError,ValueError):pass
-     if target and not excluded_url(target):
-      # A page linking to distinct individual bid URLs is a listing, even
-      # when it uses divs rather than tr/article/li elements. Do not emit
-      # the listing URL as an individual solicitation.
-      if target != final_url and is_individual_notice_link(target):
-       nested_notice_links = True
-      # A nested listing row likewise only queues a detail URL. It cannot
-      # establish that the bid is current, relevant, or even accessible.
-      if len(nested_candidates)<max_details and target not in visited and (category(row) or bidlike(label+' '+href)):
-       priority = 8 if is_individual_notice_link(target) else 0
-       nested_candidates.append((priority,target,label,row))
+      # Never enqueue an empty or off-host URL. Those used to consume the
+      # bounded detail budget ahead of a real same-host bid notice.
+      continue
+     target_identity = notice_identity.canonical_url(target)
+     if (not target_identity or excluded_url(target)
+         or target_identity == listing_identity):
+      # Excluded archives and same-page fragments are not individual bids.
+      continue
+     # A page linking to distinct individual bid URLs is a listing, even
+     # when it uses divs rather than tr/article/li elements. Do not emit
+     # the listing URL as an individual solicitation.
+     if is_individual_notice_link(target):
+      nested_notice_links = True
+     # Preserve the budget for distinct, permitted, relevant detail URLs.
+     # A nested listing row only queues a candidate, never proves it open.
+     if (len(nested_candidates)<max_details and target_identity not in visited
+         and target_identity not in nested_seen
+         and (category(row) or bidlike(label+' '+href))):
+      priority = 8 if is_individual_notice_link(target) else 0
+      nested_candidates.append((priority,target,label,row))
+      nested_seen.add(target_identity)
     if nested_candidates:
      nested_candidates.sort(key=lambda item: -item[0])
      candidates[candidate_index+1:candidate_index+1] = nested_candidates
