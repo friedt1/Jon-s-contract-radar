@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-30T05:56:30.416927+00:00",
+  "updated": "2026-10-30T06:33:40.493341+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 23,
+  "staged_entrypoints": 25,
   "probes": [
     {
       "name": "Broome County",
@@ -328,6 +328,35 @@
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official Village of Waverly homepage publishes a contractor RFQ (New York Forward Small Project Fund) with a September 15, 2026 application deadline; this is unrelated building work and past deadline. No stable public individual-bid listing adapter or permitted recurring extraction verified. Review robots/publisher terms, notice listing format, individual scope/deadlines, and live extraction before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "City of Hornell",
+      "official_entrypoint": "https://www.cityofhornell.gov/upcoming-bid-projects",
+      "state": "listing_reachable_off_host_documents_review_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official City of Hornell Upcoming Bid Projects page observed 2026-10-30 with PDF bid documents on external irp.cdn-website.com. Stage only: review robots, publisher and CDN terms; implement permitted per-document retrieval, distinguish upcoming from past bids, verify scope/deadline/status and worksite before activation. No off-host PDF is fetched by staging.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false,
+      "off_host_pdf_hosts_unverified": [
+        "irp.cdn-website.com"
+      ]
+    },
+    {
+      "name": "City of Geneva",
+      "official_entrypoint": "https://cityofgenevany.gov/Bids.aspx",
+      "state": "listing_reachable_no_open_bids",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official City of Geneva CivicPlus Bid Postings page observed 2026-10-30 with no open postings. Stage only: review robots/publisher terms and verify future individual bidID detail extraction, status, closing dates, and Elmira drive time before direct activation. A no-open message is not proof of complete procurement coverage.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     },
