@@ -68,6 +68,18 @@ def classify(source, status):
     else:
         detail_access_state = "not_attempted"
 
+    # Later listing pages may fail even when the first page succeeds.
+    # Preserve that incomplete-coverage evidence instead of reporting success.
+    pagination_errors = _number(r"\b(\d+) pagination errors:", status)
+    pagination_section = re.search(r"\b\d+ pagination errors:\s*([^;]*)", status)
+    pagination_names = pagination_section.group(1) if pagination_section else ""
+    if "RobotsDenied" in pagination_names:
+        pagination_access_state = "robots_blocked"
+    elif pagination_errors:
+        pagination_access_state = "partial_listing_errors"
+    else:
+        pagination_access_state = "no_reported_errors"
+
     return {
         "name": source["name"],
         "mode": mode,
@@ -80,6 +92,8 @@ def classify(source, status):
         "detail_fetches_attempted": detail_checked,
         "individual_bid_details_fetched": details_fetched,
         "detail_errors": detail_errors,
+        "pagination_errors": pagination_errors,
+        "pagination_access_state": pagination_access_state,
         "detail_access_state": detail_access_state,
         "pdf_fetch_attempts": _number(r"\b(\d+) PDF-shaped requests attempted\b", status),
         "pdf_budget_skips": _number(r"\b(\d+) PDF requests skipped at budget\b", status),
@@ -111,6 +125,10 @@ def summarize(sources, statuses):
     counts["detail_fetches_attempted"] = sum(row["detail_fetches_attempted"] for row in rows)
     counts["individual_bid_details_fetched"] = sum(row["individual_bid_details_fetched"] for row in rows)
     counts["detail_errors"] = sum(row["detail_errors"] for row in rows)
+    counts["pagination_errors"] = sum(row["pagination_errors"] for row in rows)
+    counts["pagination_incomplete_sources"] = sum(row["pagination_errors"] > 0 for row in rows)
+    counts["pagination_robots_blocked_sources"] = sum(
+        row["pagination_access_state"] == "robots_blocked" for row in rows)
     counts["detail_robots_blocked_sources"] = sum(row["detail_access_state"] == "robots_blocked" for row in rows)
     counts["pdf_fetch_attempts"] = sum(row["pdf_fetch_attempts"] for row in rows)
     counts["pdf_budget_skips"] = sum(row["pdf_budget_skips"] for row in rows)
@@ -126,6 +144,7 @@ def summarize(sources, statuses):
                     "Detail fetch attempts do not establish valid notices; "
                     "individual details fetched prove retrieval, not open status. "
                     "Individual-detail robots blocks and errors are reported separately. "
+                    "Listing pagination failures mean the listing may be incomplete. "
                     "External provider links require an approved adapter and are not followed. "
                     "Configured access-required portals are not direct fetch targets. "
                     "HTTP refusals, unsafe redirects, rate limits and unsupported "
