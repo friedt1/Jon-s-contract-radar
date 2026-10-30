@@ -10,7 +10,10 @@ _CLOSED = re.compile(
     r"(?:$|[\s:;,()\-–—/])", re.I
 )
 _QUESTION_ONLY = re.compile(
-    r"^closed\s+(?:for|to)\s+(?:questions?|inquir(?:y|ies)|"
+    # Publisher labels such as "Closed - for questions" and "Closed: Q&A"
+    # describe a Q&A milestone, not the submission status.
+    r"^closed[\s:;,()\-–—/]+(?:(?:for|to)\s+)?"
+    r"(?:questions?|q\s*&\s*a|inquir(?:y|ies)|"
     r"clarifications?|rfis?|addenda)\b", re.I
 )
 
