@@ -100,6 +100,21 @@ class SourceHealthTests(unittest.TestCase):
         self.assertEqual(counts["configured_direct"], 4)
         self.assertEqual(counts["fetched_unverified"], 0)
 
+    def test_civicplus_detail_budget_deferral_is_incomplete_coverage(self):
+        src = {"name": "County", "mode": "direct_page",
+               "url": "https://county.example/Bids.aspx", "verified_url": True}
+        status = ("direct fetched; 1 listing pages; 37 individual bid records; "
+                  "36 relevant details checked; "
+                  "1 individual bid records deferred at detail budget; "
+                  "1 individual bid details fetched; 0 unverified candidates")
+        row = source_health.classify(src, status)
+        self.assertEqual(row["detail_budget_deferred"], 1)
+        self.assertEqual(row["individual_bid_records_found"], 37)
+        counts = source_health.summarize([src], {"County": status})["counts"]
+        self.assertEqual(counts["detail_budget_deferred"], 1)
+        self.assertEqual(counts["detail_budget_incomplete_sources"], 1)
+        self.assertEqual(counts["fetched_unverified"], 1)
+
     def test_pagination_failure_is_not_complete_coverage(self):
         src = {"name": "Tioga fixture", "mode": "direct_page",
                "url": "https://county.example/bids", "verified_url": True}
