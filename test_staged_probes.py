@@ -133,6 +133,39 @@ class StagedProbeTests(unittest.TestCase):
         self.assertFalse(row["direct_monitoring_activated"])
         self.assertEqual(calls, [ENTRY])
 
+    def test_same_host_login_redirect_is_not_a_public_bid_listing(self):
+        for path in ("/Account/Login?ReturnUrl=%2FBids.aspx",
+                     "/sign-in?return=%2FBids.aspx"):
+            with self.subTest(path=path):
+                row = staged.probe(SOURCE, fetch=lambda url: (
+                    "<h1>Sign in</h1>", "text/html",
+                    "https://county.example" + path))
+                self.assertEqual(row["state"], "listing_authentication_required")
+                self.assertFalse(row["listing_retrieved"])
+                self.assertFalse(row["individual_notice_retrieved"])
+                self.assertFalse(row["direct_monitoring_activated"])
+
+    def test_same_url_login_form_requires_authentication(self):
+        login = ('<html><title>Sign In - County Procurement</title>'
+                 '<form><input type="password" name="password"></form></html>')
+        row = staged.probe(SOURCE, fetch=lambda url: (login, "text/html", url))
+        self.assertEqual(row["state"], "listing_authentication_required")
+        self.assertFalse(row["listing_retrieved"])
+        # An ordinary public bids page may link to a login area. Do not
+        # misclassify it as a login-only page without an actual form.
+        public = ('<h1>County bids</h1><a href="/Account/Login">Log in</a>')
+        other = dict(SOURCE, name="Allegany County")
+        row = staged.probe(other, fetch=lambda url: (public, "text/html", url))
+        self.assertEqual(row["state"], "listing_reachable_adapter_required")
+        self.assertTrue(row["listing_retrieved"])
+
+    def test_https_to_http_downgrade_is_not_verified_listing(self):
+        row = staged.probe(SOURCE, fetch=lambda url: (
+            "<h1>County bids</h1>", "text/html", "http://county.example/Bids.aspx"))
+        self.assertEqual(row["state"], "listing_insecure_redirect")
+        self.assertFalse(row["listing_retrieved"])
+        self.assertFalse(row["direct_monitoring_activated"])
+
     def test_unrelated_or_lookalike_listing_redirect_is_not_provider(self):
         source = dict(SOURCE, name="Ontario County")
         for target in ("https://other.example/bids",
