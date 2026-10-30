@@ -26,7 +26,7 @@ def classify(source, status):
     # transient fetch errors or successful individual-notice ingestion.
     # A 403 may be anti-bot protection rather than a login requirement:
     # label it as HTTP-blocked, not "credentials required".
-    elif re.search(r"\\bdirect error: HTTPError HTTP (?:401|403)\\b", status):
+    elif re.search(r"\bdirect error: HTTPError HTTP (?:401|403)\b", status):
         direct_state = "http_blocked"
     elif "direct error: UnsafeRedirect" in status:
         direct_state = "redirect_blocked"
