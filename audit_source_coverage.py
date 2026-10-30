@@ -8,8 +8,7 @@ import json
 from pathlib import Path
 
 from scan import UNCONNECTED_PLATFORMS
-
-DIRECT_MODES = {"direct_page", "official_feed", "authorized_api"}
+from source_config import DIRECT_MODES, direct_configured, valid_public_https_url
 
 
 def audit(sources):
@@ -17,10 +16,10 @@ def audit(sources):
     for source in sources:
         mode = source.get("mode", "missing")
         url = source.get("url", "")
-        direct = mode in DIRECT_MODES and bool(url) and source.get("verified_url") is True
+        direct = direct_configured(source)
         access_required = direct and source["name"] in UNCONNECTED_PLATFORMS
         staged = (not direct and mode == "discovery_pending"
-                  and bool(source.get("candidate_official_url")))
+                  and valid_public_https_url(source.get("candidate_official_url")))
         invalid_direct = mode in DIRECT_MODES and not direct
         results.append({
             "source": source["name"],
@@ -37,7 +36,7 @@ def audit(sources):
                        if access_required else
                        "configured; live ingestion not independently verified" if direct else
                        "official URL staged; individual-notice extraction and permissions not verified" if staged else
-                       "invalid direct configuration; URL/verification missing" if invalid_direct else
+                       "invalid direct configuration; verified HTTPS URL required" if invalid_direct else
                        "not directly monitored; official source discovery required"),
         })
     return {
@@ -54,7 +53,8 @@ def audit(sources):
         "warning": ("Direct configuration is not operational monitoring. Provider landing URLs "
                     "without approved individual-listing ingestion are access-required, not fetch targets. "
                     "Even other fetch targets do not prove permitted or successful bid extraction. "
-                    "Staged URLs are not active monitoring.")
+                    "Malformed, insecure, or unverified URLs do not count as direct "
+                    "configuration; staged URLs are not active monitoring.")
     }
 
 

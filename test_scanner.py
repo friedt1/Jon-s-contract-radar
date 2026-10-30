@@ -132,7 +132,7 @@ class RegressionTests(unittest.TestCase):
 
     def test_direct_failure_preserves_news_discovery(self):
         with patch.object(scanner,'scan_direct',side_effect=ValueError('bad HTML')),patch.object(scanner,'scan_news',return_value=[{'id':'one'}]):
-            _,status,leads=scanner.run({'name':'Test','mode':'direct_page','url':'https://example.org'})
+            _,status,leads=scanner.run({'name':'Test','mode':'direct_page','url':'https://example.org','verified_url':True})
         self.assertIn('direct error',status);self.assertEqual(leads,[{'id':'one'}])
 
     def test_pdf_success_and_failure(self):

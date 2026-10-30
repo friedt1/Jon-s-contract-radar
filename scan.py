@@ -21,6 +21,7 @@ import public_bid_pagination as public_pages
 import civicplus_bids
 import robots_policy
 import source_health
+import source_config
 import opportunity_triage
 from submission_deadlines import submission_deadline, submission_deadline_details, explicit_closing_passed
 
@@ -712,8 +713,10 @@ def error_label(error):
 
 def run(src):
  statuses=[];leads=[]
- if src.get('url') and src.get('mode')=='direct_page':
-  if src['name'] in UNCONNECTED_PLATFORMS:
+ if src.get('mode')=='direct_page':
+  if not source_config.direct_configured(src):
+   statuses.append('direct not configured: verified public HTTPS source URL required')
+  elif src['name'] in UNCONNECTED_PLATFORMS:
    statuses.append('direct access required: individual listing ingestion not connected; provider-approved feed/access not established')
   else:
    try:
@@ -778,7 +781,7 @@ def main():
                         key=lambda x:(x['review_score'], x.get('published','')),reverse=True)[:300]
  direct=sum('direct fetched' in x for x in status.values());indirect=sum('indirect RSS ok' in x for x in status.values())
  # Configuration, page fetch, and individual-bid extraction are distinct states.
- direct_names={s['name'] for s in sources if s.get('mode')=='direct_page' and s.get('verified_url') is True and s.get('url')}
+ direct_names={s['name'] for s in sources if s.get('mode')=='direct_page' and source_config.direct_configured(s)}
  coverage={
   'total_targets':len(sources),
   'direct_configured':len(direct_names),

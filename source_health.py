@@ -5,6 +5,8 @@ crawler is authorized. A staged official URL never counts as a live adapter.
 """
 import re
 
+from source_config import direct_configured, valid_public_https_url
+
 
 def _number(pattern, status):
     match = re.search(pattern, status)
@@ -13,11 +15,11 @@ def _number(pattern, status):
 
 def classify(source, status):
     mode = source.get("mode", "discovery_pending")
-    configured = (mode in {"direct_page", "official_feed", "authorized_api"}
-                  and source.get("verified_url") is True
-                  and bool(source.get("url")))
+    configured = direct_configured(source)
     if not configured:
-        direct_state = "staged_official_url" if source.get("candidate_official_url") else "not_configured"
+        direct_state = ("staged_official_url" if mode == "discovery_pending" and
+                        valid_public_https_url(source.get("candidate_official_url"))
+                        else "not_configured")
     elif "direct blocked by robots policy" in status:
         direct_state = "robots_blocked"
     elif "individual listing ingestion not connected" in status:
