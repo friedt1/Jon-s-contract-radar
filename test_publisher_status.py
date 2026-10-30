@@ -62,6 +62,38 @@ class PublisherStatusTests(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertEqual(result["status"], "review required")
 
+
+    def test_explicit_status_field_labels_cannot_hide_closed_bids(self):
+        # Synthetic historical Erie-style tree/stump notices, never live work.
+        # A publisher may retain the field name in the extracted status value.
+        for state in (
+            "Status: Awarded", "Bid Status: Closed",
+            "Solicitation Status - Withdrawn", "Notice Status: Cancelled",
+            "Current Status: Expired", "Procurement Status: Canceled",
+        ):
+            with self.subTest(state=state):
+                notice = {"title": "Tree and stump removal",
+                          "url": "https://county.example/bids?bidID=321",
+                          "deadline": "2026-11-20",
+                          "status": "unverified", "open_status": state}
+                self.assertTrue(publisher_closed(notice))
+                self.assertEqual(review_assessment(
+                    dict(notice, category="Tree removal",
+                         lead_type="individual county bid candidate"),
+                    today=self.TODAY)["review_priority"], "expired_check")
+                self.assertIsNone(classify(notice, today=self.TODAY))
+        # Q&A closure does not close bidding; unrelated Owego demolition
+        # remains excluded from the tree-work review feed.
+        self.assertFalse(publisher_closed(
+            {"open_status": "Bid Status: Closed for questions"}))
+        self.assertFalse(publisher_closed(
+            {"open_status": "Notice Status: Open"}))
+        self.assertIsNone(classify({
+            "title": "Owego demolition rebid", "summary": "Building demolition",
+            "url": "https://county.example/bids?bidID=322",
+            "deadline": "2026-11-20", "open_status": "Notice Status: Open"
+        }, today=self.TODAY))
+
     def test_owego_demolition_still_excluded_as_unrelated(self):
         owego = {"title": "67 Central Avenue Demolition Rebid",
                  "summary": "Building demolition and site restoration",
