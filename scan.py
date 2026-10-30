@@ -217,9 +217,25 @@ def published_result_link(title):
   norm(title), re.I))
 
 
+def likely_pdf_link(url, title=''):
+ """Conservative pre-fetch hint for PDFs behind extensionless agency links.
+
+ The scanner cannot know Content-Type before fetching. Treat clearly labeled
+ PDF links and bid documents under common opaque /media/ or DocumentCenter
+ routes as PDF-budget consumers. This may skip ambiguous documents after the
+ cap, but must not fetch unbounded archived PDFs merely to discover their type.
+ """
+ path = up.urlsplit(url).path.lower()
+ if path.endswith('.pdf') or re.search(r'\bpdf\b', norm(title), re.I):
+  return True
+ return (bool(re.search(r'/(?:media|documentcenter/view)/', path))
+         and not pathlib.PurePosixPath(path).suffix
+         and bool(bidlike(title) or category(title)))
+
+
 def pdf_listing_recency(title, url, year):
  """Order bounded PDF checks; a year is NOT proof a solicitation is open."""
- if not up.urlsplit(url).path.lower().endswith('.pdf'):
+ if not likely_pdf_link(url, title):
   return 0
  years=[int(y) for y in re.findall(r'(?<!\d)20\d{2}(?!\d)', norm(title))]
  if not years:
@@ -550,7 +566,7 @@ def scan_direct(src):
   # A PDF URL can be identified before downloading its bytes. Once the
   # extractor budget is exhausted, skip it without spending another request
   # or consuming the remaining individual-notice detail budget.
-  if up.urlsplit(url).path.lower().endswith('.pdf') and pdfs>=MAX_PDF:
+  if likely_pdf_link(url, title) and pdfs>=MAX_PDF:
    pdfs_skipped+=1
    continue
   visited.add(url)
