@@ -117,7 +117,7 @@ class PdfArchivePriorityTests(unittest.TestCase):
         current = "https://example.gov/media/current-document"
         old = ["https://example.gov/media/archive-" + str(n) for n in range(7)]
         listing = "".join(
-            '<a href="/media/archive-%d">Tree removal bid 2024 proposal %d</a>' % (n, n)
+            '<a href="/media/opaque-%d">Tree removal bid 2024 proposal %d</a>' % (n, n)
             for n in range(7)
         ) + '<a href="/media/current-document">Tree removal bid 2026 proposal</a>'
         requested = []
