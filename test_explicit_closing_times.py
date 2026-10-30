@@ -80,6 +80,31 @@ class ExplicitClosingTimeTests(unittest.TestCase):
         self.assertEqual(submission_deadline_details(example), ("2026-11-02", "10:00 AM"))
         self.assertFalse(explicit_closing_passed(example, scan.NOW))
 
+    def test_same_day_date_only_amendment_clears_old_clock(self):
+        # A revised notice that restates the same day without a time does
+        # not prove the original closing hour is still in force.
+        notice = ("Bids due 10/29/2026 at 1:00 PM; "
+                  "Amendment: bids due 10/29/2026")
+        self.assertEqual(submission_deadline_details(notice),
+                         ("2026-10-29", ""))
+        self.assertFalse(explicit_closing_passed(notice, scan.NOW))
+
+    def test_same_day_amendment_with_clock_replaces_old_clock(self):
+        notice = ("Bids due 10/29/2026 at 1:00 PM; "
+                  "Amendment: bids due 10/29/2026 at 4:00 PM")
+        self.assertEqual(submission_deadline_details(notice),
+                         ("2026-10-29", "4:00 PM"))
+        self.assertFalse(explicit_closing_passed(notice, scan.NOW))
+
+    def test_receipt_before_date_and_later_date_only_amendment(self):
+        # Receipt-before-date extraction is a separate parser branch; its
+        # match must not override a later amendment solely due to append order.
+        notice = ("Sealed bids will be received until 1:00 PM on Oct 29, 2026. "
+                  "Amendment: bids due 10/29/2026")
+        self.assertEqual(submission_deadline_details(notice),
+                         ("2026-10-29", ""))
+        self.assertFalse(explicit_closing_passed(notice, scan.NOW))
+
     def test_generic_html_bid_expired_at_explicit_local_time(self):
         src = {"name": "Test County", "url": "https://example.org/bids", "mode": "direct_page"}
         listing = '<a href="/bid/1">Tree removal bid</a>'
