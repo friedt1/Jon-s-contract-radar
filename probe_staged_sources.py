@@ -198,14 +198,12 @@ def probe(source, fetch=scan.fetch, now=None):
                 r"\bno\s+(?:current(?:ly)?\s+)?open\s+bids?\b",
                 listing_text, re.I))
             possible_notice_links = any(
-                href and (
-                    re.search(r"\.pdf(?:$|[?#])", href, re.I)
-                    or (re.search(
-                        r"\b(?:bids?|rfps?|rfqs?|proposals?|solicitations?|"
-                        r"quotes?|trees?|stumps?)\b", label, re.I)
-                        and urlparse(href).path not in (
-                            "", "/", urlparse(final).path)))
-                for label, href, _ in page.links
+                parsed.path.lower().endswith(".pdf")
+                or (re.search(
+                    r"\\b(?:bids?|rfps?|rfqs?|proposals?|solicitations?|"
+                    r"quotes?|trees?|stumps?)\\b", label, re.I)
+                    and parsed.path not in ("", "/", urlparse(final).path))
+                for label, parsed in linked
             )
             empty_bids_listing = (
                 has_procurement_evidence and no_open_bids_reported
