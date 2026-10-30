@@ -19,6 +19,10 @@
       "fetched_unverified": 15,
       "robots_blocked": 1,
       "access_required": 2,
+      "http_blocked": 0,
+      "redirect_blocked": 0,
+      "rate_limited": 0,
+      "unsupported_content": 0,
       "fetch_error": 0,
       "not_fetched": 0,
       "staged_official_url": 26,
@@ -2080,9 +2084,9 @@
         "diagnostic": "indirect RSS error: RobotsDenied"
       }
     ],
-    "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Individual-detail robots blocks and errors are reported separately. External provider links require an approved adapter and are not followed. Configured access-required portals are not direct fetch targets. Staged URLs are not monitored; all leads remain unverified."
+    "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Individual-detail robots blocks and errors are reported separately. External provider links require an approved adapter and are not followed. Configured access-required portals are not direct fetch targets. HTTP refusals, unsafe redirects, rate limits and unsupported content are distinguished from transient fetch errors. Staged URLs are not monitored; all leads remain unverified."
   },
-  "updated": "2026-10-30T11:08:12+00:00",
+  "updated": "2026-10-30T11:57:43+00:00",
   "opportunities": [],
   "source_status": {
     "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 2 relevant details checked; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
