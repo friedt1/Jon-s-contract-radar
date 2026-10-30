@@ -48,7 +48,10 @@ def canonical_url(url):
                 # notice identity. Repeated keys may be order-sensitive:
                 # retain their original order so different bids cannot merge.
                 if len({key.lower() for key, _ in filtered}) == len(filtered):
-                    filtered.sort(key=lambda pair: pair[0])
+                    filtered.sort(key=lambda pair: pair[0].lower())
+                # Canonicalize ordinary query order even when there are no
+                # tracking parameters. Otherwise two links to the same bid
+                # receive different IDs depending on parameter order.
                 if filtered != pairs:
                     query = urlencode(filtered)
         return urlunsplit((parts.scheme.lower(), netloc, parts.path, query, ""))
