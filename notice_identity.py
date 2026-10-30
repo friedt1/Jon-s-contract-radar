@@ -49,6 +49,9 @@ def canonical_url(url):
                 # retain their original order so different bids cannot merge.
                 if len({key.lower() for key, _ in filtered}) == len(filtered):
                     filtered.sort(key=lambda pair: pair[0])
+                # Normalize ordinary parameter order even when there are no
+                # tracking parameters to remove. Previously, query variants
+                # without utm_* were not deduplicated at all.
                 if filtered != pairs:
                     query = urlencode(filtered)
         return urlunsplit((parts.scheme.lower(), netloc, parts.path, query, ""))
