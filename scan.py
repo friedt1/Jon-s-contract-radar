@@ -49,7 +49,9 @@ MAX_BYTES = 2_500_000
 # Tompkins County's current official purchasing page delegates open bids to
 # BidNet Direct, rather than publishing current individual notices itself.
 UNCONNECTED_PLATFORMS = frozenset({'BidNet NY platform', 'PennBid platform',
-                                   'Tompkins County purchasing'})
+                                   'Tompkins County purchasing',
+                                   'Schuyler County purchasing', 'Elmira City bids',
+                                   'Lycoming County bids'})
 EXTERNAL_PROVIDER_HOSTS = ('bonfirehub.com', 'bidnetdirect.com',
                            'pennbid.net', 'publicpurchase.com', 'opengov.com')
 
