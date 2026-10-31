@@ -123,5 +123,43 @@ class ScannerRotationTests(unittest.TestCase):
         self.assertEqual(len(all_fetched), 11)
 
 
+    def test_nested_bid_index_rotates_deferred_individual_notices(self):
+        index = "https://county.example/procurement"
+        listing = '<a href="/procurement">Current bids</a>'
+        nested = "".join(
+            f'<a href="/bid/{number}">Tree removal bid</a>'
+            for number in range(11))
+        start = dt.datetime(2026, 10, 31, 10, tzinfo=UTC)
+        all_fetched = set()
+        stable = None
+        for hour in range(5):
+            fetched = []
+
+            def fake_fetch(url, binary=False):
+                if url == BASE:
+                    body = listing
+                elif url == index:
+                    body = nested
+                else:
+                    fetched.append(url)
+                    body = "<h1>Unrelated historical road paving project</h1>"
+                return (body.encode() if binary else body, "text/html", url)
+
+            with patch.object(scan, "NOW", start + dt.timedelta(hours=hour)), \\
+                 patch.object(scan, "MAX_DETAIL", 6), \\
+                 patch.object(scan, "fetch", side_effect=fake_fetch):
+                leads, status = scan.scan_direct({
+                    "name": "Synthetic County", "url": BASE, "mode": "direct_page"
+                })
+            self.assertEqual(leads, [])
+            self.assertEqual(len(fetched), 5)
+            self.assertIn("6 details checked", status)
+            if stable is None:
+                stable = fetched[:3]
+            self.assertEqual(fetched[:3], stable)
+            all_fetched.update(fetched)
+        self.assertEqual(len(all_fetched), 11)
+
+
 if __name__ == "__main__":
     unittest.main()
