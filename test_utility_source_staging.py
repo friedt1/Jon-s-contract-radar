@@ -55,13 +55,13 @@ class UtilityGatewayStagingTests(unittest.TestCase):
         self.assertIn("registration", nypa["activation_gate"])
         dot = self.by_name["New York State DOT Region 9"]
         self.assertIn("NOT an active contract", dot["official_page_role"])
-        self.assertIn("not an individual", self.by_name["NYSEG"]["official_page_role"])
+        self.assertIn("not a verified tree-work", self.by_name["NYSEG"]["official_page_role"])
 
     def test_staging_does_not_increase_direct_coverage(self):
         coverage = audit_source_coverage.audit(self.sources)
         self.assertEqual(coverage["total"], 102)
         self.assertEqual(coverage["direct_configured"], 18)
-        self.assertEqual(coverage["pending_direct"], 84)
+        self.assertEqual(coverage["not_directly_monitored"], 84)
         self.assertGreaterEqual(coverage["official_urls_staged"], len(UTILITY_GATEWAYS))
 
     def test_no_direct_requests_for_staged_gateways(self):
