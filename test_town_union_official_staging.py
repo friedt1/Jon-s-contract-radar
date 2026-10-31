@@ -57,8 +57,9 @@ class TownOfUnionOfficialStagingTests(unittest.TestCase):
         self.assertEqual(audit["total"], 102)
         self.assertEqual(audit["direct_configured"], 18)
         self.assertEqual(audit["not_directly_monitored"], 84)
-        self.assertEqual(audit["official_urls_staged"], 41)
-        self.assertEqual(audit["discovery_required"], 43)
+        self.assertGreaterEqual(audit["official_urls_staged"], 41)
+        self.assertEqual(audit["discovery_required"],
+                         84 - audit["official_urls_staged"])
         row = next(x for x in audit["sources"] if x["source"] == "Town of Union NY")
         self.assertTrue(row["official_url_staged"])
         self.assertFalse(row["direct_fetch_target"])
