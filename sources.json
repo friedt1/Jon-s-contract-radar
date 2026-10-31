@@ -599,7 +599,10 @@
     "type": "NY education",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.corningareaschools.com/page/business-services",
+    "official_page_role": "Official district Business Services contact page; current advertised bid/RFP documents are provided on request, not as a public individual-notice feed",
+    "activation_gate": "Official district Business Services page checked 2026-10-31: vendors must request copies of current advertised bid/RFP documents from the district. No public per-notice index, authoritative deadline or permitted automated document extraction established. Request-required document access is not a working monitor; review publisher terms/robots, identify an authorized individual-notice channel, and test scope/deadline extraction before activation."
   },
   {
     "name": "Ithaca City School District",

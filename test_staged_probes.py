@@ -211,6 +211,44 @@ class StagedProbeTests(unittest.TestCase):
                                     "listing_reachable_external_provider_access_required")
                 self.assertFalse(row["direct_monitoring_activated"])
 
+    def test_outbound_link_diagnostics_reject_unsafe_destinations(self):
+        # Synthetic links only. A fetched agency homepage must not promote
+        # private, malformed or encoded-control links to provider/PDF evidence.
+        for href in (
+            "https://127.0.0.1/notice.pdf",
+            "https://0x7f.0.0.1/notice.pdf",
+            "https://bids.internal/notice.pdf",
+            "https://county.example:8443/notice.pdf",
+            "https://user:pass@county.example/notice.pdf",
+            "https://cdn.example/notice%0aInjected.pdf",
+            "https://procurement.opengov.com/portal?return=%0d",
+            "https://procurement.opengov.com/portal#%09",
+            "http://cdn.example/notice.pdf",
+        ):
+            with self.subTest(href=href):
+                self.assertIsNone(staged._safe_link(ENTRY, href))
+        self.assertEqual(
+            staged._safe_link(ENTRY, "/bid-packet.pdf#page=2").hostname,
+            "county.example")
+        self.assertEqual(
+            staged._safe_link(
+                ENTRY,
+                "https://cdn.example/notice%20packet.pdf?X-Amz-Signature=abc"
+            ).hostname, "cdn.example")
+
+    def test_unsafe_outbound_links_do_not_create_false_provider_or_pdf_evidence(self):
+        source = dict(SOURCE, name="Ontario County")
+        html = (
+            '<h1>Purchasing bids</h1>'
+            '<a href="https://127.0.0.1/notice.pdf">Bid packet</a>'
+            '<a href="https://procurement.opengov.com/portal?return=%0a">'
+            'View Bids</a>'
+        )
+        row = staged.probe(source, fetch=lambda url: (html, "text/html", url))
+        self.assertEqual(row["state"], "listing_reachable_adapter_required")
+        self.assertNotIn("off_host_pdf_hosts_unverified", row)
+        self.assertFalse(row["direct_monitoring_activated"])
+
     def test_listing_http_failures_are_not_generic_errors(self):
         for code, state in ((401, "listing_authentication_required"),
                             (403, "listing_access_forbidden"),
