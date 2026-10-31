@@ -21,7 +21,10 @@
     "url": "https://www.schuylercountyny.gov/174/Purchasing",
     "mode": "direct_page",
     "verified_url": true,
-    "discovery_query": "Schuyler County NY"
+    "discovery_query": "Schuyler County NY",
+    "delegated_provider": "BidNet Direct",
+    "provider_access_required": true,
+    "activation_gate": "Official Schuyler County Purchasing page directs vendors to Empire State Purchasing Group/BidNet to view available bids and RFPs. Its purchasing homepage is not an individual solicitation feed; require provider-approved per-notice access, robots/terms review, and verified scope, deadline, status, and worksite before activation."
   },
   {
     "name": "Tompkins County purchasing",
@@ -39,7 +42,10 @@
     "url": "https://www.cityofelmirany.gov/264/Sealed-Bid-Information",
     "mode": "direct_page",
     "verified_url": true,
-    "discovery_query": "City of Elmira"
+    "discovery_query": "City of Elmira",
+    "delegated_provider": "BidNet Direct",
+    "provider_access_required": true,
+    "activation_gate": "Official City of Elmira Sealed Bid Information page states the joint Chemung County/City Purchasing Department posts bid packages, addenda, tabulations and awards on BidNet. The City information page is not a current individual-notice feed; require authorized provider access and per-notice extraction before activation. The separately configured Chemung County CivicPlus source remains independently monitored."
   },
   {
     "name": "Elmira Next local bids",
@@ -55,7 +61,10 @@
     "url": "https://lycomingcountypa.gov/government/departments/financial_management/bids.php",
     "mode": "direct_page",
     "verified_url": true,
-    "discovery_query": "Lycoming County PA"
+    "discovery_query": "Lycoming County PA",
+    "delegated_provider": "PennBid",
+    "provider_access_required": true,
+    "activation_gate": "Official Lycoming County Bid Opportunities page states all current open bid/proposal solicitations are posted to PennBid. The county gateway is not an individual-notice feed; require provider-approved access, robots/terms review, per-notice scope/deadline/status/worksite verification before activation. Surplus Municibid auctions are not procurement leads."
   },
   {
     "name": "PA procurement opportunities",
