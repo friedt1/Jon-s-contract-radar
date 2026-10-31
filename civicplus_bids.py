@@ -88,7 +88,11 @@ def individual_url(href, origin):
             return ""
         if not parsed.path.lower().endswith("/bids.aspx"):
             return ""
-        # Normalize marketing parameters before grouping listing cards. A\n        # tracked copy of the same bidID must not consume another detail\n        # request or evade contradictory-card diagnostics. Substantive and\n        # signed parameters remain intact under notice_identity rules.\n        return notice_identity.canonical_url(url)
+        # Normalize marketing parameters before grouping listing cards. A
+        # tracked copy of the same bidID must not consume another detail
+        # request or evade contradictory-card diagnostics. Substantive and
+        # signed parameters remain intact under notice_identity rules.
+        return notice_identity.canonical_url(url)
     except ValueError:
         return ""
 
