@@ -472,7 +472,10 @@
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://ashlandnychemung.gov/",
+    "official_page_role": "publisher_entrypoint_only",
+    "activation_gate": "Official Town of Ashland in Chemung County website confirmed via Chemung County's town directory and townofashland.net redirect to ashlandnychemung.gov. Homepage is NOT a bid index; locate official individual solicitations, verify robots/terms and stable permitted extraction before activation. Do not confuse with ashlandny.com, the different Town of Ashland in Greene County."
   },
   {
     "name": "Town of Erwin",
