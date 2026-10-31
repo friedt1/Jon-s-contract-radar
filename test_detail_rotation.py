@@ -1,4 +1,4 @@
-"""Synthetic offline coverage tests: no fixture represents a live contract."""
+"""Synthetic offline rotation tests; never seed or claim a live contract."""
 import datetime as dt
 import unittest
 from unittest.mock import patch
@@ -13,49 +13,59 @@ BASE = "https://county.example/bids"
 
 
 class RotationUnitTests(unittest.TestCase):
-    def test_top_priority_is_stable_but_lower_ranked_candidates_advance(self):
-        ordered = list(range(20))
-        morning = dt.datetime(2026, 10, 31, 10, tzinfo=UTC)
-        first = detail_rotation.rotate_exploration_window(ordered, 8, morning)
-        second = detail_rotation.rotate_exploration_window(
-            ordered, 8, morning + dt.timedelta(hours=1))
-        self.assertEqual(first[:6], ordered[:6])
-        self.assertEqual(second[:6], ordered[:6])
-        self.assertEqual(set(first), set(ordered))
-        self.assertEqual(set(second), set(ordered))
-        self.assertNotEqual(first[6:8], second[6:8])
+    def test_higher_ranked_candidates_stay_ahead_of_rotating_ties(self):
+        ordered = list(range(15))
+        priority = lambda number: 10 if number < 4 else 0
+        start = dt.datetime(2026, 10, 31, 10, tzinfo=UTC)
+        seen = set()
+        for hour in range(7):
+            result = detail_rotation.rotate_boundary_ties(
+                ordered, 6, start + dt.timedelta(hours=hour), priority)
+            self.assertEqual(result[:4], ordered[:4])
+            self.assertEqual(set(result), set(ordered))
+            seen.update(result[:6])
+        self.assertEqual(seen, set(ordered))
 
-    def test_same_hour_is_deterministic_and_naive_clock_does_not_rotate(self):
-        ordered = list(range(30))
+    def test_expired_lower_priority_never_preempts_future_notices(self):
+        ordered = [("future", n) for n in range(6)] + [("expired", 99)]
+        priority = lambda item: item[0]
+        for hour in range(4):
+            self.assertEqual(detail_rotation.rotate_boundary_ties(
+                ordered, 6, dt.datetime(2026, 10, 31, 10 + hour,
+                                        tzinfo=UTC), priority), ordered)
+
+    def test_same_hour_is_deterministic_and_naive_clock_keeps_order(self):
+        ordered = list(range(20))
+        priority = lambda _: 0
         now = dt.datetime(2026, 10, 31, 10, 20, tzinfo=UTC)
         self.assertEqual(
-            detail_rotation.rotate_exploration_window(ordered, 8, now),
-            detail_rotation.rotate_exploration_window(
-                ordered, 8, now + dt.timedelta(minutes=15)))
-        self.assertEqual(detail_rotation.rotate_exploration_window(
-            ordered, 8, now.replace(tzinfo=None)), ordered)
-        self.assertEqual(detail_rotation.rotate_exploration_window(
-            ordered, 30, now), ordered)
+            detail_rotation.rotate_boundary_ties(ordered, 8, now, priority),
+            detail_rotation.rotate_boundary_ties(
+                ordered, 8, now + dt.timedelta(minutes=15), priority))
+        self.assertEqual(detail_rotation.rotate_boundary_ties(
+            ordered, 8, now.replace(tzinfo=None), priority), ordered)
+        self.assertEqual(detail_rotation.rotate_boundary_ties(
+            ordered, 20, now, priority), ordered)
 
-    def test_rotating_slice_eventually_reaches_all_deferred_candidates(self):
+    def test_all_tied_deferred_candidates_eventually_examined(self):
         ordered = list(range(11))
         start = dt.datetime(2026, 10, 31, 10, tzinfo=UTC)
         seen = set()
         for hour in range(5):
-            scheduled = detail_rotation.rotate_exploration_window(
-                ordered, 6, start + dt.timedelta(hours=hour))
+            scheduled = detail_rotation.rotate_boundary_ties(
+                ordered, 6, start + dt.timedelta(hours=hour), lambda _: 0)
             seen.update(scheduled[:6])
         self.assertEqual(seen, set(ordered))
 
 
 class ScannerRotationTests(unittest.TestCase):
-    def test_generic_individual_detail_budget_explores_unfetched_links(self):
+    def test_generic_individual_detail_budget_explores_tied_links(self):
         listing = "".join(
             f'<a href="/bid/{number}">Tree removal bid</a>'
             for number in range(11))
         start = dt.datetime(2026, 10, 31, 10, tzinfo=UTC)
         all_fetched = set()
-        first_four = None
+        first_batch = None
         for hour in range(5):
             fetched = []
 
@@ -66,18 +76,19 @@ class ScannerRotationTests(unittest.TestCase):
                 body = "<h1>Unrelated road paving project</h1>"
                 return (body.encode() if binary else body, "text/html", url)
 
-            with patch.object(scan, "NOW", start + dt.timedelta(hours=hour)), \
-                 patch.object(scan, "MAX_DETAIL", 6), \
-                 patch.object(scan, "fetch", side_effect=fake_fetch):
+            with (patch.object(scan, "NOW", start + dt.timedelta(hours=hour)),
+                  patch.object(scan, "MAX_DETAIL", 6),
+                  patch.object(scan, "fetch", side_effect=fake_fetch)):
                 leads, status = scan.scan_direct({
                     "name": "Synthetic County", "url": BASE, "mode": "direct_page"
                 })
             self.assertEqual(leads, [])
             self.assertEqual(len(fetched), 6)
             self.assertIn("5 detail candidates deferred at request budget", status)
-            if first_four is None:
-                first_four = fetched[:4]
-            self.assertEqual(fetched[:4], first_four)
+            if first_batch is None:
+                first_batch = fetched
+            elif hour == 1:
+                self.assertNotEqual(fetched, first_batch)
             all_fetched.update(fetched)
         self.assertEqual(len(all_fetched), 11)
 
@@ -94,7 +105,7 @@ class ScannerRotationTests(unittest.TestCase):
         } for n in range(11)]
         start = dt.datetime(2026, 10, 31, 10, tzinfo=UTC)
         all_fetched = set()
-        first_four = None
+        first_batch = None
         for hour in range(5):
             fetched = []
 
@@ -106,24 +117,24 @@ class ScannerRotationTests(unittest.TestCase):
                           "<p>Closing Date/Time: 11/19/2026 2:00 PM</p>")
                 return detail.encode(), "text/html", url
 
-            with patch.object(scan, "NOW", start + dt.timedelta(hours=hour)), \
-                 patch.object(civicplus_bids, "MAX_DETAILS", 6), \
-                 patch.object(civicplus_bids, "listing_records", return_value=rows), \
-                 patch.object(scan, "fetch", side_effect=fake_fetch):
+            with (patch.object(scan, "NOW", start + dt.timedelta(hours=hour)),
+                  patch.object(civicplus_bids, "MAX_DETAILS", 6),
+                  patch.object(civicplus_bids, "listing_records", return_value=rows),
+                  patch.object(scan, "fetch", side_effect=fake_fetch)):
                 leads, status = scan.scan_civicplus(
                     {"name": "Synthetic County", "url": entry},
                     [(scan.parse_html("<p>Public bids</p>"), entry)], [])
             self.assertEqual(len(fetched), 6)
             self.assertIn("5 individual bid records deferred at detail budget", status)
             self.assertTrue(all(lead["status"] == "unverified" for lead in leads))
-            if first_four is None:
-                first_four = fetched[:4]
-            self.assertEqual(fetched[:4], first_four)
+            if first_batch is None:
+                first_batch = fetched
+            elif hour == 1:
+                self.assertNotEqual(fetched, first_batch)
             all_fetched.update(fetched)
         self.assertEqual(len(all_fetched), 11)
 
-
-    def test_nested_bid_index_rotates_deferred_individual_notices(self):
+    def test_nested_bid_index_rotates_tied_individual_notices(self):
         index = "https://county.example/procurement"
         listing = '<a href="/procurement">Current bids</a>'
         nested = "".join(
@@ -131,7 +142,7 @@ class ScannerRotationTests(unittest.TestCase):
             for number in range(11))
         start = dt.datetime(2026, 10, 31, 10, tzinfo=UTC)
         all_fetched = set()
-        stable = None
+        first_batch = None
         for hour in range(5):
             fetched = []
 
@@ -145,18 +156,19 @@ class ScannerRotationTests(unittest.TestCase):
                     body = "<h1>Unrelated historical road paving project</h1>"
                 return (body.encode() if binary else body, "text/html", url)
 
-            with patch.object(scan, "NOW", start + dt.timedelta(hours=hour)), \
-                 patch.object(scan, "MAX_DETAIL", 6), \
-                 patch.object(scan, "fetch", side_effect=fake_fetch):
+            with (patch.object(scan, "NOW", start + dt.timedelta(hours=hour)),
+                  patch.object(scan, "MAX_DETAIL", 6),
+                  patch.object(scan, "fetch", side_effect=fake_fetch)):
                 leads, status = scan.scan_direct({
                     "name": "Synthetic County", "url": BASE, "mode": "direct_page"
                 })
             self.assertEqual(leads, [])
             self.assertEqual(len(fetched), 5)
             self.assertIn("6 details checked", status)
-            if stable is None:
-                stable = fetched[:3]
-            self.assertEqual(fetched[:3], stable)
+            if first_batch is None:
+                first_batch = fetched
+            elif hour == 1:
+                self.assertNotEqual(fetched, first_batch)
             all_fetched.update(fetched)
         self.assertEqual(len(all_fetched), 11)
 
