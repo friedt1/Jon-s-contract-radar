@@ -78,8 +78,8 @@ _AFTER_DATE = re.compile(r"^[ \t]*(?:,[ \t]*)?(?:at[ \t]+)?(?P<clock>" + _CLOCK 
 # issuing authority's Eastern time before applying the expiration gate.
 # Require the complete timestamp; never accept a truncated/invalid suffix.
 _ISO_AFTER_DATE = re.compile(
-    r"^T(?P<clock>(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d)?(?:\\.\\d{1,6})?)"
-    r"(?P<offset>Z|[+-](?:[01]\\d|2[0-3]):[0-5]\\d)?"
+    r"^T(?P<clock>(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?(?:\.\d{1,6})?)"
+    r"(?P<offset>Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)?"
     r"(?![0-9A-Za-z:+-])", re.I,
 )
 
