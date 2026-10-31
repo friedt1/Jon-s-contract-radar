@@ -71,20 +71,55 @@ def listing_closing_of(row):
 
 def listing_records(page, origin):
     """Read individual Granicus RFP rows; never infer deadline from start date."""
-    found = {}
-    for title, href, _ in page.links:
+    # One Granicus notice can appear in multiple listing rows (for example,
+    # a featured row and a department row). An href-keyed row map keeps only
+    # the last row and can erase contradictory closing evidence. Use the
+    # original enclosing row for EACH link, then reconcile by notice ID.
+    grouped = {}
+    for index, (title, href, _) in enumerate(page.links):
         url = individual_url(href, origin)
-        if not url or url in found:
+        if not url:
             continue
-        row = page.link_rows.get(href, "")
+        row = page.link_contexts.get(index, page.link_rows.get(href, ""))
         due, clock = listing_closing_of(row)
         status_match = re.search(r"\b(Open|Closed|Awarded|Cancelled|Canceled)\s*$", row, re.I)
-        found[url] = {
-            "title": title.strip()[:220], "url": url,
-            "open_status": status_match.group(1).lower() if status_match else "unknown",
-            "deadline": due, "deadline_time": clock,
-        }
-    return list(found.values())
+        grouped.setdefault(url, []).append((
+            title.strip()[:220],
+            status_match.group(1).lower() if status_match else "unknown",
+            due, clock,
+        ))
+
+    records = []
+    for url, observations in grouped.items():
+        statuses = {status for _, status, _, _ in observations if status != "unknown"}
+        closed = bool(statuses & CLOSED)
+        open_seen = "open" in statuses
+        status_conflict = closed and open_seen
+        # Closed and Awarded are both closed states, not a false conflict.
+        status = ("unknown" if status_conflict else
+                  "closed" if closed else "open" if open_seen else "unknown")
+        dates = {due for _, _, due, _ in observations if due}
+        clocks = {clock.upper().replace(" ", "")
+                  for _, _, due, clock in observations if due and clock}
+        deadline_conflict = len(dates) > 1 or len(clocks) > 1
+        due = next(iter(dates)) if len(dates) == 1 and not deadline_conflict else ""
+        clock = next((clock for _, _, date, clock in observations
+                      if date == due and clock), "") if due else ""
+        title = next((title for title, _, _, _ in observations
+                      if title and title.lower() not in {
+                          "view", "view details", "details", "read more"
+                      }), observations[0][0])
+        records.append({
+            "title": title, "url": url,
+            "open_status": status, "deadline": due, "deadline_time": clock,
+            "listing_status_conflict": status_conflict,
+            "listing_deadline_conflict": deadline_conflict,
+            "listing_status_evidence": sorted(statuses),
+            "listing_deadline_evidence": sorted(
+                {(" ".join((date, time))).strip()
+                 for _, _, date, time in observations if date}),
+        })
+    return records
 
 
 def detail_closing_of(text):
