@@ -28,9 +28,10 @@ def rotate_boundary_ties(ordered, budget, now, priority):
     start = budget - 1
     while start > 0 and priority(items[start - 1]) == boundary:
         start -= 1
-    # Keep the first ranked link stable even if every candidate ties. This
-    # preserves predictable first-notice checks on small municipal indexes.
-    start = max(1, start)
+    # With one available detail slot, pinning the first tied candidate would
+    # starve every other notice forever. Keep that first link stable only when
+    # at least two detail slots are available; otherwise rotate the full tie.
+    start = max(1 if budget > 1 else 0, start)
     if start >= budget:
         return items
     end = budget
