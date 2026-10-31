@@ -25,7 +25,7 @@ def _access_error_types(names, count):
     types = []
     if "RobotsDenied" in names:
         types.append("robots_blocked")
-    if re.search(r"\\bHTTPError HTTP (?:401|403)\\b", names):
+    if re.search(r"\bHTTPError HTTP (?:401|403)\b", names):
         types.append("http_blocked")
     if "UnsafeRedirect" in names:
         types.append("redirect_blocked")
