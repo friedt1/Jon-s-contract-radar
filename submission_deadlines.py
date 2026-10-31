@@ -145,6 +145,16 @@ _REVISION_PREFIX = re.compile(
 )
 
 
+# Official forms sometimes put the amendment marker *after* the field name:
+# "Bid submission deadline (revised): October 30, 2026". Only accept a
+# standalone revision marker between the submission label and its date;
+# unrelated narrative text or a revised questions deadline is not evidence.
+_INLINE_REVISION_FIELD = re.compile(
+    r"^\s*[:\-]?\s*\(?\s*(?:revised|amended|updated|corrected|rescheduled)"
+    r"\s*\)?\s*[:\-]?\s*$", re.I,
+)
+
+
 def _is_revised_submission(text, start):
     """Require an explicit amendment immediately before this submission label.
 
@@ -185,7 +195,9 @@ def submission_deadline_details(text):
         clock = ""
         if raw:
             clock = _normalized_clock(raw.group("clock"))
-        matches.append((date, clock, match.start(), _is_revised_submission(text, match.start())))
+        revised = (_is_revised_submission(text, match.start())
+                   or bool(_INLINE_REVISION_FIELD.fullmatch(between)))
+        matches.append((date, clock, match.start(), revised))
     matches.extend((date, clock, pos, _is_revised_submission(text, pos))
                    for date, clock, pos in _receipt_before_date_matches(text, with_position=True))
     if not matches:
