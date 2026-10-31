@@ -11,6 +11,7 @@ from urllib.parse import parse_qs, urljoin, urlparse
 from zoneinfo import ZoneInfo
 
 import public_bid_pagination as public_pages
+import notice_identity
 
 SOURCES = frozenset({"Chemung County bids", "Steuben County bids",
                      "Town of Horseheads", "City of Ithaca",
@@ -87,7 +88,7 @@ def individual_url(href, origin):
             return ""
         if not parsed.path.lower().endswith("/bids.aspx"):
             return ""
-        return url.split("#", 1)[0]
+        # Normalize marketing parameters before grouping listing cards. A\n        # tracked copy of the same bidID must not consume another detail\n        # request or evade contradictory-card diagnostics. Substantive and\n        # signed parameters remain intact under notice_identity rules.\n        return notice_identity.canonical_url(url)
     except ValueError:
         return ""
 
