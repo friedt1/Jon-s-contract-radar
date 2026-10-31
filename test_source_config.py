@@ -14,6 +14,7 @@ class SourceConfigurationTests(unittest.TestCase):
             "https://county.example/Bids.aspx",
             "https://county.example:443/Bids.aspx?year=2026",
             "https://www.cortlandcountyny.gov/Bids.aspx",
+            "https://0x7f.bids.example/Bids.aspx",  # real alphabetic TLD
         ):
             with self.subTest(url=url):
                 self.assertTrue(source_config.valid_public_https_url(url))
@@ -29,6 +30,10 @@ class SourceConfigurationTests(unittest.TestCase):
             "https://county.example./bids",
             "https://county.example:broken/bids",
             "https://127.0.0.1/bids",
+            "https://0x7f.0.0.1/bids",
+            "https://0x7f.1/bids",
+            "https://0177.0x0.0.01/bids",
+            "https://0xA9.0xFE.0xA9.0xFE/latest/meta-data/",
             "https://10.0.0.8/bids",
             "https://169.254.169.254/latest/meta-data/",
             "https://192.168.1.2/bids",
@@ -68,6 +73,7 @@ class SourceConfigurationTests(unittest.TestCase):
             ("https://county.example/bids", False),
             ("http://county.example/bids", True),
             ("https://user:pw@county.example/bids", True),
+            ("https://0x7f.0.0.1/bids", True),
         ):
             source = {"name": "Synthetic", "mode": "direct_page",
                       "url": url, "verified_url": verified}
