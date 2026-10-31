@@ -79,16 +79,19 @@ class BroadPortalLocalPriorityTests(unittest.TestCase):
         self.assertIn(OWEGO, requested)
         self.assertEqual([item["url"] for item in leads], [LOCAL])
 
-    def test_non_statewide_source_keeps_existing_ordering(self):
+    def test_non_statewide_source_keeps_first_ranked_link_without_local_boost(self):
         listing = "".join(
             '<a href="/bid/outside-%d">Tree removal bid in Albany</a>' % n
             for n in range(scan.MAX_DETAIL)
         ) + '<a href="/bid/elmira-tree">Elmira tree removal bid</a>'
         source = {"name": "Test County", "url": BASE}
         leads, status, requested = self.fixture(source, listing)
+        # Unlike statewide sources, local text is not an artificial priority
+        # boost. The first equal-ranked link remains first. Later tied links
+        # may rotate into the bounded budget on subsequent scheduled scans.
         self.assertEqual(requested[1], OUTSIDE)
-        self.assertNotIn(LOCAL, requested)
-        self.assertNotIn(LOCAL, [item["url"] for item in leads])
+        self.assertEqual(len(requested), scan.MAX_DETAIL + 1)
+        self.assertTrue(all(item["status"] == "unverified" for item in leads))
         self.assertIn("1 detail candidates deferred at request budget", status)
 
 
