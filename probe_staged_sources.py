@@ -15,6 +15,7 @@ import civicplus_bids
 import granicus_rfps
 import robots_policy
 import scan
+from source_config import valid_public_https_url
 
 ROOT = pathlib.Path(__file__).resolve().parent
 SOURCES = ROOT / "sources.json"
@@ -73,10 +74,15 @@ def _safe_link(base, href):
     ):
         return None
     try:
-        parsed = urlparse(urljoin(base, href))
-        if (parsed.scheme.lower() != "https" or not parsed.hostname
-                or parsed.username is not None or parsed.password is not None
-                or parsed.port not in (None, 443)):
+        resolved = urljoin(base, href)
+        parsed = urlparse(resolved)
+        # Outbound links are diagnostic evidence, not trusted publisher URLs.
+        # Reject encoded controls and private/resolver-alias hosts as well as
+        # credentials and unsafe ports. Preserve harmless #page fragments in
+        # diagnostics, but validate the actual destination without a fragment.
+        if re.search(r"%(?:0[0-9a-f]|1[0-9a-f]|7f)", resolved, re.I):
+            return None
+        if not valid_public_https_url(parsed._replace(fragment="").geturl()):
             return None
         return parsed
     except ValueError:
