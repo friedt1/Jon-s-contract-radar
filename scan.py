@@ -399,7 +399,530 @@ def is_individual_notice_link(url):
   if any(key.lower() == 'bidid' for key in up.parse_qs(parsed.query)):
    return True
   return bool(re.search(
-   r'/(?:bids?|rfp|rfq|solicitations?|tenders?|opportunities?)/[^/]+/?$',
+   r'/(?:bids?|rfp|rfq|solicitations?|tenders?|opportunities?|bid-projects)/[^/]+/?
+   parsed.path, re.I))
+ except ValueError:
+  return False
+
+
+
+def navigation_only_detail_link(title, context, url):
+ """Do not spend the bounded detail budget on generic navigation links.
+
+ A bare 'View details' link is not evidence of a bid. Retain bid-shaped URLs,
+ isolated listing-row scope, and procurement-path entrypoints so that generic
+ labels on actual individual notices or nested bid indexes still work.
+ """
+ label = norm(title).lower()
+ generic = {'view', 'view details', 'details', 'read more', 'more info',
+            'learn more', 'click here', 'view more', 'view page'}
+ if label not in generic or is_individual_notice_link(url):
+  return False
+ path = up.unquote(up.urlparse(url).path)
+ return not (category(context) or bidlike(context) or category(path)
+             or bidlike(path) or re.search(r'/purchasing(?:/|$)', path, re.I))
+
+
+def scan_civicplus(src, listing_pages, page_errors):
+ """Only individual public bidID notices; never treat the whole listing as a bid."""
+ name = src['name']
+ records = {}
+ # A publisher can repeat one bidID in different cards or on different
+ # listing pages with contradictory titles, statuses or deadlines. The first
+ # card is not authoritative: require the individual notice to resolve the
+ # conflict, rather than skipping a reopened bid as closed or borrowing an
+ # unrelated card's scope. Repeated links inside the SAME card are harmless.
+ row_evidence = {}
+ for page, origin in listing_pages:
+  for link_index, (_, href, _) in enumerate(page.links):
+   url = civicplus_bids.individual_url(href, origin)
+   if not url:
+    continue
+   context = norm(page.link_contexts.get(link_index, page.link_rows.get(href, '')))
+   if context:
+    row_evidence.setdefault(url, set()).add(context)
+  for row in civicplus_bids.listing_records(page, origin):
+   records.setdefault(row['url'], row)
+ ambiguous_urls = {url for url, contexts in row_evidence.items() if len(contexts) > 1}
+ found = {}
+ checked = 0
+ individual_details_fetched = 0
+ errors = []
+ closed_count = 0
+ expired_count = 0
+ # A CivicPlus archive may label years of expired bids "Open". With a
+ # bounded detail budget, inspect future-dated listings before undated ones,
+ # and undated ones before already elapsed cutoffs. This is ONLY request
+ # ordering: neither a future date nor a listing "Open" label verifies a bid.
+ # Inspect generic titles too; tree-work scope may exist only in the detail.
+ def notice_priority(row):
+  if row['url'] in ambiguous_urls:
+   # A duplicate bidID may be closed in an older card and reopened in a
+   # newer one. Examine ALL card contexts for request ordering only. The
+   # fetched individual notice still controls scope, status, and deadline;
+   # conflicting listing evidence is never used to publish a candidate.
+   contexts = row_evidence.get(row['url'], ())
+   future_open = False
+   for context in contexts:
+    if civicplus_bids.status_of(context) in civicplus_bids.CLOSED:
+     continue
+    context_due, context_time = civicplus_bids.closing_of(context)
+    if context_due and not civicplus_bids.closing_passed(context_due, context_time, NOW):
+     future_open = True
+     break
+   timing = 0 if future_open else 1
+   relevant = 0 if any(category(context) for context in contexts) else 1
+  else:
+   due = row.get('deadline', '')
+   timing = (1 if not due else
+             2 if civicplus_bids.closing_passed(due, row.get('deadline_time', ''), NOW)
+             else 0)
+   relevant = 0 if category(row['title'] + ' ' + row['description']) else 1
+  return (timing, relevant)
+ prioritized = sorted(records.values(), key=notice_priority)
+ eligible_count = sum(row['open_status'] not in civicplus_bids.CLOSED
+                      or row['url'] in ambiguous_urls for row in prioritized)
+ deferred_at_budget = max(0, eligible_count - civicplus_bids.MAX_DETAILS)
+ for row in prioritized:
+  ambiguous = row['url'] in ambiguous_urls
+  if row['open_status'] in civicplus_bids.CLOSED and not ambiguous:
+   closed_count += 1
+   continue
+  # The county listing is not the worksite; routing remains unverified.
+  if checked >= civicplus_bids.MAX_DETAILS:
+   break
+  checked += 1
+  detail_status = 'unknown'
+  detail_due = ''
+  detail_time = ''
+  detail_scope = ''
+  detail_worksite = ''
+  try:
+   blob, kind, final = fetch(row['url'], binary=True)
+   # Never publish a listing-only candidate when the individual notice could
+   # not be read. A failed fetch or redirect to a homepage is not evidence.
+   if 'html' not in kind and not blob.lstrip().startswith(b'<'):
+    errors.append('unsupported detail content')
+    continue
+   resolved = civicplus_bids.individual_url(final, row['url'])
+   expected_id = next((v[0] for k, v in up.parse_qs(up.urlparse(row['url']).query).items()
+                       if k.lower() == 'bidid' and v), '')
+   actual_id = next((v[0] for k, v in up.parse_qs(up.urlparse(final).query).items()
+                     if k.lower() == 'bidid' and v), '')
+   if not resolved or actual_id != expected_id:
+    errors.append('detail redirected away from original bid')
+    continue
+   detail = parse_html(blob.decode('utf-8', 'replace'))
+   body = ' '.join(detail.parts)
+   if not body:
+    errors.append('empty detail content')
+    continue
+   # A server can retain ?bidID= in the URL while serving its generic
+   # homepage. Require at least one bid-specific detail label as well.
+   if not re.search(r'\b(?:Bid\s+(?:Number|Title)|Closing\s+Date/Time|Description|Status)\s*:', body, re.I):
+    errors.append('missing individual bid fields')
+    continue
+   # Count only a successfully fetched, non-empty notice whose bidID still
+   # matches the listing. Attempts and homepage reads are not bid details.
+   individual_details_fetched += 1
+   detail_status = civicplus_bids.status_of(body)
+   detail_due, detail_time = civicplus_bids.detail_closing_of(body)
+   detail_scope = civicplus_bids.detail_description(body)
+   detail_worksite = civicplus_bids.detail_worksite(body)
+  except Exception as e:
+   errors.append(error_label(e))
+   continue
+  if detail_status in civicplus_bids.CLOSED:
+   closed_count += 1
+   continue
+  # The individual notice takes precedence over a stale listing date.
+  # Conflicting cards can contain a superseded deadline. Never fall back
+  # to either listing card when the individual detail omits its cutoff.
+  due = detail_due or ('' if ambiguous else row['deadline'])
+  due_time = detail_time if detail_due else ('' if ambiguous else row['deadline_time'])
+  if civicplus_bids.closing_passed(due, due_time, NOW):
+   expired_count += 1
+   continue
+  # Conflicting cards must not supply the solicitation scope. Require
+  # description evidence from the fetched individual bidID notice itself.
+  scope = detail_scope if ambiguous else (detail_scope or row['description'])
+  if not category(scope if ambiguous or detail_scope else row['title'] + ' ' + scope):
+   continue
+  evidence = row['title'] + ' bid ' + scope + (' Due date: ' + due if due else '')
+  summary = ('Bid No. ' + row['bid_number'] + '. ' if row['bid_number']
+             else 'Bid notice. ' if ambiguous else '') + scope
+  if due:
+   summary += ' Due date: ' + due
+  lead_title = (detail_scope[:130] if ambiguous and not category(row['title'])
+                else row['title'])
+  add_lead(found, name, lead_title, row['url'], summary, 'individual county bid candidate', evidence=evidence)
+  uid = notice_identity.notice_id(row['url'])
+  if uid in found:
+   found[uid].update({
+    'agency': name.replace(' bids', '') + ' (issuing authority)',
+    'scope': detail_scope or row['title'],
+    'bid_number': row['bid_number'],
+    'location': detail_worksite or 'Worksite unverified; county issuing authority is not a worksite',
+    'location_verified': False,
+    'open_status': 'detail_listed_open' if detail_status == 'open' else
+                   'listing_open' if not ambiguous and row['open_status'] == 'open'
+                   else 'unknown',
+    'deadline_time': due_time,
+    'deadline_timezone': 'unverified',
+    'deadline_source': 'individual notice' if detail_due else 'listing' if due else 'unknown',
+    'travel_verified': False,
+    'travel_category': 'unverified',
+   })
+ status = (f'direct fetched; {len(listing_pages)} listing pages; '
+           f'{len(records)} individual bid records; '
+           f'{len(ambiguous_urls)} conflicting duplicate bid cards; '
+           f'{checked} relevant details checked; '
+            f'{deferred_at_budget} individual bid records deferred at detail budget; '
+           f'{individual_details_fetched} individual bid details fetched; '
+           f'{len(found)} unverified candidates; {closed_count} closed; {expired_count} expired')
+ if errors:
+  status += f'; {len(errors)} detail errors: ' + ','.join(sorted(set(errors)))
+ if page_errors:
+  status += f'; {len(page_errors)} pagination errors: ' + ','.join(sorted(set(page_errors)))
+ return list(found.values()), status
+
+
+def individual_metadata_notice(body, url):
+ """Require bid-specific fields before treating a metadata table as one notice.
+
+ A table of many solicitations, a homepage, or a navigation menu must not
+ become an individual bid merely because it mentions tree removal.
+ """
+ return (is_individual_notice_link(url)
+         and bool(re.search(r'\b(?:Bid\s+(?:Number|No\.?)|Solicitation\s+(?:Number|ID))\s*:', body, re.I))
+         and bool(re.search(r'\bDescription\s*:', body, re.I)))
+
+
+def metadata_description(body):
+ """Isolate the solicitation description from subsequent metadata fields."""
+ match = re.search(
+  r'\bDescription\s*:\s*(.+?)(?=\b(?:Closing\s+Date(?:/Time)?|'
+  r'Bid\s+(?:Number|No\.?|Title)|Solicitation\s+(?:Number|ID)|'
+  r'Status|Contact|Related\s+Documents|Publication\s+Date)\s*:|$)',
+  body, re.I | re.S)
+ return norm(match.group(1))[:1200] if match else ''
+
+
+def scan_direct(src):
+ base=src['url'];name=src['name'];found={};visited=set();errors=[];pdfs=0;pdf_attempts=0;pdfs_skipped=0;budget_skipped_urls=set();result_links_skipped=0;provider_skips=set();nested_listing_pages=0;metadata_details=0;detail_budget_skipped=set()
+ html,ctype,final=fetch(base)
+ if 'html' not in ctype and not html.lstrip().startswith('<'):return [],'unsupported content type'
+ page=parse_html(html)
+ listing_pages=[(page,final)]
+ page_errors=[]
+ if name in public_pages.PUBLIC_LISTINGS:
+  seen_pages={final};cursor=0
+  while cursor<len(listing_pages) and len(listing_pages)<public_pages.MAX_PAGES:
+   current,origin=listing_pages[cursor];cursor+=1
+   for next_url in public_pages.next_pages(current.links,origin,seen_pages):
+    if len(listing_pages)>=public_pages.MAX_PAGES:break
+    seen_pages.add(next_url)
+    try:
+     extra,extra_type,extra_final=fetch(next_url)
+     if 'html' not in extra_type and not extra.lstrip().startswith('<'):
+      page_errors.append('unsupported pagination content');continue
+     listing_pages.append((parse_html(extra),extra_final))
+    except Exception as e:page_errors.append(error_label(e))
+ if name in civicplus_bids.SOURCES and any(civicplus_bids.listing_records(p, origin) for p, origin in listing_pages):
+  return scan_civicplus(src, listing_pages, page_errors)
+ # Keep each table/list record isolated from neighboring bid scopes and dates.
+ max_details=public_pages.MAX_PUBLIC_DETAILS if name in public_pages.PUBLIC_LISTINGS else MAX_DETAIL
+ candidates=[]
+ listing_links=[(title,href,pos,p.link_contexts.get(i,p.link_rows.get(href,title)),origin)
+                for p,origin in listing_pages for i,(title,href,pos) in enumerate(p.links)]
+ for title,href,pos,context,origin in listing_links:
+  # Pager controls are listing navigation, not bid-detail candidates. Even
+  # malformed page cursors must not consume the individual-detail budget.
+  if name in public_pages.PUBLIC_LISTINGS and public_pages.pagination_label(title):
+   continue
+  url=safe_detail_url(origin,href)
+  if not url:
+   try:
+    if provider_link(up.urljoin(origin,href)):provider_skips.add(up.urljoin(origin,href))
+   except (TypeError,ValueError):pass
+   continue
+  # Results and award tabs are historical evidence, not solicitations. Many
+  # county PDF links have opaque URLs, so inspect the publisher's link label.
+  if published_result_link(title):
+   result_links_skipped+=1
+   continue
+  # Follow only same-host notices and explicitly permitted platform links.
+  same_host=up.urlparse(url).hostname==up.urlparse(origin).hostname
+  context=context[:1500]
+  descriptor=title+' '+context
+  # Listing rows stay isolated; detail pages supply missing scope and deadlines.
+  # A listing row is discovery evidence only. Never publish its link until
+  # the corresponding individual notice has actually been fetched and parsed.
+  if navigation_only_detail_link(title, context, url):
+   continue
+  if not excluded_url(url) and (any(x in (title+' '+href).lower() for x in FOLLOW_HINTS) or (category(descriptor) and same_host)) and url!=origin:
+   # A generic 'Details' label can still point directly to a bid notice.
+   # Prioritize its URL shape before unrelated purchasing/navigation links.
+   score=(6 if is_individual_notice_link(url) else 0)+(4 if category(title) else 0)+(3 if bidlike(title+' '+href) else 0)+(1 if category(context) else 0)
+   # A 2024 PDF must not consume the five-PDF budget ahead of a
+   # 2026 document on the same county archive page. A year only changes
+   # retrieval order; the fetched notice must still pass all evidence gates.
+   score+=pdf_listing_recency(title,url,NOW.astimezone(ZoneInfo('America/New_York')).year)
+   # Unlike a document's publication year, a row-specific submission cutoff
+   # directly distinguishes current from stale bid-listing links. Never use
+   # the page-wide body: neighboring rows have unrelated dates.
+   score+=listing_deadline_priority(context,NOW)
+   # Statewide procurement indexes expose far more candidates than our bounded
+   # detail budget. Prefer links with an explicit regional place in their own
+   # listing row, so unrelated statewide bids cannot starve local notices.
+   # This is request ordering only: place text does NOT verify worksite, route,
+   # publisher status, permission, or an open solicitation.
+   if name in BROAD_SOURCES and local_evidence(title+' '+context):
+    score+=7
+   candidates.append((score,url,title,context))
+ # Row parsing is used to discover relevant detail URLs, not to invent bid links.
+ candidates.sort(key=lambda x:-x[0])
+ # Nested bid links must be examined before unrelated siblings exhaust the
+ # bounded detail budget. Python's list iterator visits inserted entries next.
+ for candidate_index, (_,url,title,context) in enumerate(candidates):
+  # A publisher can link the same PDF/notice with different marketing query
+  # parameters or fragments. Deduplicate network attempts by notice identity,
+  # while retaining substantive bid IDs and signed URL query strings.
+  identity_url=notice_identity.canonical_url(url) or url
+  if identity_url in visited:continue
+  # A PDF URL can be identified before downloading its bytes. Once the
+  # extractor budget is exhausted, skip it without spending another request
+  # or consuming the remaining individual-notice detail budget.
+  # Cap requests to PDF-shaped URLs, including timeouts, HTTP errors and
+  # robots denials. Counting only successfully parsed PDFs allowed an archive
+  # full of broken links to bypass the intended network request budget.
+  pdf_hint=likely_pdf_link(url,title)
+  if pdf_hint and pdf_attempts>=MAX_PDF:
+   if identity_url not in budget_skipped_urls:
+    budget_skipped_urls.add(identity_url)
+    pdfs_skipped+=1
+   continue
+  # Distinguish unfetched generic candidates from PDF-budget skips.
+  # Neither category proves that an individual bid exists or remains open.
+  if len(visited)>=max_details:
+   detail_budget_skipped.add(identity_url)
+   continue
+  if pdf_hint:pdf_attempts+=1
+  visited.add(identity_url)
+  try:
+   blob,kind,final_url=fetch(url,binary=True)
+   # Redirects must not turn a permitted source link into an untrusted host.
+   if not redirect_preserves_notice(url,final_url):
+    errors.append('unsafe or changed notice redirect')
+    continue
+   if excluded_url(final_url):continue
+   if 'pdf' in kind or url.lower().split('?')[0].endswith('.pdf'):
+    # A server may return an unlabelled PDF. It has already been fetched, but
+    # still must not exceed the bounded PDF parsing budget.
+    if not pdf_hint:
+     if pdf_attempts>=MAX_PDF:continue
+     pdf_attempts+=1
+    if pdfs>=MAX_PDF:continue
+    pdfs+=1;text=pdf_text(blob)
+    if closed(text) or (deadline(text) and deadline(text)<NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat()) or explicit_closing_passed(text,NOW):
+     found.pop(notice_identity.notice_id(url),None);continue
+    if category(text) and (bidlike(title+' '+url) or bidlike(text[:3000])):
+     key=category(text);p=text.lower().find(next((t for t in CATEGORIES[key] if t in text.lower()),''))
+     snippet=text[max(0,p-150):p+500]
+     if eligible(text,name):
+      add_lead(found,name,title if category(title) else snippet[:130],final_url,snippet+' '+('Deadline: '+deadline(text) if deadline(text) else ''),'PDF bid candidate',evidence=text)
+      annotate_explicit_closing(found,final_url,text)
+   elif 'html' in kind or blob.lstrip().startswith(b'<'):
+    p=parse_html(blob.decode('utf-8','replace'));body=norm(' '.join(p.parts))[:20000]
+    # A listing containing many bids must be handled as separate rows.
+    records=p.rows if p.rows else [body]
+    if (not p.rows or individual_metadata_notice(body, final_url)) and (closed(body) or (deadline(body) and deadline(body)<NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat()) or explicit_closing_passed(body,NOW)):
+     found.pop(notice_identity.notice_id(url),None);continue
+    nested_notice_links = False
+    nested_candidates = []
+    nested_seen = set()
+    listing_identity = notice_identity.canonical_url(final_url)
+    for link_index,(label,href,_) in enumerate(p.links):
+     row=p.link_contexts.get(link_index,p.link_rows.get(href,label))
+     target=safe_detail_url(final_url,href)
+     if not target:
+      # Nested agency purchasing pages may delegate the actual notices to
+      # OpenGov/BidNet/etc. Record that access gap without visiting the portal.
+      try:
+       external=up.urljoin(final_url,href)
+       if provider_link(external):provider_skips.add(external)
+      except (TypeError,ValueError):pass
+      # Never enqueue an empty or off-host URL. Those used to consume the
+      # bounded detail budget ahead of a real same-host bid notice.
+      continue
+     target_identity = notice_identity.canonical_url(target)
+     if (not target_identity or excluded_url(target)
+         or target_identity == listing_identity):
+      # Excluded archives and same-page fragments are not individual bids.
+      continue
+     # A page linking to distinct individual bid URLs is a listing, even
+     # when it uses divs rather than tr/article/li elements. Do not emit
+     # the listing URL as an individual solicitation.
+     if is_individual_notice_link(target):
+      nested_notice_links = True
+     # Preserve the budget for distinct, permitted, relevant detail URLs.
+     # A nested listing row only queues a candidate, never proves it open.
+     if (len(nested_candidates)<max_details and target_identity not in visited
+         and target_identity not in nested_seen
+         and (category(row) or bidlike(label+' '+href))):
+      priority = 8 if is_individual_notice_link(target) else 0
+      nested_candidates.append((priority,target,label,row))
+      nested_seen.add(target_identity)
+    if nested_candidates:
+     nested_candidates.sort(key=lambda item: -item[0])
+     candidates[candidate_index+1:candidate_index+1] = nested_candidates
+    if nested_notice_links and not p.rows:
+     nested_listing_pages += 1
+    metadata_notice = individual_metadata_notice(body, final_url) and not nested_notice_links
+    # Many actual notices include <li> work requirements or navigation. Such
+    # markup creates parser rows, but does not make the page a bid index.
+    # Require a bid-specific heading AND submission evidence on a detail-shaped
+    # URL; a tree-work mention in a menu or an undated listing is insufficient.
+    heading_scope = next((heading for heading in p.headings
+                          if category(heading) and bidlike(heading)
+                          and not re.search(r'\b(?:listings?|list of|all bids|current bids|bid opportunities)\b',
+                                            heading, re.I)), '')
+    heading_notice = (not nested_notice_links and bool(heading_scope)
+                      and is_individual_notice_link(final_url)
+                      and (bool(deadline(body)) or bool(re.search(
+                          r'\b(?:Bid\s+(?:Number|No\.?)|Solicitation\s+(?:Number|ID))\s*:',
+                          body, re.I))))
+    if metadata_notice or heading_notice:
+     metadata_details += 1
+    # A single notice's metadata rows or list-backed bid heading is not a
+    # multi-notice index. Scope must come from the individual heading or the
+    # Description field, never from unrelated navigation/list items.
+    scope = (metadata_description(body) if metadata_notice else
+             heading_scope if heading_notice else body)
+    if (not p.rows or metadata_notice or heading_notice) and not nested_notice_links and category(scope) and eligible(scope + (' bid' if metadata_notice else '') + (' Due date: ' + deadline(body) if deadline(body) else ''), name) and not closed(body) and not explicit_closing_passed(body,NOW):
+     key=category(scope);match=next((t for t in CATEGORIES[key] if t in scope.lower()),'')
+     ix=scope.lower().find(match);snippet=scope[max(0,ix-160):ix+520]
+     add_lead(found,name,title if category(title) else snippet[:130],final_url,('Bid description: ' if metadata_notice else '')+snippet+' '+('Deadline: '+deadline(body) if deadline(body) else ''),'individual metadata bid candidate' if metadata_notice else 'direct detail candidate',evidence=body)
+     annotate_explicit_closing(found,final_url,body)
+  except Exception as e:errors.append(error_label(e))
+
+ rendering='; dynamic/login portal: extraction incomplete' if not page.rows and any(x in html.lower() for x in ('enable javascript','ng-app','id="app"','id="root"','sign in','log in')) else ''
+ return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {len(detail_budget_skipped)} detail candidates deferred at request budget; {metadata_details} individual bid details fetched; {pdfs} PDFs checked; {pdf_attempts} PDF-shaped requests attempted; {pdfs_skipped} PDF requests skipped at budget; {result_links_skipped} result/award links excluded; {len(provider_skips)} external provider links skipped (access required); {len(found)} candidates; {nested_listing_pages} nested listing pages excluded as notices'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
+
+def scan_news(src):
+ name=src['name'];query=src.get('discovery_query',name);q='"'+query.replace('"','')+'" ("tree removal" OR "tree trimming" OR "vegetation management" OR "land clearing" OR "forestry mulching" OR "storm cleanup" OR "brush clearing" OR "storm debris") (bid OR RFP OR contract OR procurement)'
+ url='https://news.google.com/rss/search?'+up.urlencode({'q':q,'hl':'en-US','gl':'US','ceid':'US:en'})
+ xml,_,_=fetch(url);root=ET.fromstring(xml);found={}
+ for item in root.findall('.//item'):
+  title=norm(item.findtext('title'));summary=norm(item.findtext('description'))
+  if not category(title+' '+summary) or not bidlike(title+' '+summary):continue
+  if src.get('require_local_evidence') and not local_evidence(title+' '+summary):continue
+  try:date=email.utils.parsedate_to_datetime(item.findtext('pubDate','')).date()
+  except (ValueError,TypeError,OverflowError):date=None
+  if date is None or not 0 <= (NOW.date()-date).days <= 90:continue
+  add_lead(found,name,title,(item.findtext('link') or '').strip(),summary,'indirect news candidate')
+  if date:
+   uid=notice_identity.notice_id((item.findtext('link') or '').strip())
+   if uid in found: found[uid]['published']=date.isoformat()
+ return list(found.values())
+
+def error_label(error):
+ return type(error).__name__ + (' HTTP '+str(error.code) if hasattr(error,'code') else '')
+
+def run(src):
+ statuses=[];leads=[]
+ if src.get('mode') in source_config.DIRECT_MODES:
+  if not source_config.direct_configured(src):
+   statuses.append('direct not configured: verified public HTTPS source URL required')
+  elif (src['name'] in UNCONNECTED_PLATFORMS or src.get('provider_access_required') is True
+        or bool(src.get('delegated_provider'))):
+   statuses.append('direct access required: individual listing ingestion not connected; provider-approved feed/access not established')
+  elif not source_config.direct_fetch_target(src):
+   statuses.append('direct adapter not implemented: feed/API URL configured but individual-listing ingestion not connected')
+  else:
+   try:
+    items,st=scan_direct(src);leads.extend(items);statuses.append(st)
+   except robots_policy.RobotsDenied as e:statuses.append('direct blocked by robots policy: '+str(e))
+   except Exception as e:statuses.append('direct error: '+error_label(e))
+ if src['name']=='Elmira Next local bids':
+  try:
+   xml,ctype,_=fetch(local_bid_rss.FEED_URL)
+   records=local_bid_rss.parse(xml,now=NOW)
+   vetted={}
+   for item in records:
+    # Discovery only; published candidates still require source verification.
+    item_leads={}
+    add_lead(item_leads,src['name'],item['title'],item['url'],item['description'],'public bid RSS candidate')
+    for uid,lead in item_leads.items():
+     lead['published']=item['published']
+     vetted[uid]=lead
+   leads.extend(vetted.values())
+   statuses.append(f'local bid RSS fetched; {len(records)} notices; {len(vetted)} unverified tree-service candidates')
+  except Exception as e:
+   statuses.append('local bid RSS error: '+error_label(e))
+ try:
+  items=scan_news(src);leads.extend(items);statuses.append(f'indirect RSS ok; {len(items)} candidates')
+ except Exception as e:statuses.append('indirect RSS error: '+error_label(e))
+ if src['name'] in ('BidNet NY platform','PennBid platform'):
+  statuses.append('individual listing ingestion not connected; provider-approved feed/access not established')
+ return src['name'],'; '.join(statuses),leads
+
+def main():
+ sources=json.loads(SOURCES.read_text(encoding='utf-8'));status={};found={}
+ if len(sources)!=102 or len({s['name'] for s in sources})!=102:
+  raise ValueError('Expected 102 uniquely named discovery targets')
+ with cf.ThreadPoolExecutor(max_workers=5) as pool:
+  for name,st,items in pool.map(run,sources):
+   status[name]=st
+   for lead in items:
+    uid=lead['id']
+    if uid not in found or (lead['lead_type']!='indirect news candidate' and found[uid]['lead_type']=='indirect news candidate'):found[uid]=lead
+ status['SAM.gov']='deferred'
+ if not any('direct fetched' in x or 'indirect RSS ok' in x for x in status.values()):
+  raise RuntimeError('All sources failed; preserving the previous feed and history')
+ # Keep a separate history of discoveries, including leads no longer in the latest scan.
+ history_path=ROOT/'data'/'history.json'
+ try:
+  previous=json.loads(history_path.read_text(encoding='utf-8')) if history_path.exists() else {}
+  historical=previous.get('opportunities',{}) if isinstance(previous,dict) else {}
+  if not isinstance(historical,dict):historical={}
+ except (ValueError,OSError):historical={}
+ local_today=NOW.astimezone(ZoneInfo('America/New_York')).date()
+ for uid,lead in found.items():
+  lead.update(opportunity_triage.review_assessment(lead, local_today, now=NOW))
+  old=historical.get(uid,{})
+  old.pop('excluded_reason',None)
+  historical[uid]={**old,**lead,'first_seen':old.get('first_seen',NOW.isoformat(timespec='seconds')),'last_seen':NOW.isoformat(timespec='seconds')}
+ # Cap history to keep repository commits manageable.
+ historical=dict(sorted(historical.items(),key=lambda x:x[1].get('last_seen',''),reverse=True)[:1000])
+ history_path.parent.mkdir(parents=True,exist_ok=True)
+ history_path.write_text(json.dumps({'updated':NOW.isoformat(timespec='seconds'),'opportunities':historical},indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+ # A missed expired notice may remain in history for audit, never in active feed.
+ published_leads=sorted((lead for lead in found.values() if lead['review_priority']!='expired_check'),
+                        key=lambda x:(x['review_score'], x.get('published','')),reverse=True)[:300]
+ direct=sum('direct fetched' in x for x in status.values());indirect=sum('indirect RSS ok' in x for x in status.values())
+ # Configuration, page fetch, and individual-bid extraction are distinct states.
+ direct_names={s['name'] for s in sources if s.get('mode')=='direct_page' and source_config.direct_configured(s)}
+ coverage={
+  'total_targets':len(sources),
+  'direct_configured':len(direct_names),
+  'pending_direct':len(sources)-len(direct_names),
+  'direct_fetched':sum('direct fetched' in status.get(name,'') for name in direct_names),
+  'direct_not_fetched':sum('direct fetched' not in status.get(name,'') for name in direct_names),
+  'indirect_rss_succeeded':indirect,
+  'verified_open_contracts':sum(x.get('status')=='verified' and x.get('open_status')=='verified_open' for x in published_leads),
+  'warning':'A fetched listing page is not proof that all individual bids were extracted or that any bid is open.'
+ }
+ integration_status={
+  'NYS Contract Reporter':'blocked: terms prohibit bulk automated access without explicit permission; authorized export parser only',
+  'BidNet Direct':'not connected: individual bid listing interface/permission not established',
+  'PennBid':'not connected: individual bid listing interface/permission not established',
+ }
+ data={'integration_status':integration_status,'source_coverage':coverage,'source_health':source_health.summarize(sources,status),'updated':NOW.isoformat(timespec='seconds'),'opportunities':published_leads,'source_status':status,'coverage_note':f'{len(sources)} named targets; {direct} direct public home pages fetched, with bounded detail/PDF checks; {indirect} indirect news searches succeeded. Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. {coverage['pending_direct']} targets do not have verified direct integrations. SAM.gov deferred.'}
+ OUT.parent.mkdir(parents=True,exist_ok=True);OUT.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+ print(f'Targets {len(sources)}, direct fetched {direct}, indirect successful {indirect}, candidates {len(found)}')
+if __name__=='__main__':main()
+,
    parsed.path, re.I))
  except ValueError:
   return False
