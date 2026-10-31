@@ -54,8 +54,11 @@ class CornellOfficialIndexTests(unittest.TestCase):
         self.assertEqual(audit["total"], 102)
         self.assertEqual(audit["direct_configured"], 18)
         self.assertEqual(audit["not_directly_monitored"], 84)
-        self.assertEqual(audit["official_urls_staged"], 42)
-        self.assertEqual(audit["discovery_required"], 42)
+        # Additional publisher gateways may be staged independently;
+        # Cornell must remain staged, not counted as a direct fetch target.
+        self.assertGreaterEqual(audit["official_urls_staged"], 42)
+        self.assertEqual(audit["discovery_required"],
+                         84 - audit["official_urls_staged"])
         row = next(x for x in audit["sources"] if x["source"] == "Cornell University")
         self.assertTrue(row["official_url_staged"])
         self.assertFalse(row["direct_fetch_target"])
