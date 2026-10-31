@@ -13,6 +13,27 @@ def _number(pattern, status):
     return int(match.group(1)) if match else 0
 
 
+def _access_error_types(names, count):
+    """All observed access failures, not just the highest-priority one.
+
+    A single scan may hit a robots refusal on one detail and an HTTP 429
+    on another. Preserve both in structured diagnostics. Do not infer an
+    access problem from error text when the recorded error count is zero.
+    """
+    if not count:
+        return []
+    types = []
+    if "RobotsDenied" in names:
+        types.append("robots_blocked")
+    if re.search(r"\\bHTTPError HTTP (?:401|403)\\b", names):
+        types.append("http_blocked")
+    if "UnsafeRedirect" in names:
+        types.append("redirect_blocked")
+    if "HTTPError HTTP 429" in names:
+        types.append("rate_limited")
+    return types
+
+
 def classify(source, status):
     mode = source.get("mode", "discovery_pending")
     configured = direct_configured(source)
@@ -75,6 +96,7 @@ def classify(source, status):
     details_fetched = _number(r"\b(\d+) individual bid details fetched\b", status)
     error_section = re.search(r"\b\d+ detail errors:\s*([^;]*)", status)
     error_names = error_section.group(1) if error_section else ""
+    detail_error_types = _access_error_types(error_names, detail_errors)
     if "RobotsDenied" in error_names:
         detail_access_state = "robots_blocked"
     elif re.search(r"\bHTTPError HTTP (?:401|403)\b", error_names):
@@ -97,6 +119,7 @@ def classify(source, status):
     pagination_errors = _number(r"\b(\d+) pagination errors:", status)
     pagination_section = re.search(r"\b\d+ pagination errors:\s*([^;]*)", status)
     pagination_names = pagination_section.group(1) if pagination_section else ""
+    pagination_error_types = _access_error_types(pagination_names, pagination_errors)
     if "RobotsDenied" in pagination_names:
         pagination_access_state = "robots_blocked"
     elif re.search(r"\bHTTPError HTTP (?:401|403)\b", pagination_names):
@@ -129,7 +152,9 @@ def classify(source, status):
         "detail_errors": detail_errors,
         "pagination_errors": pagination_errors,
         "pagination_access_state": pagination_access_state,
+        "pagination_error_types": pagination_error_types,
         "detail_access_state": detail_access_state,
+        "detail_error_types": detail_error_types,
         "pdf_fetch_attempts": _number(r"\b(\d+) PDF-shaped requests attempted\b", status),
         "pdf_budget_skips": _number(r"\b(\d+) PDF requests skipped at budget\b", status),
         "result_award_links_excluded": _number(r"\b(\d+) result/award links excluded\b", status),
@@ -172,14 +197,14 @@ def summarize(sources, statuses):
     counts["detail_errors"] = sum(row["detail_errors"] for row in rows)
     counts["pagination_errors"] = sum(row["pagination_errors"] for row in rows)
     counts["pagination_incomplete_sources"] = sum(row["pagination_errors"] > 0 for row in rows)
-    counts["pagination_robots_blocked_sources"] = sum(
-        row["pagination_access_state"] == "robots_blocked" for row in rows)
-    counts["detail_robots_blocked_sources"] = sum(row["detail_access_state"] == "robots_blocked" for row in rows)
-    for state in ("http_blocked", "redirect_blocked", "rate_limited"):
+    # The primary access state remains a single value for older dashboards.
+    # Per-reason counts are intentionally non-exclusive: mixed failures in
+    # one source must appear under every observed access restriction.
+    for state in ("robots_blocked", "http_blocked", "redirect_blocked", "rate_limited"):
         counts["detail_" + state + "_sources"] = sum(
-            row["detail_access_state"] == state for row in rows)
+            state in row["detail_error_types"] for row in rows)
         counts["pagination_" + state + "_sources"] = sum(
-            row["pagination_access_state"] == state for row in rows)
+            state in row["pagination_error_types"] for row in rows)
     counts["pdf_fetch_attempts"] = sum(row["pdf_fetch_attempts"] for row in rows)
     counts["pdf_budget_skips"] = sum(row["pdf_budget_skips"] for row in rows)
     counts["result_award_links_excluded"] = sum(
@@ -194,7 +219,8 @@ def summarize(sources, statuses):
                     "Detail fetch attempts do not establish valid notices; "
                     "individual details fetched prove retrieval, not open status. "
                     "Individual-detail robots blocks, HTTP refusals, redirects, rate limits "
-                    "and other errors are reported separately. "
+                    "and other errors are reported separately, including mixed failure "
+                    "types on the same source. "
                     "Listing pagination failures, deferred individual bid records, and "
                     "unfetched generic detail candidates mean extraction coverage may be incomplete. "
                     "Generic candidates are not verified individual solicitations. "
