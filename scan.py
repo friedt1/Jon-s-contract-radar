@@ -785,6 +785,15 @@ def scan_direct(src):
      # the listing URL as an individual solicitation.
      if is_individual_notice_link(target):
       nested_notice_links = True
+     # A generic archive with separate PDF bid packets is also a listing,
+     # not one giant tree-work solicitation. Without this gate the archive
+     # body could be emitted as an undated individual notice when its links
+     # have no /bid/ ID path. Individual-shaped detail pages may legitimately
+     # link supporting PDFs, so do not suppress those on this evidence alone.
+     if (not is_individual_notice_link(final_url)
+         and likely_pdf_link(target, label)
+         and (category(row) or bidlike(label + ' ' + href))):
+      nested_notice_links = True
      # Preserve the budget for distinct, permitted, relevant detail URLs.
      # A nested listing row only queues a candidate, never proves it open.
      if (target_identity not in visited and target_identity not in nested_seen
