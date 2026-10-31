@@ -35,20 +35,25 @@ class DemolitionScopeGateTests(unittest.TestCase):
                 self.assertEqual(found, {})
 
     def test_substantive_sitework_still_qualifies_as_related_not_tree(self):
-        for notice in (
-            "Building demolition and site grading bid due November 10, 2026",
-            "Demolition and site preparation with excavation and grading RFP",
-            "Razing and site preparation including clearing and grubbing contract",
+        for notice, expected in (
+            ("Building demolition and site grading bid due November 10, 2026",
+             "Related site prep"),
+            ("Demolition and site preparation with excavation and grading RFP",
+             "Related site prep"),
+            # Explicit clearing takes precedence under the existing core
+            # category hierarchy; never mislabel it as adjacent site prep.
+            ("Razing and site preparation including clearing and grubbing contract",
+             "Land clearing"),
         ):
             with self.subTest(notice=notice):
-                self.assertEqual(scan.category(notice), "Related site prep")
+                self.assertEqual(scan.category(notice), expected)
                 self.assertTrue(scan.eligible(notice))
                 found = {}
                 scan.add_lead(found, "Synthetic County", notice,
                               "https://example.gov/bids/sitework")
                 self.assertEqual(len(found), 1)
                 lead = next(iter(found.values()))
-                self.assertEqual(lead["category"], "Related site prep")
+                self.assertEqual(lead["category"], expected)
                 self.assertEqual(lead["status"], "unverified")
 
     def test_explicit_tree_removal_still_takes_precedence(self):
