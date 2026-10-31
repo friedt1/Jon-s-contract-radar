@@ -30,7 +30,9 @@ class PABoroughPublisherStagingTests(unittest.TestCase):
         audit = audit_source_coverage.audit(self.sources)
         self.assertGreaterEqual(audit["official_urls_staged"], len(PUBLISHERS))
         self.assertEqual(audit["not_directly_monitored"], 84)
-        self.assertEqual(audit["direct_configured"] + audit["official_urls_staged"] +\n                         audit["discovery_required"] + audit["invalid_direct_configurations"],\n                         len(self.sources))
+        self.assertEqual(audit["direct_configured"] + audit["official_urls_staged"] +
+                         audit["discovery_required"] + audit["invalid_direct_configurations"],
+                         len(self.sources))
         for name, url in PUBLISHERS.items():
             with self.subTest(source=name):
                 source = next(s for s in self.sources if s["name"] == name)
@@ -48,8 +50,10 @@ class PABoroughPublisherStagingTests(unittest.TestCase):
 
     def test_published_health_is_metadata_not_a_new_contract_scan(self):
         counts = self.feed["source_health"]["counts"]
-        self.assertEqual(counts["staged_official_url"],\n                         audit_source_coverage.audit(self.sources)["official_urls_staged"])
-        self.assertEqual(counts["not_configured"],\n                         audit_source_coverage.audit(self.sources)["discovery_required"])
+        self.assertEqual(counts["staged_official_url"],
+                         audit_source_coverage.audit(self.sources)["official_urls_staged"])
+        self.assertEqual(counts["not_configured"],
+                         audit_source_coverage.audit(self.sources)["discovery_required"])
         self.assertEqual(self.feed["source_coverage"]["pending_direct"], 84)
         self.assertEqual(self.feed["source_coverage"]["verified_open_contracts"], 0)
         self.assertEqual(self.feed["opportunities"], [])
