@@ -36,6 +36,8 @@ CATEGORIES = {
  'Vegetation management': ('vegetation management','brush clearing','brush removal','brush cutting','right of way clearing','right-of-way clearing','line clearance','roadside mowing','forestry mowing','vegetation control','brush hogging','brush mowing'),
  'Storm cleanup': ('storm debris','storm clean-up','storm cleanup','woody debris removal','disaster debris','emergency tree','storm damage','storm response'),
 }
+SITE_PREP_PHRASES = ('site preparation', 'site prep', 'site grading',
+                     'earthwork and grading', 'grading and grubbing')
 BID_HINTS = ('bid','rfp','rfq','solicitation','tender','proposal','contract','procurement','request for','invitation to','sealed bid','quotes','bidid=','advertisement','opportunit','bonfire','pennbid')
 FOLLOW_HINTS = BID_HINTS + ('view','details','notice','download','document','attachment','specification','project','current','open','pdf')
 BAD_LINKS = ('mailto:','tel:','javascript:','#')
@@ -731,7 +733,7 @@ def scan_direct(src):
     if closed(text) or (deadline(text) and deadline(text)<NOW.astimezone(ZoneInfo('America/New_York')).date().isoformat()) or explicit_closing_passed(text,NOW):
      found.pop(notice_identity.notice_id(url),None);continue
     if category(text) and (bidlike(title+' '+url) or bidlike(text[:3000])):
-     key=category(text);p=text.lower().find(next((t for t in CATEGORIES[key] if t in text.lower()),''))
+     key=category(text);p=text.lower().find(next((t for t in CATEGORIES.get(key, SITE_PREP_PHRASES) if t in text.lower()),''))
      snippet=text[max(0,p-150):p+500]
      if eligible(text,name):
       add_lead(found,name,title if category(title) else snippet[:130],final_url,snippet+' '+('Deadline: '+deadline(text) if deadline(text) else ''),'PDF bid candidate',evidence=text)
@@ -810,7 +812,7 @@ def scan_direct(src):
     scope = (metadata_description(body) if metadata_notice else
              heading_scope if heading_notice else body)
     if (not p.rows or metadata_notice or heading_notice) and not nested_notice_links and category(scope) and eligible(scope + (' bid' if metadata_notice else '') + (' Due date: ' + deadline(body) if deadline(body) else ''), name) and not closed(body) and not explicit_closing_passed(body,NOW):
-     key=category(scope);match=next((t for t in CATEGORIES[key] if t in scope.lower()),'')
+     key=category(scope);match=next((t for t in CATEGORIES.get(key, SITE_PREP_PHRASES) if t in scope.lower()),'')
      ix=scope.lower().find(match);snippet=scope[max(0,ix-160):ix+520]
      add_lead(found,name,title if category(title) else snippet[:130],final_url,('Bid description: ' if metadata_notice else '')+snippet+' '+('Deadline: '+deadline(body) if deadline(body) else ''),'individual metadata bid candidate' if metadata_notice else 'direct detail candidate',evidence=body)
      annotate_explicit_closing(found,final_url,body)
