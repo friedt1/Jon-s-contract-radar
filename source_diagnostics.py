@@ -115,7 +115,9 @@ def report(payload):
             "indirect_state": indirect,
             "detail_access_state": row.get("detail_access_state", "unknown"),
             "access_required": direct == "access_required" or
+                               bool(row.get("staged_provider_access_required")) or
                                (not row and "access required" in low),
+            "staged_access_required": bool(row.get("staged_provider_access_required")),
             "direct_error": direct_error,
             "indirect_error": indirect_error,
             "detail_errors": detail_errors,
