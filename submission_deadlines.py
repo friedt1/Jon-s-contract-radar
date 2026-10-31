@@ -88,7 +88,7 @@ def _iso_closing(date, suffix):
     """Normalize an ISO timestamp to the issuing authority's Eastern clock."""
     from zoneinfo import ZoneInfo
     try:
-        instant = dt.datetime.fromisoformat(date.isoformat() + "T" + suffix)
+        instant = dt.datetime.fromisoformat(date.isoformat() + suffix)
         if instant.tzinfo is not None:
             instant = instant.astimezone(ZoneInfo("America/New_York"))
         return instant.date(), instant.strftime("%I:%M %p").lstrip("0")
