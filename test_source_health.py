@@ -174,6 +174,8 @@ class SourceHealthTests(unittest.TestCase):
         row = source_health.classify(src, status)
         self.assertEqual(row["detail_error_types"], [])
         self.assertEqual(row["pagination_error_types"], [])
+        self.assertEqual(row["detail_access_state"], "not_attempted")
+        self.assertEqual(row["pagination_access_state"], "no_reported_errors")
         counts = source_health.summarize([src], {"County": status})["counts"]
         self.assertEqual(counts["detail_robots_blocked_sources"], 0)
         self.assertEqual(counts["pagination_http_blocked_sources"], 0)
