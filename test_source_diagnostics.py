@@ -351,6 +351,23 @@ class SourceDiagnosticsTests(unittest.TestCase):
         self.assertEqual(result["health_inventory_shortfall"], 0)
         self.assertEqual(result["duplicate_health_rows"], [])
 
+    def test_staged_provider_gate_is_access_required_but_not_direct_failure(self):
+        result = source_diagnostics.report({
+            "source_status": {"Utility": "indirect RSS error: RobotsDenied"},
+            "source_health": {"sources": [{
+                "name": "Utility", "direct_state": "staged_official_url",
+                "indirect_state": "robots_blocked",
+                "staged_provider_access_required": True,
+            }]},
+            "opportunities": [],
+        })
+        row = result["sources"][0]
+        self.assertTrue(row["access_required"])
+        self.assertTrue(row["staged_access_required"])
+        self.assertFalse(row["direct_error"])
+        self.assertFalse(row["error"])
+        self.assertEqual(result["verified_open_opportunities"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()
