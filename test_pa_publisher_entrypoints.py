@@ -67,12 +67,13 @@ class PaPublisherEntrypointTests(unittest.TestCase):
                     row = source_health.classify(source, status)
                     self.assertTrue(row["provider_access_required"])
                     self.assertEqual(row["direct_state"], "access_required")
-                # A real robots block must remain visible while the access
-                # requirement continues to count in configured coverage.
+                # A prior robots refusal remains in the raw diagnostic, but
+                # provider authorization is still the primary blocker.
                 blocked = source_health.classify(
                     source, "direct blocked by robots policy: disallowed")
-                self.assertEqual(blocked["direct_state"], "robots_blocked")
+                self.assertEqual(blocked["direct_state"], "access_required")
                 self.assertTrue(blocked["provider_access_required"])
+                self.assertIn("robots policy", blocked["diagnostic"])
         summary = source_health.summarize(
             [self.by_name[name] for name in providers], {})
         self.assertEqual(summary["counts"]["configured_direct"], 3)
