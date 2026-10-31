@@ -5,9 +5,14 @@ and unknown query parameters are retained; those may identify different notices.
 This module never claims a notice is open, current, or geographically eligible.
 """
 import hashlib
+import re
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from source_config import public_dns_hostname
+
+# Percent-encoded control bytes are unsafe even when urlsplit would treat
+# them as ordinary path/query text. Match the direct-source URL guard.
+_ENCODED_CONTROL = re.compile(r"%(?:0[0-9a-f]|1[0-9a-f]|7f)", re.I)
 
 _TRACKING_KEYS = frozenset({
     "fbclid", "gclid", "gbraid", "wbraid", "msclkid",
@@ -16,7 +21,8 @@ _TRACKING_KEYS = frozenset({
 
 
 def canonical_url(url):
-    if not isinstance(url, str) or not url or any(ord(c) < 33 or ord(c) == 127 or c == "\\" for c in url):
+    if (not isinstance(url, str) or not url or _ENCODED_CONTROL.search(url)
+            or any(ord(c) < 33 or ord(c) == 127 or c == "\\" for c in url)):
         return ""
     try:
         parts = urlsplit(url)
