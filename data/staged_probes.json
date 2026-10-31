@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-31T04:39:32.882173+00:00",
+  "updated": "2026-10-31T04:41:47.541789+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 40,
+  "staged_entrypoints": 41,
   "probes": [
     {
       "name": "Broome County",
@@ -536,6 +536,19 @@
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official Town of Dryden domain hosts historic 2025 RFP PDFs, including broadband outside-plant work and an unrelated feasibility study. Direct homepage fetch returned HTTP 403 in source review. No current procurement index or permitted individual notice adapter verified; record HTTP block accurately and review robots/terms before activation. Historical PDFs are not live bids.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Town of Union NY",
+      "official_entrypoint": "https://www.townofunion.com/government/public_notices/bid_opportunities.php",
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Town of Union Bid Opportunities page was reviewed October 31, 2026: its visible posting deadlines end in 2024, and a linked individual PDF returned HTTP 403 during review. Current individual-notice extraction is not established. Review robots/terms, permitted notice links, publisher status, amended submission deadlines and worksite before activation. Historical bids are not live contracts.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     },
