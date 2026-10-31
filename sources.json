@@ -533,7 +533,9 @@
     "type": "PA municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://towandaborough.org/public-announcements/",
+    "activation_gate": "Official borough Public Announcements page publishes individual solicitations, but mixes notices and has an expired October 27, 2026 waste-collection bid. Verify robots/terms and permitted per-notice extraction, submission deadline/amendments, tree-work scope and Elmira travel time before activation; never treat the index or expired unrelated bid as live."
   },
   {
     "name": "Mansfield Borough",
