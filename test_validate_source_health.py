@@ -90,6 +90,53 @@ class ValidateSourceHealthTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Source health count disagrees"):
             self.check(sources, payload)
 
+    def test_mixed_access_failure_totals_cannot_be_forged(self):
+        sources, payload = self.payload()
+        # The top-level page can succeed while individual notices fail.
+        payload['source_status']['Tioga County NY'] = (
+            'direct fetched; 1 listing pages; 2 details checked; '
+            '1 individual bid details fetched; '
+            '2 detail errors: RobotsDenied,HTTPError HTTP 429; '
+            '1 pagination errors: HTTPError HTTP 403'
+        )
+        payload['source_health'] = source_health.summarize(
+            sources, payload['source_status'])
+        counts = payload['source_health']['counts']
+        self.assertEqual(counts['detail_robots_blocked_sources'], 1)
+        self.assertEqual(counts['detail_rate_limited_sources'], 1)
+        self.assertEqual(counts['pagination_http_blocked_sources'], 1)
+        self.check(sources, payload)
+
+        counts['detail_rate_limited_sources'] = 0
+        with self.assertRaisesRegex(ValueError, 'Source health count disagrees'):
+            self.check(sources, payload)
+
+    def test_access_failure_row_cannot_hide_mixed_errors(self):
+        sources, payload = self.payload()
+        payload['source_status']['Tioga County NY'] = (
+            'direct fetched; 1 listing pages; 2 details checked; '
+            '1 individual bid details fetched; '
+            '2 detail errors: RobotsDenied,HTTPError HTTP 429'
+        )
+        payload['source_health'] = source_health.summarize(
+            sources, payload['source_status'])
+        row = next(r for r in payload['source_health']['sources']
+                   if r['name'] == 'Tioga County NY')
+        self.assertEqual(row['detail_error_types'],
+                         ['robots_blocked', 'rate_limited'])
+        self.check(sources, payload)
+
+        row['detail_error_types'] = ['robots_blocked']
+        with self.assertRaisesRegex(ValueError, 'Source health diagnostic disagrees'):
+            self.check(sources, payload)
+
+    def test_legacy_health_without_nonexclusive_arrays_remains_readable(self):
+        sources, payload = self.payload()
+        for row in payload['source_health']['sources']:
+            row.pop('detail_error_types', None)
+            row.pop('pagination_error_types', None)
+        self.check(sources, payload)
+
     def test_detail_count_still_cannot_exceed_attempts(self):
         sources, payload = self.payload()
         row = next(r for r in payload["source_health"]["sources"]
