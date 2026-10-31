@@ -65,7 +65,10 @@ _CLOCK_12 = r"(?:0?[1-9]|1[0-2])(?::[0-5]\d)?[ \t]*[AP]\.?[ \t]*M\.?"
 # Require a colon for 24-hour notation; never infer that bare '1400' is a time.
 # Do not consume the AM/PM suffix of an ordinary 12-hour time.
 _CLOCK_24 = r"(?:[01]?\d|2[0-3]):[0-5]\d(?![ \t]*[AP]\.?[ \t]*M\.?)(?:[ \t]*(?:hours?|hrs?))?"
-_CLOCK = r"(?:" + _CLOCK_12 + r"|" + _CLOCK_24 + r")"
+# Official bid notices also use "at noon", "12 noon", or "midnight".
+# These words are clocks only when adjacent to a validated submission label.
+_CLOCK_WORD = r"(?:12(?::00)?[ \t]+)?(?:noon|midnight)\b"
+_CLOCK = r"(?:" + _CLOCK_12 + r"|" + _CLOCK_24 + r"|" + _CLOCK_WORD + r")"
 # Accept "due DATE at 1:30 P.M." and "due DATE, at 1:30 P.M.".
 # A word boundary after the final dot in P.M. would reject the clock.
 _AFTER_DATE = re.compile(r"^[ \t]*(?:,[ \t]*)?(?:at[ \t]+)?(?P<clock>" + _CLOCK + r")(?=$|[ \t,;.)])", re.I)
@@ -97,6 +100,9 @@ _DUE_BEFORE_DATE = re.compile(
 
 def _normalized_clock(value):
     """Return normalized Eastern agency-local clock; never guess missing times."""
+    named = re.fullmatch(r"(?:12(?::00)?[ \t]+)?(noon|midnight)", value.strip(), re.I)
+    if named:
+        return "12:00 PM" if named.group(1).lower() == "noon" else "12:00 AM"
     raw = re.sub(r"\b(?:hours?|hrs?)\b", "", value, flags=re.I).strip()
     raw = re.sub(r"\.", "", raw.upper())
     raw = re.sub(r"\s+", " ", raw).strip()
