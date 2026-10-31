@@ -41,6 +41,12 @@ def classify(source, status):
     # successful scanner run. Preserve them when the feed is stale or a
     # source is robots-blocked; never count a provider gateway as an
     # operational direct-fetch target merely because its status is missing.
+    staged_provider_access_required = (
+        not configured and mode == "discovery_pending"
+        and valid_public_https_url(source.get("candidate_official_url"))
+        and (source.get("provider_access_required") is True
+             or bool(source.get("delegated_provider")))
+    )
     provider_access_required = configured and (
         source.get("provider_access_required") is True
         or bool(source.get("delegated_provider"))
@@ -138,6 +144,7 @@ def classify(source, status):
         "mode": mode,
         "direct_state": direct_state,
         "provider_access_required": provider_access_required,
+        "staged_provider_access_required": staged_provider_access_required,
         "indirect_state": indirect_state,
         "direct_url": source.get("url", "") if configured else "",
         "staged_official_url": source.get("candidate_official_url", "") if not configured else "",
@@ -178,6 +185,10 @@ def summarize(sources, statuses):
     # These are potential fetch targets, not proof of permitted extraction.
     counts["configured_access_required"] = sum(
         row["provider_access_required"] for row in rows)
+    # A staged official entrypoint may already require supplier registration.
+    # Report it separately; it is NOT a configured direct integration.
+    counts["staged_provider_access_required"] = sum(
+        row["staged_provider_access_required"] for row in rows)
     counts["configured_unimplemented_adapters"] = sum(
         direct_configured(src) and not direct_fetch_target(src) for src in sources)
     counts["configured_fetch_targets"] = sum(
@@ -246,5 +257,7 @@ def summarize(sources, statuses):
                     "are not direct fetch targets. "
                     "HTTP refusals, unsafe redirects, rate limits and unsupported "
                     "content are distinguished from transient fetch errors. "
-                    "Staged URLs are not monitored; all leads remain unverified.")
+                    "Staged provider access gates are reported separately from "
+                    "configured direct portals. Staged URLs are not monitored; "
+                    "all leads remain unverified.")
     }
