@@ -2715,7 +2715,7 @@
     ],
     "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Individual-detail robots blocks, HTTP refusals, redirects, rate limits and other errors are reported separately. Listing pagination failures, deferred individual bid records, and unfetched generic detail candidates mean extraction coverage may be incomplete. Generic candidates are not verified individual solicitations. External provider links require an approved adapter and are not followed. Provider-access requirements persist even when a scan has no status. Configured access-required portals and unimplemented feed/API adapters are not direct fetch targets. HTTP refusals, unsafe redirects, rate limits and unsupported content are distinguished from transient fetch errors. Staged URLs are not monitored; all leads remain unverified."
   },
-  "updated": "2026-10-31T10:14:26+00:00",
+  "updated": "2026-10-31T10:53:37+00:00",
   "opportunities": [],
   "source_status": {
     "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 0 conflicting duplicate bid cards; 2 relevant details checked; 0 individual bid records deferred at detail budget; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
