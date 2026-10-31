@@ -29,10 +29,14 @@ def classify(source, status):
         direct_state = ("staged_official_url" if mode == "discovery_pending" and
                         valid_public_https_url(source.get("candidate_official_url"))
                         else "not_configured")
+    elif provider_access_required:
+        # Provider approval remains a prerequisite even when an older scan
+        # recorded a robots refusal on the gateway page. Preserve that
+        # refusal in the raw diagnostic, but do not misclassify the source
+        # as a robot-only integration that would activate if robots changed.
+        direct_state = "access_required"
     elif "direct blocked by robots policy" in status:
         direct_state = "robots_blocked"
-    elif provider_access_required:
-        direct_state = "access_required"
     elif not direct_fetch_target(source):
         # Feed/API configuration is not operational until its own adapter exists.
         direct_state = "adapter_not_implemented"

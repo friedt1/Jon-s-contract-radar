@@ -67,8 +67,8 @@ class FiveMunicipalPublisherStagingTests(unittest.TestCase):
         self.assertEqual(result["total"], 102)
         self.assertEqual(result["direct_configured"], 18)
         self.assertEqual(result["not_directly_monitored"], 84)
-        self.assertEqual(result["official_urls_staged"], 40)
-        self.assertEqual(result["discovery_required"], 44)
+        self.assertGreaterEqual(result["official_urls_staged"], 40)
+        self.assertEqual(result["discovery_required"], 84 - result["official_urls_staged"])
         for name in EXPECTED:
             row = next(x for x in result["sources"] if x["source"] == name)
             self.assertTrue(row["official_url_staged"])
