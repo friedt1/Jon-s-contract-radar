@@ -716,7 +716,10 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.nyseg.com/suppliersandpartners",
+    "official_page_role": "Official NYSEG suppliers/partners gateway; electricity/gas supplier information, not a verified tree-work solicitation listing",
+    "activation_gate": "Official NYSEG Suppliers and Partners page checked 2026-10-31. It describes energy supply partners and services, not an individual vegetation-management procurement index. NYSEG's tree-care information confirms vegetation work exists but not a live bid. Identify the authorized contractor procurement channel, review publisher terms/robots, and verify individual bid scope, deadlines and local worksite before activating."
   },
   {
     "name": "New York State DOT Region 6",
@@ -734,7 +737,10 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.dot.ny.gov/regional-offices/region9/projects",
+    "official_page_role": "Official NYSDOT Region 9 projects overview; project-status information, NOT an active contract letting or bid feed",
+    "activation_gate": "Official NYSDOT Region 9 Projects page checked 2026-10-31 links to Projects in Your Neighborhood and statewide contracting resources; regional project descriptions are not open solicitations. Locate the authoritative current NYSDOT letting/contract feed, verify permitted per-contract extraction, closing dates, tree/vegetation scope and ~2-hour Elmira worksite before activation. Do not promote historic design-build project pages."
   },
   {
     "name": "PennDOT District 3",
@@ -779,7 +785,12 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.nypa.gov/Procurement",
+    "official_page_role": "Official NYPA procurement gateway; public opportunity links and separate SAP Ariba sourcing registration, not an approved individual-notice API",
+    "delegated_provider": "SAP Ariba",
+    "provider_access_required": true,
+    "activation_gate": "Official NYPA Procurement page checked 2026-10-31: NYPA publishes opportunity information but uses SAP Ariba for bid events and supplier registration. A public gateway is not an authorized per-notice feed. Verify publisher robots/terms and permitted public RFQ listing extraction, then confirm individual deadline, scope, worksite and provider access before activation. Do not crawl registration-only Ariba events."
   },
   {
     "name": "FirstEnergy Penelec",
@@ -787,7 +798,12 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.firstenergycorp.com/supplychain/supplier_registration.html",
+    "official_page_role": "Official FirstEnergy materials/services supplier registration; publisher explicitly states external website does not publish bids",
+    "delegated_provider": "Coupa",
+    "provider_access_required": true,
+    "activation_gate": "Official FirstEnergy supplier FAQ checked 2026-10-31 explicitly says it does NOT publish upcoming bids on its external website. Supplier registration allows consideration for invitation-only RFI/RFQ/RFP; Coupa sourcing events require supplier onboarding/invitation. No public per-notice extraction is available here. Keep blocked/access-required until publisher-approved integration exists; never scrape Coupa or treat energy-supply auctions as tree contracts."
   },
   {
     "name": "Norfolk Southern",
