@@ -531,7 +531,8 @@ def scan_civicplus(src, listing_pages, page_errors):
   if not category(scope if ambiguous or detail_scope else row['title'] + ' ' + scope):
    continue
   evidence = row['title'] + ' bid ' + scope + (' Due date: ' + due if due else '')
-  summary = ('Bid No. ' + row['bid_number'] + '. ' if row['bid_number'] else '') + scope
+  summary = ('Bid No. ' + row['bid_number'] + '. ' if row['bid_number']
+             else 'Bid notice. ' if ambiguous else '') + scope
   if due:
    summary += ' Due date: ' + due
   lead_title = (detail_scope[:130] if ambiguous and not category(row['title'])
