@@ -1,7 +1,9 @@
 {
-  "updated": "2026-10-31T20:47:01.277277+00:00",
+  "updated": "2026-10-31T21:42:06.464343+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 52,
+  "safe_staged_entrypoints": 52,
+  "invalid_staged_entrypoints": 0,
   "probes": [
     {
       "name": "Broome County",
@@ -568,8 +570,8 @@
     {
       "name": "Sayre Borough",
       "official_entrypoint": "https://sayreborough.org/",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -581,8 +583,8 @@
     {
       "name": "Athens Borough",
       "official_entrypoint": "https://athensboroughpa.org/",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -607,8 +609,8 @@
     {
       "name": "Mansfield Borough",
       "official_entrypoint": "https://mansfieldborough.org/",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
