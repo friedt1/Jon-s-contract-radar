@@ -5,6 +5,7 @@ Optional: python source_diagnostics.py --strict [path]
 """
 import argparse
 import json
+from collections import Counter
 from pathlib import Path
 
 
@@ -18,9 +19,25 @@ def report(payload):
         health = {}
     if not isinstance(health, dict) or not isinstance(health.get("sources", []), list):
         raise ValueError("invalid source health schema")
+    health_names = [row["name"] for row in health.get("sources", [])
+                    if isinstance(row, dict) and isinstance(row.get("name"), str)]
+    duplicate_health_names = sorted(
+        name for name, count in Counter(health_names).items() if count > 1)
     by_name = {row["name"]: row for row in health.get("sources", [])
                if isinstance(row, dict) and isinstance(row.get("name"), str)}
     has_health = "source_health" in payload and payload["source_health"] is not None
+    coverage = payload.get("source_coverage", {})
+    expected = coverage.get("total_targets") if isinstance(coverage, dict) else None
+    if isinstance(expected, bool) or not isinstance(expected, int) or expected < 0:
+        expected = None
+    # SAM.gov is a separately deferred target, not one of the 102 named
+    # monitored sources. A target missing from BOTH status and health used
+    # to disappear entirely; reconcile against the published inventory size.
+    observed_targets = (set(sources) | set(by_name)) - {"SAM.gov"}
+    unaccounted_targets = (max(0, expected - len(observed_targets))
+                           if has_health and expected is not None else 0)
+    health_inventory_shortfall = (max(0, expected - len(by_name))
+                                  if has_health and expected is not None else 0)
     results = []
     # A source present in health but missing from source_status must not
     # disappear from diagnostics. Conversely, missing health rows are a gap
@@ -49,6 +66,7 @@ def report(payload):
         # structured health report; it is not a missing health record.
         health_missing = (has_health and name not in by_name
                           and not (name == "SAM.gov" and message == "deferred"))
+        duplicate_health_row = name in duplicate_health_names
         coverage_incomplete = bool(
             detail_errors or pagination_errors or detail_budget_deferred
             or detail_candidates_deferred or pdf_budget_skips)
@@ -90,13 +108,14 @@ def report(payload):
             "coverage_incomplete": coverage_incomplete,
             "status_missing": status_missing,
             "health_missing": health_missing,
+            "duplicate_health_row": duplicate_health_row,
             "pagination_access_state": row.get("pagination_access_state", "unknown"),
             "pdf_fetch_attempts": row.get("pdf_fetch_attempts", 0),
             "pdf_budget_skips": pdf_budget_skips,
             "result_award_links_excluded": row.get("result_award_links_excluded", 0),
             "external_provider_links_skipped": row.get("external_provider_links_skipped", 0),
             "error": (direct_error or bool(detail_errors) or bool(pagination_errors)
-                      or status_missing or health_missing),
+                      or status_missing or health_missing or duplicate_health_row),
             "raw_status": message,
         })
     return {
@@ -111,13 +130,18 @@ def report(payload):
         "detail_budget_deferred": sum(row["detail_budget_deferred"] for row in results),
         "detail_candidates_deferred": sum(row["detail_candidates_deferred"] for row in results),
         "incomplete_detail_sources": sum(row["coverage_incomplete"] for row in results),
-        "diagnostic_gaps": sum(
-            row["status_missing"] or row["health_missing"] for row in results),
+        "diagnostic_gaps": (sum(
+            row["status_missing"] or row["health_missing"] for row in results)
+            + unaccounted_targets + len(duplicate_health_names)),
+        "unaccounted_targets": unaccounted_targets,
+        "health_inventory_shortfall": health_inventory_shortfall,
+        "duplicate_health_rows": duplicate_health_names,
         "sources": results,
         "warning": ("Direct fetch, indirect RSS, provider access and individual-detail "
                     "failures, including incomplete listing pagination and deferred "
                     "detail requests, are separate. Missing per-source diagnostics "
-                    "are reported rather than silently dropped. "
+                    "are reported rather than silently dropped; inventory-size "
+                    "shortfalls and duplicate health records are also flagged. "
                     "A fetched page or unverified candidate "
                     "is not a verified open contract.")
     }
