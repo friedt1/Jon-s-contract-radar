@@ -1,34 +1,41 @@
-"""Bounded, deterministic exploration of lower-ranked public bid detail links.
+"""Deterministic exploration of tied, deferred public bid detail links.
 
-The scanner must keep high-priority notices ahead of generic archives, but a
-fixed request budget must not inspect the exact same first N links forever.
-This only changes WHICH permitted individual links are attempted; it never
-changes eligibility, source permissions, deadlines, or publication status.
+Never promote expired or lower-ranked notices ahead of future/relevant ones.
+Rotate only the equal-priority group straddling the fixed request budget.
+This changes retrieval order, not eligibility, permissions or publication.
 """
 import datetime as dt
 
 
-def rotate_exploration_window(ordered, budget, now):
-    """Preserve the top 75% of a request budget and rotate its remaining slots.
+def rotate_boundary_ties(ordered, budget, now, priority):
+    """Rotate a tied group crossing the bounded detail-request cutoff.
 
-    The ordered argument is already ranked by the caller. Stable top slots
-    retain urgent/relevant notices, while a bounded slice of remaining
-    candidates advances each UTC hour. Return the full list (not truncated)
-    so the caller can still report unfetched candidates accurately.
+    Callers must sort the input by the same priority function first. Every
+    higher-ranked group remains ahead of every lower-ranked group. If the
+    boundary falls exactly between priority groups, leave the order unchanged
+    rather than fetching lower-priority/expired notices prematurely.
 
-    A naive or missing clock cannot safely define a rotation window; retain
-    the original order instead. No network requests happen here.
+    The full list is retained for honest deferred-count diagnostics. An
+    aware UTC-hour clock makes repeated scans stable within an hour and
+    advances a partial tie group in subsequent hours.
     """
     items = list(ordered)
-    if not isinstance(budget, int) or budget <= 1 or len(items) <= budget:
-        return items
-    if (not isinstance(now, dt.datetime) or now.tzinfo is None
+    if (not isinstance(budget, int) or budget <= 0 or len(items) <= budget
+            or not isinstance(now, dt.datetime) or now.tzinfo is None
             or now.utcoffset() is None):
         return items
-    exploration = max(1, (budget + 3) // 4)
-    protected = budget - exploration
-    tail = items[protected:]
-    # The tail is strictly longer than exploration when len(items) > budget.
+    boundary = priority(items[budget - 1])
+    start = budget - 1
+    while start > 0 and priority(items[start - 1]) == boundary:
+        start -= 1
+    end = budget
+    while end < len(items) and priority(items[end]) == boundary:
+        end += 1
+    if end == budget:
+        return items
+    group = items[start:end]
+    window = budget - start
     hour = int(now.astimezone(dt.timezone.utc).timestamp() // 3600)
-    offset = (hour * exploration) % len(tail)
-    return items[:protected] + tail[offset:] + tail[:offset]
+    offset = (hour * window) % len(group)
+    items[start:end] = group[offset:] + group[:offset]
+    return items
