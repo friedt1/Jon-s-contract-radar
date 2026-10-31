@@ -70,8 +70,13 @@ def category(s):
  # scopes (including the historical Owego demolition regression).
  if not re.search(r'\b(?:site prep(?:aration)?|site grading|earthwork and grading|grading and grubbing)\b',t):
   return None
+ # A demolition scope mentioning tree *protection*, landscape buffers or
+ # vegetation preservation is not a tree-clearing job. Where demolition is
+ # present, require actual sitework (grading/earthwork/grubbing/clearing),
+ # not merely the word "tree". Explicit tree-service categories above still
+ # take precedence when removal/trimming is genuinely requested.
  if (re.search(r'\b(?:demolition|demolish(?:ing|ed)?|razing)\b',t)
-     and not re.search(r'\b(?:trees?|stumps?|brush|vegetation|clearing|grubbing)\b',t)):
+     and not re.search(r'\b(?:clearing|grubbing|grading|earthwork|excavation)\b',t)):
   return None
  return 'Related site prep'
 def bidlike(s):
