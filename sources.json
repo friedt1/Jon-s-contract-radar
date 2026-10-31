@@ -625,7 +625,7 @@
     "verified_url": false,
     "candidate_official_url": "https://www.ithacacityschools.org/page/business-services",
     "official_page_role": "Official Ithaca City School District Business Services; purchasing contact gateway, NOT a verified current bid feed",
-    "activation_gate": "Official Ithaca City School District homepage links to Business Services (verified 2026-10-31). The page does not establish a public, automatable individual-bid feed. District legal notices may require direct sealed submission; locate the publisher-approved notice index or authorized procurement channel, review robots/terms, and verify each individual solicitation's location, tree/vegetation scope, closing time, amendments and open status. Do not treat third-party bid summaries or school budget pages as official live bids."
+    "activation_gate": "Official Ithaca City School District homepage links to Business Services (verified 2026-10-31). The page does not establish a public, automatable individual-bid feed. District legal notices may require direct sealed submission; locate the publisher-approved notice index or authorized procurement channel, review robots/terms, and verify each individual solicitation's location, tree/vegetation scope, submission deadline and closing time, amendments and open status. Do not treat third-party bid summaries or school budget pages as official live bids."
   },
   {
     "name": "Binghamton City School District",
