@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-31T14:31:26.525524+00:00",
+  "updated": "2026-10-31T17:43:49.890178+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 46,
+  "staged_entrypoints": 47,
   "probes": [
     {
       "name": "Broome County",
@@ -151,8 +151,8 @@
     {
       "name": "Bradford County PA",
       "official_entrypoint": "https://www.bradfordcountypa.gov/bids.aspx",
-      "state": "listing_reachable_no_open_bids",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -602,6 +602,19 @@
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official City of Williamsport Request for Proposal document category verified 2026-10-30: individual RFP/IFB posts exist, but the index also contains historical responses and non-service sale notices. Before activation, verify robots and publisher terms, build permitted individual-post/attachment extraction with authoritative bid submission deadlines, scope and worksite, and separately review any external provider authorization. Do not treat a dated post as an open bid.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Corning-Painted Post Area School District",
+      "official_entrypoint": "https://www.corningareaschools.com/page/business-services",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official district Business Services page checked 2026-10-31: vendors must request copies of current advertised bid/RFP documents from the district. No public per-notice index, authoritative deadline or permitted automated document extraction established. Request-required document access is not a working monitor; review publisher terms/robots, identify an authorized individual-notice channel, and test scope/deadline extraction before activation.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     },
