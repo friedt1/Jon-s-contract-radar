@@ -31,7 +31,7 @@ SOURCES = ROOT / 'sources.json'
 OUT = ROOT / 'data' / 'opportunities.json'
 NOW = dt.datetime.now(dt.timezone.utc)
 CATEGORIES = {
- 'Tree removal': ('tree removal','removal of trees','removal of hazardous trees','hazardous tree','tree and stump removal','tree and brush removal','tree cutting','tree felling','hazard tree','tree service','tree work','tree clearing','stump removal','stump grinding','arborist'),
+ 'Tree removal': ('tree removal','removal of trees','removal of hazardous trees','hazardous tree','tree and stump removal','tree & stump removal','trees & stumps removal','tree/stump removal','tree and stumps removal','tree and brush removal','tree & brush removal','tree/brush removal','tree cutting','tree felling','hazard tree','tree service','tree work','tree clearing','stump removal','stump grinding','arborist'),
  'Tree trimming': ('tree trimming','trimming of trees','tree pruning','tree maintenance','tree care','tree management','limb removal'),
  'Land clearing': ('land clearing','site clearing','lot clearing','clearing and grubbing','forestry mulching'),
  'Vegetation management': ('vegetation management','brush clearing','brush removal','brush cutting','right of way clearing','right-of-way clearing','line clearance','roadside mowing','forestry mowing','vegetation control','brush hogging','brush mowing'),
