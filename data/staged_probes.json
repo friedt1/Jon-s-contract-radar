@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-31T03:39:33.635963+00:00",
+  "updated": "2026-10-31T04:39:32.882173+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 40,
   "probes": [
@@ -164,8 +164,8 @@
     {
       "name": "Tioga County PA",
       "official_entrypoint": "https://www.tiogacountypa.us/departments/commissioners",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -177,8 +177,8 @@
     {
       "name": "Susquehanna County",
       "official_entrypoint": "https://www.susqco.com/departments/county-commissioners/current-bid-specifications",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
