@@ -97,6 +97,26 @@ class NoticeIdentityTests(unittest.TestCase):
                 self.assertEqual(notice_identity.canonical_url(url), "")
                 self.assertEqual(notice_identity.notice_id(url), "")
 
+    def test_encoded_control_bytes_cannot_form_notice_identity(self):
+        # Synthetic URL variants; never publish or fetch these links.
+        for suffix in (
+            "/Bids.aspx%0aX-Injected",
+            "/Bids.aspx?bidID=416%0dX-Injected",
+            "/Bids.aspx?bidID=416%00",
+            "/Bids.aspx?bidID=416%7F",
+            "/Bids.aspx#details%09",
+        ):
+            url = "https://county.example" + suffix
+            with self.subTest(url=url):
+                self.assertEqual(notice_identity.canonical_url(url), "")
+                self.assertEqual(notice_identity.notice_id(url), "")
+
+    def test_safe_percent_encoding_and_signed_notice_still_work(self):
+        url = "https://county.example/Bids%20and%20RFPs?bidID=416"
+        self.assertEqual(notice_identity.canonical_url(url), url)
+        signed = "https://county.example/bid?X-Amz-Signature=abc%2Fdef&bidID=416"
+        self.assertEqual(notice_identity.canonical_url(signed), signed)
+
     def test_add_lead_deduplicates_tracking_variants(self):
         out = {}
         scan.add_lead(out, "County", "Tree removal bid",
