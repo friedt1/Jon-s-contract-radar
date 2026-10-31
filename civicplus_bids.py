@@ -181,27 +181,32 @@ def listing_records(page, origin):
     'Show Closed...' control is outside the first record and cannot contaminate it.
     """
     links = []
-    for label, href, position in page.links:
+    for link_index, (label, href, position) in enumerate(page.links):
         url = individual_url(href, origin)
         # A misleading bidID on a pager control is not a solicitation card.
         if url and not public_pages.pagination_label(label):
-            links.append((position, label, url))
+            links.append((position, link_index, label, url))
     links.sort()
     first = {}
-    for position, label, url in links:
+    for position, link_index, label, url in links:
         if url not in first:
-            first[url] = (position, label)
-    unique = sorted(((position, label, url) for url, (position, label) in first.items()))
+            first[url] = (position, link_index, label)
+    unique = sorted((position, link_index, label, url)
+                    for url, (position, link_index, label) in first.items())
     records = []
     generic_labels = {"read on", "read more", "details", "view details",
                       "view bid", "view", "more info", "learn more", "click here"}
-    for i, (start, title, url) in enumerate(unique):
+    for i, (start, link_index, title, url) in enumerate(unique):
         stop = unique[i + 1][0] if i + 1 < len(unique) else len(page.parts)
         # A public bid card often puts the title BEFORE its generic "Read on"
         # link. Use the isolated article/list/table row, never the prior card.
-        href = next((href for label, href, pos in page.links
-                     if pos == start and individual_url(href, origin) == url), "")
-        card_text = page.link_rows.get(href, "") if href else ""
+        href = page.links[link_index][1]
+        # A repeated bidID link may appear in multiple cards. The legacy
+        # href-keyed map retains only the LAST card and can contaminate the
+        # first bid's title, closing date and status with a different row.
+        # Prefer the exact link's enclosing card, preserving the fallback
+        # for parsers that do not expose per-link contexts.
+        card_text = page.link_contexts.get(link_index, page.link_rows.get(href, ""))
         if card_text and title.strip().lower() in generic_labels:
             prefix = re.split(
                 r"\b(?:Bid\s+No\.?|Status|Closes|Publication Date/Time|"
