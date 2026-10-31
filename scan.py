@@ -793,6 +793,11 @@ def scan_direct(src):
       nested_seen.add(target_identity)
     if nested_candidates:
      nested_candidates.sort(key=lambda item: -item[0])
+     # A nested procurement index may contain hundreds of bid IDs. Rotate
+     # its deferred tail too; rotating only the outer index would retry the
+     # same nested notices on every scheduled scan.
+     nested_candidates = detail_rotation.rotate_exploration_window(
+      nested_candidates, max(1, max_details - len(visited)), NOW)
      candidates[candidate_index+1:candidate_index+1] = nested_candidates
     if nested_notice_links and not p.rows:
      nested_listing_pages += 1
