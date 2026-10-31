@@ -45,3 +45,26 @@ def rotate_boundary_ties(ordered, budget, now, priority):
     offset = (hour * window) % len(group)
     items[start:end] = group[offset:] + group[:offset]
     return items
+
+
+def rotate_selected_boundary_ties(ordered, budget, now, priority, selected):
+    """Rotate tied candidates at a *separate* request budget boundary.
+
+    Some detail links consume both the general detail budget and a smaller
+    PDF download budget. Rotating only at the general boundary can retry the
+    same five PDFs forever when the page lists fewer than MAX_DETAIL links.
+    Rotate only selected (PDF-shaped) links in their existing slots, leaving
+    HTML candidates and higher-ranked PDF groups untouched. This changes
+    fetch order, not access permission, eligibility, or publication status.
+    """
+    items = list(ordered)
+    if not isinstance(budget, int) or budget <= 0:
+        return items
+    positions = [i for i, item in enumerate(items) if selected(item)]
+    if len(positions) <= budget:
+        return items
+    subset = [items[i] for i in positions]
+    rotated = rotate_boundary_ties(subset, budget, now, priority)
+    for index, item in zip(positions, rotated):
+        items[index] = item
+    return items
