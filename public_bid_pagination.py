@@ -4,7 +4,7 @@ Never used on NYSCR, BidNet or PennBid; those require a permitted
 listing/export interface. Do not follow off-host or unrelated links.
 """
 import re
-from urllib.parse import urljoin, urlparse, parse_qs
+from urllib.parse import urljoin, urlparse, parse_qsl
 
 PUBLIC_LISTINGS = frozenset({
     "Chemung County bids", "Steuben County bids",
@@ -12,6 +12,7 @@ PUBLIC_LISTINGS = frozenset({
     "Elmira City bids",
 })
 PAGE_KEYS = frozenset({"page", "pagenumber", "pageno", "skip", "offset", "start"})
+_ENCODED_CONTROL = re.compile(r"%(?:0[0-9a-f]|1[0-9a-f]|7f)", re.I)
 MAX_PAGES = 3
 MAX_PUBLIC_DETAILS = 36
 
@@ -38,7 +39,8 @@ def next_pages(links, listing_url, seen):
     for label, href, _ in links:
         if not isinstance(href, str) or not href or not pagination_label(label):
             continue
-        if any(ord(c) < 33 or ord(c) == 127 or c == "\\" for c in href):
+        if (any(ord(c) < 33 or ord(c) == 127 or c == "\\" for c in href)
+                or _ENCODED_CONTROL.search(href)):
             continue
         try:
             url = urljoin(listing_url, href)
@@ -48,11 +50,13 @@ def next_pages(links, listing_url, seen):
                     or parsed.port not in (None, 443)
                     or parsed.path.lower().rstrip("/") != base.path.lower().rstrip("/")):
                 continue
-            params = {k.lower(): v for k, v in parse_qs(parsed.query).items()}
-            if "bidid" in params:  # a bid detail must never masquerade as a pager
-                continue
-            cursors = [value for key, values in params.items()
-                       if key in PAGE_KEYS for value in values]
+            # Keep every cursor, including duplicate/mixed-case keys and empty
+            # values. Collapsing into a dict could conceal a malformed cursor.
+            params = [(key.lower(), value) for key, value in
+                      parse_qsl(parsed.query, keep_blank_values=True)]
+            if any(key == "bidid" for key, _ in params):
+                continue  # a bid detail must never masquerade as a pager
+            cursors = [value for key, value in params if key in PAGE_KEYS]
             if not cursors or not all(value.isascii() and value.isdigit()
                                       for value in cursors):
                 continue
