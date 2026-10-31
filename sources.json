@@ -643,7 +643,10 @@
     "type": "NY education",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://fcs.cornell.edu/projects-out-to-bid",
+    "official_page_role": "official_construction_project_index_with_individual_pages",
+    "activation_gate": "Publisher has individual /bid-projects/ pages; verify robots/terms and permitted automated extraction, separate Cornell-funded Trimble Unity from state NYSCR notices, confirm submission deadlines rather than bid-opening times, and test relevant worksite/scope before activation."
   },
   {
     "name": "Ithaca College",
