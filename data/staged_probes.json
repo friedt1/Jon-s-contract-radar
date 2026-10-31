@@ -1,8 +1,8 @@
 {
-  "updated": "2026-10-31T23:02:50.720653+00:00",
+  "updated": "2026-10-31T23:44:33.246966+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 56,
-  "safe_staged_entrypoints": 56,
+  "staged_entrypoints": 58,
+  "safe_staged_entrypoints": 58,
   "invalid_staged_entrypoints": 0,
   "probes": [
     {
@@ -673,6 +673,19 @@
       "direct_monitoring_activated": false
     },
     {
+      "name": "Elmira City School District",
+      "official_entrypoint": "https://www.elmiracityschools.com/page/business-office",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Elmira City Schools homepage links to Business Office (verified 2026-10-31). This district business page is not a verified individual-contract solicitation index. Determine where the district publishes construction and tree-service bids (including any project document host or authorized cooperative), verify robots/terms and per-notice extraction, and independently confirm worksite, tree/clearing scope, submission deadline, amendments and current open status before activation. Do not infer bids from capital-project pages or contact listings.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
       "name": "Corning-Painted Post Area School District",
       "official_entrypoint": "https://www.corningareaschools.com/page/business-services",
       "state": "official_page_reachable_no_procurement_evidence",
@@ -682,6 +695,19 @@
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official district Business Services page checked 2026-10-31: vendors must request copies of current advertised bid/RFP documents from the district. No public per-notice index, authoritative deadline or permitted automated document extraction established. Request-required document access is not a working monitor; review publisher terms/robots, identify an authorized individual-notice channel, and test scope/deadline extraction before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Ithaca City School District",
+      "official_entrypoint": "https://www.ithacacityschools.org/page/business-services",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Ithaca City School District homepage links to Business Services (verified 2026-10-31). The page does not establish a public, automatable individual-bid feed. District legal notices may require direct sealed submission; locate the publisher-approved notice index or authorized procurement channel, review robots/terms, and verify each individual solicitation's location, tree/vegetation scope, submission deadline and closing time, amendments and open status. Do not treat third-party bid summaries or school budget pages as official live bids.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     },
