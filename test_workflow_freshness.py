@@ -31,5 +31,25 @@ class WorkflowFreshnessTests(unittest.TestCase):
         self.assertLess(rebase, push)
 
 
+    def test_all_generated_feeds_retry_non_force_push_after_rebase(self):
+        # A scheduled local scan once passed tests and extraction but lost
+        # a race with a concurrent main merge at git push. Retrying must
+        # fetch/rebase again, never force-push over other scan results.
+        for path in (".github/workflows/scan.yml",
+                     ".github/workflows/local-leads.yml",
+                     ".github/workflows/staged-probe.yml"):
+            with self.subTest(workflow=path):
+                workflow = (ROOT / path).read_text()
+                self.assertIn("for attempt in 1 2 3 4 5; do", workflow)
+                self.assertIn("git pull --rebase origin main", workflow)
+                self.assertIn("if git push origin HEAD:main; then", workflow)
+                self.assertIn('if [ "$attempt" -eq 5 ]; then', workflow)
+                self.assertIn('exit 1', workflow)
+                self.assertNotIn("git push --force", workflow)
+                self.assertNotIn("git push -f ", workflow)
+                self.assertLess(workflow.index("git pull --rebase origin main"),
+                                workflow.index("if git push origin HEAD:main; then"))
+
+
 if __name__ == "__main__":
     unittest.main()

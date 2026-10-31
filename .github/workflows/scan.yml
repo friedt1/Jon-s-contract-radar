@@ -69,6 +69,18 @@ jobs:
             # A staged probe or another workflow may have updated main while
             # this scan ran. Rebase rather than losing the scheduled result to
             # a non-fast-forward push; genuine data conflicts still fail closed.
-            git pull --rebase origin main
-            git push origin HEAD:main
+            # Another scheduled workflow may publish between rebase and push.
+            # Retry only optimistic, non-force pushes; a genuine rebase
+            # conflict still fails closed rather than overwriting data.
+            for attempt in 1 2 3 4 5; do
+              git pull --rebase origin main
+              if git push origin HEAD:main; then
+                break
+              fi
+              if [ "$attempt" -eq 5 ]; then
+                echo "Could not publish after five non-force attempts" >&2
+                exit 1
+              fi
+              sleep "$attempt"
+            done
           fi
