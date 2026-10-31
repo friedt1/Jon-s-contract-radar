@@ -144,7 +144,7 @@
       "detail_candidates_deferred": 33,
       "detail_candidate_incomplete_sources": 3,
       "individual_bid_details_fetched": 12,
-      "detail_errors": 2,
+      "detail_errors": 0,
       "pagination_errors": 0,
       "pagination_incomplete_sources": 0,
       "pagination_robots_blocked_sources": 0,
@@ -351,16 +351,16 @@
         "detail_budget_deferred": 0,
         "detail_candidates_deferred": 12,
         "individual_bid_details_fetched": 0,
-        "detail_errors": 1,
+        "detail_errors": 0,
         "pagination_errors": 0,
         "pagination_access_state": "no_reported_errors",
-        "detail_access_state": "fetch_error",
+        "detail_access_state": "attempted_unverified",
         "pdf_fetch_attempts": 5,
         "pdf_budget_skips": 263,
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 12 detail candidates deferred at request budget; 0 individual bid details fetched; 4 PDFs checked; 5 PDF-shaped requests attempted; 263 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 12 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 263 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "PA DGS construction bids",
@@ -376,16 +376,16 @@
         "detail_budget_deferred": 0,
         "detail_candidates_deferred": 17,
         "individual_bid_details_fetched": 0,
-        "detail_errors": 1,
+        "detail_errors": 0,
         "pagination_errors": 0,
         "pagination_access_state": "no_reported_errors",
-        "detail_access_state": "fetch_error",
+        "detail_access_state": "attempted_unverified",
         "pdf_fetch_attempts": 5,
         "pdf_budget_skips": 276,
         "result_award_links_excluded": 95,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 17 detail candidates deferred at request budget; 0 individual bid details fetched; 4 PDFs checked; 5 PDF-shaped requests attempted; 276 PDF requests skipped at budget; 95 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 17 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 276 PDF requests skipped at budget; 95 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
       },
       {
         "name": "Tioga Bradford Housing Authority",
@@ -2715,7 +2715,7 @@
     ],
     "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Individual-detail robots blocks, HTTP refusals, redirects, rate limits and other errors are reported separately. Listing pagination failures, deferred individual bid records, and unfetched generic detail candidates mean extraction coverage may be incomplete. Generic candidates are not verified individual solicitations. External provider links require an approved adapter and are not followed. Provider-access requirements persist even when a scan has no status. Configured access-required portals and unimplemented feed/API adapters are not direct fetch targets. HTTP refusals, unsafe redirects, rate limits and unsupported content are distinguished from transient fetch errors. Staged URLs are not monitored; all leads remain unverified."
   },
-  "updated": "2026-10-31T12:51:49+00:00",
+  "updated": "2026-10-31T13:38:34+00:00",
   "opportunities": [],
   "source_status": {
     "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 0 conflicting duplicate bid cards; 2 relevant details checked; 0 individual bid records deferred at detail budget; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
@@ -2725,8 +2725,8 @@
     "Elmira City bids": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied",
     "Elmira Next local bids": "direct fetched; 1 listing pages; 10 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 2 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied",
     "Lycoming County bids": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied",
-    "PA procurement opportunities": "direct fetched; 1 listing pages; 18 details checked; 12 detail candidates deferred at request budget; 0 individual bid details fetched; 4 PDFs checked; 5 PDF-shaped requests attempted; 263 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied",
-    "PA DGS construction bids": "direct fetched; 1 listing pages; 18 details checked; 17 detail candidates deferred at request budget; 0 individual bid details fetched; 4 PDFs checked; 5 PDF-shaped requests attempted; 276 PDF requests skipped at budget; 95 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: ValueError; indirect RSS error: RobotsDenied",
+    "PA procurement opportunities": "direct fetched; 1 listing pages; 18 details checked; 12 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 263 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
+    "PA DGS construction bids": "direct fetched; 1 listing pages; 18 details checked; 17 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 276 PDF requests skipped at budget; 95 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "Tioga Bradford Housing Authority": "direct fetched; 1 listing pages; 2 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "Chemung County purchasing": "direct fetched; 1 listing pages; 18 details checked; 4 detail candidates deferred at request budget; 2 individual bid details fetched; 4 PDFs checked; 4 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 2 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
     "PennBid platform": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established",
