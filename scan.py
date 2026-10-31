@@ -138,12 +138,24 @@ def closed(text):
   r'|\b(?:withdrawn|rescinded)\s+(?:solicitation|rfp|rfq|procurement\s+notice)\b',
   text, re.I))
 
-def eligible(text, source='', today=None):
- today=today or NOW.astimezone(ZoneInfo('America/New_York')).date()
+def eligible(text, source='', today=None, now=None):
+ """Conservatively gate every candidate, including indirect RSS discoveries.
+
+ Direct HTML/PDF paths already check explicit same-day closing times, but
+ news and local bid RSS flow through add_lead() instead. Apply the same
+ cutoff here so a bid closed earlier today cannot re-enter via RSS. A date
+ without a clock stays unverified, not presumed closed. Explicit historical
+ test dates remain independent of the scanner's real current clock.
+ """
+ now=now or NOW
+ local_today=now.astimezone(ZoneInfo('America/New_York')).date()
+ today=today or local_today
  if not category(text) or not bidlike(text): return False
  if closed(text): return False
  due=deadline(text)
  if due and dt.date.fromisoformat(due)<today: return False
+ if due==today.isoformat() and today==local_today and explicit_closing_passed(text,now):
+  return False
  if source in BROAD_SOURCES and not local_evidence(text): return False
  return True
 
