@@ -121,12 +121,24 @@ def probe(source, fetch=scan.fetch, now=None):
         "terms_review": "required; robots allowance alone is not authorization",
         "direct_monitoring_activated": False,
     }
+    # Staged entries are untrusted configuration. Apply the same public-HTTPS
+    # URL hygiene as active source configuration before ANY network request.
+    # An invalid entry must not become a generic network error or a live source.
+    if not valid_public_https_url(url):
+        result["state"] = "listing_invalid_official_url"
+        return result
     try:
         html, kind, final = fetch(url)
-        # A redirected listing must remain on HTTPS. An HTTP downgrade is
-        # not evidence of a working public procurement entrypoint.
-        if urlparse(final).scheme.lower() != "https":
-            result["state"] = "listing_insecure_redirect"
+        # The fetcher normally blocks unsafe redirects, but validate its final
+        # URL independently too (including credentialed, malformed, nonstandard
+        # port and encoded-control destinations). This protects injected fetchers
+        # and future adapter changes from treating an unsafe landing as a bid page.
+        if not valid_public_https_url(final):
+            result["state"] = (
+                "listing_insecure_redirect"
+                if isinstance(final, str) and final.lower().startswith("http://")
+                else "listing_unsafe_redirect"
+            )
             return result
         if urlparse(final).hostname != urlparse(url).hostname:
             # A county may redirect its bids page directly to an external
@@ -383,6 +395,12 @@ def build(sources, fetch=scan.fetch, now=None):
         "updated": (now or dt.datetime.now(dt.timezone.utc)).isoformat(),
         "configured_targets": len(sources),
         "staged_entrypoints": len(staged),
+        "safe_staged_entrypoints": sum(
+            valid_public_https_url(s.get("candidate_official_url")) for s in staged
+        ),
+        "invalid_staged_entrypoints": sum(
+            not valid_public_https_url(s.get("candidate_official_url")) for s in staged
+        ),
         "probes": rows,
         "warning": ("Diagnostic only: no source is activated by these probes. "
                     "A fetched page or parsed historical notice is not an open bid. "
