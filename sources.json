@@ -551,7 +551,10 @@
     "type": "PA municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://cityofwilliamsport.org/news/document-category/request-for-proposal/",
+    "official_page_role": "mixed_rfp_index_and_archived_responses",
+    "activation_gate": "Official City of Williamsport Request for Proposal document category verified 2026-10-30: individual RFP/IFB posts exist, but the index also contains historical responses and non-service sale notices. Before activation, verify robots and publisher terms, build permitted individual-post/attachment extraction with authoritative bid submission deadlines, scope and worksite, and separately review any external provider authorization. Do not treat a dated post as an open bid."
   },
   {
     "name": "Montrose Borough",
