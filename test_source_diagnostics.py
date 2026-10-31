@@ -269,6 +269,78 @@ class SourceDiagnosticsTests(unittest.TestCase):
         self.assertEqual(result["diagnostic_gaps"], 1)
         self.assertEqual(result["unaccounted_targets"], 0)
 
+    def test_named_inventory_detects_swapped_source_despite_matching_count(self):
+        # Synthetic inventory: a missing source is masked by an unexpected
+        # row when only counts are compared. SAM.gov is outside this inventory.
+        result = source_diagnostics.report({
+            "source_coverage": {
+                "total_targets": 3,
+                "expected_source_names": ["County A", "County B", "County C"],
+            },
+            "source_status": {
+                "County A": "direct fetched",
+                "County B": "direct fetched",
+                "Unexpected": "direct fetched",
+                "SAM.gov": "deferred",
+            },
+            "source_health": {"sources": [
+                {"name": "County A", "direct_state": "fetched_unverified"},
+                {"name": "County B", "direct_state": "fetched_unverified"},
+                {"name": "Unexpected", "direct_state": "fetched_unverified"},
+            ]},
+            "opportunities": [],
+        })
+        self.assertEqual(result["missing_inventory_sources"], ["County C"])
+        self.assertEqual(result["unexpected_inventory_sources"], ["Unexpected"])
+        self.assertEqual(result["unaccounted_targets"], 1)
+        self.assertEqual(result["health_inventory_shortfall"], 1)
+        self.assertEqual(result["diagnostic_gaps"], 2)
+        rows = {row["source"]: row for row in result["sources"]}
+        self.assertTrue(rows["Unexpected"]["unexpected_inventory_source"])
+        self.assertTrue(rows["Unexpected"]["error"])
+        self.assertNotIn("SAM.gov", result["unexpected_inventory_sources"])
+        self.assertEqual(result["verified_open_opportunities"], 0)
+
+    def test_named_inventory_reconciles_complete_scan(self):
+        result = source_diagnostics.report({
+            "source_coverage": {
+                "total_targets": 2,
+                "expected_source_names": ["County B", "County A"],
+            },
+            "source_status": {
+                "County A": "direct fetched",
+                "County B": "direct fetched",
+            },
+            "source_health": {"sources": [
+                {"name": "County A", "direct_state": "fetched_unverified"},
+                {"name": "County B", "direct_state": "fetched_unverified"},
+            ]},
+            "opportunities": [],
+        })
+        self.assertEqual(result["missing_inventory_sources"], [])
+        self.assertEqual(result["unexpected_inventory_sources"], [])
+        self.assertEqual(result["diagnostic_gaps"], 0)
+
+    def test_invalid_named_inventory_rejected(self):
+        for names, total in [
+            (["County A", "County A"], 2),
+            (["County A", ""], 2),
+            (["County A", 123], 2),
+            ("County A", 1),
+            (["County A"], 2),
+        ]:
+            with self.subTest(names=names, total=total):
+                with self.assertRaises(ValueError):
+                    source_diagnostics.report({
+                        "source_coverage": {
+                            "total_targets": total,
+                            "expected_source_names": names,
+                        },
+                        "source_status": {},
+                        "source_health": {"sources": []},
+                        "opportunities": [],
+                    })
+
     def test_legacy_feed_does_not_claim_inventory_reconciliation(self):
         result = source_diagnostics.report({
             "source_coverage": {"total_targets": 102},

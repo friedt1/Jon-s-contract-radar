@@ -905,6 +905,9 @@ def main():
  direct_names={s['name'] for s in sources if s.get('mode')=='direct_page' and source_config.direct_configured(s)}
  coverage={
   'total_targets':len(sources),
+  # Preserve the exact 102-source identity so missing names cannot be masked
+  # by unexpected or renamed diagnostics with the same total count.
+  'expected_source_names':sorted(s['name'] for s in sources),
   'direct_configured':len(direct_names),
   'pending_direct':len(sources)-len(direct_names),
   'direct_fetched':sum('direct fetched' in status.get(name,'') for name in direct_names),
