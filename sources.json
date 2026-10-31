@@ -595,7 +595,10 @@
     "type": "NY education",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.elmiracityschools.com/page/business-office",
+    "official_page_role": "Official Elmira City Schools Business Office; district procurement contact gateway, NOT a current individual-bid listing",
+    "activation_gate": "Official Elmira City Schools homepage links to Business Office (verified 2026-10-31). This district business page is not a verified individual-contract solicitation index. Determine where the district publishes construction and tree-service bids (including any project document host or authorized cooperative), verify robots/terms and per-notice extraction, and independently confirm worksite, tree/clearing scope, submission deadline, amendments and current open status before activation. Do not infer bids from capital-project pages or contact listings."
   },
   {
     "name": "Horseheads Central School District",
@@ -619,7 +622,10 @@
     "type": "NY education",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.ithacacityschools.org/page/business-services",
+    "official_page_role": "Official Ithaca City School District Business Services; purchasing contact gateway, NOT a verified current bid feed",
+    "activation_gate": "Official Ithaca City School District homepage links to Business Services (verified 2026-10-31). The page does not establish a public, automatable individual-bid feed. District legal notices may require direct sealed submission; locate the publisher-approved notice index or authorized procurement channel, review robots/terms, and verify each individual solicitation's location, tree/vegetation scope, submission deadline and closing time, amendments and open status. Do not treat third-party bid summaries or school budget pages as official live bids."
   },
   {
     "name": "Binghamton City School District",
