@@ -233,6 +233,52 @@ class SourceDiagnosticsTests(unittest.TestCase):
         self.assertFalse(row["health_missing"])
         self.assertFalse(row["error"])
 
+    def test_inventory_count_exposes_sources_missing_from_both_diagnostics(self):
+        # All names are synthetic. A source absent from both structures must
+        # not make the claimed three-target scan appear complete.
+        result = source_diagnostics.report({
+            "source_coverage": {"total_targets": 3},
+            "source_status": {"County A": "direct fetched", "County B": "direct fetched"},
+            "source_health": {"sources": [
+                {"name": "County A", "direct_state": "fetched_unverified"},
+                {"name": "County B", "direct_state": "fetched_unverified"},
+            ]},
+            "opportunities": [],
+        })
+        self.assertEqual(result["unaccounted_targets"], 1)
+        self.assertEqual(result["health_inventory_shortfall"], 1)
+        self.assertEqual(result["diagnostic_gaps"], 1)
+        self.assertEqual(result["verified_open_opportunities"], 0)
+
+    def test_duplicate_health_row_is_an_error_not_a_second_source(self):
+        result = source_diagnostics.report({
+            "source_coverage": {"total_targets": 2},
+            "source_status": {"County A": "direct fetched", "County B": "direct fetched"},
+            "source_health": {"sources": [
+                {"name": "County A", "direct_state": "fetched_unverified"},
+                {"name": "County A", "direct_state": "fetched_unverified"},
+                {"name": "County B", "direct_state": "fetched_unverified"},
+            ]},
+            "opportunities": [],
+        })
+        rows = {row["source"]: row for row in result["sources"]}
+        self.assertEqual(result["duplicate_health_rows"], ["County A"])
+        self.assertTrue(rows["County A"]["duplicate_health_row"])
+        self.assertTrue(rows["County A"]["error"])
+        self.assertFalse(rows["County B"]["error"])
+        self.assertEqual(result["diagnostic_gaps"], 1)
+        self.assertEqual(result["unaccounted_targets"], 0)
+
+    def test_legacy_feed_does_not_claim_inventory_reconciliation(self):
+        result = source_diagnostics.report({
+            "source_coverage": {"total_targets": 102},
+            "source_status": {"Legacy": "direct fetched"},
+            "opportunities": [],
+        })
+        self.assertEqual(result["unaccounted_targets"], 0)
+        self.assertEqual(result["health_inventory_shortfall"], 0)
+        self.assertEqual(result["duplicate_health_rows"], [])
+
 
 if __name__ == "__main__":
     unittest.main()
