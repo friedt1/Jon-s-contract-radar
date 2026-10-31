@@ -63,6 +63,33 @@ class ValidateSourceHealthTests(unittest.TestCase):
         self.assertEqual(payload["source_health"]["counts"]["http_blocked"], 1)
         self.check(sources, payload)
 
+    def test_named_inventory_cannot_be_replaced_with_102_other_names(self):
+        sources, payload = self.payload()
+        payload["source_coverage"]["expected_source_names"] = sorted(
+            [s["name"] for s in sources][1:] + ["Unrecognized County"])
+        with self.assertRaisesRegex(ValueError, "Expected source inventory"):
+            self.check(sources, payload)
+
+    def test_swapped_health_states_fail_even_when_totals_match(self):
+        sources, payload = self.payload()
+        rows = {row["name"]: row for row in payload["source_health"]["sources"]}
+        self.assertEqual(rows["Tioga County NY"]["direct_state"], "fetched_unverified")
+        self.assertEqual(rows["Town of Lansing"]["direct_state"], "staged_official_url")
+        rows["Tioga County NY"]["direct_state"], rows["Town of Lansing"]["direct_state"] = (
+            rows["Town of Lansing"]["direct_state"],
+            rows["Tioga County NY"]["direct_state"],
+        )
+        with self.assertRaisesRegex(ValueError, "Source health state disagrees"):
+            self.check(sources, payload)
+
+    def test_balanced_but_forged_health_counts_fail(self):
+        sources, payload = self.payload()
+        counts = payload["source_health"]["counts"]
+        counts["fetched_unverified"] += 1
+        counts["not_configured"] -= 1
+        with self.assertRaisesRegex(ValueError, "Source health count disagrees"):
+            self.check(sources, payload)
+
     def test_detail_count_still_cannot_exceed_attempts(self):
         sources, payload = self.payload()
         row = next(r for r in payload["source_health"]["sources"]
