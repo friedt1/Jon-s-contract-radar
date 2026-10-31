@@ -25,7 +25,7 @@ def rotate_exploration_window(ordered, budget, now):
     if (not isinstance(now, dt.datetime) or now.tzinfo is None
             or now.utcoffset() is None):
         return items
-    exploration = max(1, budget // 4)
+    exploration = max(1, (budget + 3) // 4)
     protected = budget - exploration
     tail = items[protected:]
     # The tail is strictly longer than exploration when len(items) > budget.
