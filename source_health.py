@@ -97,13 +97,13 @@ def classify(source, status):
     error_section = re.search(r"\b\d+ detail errors:\s*([^;]*)", status)
     error_names = error_section.group(1) if error_section else ""
     detail_error_types = _access_error_types(error_names, detail_errors)
-    if "RobotsDenied" in error_names:
+    if "robots_blocked" in detail_error_types:
         detail_access_state = "robots_blocked"
-    elif re.search(r"\bHTTPError HTTP (?:401|403)\b", error_names):
+    elif "http_blocked" in detail_error_types:
         detail_access_state = "http_blocked"
-    elif "UnsafeRedirect" in error_names:
+    elif "redirect_blocked" in detail_error_types:
         detail_access_state = "redirect_blocked"
-    elif "HTTPError HTTP 429" in error_names:
+    elif "rate_limited" in detail_error_types:
         detail_access_state = "rate_limited"
     elif detail_errors:
         detail_access_state = "partial_fetch_errors" if details_fetched else "fetch_error"
@@ -120,13 +120,13 @@ def classify(source, status):
     pagination_section = re.search(r"\b\d+ pagination errors:\s*([^;]*)", status)
     pagination_names = pagination_section.group(1) if pagination_section else ""
     pagination_error_types = _access_error_types(pagination_names, pagination_errors)
-    if "RobotsDenied" in pagination_names:
+    if "robots_blocked" in pagination_error_types:
         pagination_access_state = "robots_blocked"
-    elif re.search(r"\bHTTPError HTTP (?:401|403)\b", pagination_names):
+    elif "http_blocked" in pagination_error_types:
         pagination_access_state = "http_blocked"
-    elif "UnsafeRedirect" in pagination_names:
+    elif "redirect_blocked" in pagination_error_types:
         pagination_access_state = "redirect_blocked"
-    elif "HTTPError HTTP 429" in pagination_names:
+    elif "rate_limited" in pagination_error_types:
         pagination_access_state = "rate_limited"
     elif pagination_errors:
         pagination_access_state = "partial_listing_errors"
