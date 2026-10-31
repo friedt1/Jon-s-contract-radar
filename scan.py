@@ -178,14 +178,14 @@ def fetch(url, binary=False):
 
 class Page(HTMLParser):
  def __init__(self):
-  super().__init__();self.parts=[];self.links=[];self.active=None;self.skip=0;self.in_row=False;self.row=[];self.rows=[];self.link_rows={};self.row_links=[];self.headings=[];self.heading_tag=None;self.heading_parts=[]
+  super().__init__();self.parts=[];self.links=[];self.active=None;self.skip=0;self.in_row=False;self.row=[];self.rows=[];self.link_rows={};self.link_contexts={};self.row_links=[];self.row_link_indexes=[];self.headings=[];self.heading_tag=None;self.heading_parts=[]
  def handle_starttag(self,tag,attrs):
   a=dict(attrs)
   if tag in ('script','style','noscript'):self.skip+=1
   if tag in ('h1','h2') and self.heading_tag is None:
    self.heading_tag=tag;self.heading_parts=[]
   if tag in ('tr','article','li') and not self.in_row:
-   self.row_tag=tag;self.in_row=True;self.row=[];self.row_links=[]
+   self.row_tag=tag;self.in_row=True;self.row=[];self.row_links=[];self.row_link_indexes=[]
   if tag=='a':
    self.active=[a.get('href') or '',[],len(self.parts)]
    if self.in_row:self.row_links.append(a.get('href') or '')
@@ -204,9 +204,13 @@ class Page(HTMLParser):
    self.heading_tag=None;self.heading_parts=[]
   if tag=='a' and self.active is not None:
    href,words,pos=self.active;self.links.append((norm(' '.join(words)),href,pos));self.active=None
+   if self.in_row:self.row_link_indexes.append(len(self.links)-1)
   if self.in_row and tag==self.row_tag:
    text=norm(' '.join(self.row));self.rows.append(text)
    for href in self.row_links:self.link_rows[href]=text
+   # A link can occur in multiple rows with different bid scopes/dates.
+   # Keep its original row by link index; href-only mapping loses evidence.
+   for index in self.row_link_indexes:self.link_contexts[index]=text
    self.in_row=False;self.row=[]
 
 def parse_html(html):
@@ -587,8 +591,8 @@ def scan_direct(src):
  # Keep each table/list record isolated from neighboring bid scopes and dates.
  max_details=public_pages.MAX_PUBLIC_DETAILS if name in public_pages.PUBLIC_LISTINGS else MAX_DETAIL
  candidates=[]
- listing_links=[(title,href,pos,p.link_rows.get(href,title),origin)
-                for p,origin in listing_pages for title,href,pos in p.links]
+ listing_links=[(title,href,pos,p.link_contexts.get(i,p.link_rows.get(href,title)),origin)
+                for p,origin in listing_pages for i,(title,href,pos) in enumerate(p.links)]
  for title,href,pos,context,origin in listing_links:
   # Pager controls are listing navigation, not bid-detail candidates. Even
   # malformed page cursors must not consume the individual-detail budget.
@@ -696,8 +700,8 @@ def scan_direct(src):
     nested_candidates = []
     nested_seen = set()
     listing_identity = notice_identity.canonical_url(final_url)
-    for label,href,_ in p.links:
-     row=p.link_rows.get(href,label)
+    for link_index,(label,href,_) in enumerate(p.links):
+     row=p.link_contexts.get(link_index,p.link_rows.get(href,label))
      target=safe_detail_url(final_url,href)
      if not target:
       # Nested agency purchasing pages may delegate the actual notices to
