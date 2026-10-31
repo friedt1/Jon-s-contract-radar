@@ -194,6 +194,22 @@ def summarize(sources, statuses):
     counts["detail_candidate_incomplete_sources"] = sum(
         row["detail_candidates_deferred"] > 0 for row in rows)
     counts["individual_bid_details_fetched"] = sum(row["individual_bid_details_fetched"] for row in rows)
+    # Distinguish successfully opening a procurement landing page from
+    # actually retrieving individual bid details. PDF checks are reported
+    # separately; neither kind of retrieval verifies an open opportunity.
+    counts["individual_detail_retrieval_sources"] = sum(
+        row["individual_bid_details_fetched"] > 0 for row in rows)
+    counts["fetched_without_individual_details_sources"] = sum(
+        row["direct_state"] == "fetched_unverified"
+        and row["individual_bid_details_fetched"] == 0 for row in rows)
+    # A fetched landing page with incomplete pagination, request budgets,
+    # or failed details cannot be described as complete listing coverage.
+    counts["fetched_with_incomplete_extraction_sources"] = sum(
+        row["direct_state"] == "fetched_unverified"
+        and any(row[key] > 0 for key in (
+            "pagination_errors", "detail_errors", "detail_budget_deferred",
+            "detail_candidates_deferred", "pdf_budget_skips"))
+        for row in rows)
     counts["detail_errors"] = sum(row["detail_errors"] for row in rows)
     counts["pagination_errors"] = sum(row["pagination_errors"] for row in rows)
     counts["pagination_incomplete_sources"] = sum(row["pagination_errors"] > 0 for row in rows)

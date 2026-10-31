@@ -201,5 +201,49 @@ class SourceHealthTests(unittest.TestCase):
         self.assertEqual(summary["counts"]["not_configured"], 0)
 
 
+    def test_landing_page_fetches_do_not_imply_individual_bid_coverage(self):
+        # All statuses are synthetic. No source is activated and no lead is
+        # manufactured by this accounting test.
+        sources = [
+            {"name": name, "mode": "direct_page",
+             "url": f"https://{name.lower()}.example/bids",
+             "verified_url": True}
+            for name in ("Details", "PdfArchive", "IndexOnly", "Failed")
+        ]
+        sources.append({"name": "Staged", "mode": "discovery_pending",
+                        "candidate_official_url": "https://staged.example/bids"})
+        statuses = {
+            "Details": ("direct fetched; 1 listing pages; "
+                        "2 individual bid details fetched; 0 candidates"),
+            "PdfArchive": ("direct fetched; 1 listing pages; "
+                           "0 individual bid details fetched; 4 PDFs checked; "
+                           "18 PDF requests skipped at budget"),
+            "IndexOnly": ("direct fetched; 1 listing pages; "
+                          "0 individual bid details fetched"),
+            "Failed": "direct error: TimeoutError",
+            "Staged": "indirect RSS error: RobotsDenied",
+        }
+        counts = source_health.summarize(sources, statuses)["counts"]
+        self.assertEqual(counts["fetched_unverified"], 3)
+        self.assertEqual(counts["individual_bid_details_fetched"], 2)
+        self.assertEqual(counts["individual_detail_retrieval_sources"], 1)
+        self.assertEqual(counts["fetched_without_individual_details_sources"], 2)
+        self.assertEqual(counts["fetched_with_incomplete_extraction_sources"], 1)
+        self.assertEqual(counts["staged_official_url"], 1)
+        self.assertEqual(counts["fetch_error"], 1)
+
+    def test_failed_detail_and_pagination_fetches_mark_incomplete_coverage(self):
+        src = {"name": "County", "mode": "direct_page",
+               "url": "https://county.example/bids", "verified_url": True}
+        status = ("direct fetched; 1 listing pages; "
+                  "1 individual bid details fetched; "
+                  "2 detail errors: TimeoutError; "
+                  "1 pagination errors: RobotsDenied")
+        counts = source_health.summarize([src], {"County": status})["counts"]
+        self.assertEqual(counts["individual_detail_retrieval_sources"], 1)
+        self.assertEqual(counts["fetched_without_individual_details_sources"], 0)
+        self.assertEqual(counts["fetched_with_incomplete_extraction_sources"], 1)
+
+
 if __name__ == "__main__":
     unittest.main()
