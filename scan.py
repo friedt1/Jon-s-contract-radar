@@ -135,6 +135,12 @@ def closed(text):
   r'\s+(?:(?:is|are)\s+)?(?:now\s+)?closed\b'
   r'|\bstatus\s*(?::|(?:is|are))\s*closed\b(?!' + question_only + r')'
   r'|\bclosed\s+(?:for|to)\s+(?:bids?|proposals?|submissions?)\b'
+  # A publisher may close intake without using the literal status "Closed".
+  # Match explicit bid/proposal intake termination, not a closed questions
+  # window or a future conditional "not accepted after" cutoff.
+  r'|\bno\s+longer\s+accepting\s+(?:new\s+)?(?:sealed\s+)?(?:bids?|proposals?|submissions?)\b'
+  r'|\b(?:bids?|proposals?|submissions?)\s+(?:are|is)\s+no\s+longer\s+(?:being\s+)?accepted\b'
+  r'|\b(?:bid|proposal|submission)\s+(?:intake|submission\s+(?:period|window)|period|window)\s+(?:(?:has|have)\s+)?(?:ended|closed)\b'
   # A withdrawn solicitation is closed; a contractor withdrawing its own
   # offer is not evidence that the issuing agency cancelled procurement.
   r'|\b(?:status|solicitation\s+status|bid\s+status)\s*(?::|(?:is|are))\s*(?:withdrawn|rescinded)\b'

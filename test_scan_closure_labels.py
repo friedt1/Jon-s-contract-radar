@@ -58,6 +58,41 @@ class ScannerClosureLabelTests(unittest.TestCase):
                     "Erie tree and stump removal bid. Due November 13, 2026. " + label,
                     source="Test County", today=self.TODAY))
 
+    def test_bid_intake_ended_without_closed_status_excludes_candidates(self):
+        # Synthetic publisher wording only, never real/open bid records.
+        for label in (
+            "Agency is no longer accepting bids",
+            "No longer accepting new sealed bids",
+            "No longer accepting proposals",
+            "Bids are no longer being accepted",
+            "Proposals are no longer accepted",
+            "Bid intake has ended",
+            "Bid submission window has closed",
+            "Proposal submission period has ended",
+        ):
+            with self.subTest(label=label):
+                text = "Tree removal bid due November 13, 2026. " + label
+                self.assertTrue(scan.closed(label))
+                self.assertFalse(scan.eligible(text, today=self.TODAY))
+                found = {}
+                scan.add_lead(found, "Synthetic County", text,
+                              "https://example.gov/bids/closed-notice")
+                self.assertEqual(found, {})
+
+    def test_questions_and_future_acceptance_cutoff_are_not_closed_intake(self):
+        for label in (
+            "No longer accepting questions",
+            "Questions are no longer being accepted",
+            "Bid submission window remains open",
+            "Bids will no longer be accepted after November 13, 2026",
+            "Bids will be accepted until November 13, 2026",
+        ):
+            with self.subTest(label=label):
+                self.assertFalse(scan.closed(label))
+                self.assertTrue(scan.eligible(
+                    "Tree removal bid due November 13, 2026. " + label,
+                    today=self.TODAY))
+
     def test_one_vendor_withdrawing_offer_does_not_close_procurement(self):
         self.assertTrue(scan.closed("Rescinded"))
         text = ("Tree removal bid due November 13, 2026. "
