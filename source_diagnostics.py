@@ -20,9 +20,14 @@ def report(payload):
         raise ValueError("invalid source health schema")
     by_name = {row["name"]: row for row in health.get("sources", [])
                if isinstance(row, dict) and isinstance(row.get("name"), str)}
+    has_health = "source_health" in payload and payload["source_health"] is not None
     results = []
-    for name, status in sorted(sources.items()):
-        message = str(status)
+    # A source present in health but missing from source_status must not
+    # disappear from diagnostics. Conversely, missing health rows are a gap
+    # when the feed claims to include structured health.
+    for name in sorted(set(sources) | set(by_name)):
+        status_missing = name not in sources
+        message = str(sources.get(name, ""))
         low = message.lower()
         import re
         def count(pattern):
@@ -33,6 +38,20 @@ def report(payload):
         indirect = row.get("indirect_state", "unknown")
         detail_errors = row.get("detail_errors", 0)
         pagination_errors = row.get("pagination_errors", 0)
+        detail_budget_deferred = row.get(
+            "detail_budget_deferred",
+            count(r"(\d+) individual bid records deferred at detail budget") or 0)
+        detail_candidates_deferred = row.get(
+            "detail_candidates_deferred",
+            count(r"(\d+) detail candidates deferred at request budget") or 0)
+        pdf_budget_skips = row.get("pdf_budget_skips", 0)
+        # SAM.gov is intentionally deferred and excluded from the 102-source
+        # structured health report; it is not a missing health record.
+        health_missing = (has_health and name not in by_name
+                          and not (name == "SAM.gov" and message == "deferred"))
+        coverage_incomplete = bool(
+            detail_errors or pagination_errors or detail_budget_deferred
+            or detail_candidates_deferred or pdf_budget_skips)
         # An indirect RSS robots error must not turn a successful direct
         # fetch into a direct-source failure.
         # HTTP denials, unsafe redirects, rate limits, and unsupported
@@ -66,12 +85,18 @@ def report(payload):
             "indirect_error": indirect_error,
             "detail_errors": detail_errors,
             "pagination_errors": pagination_errors,
+            "detail_budget_deferred": detail_budget_deferred,
+            "detail_candidates_deferred": detail_candidates_deferred,
+            "coverage_incomplete": coverage_incomplete,
+            "status_missing": status_missing,
+            "health_missing": health_missing,
             "pagination_access_state": row.get("pagination_access_state", "unknown"),
             "pdf_fetch_attempts": row.get("pdf_fetch_attempts", 0),
-            "pdf_budget_skips": row.get("pdf_budget_skips", 0),
+            "pdf_budget_skips": pdf_budget_skips,
             "result_award_links_excluded": row.get("result_award_links_excluded", 0),
             "external_provider_links_skipped": row.get("external_provider_links_skipped", 0),
-            "error": direct_error or bool(detail_errors) or bool(pagination_errors),
+            "error": (direct_error or bool(detail_errors) or bool(pagination_errors)
+                      or status_missing or health_missing),
             "raw_status": message,
         })
     return {
@@ -83,9 +108,16 @@ def report(payload):
         ),
         "source_coverage": payload.get("source_coverage", {}),
         "health_counts": health.get("counts", {}),
+        "detail_budget_deferred": sum(row["detail_budget_deferred"] for row in results),
+        "detail_candidates_deferred": sum(row["detail_candidates_deferred"] for row in results),
+        "incomplete_detail_sources": sum(row["coverage_incomplete"] for row in results),
+        "diagnostic_gaps": sum(
+            row["status_missing"] or row["health_missing"] for row in results),
         "sources": results,
         "warning": ("Direct fetch, indirect RSS, provider access and individual-detail "
-                    "failures, including incomplete listing pagination, are separate. "
+                    "failures, including incomplete listing pagination and deferred "
+                    "detail requests, are separate. Missing per-source diagnostics "
+                    "are reported rather than silently dropped. "
                     "A fetched page or unverified candidate "
                     "is not a verified open contract.")
     }

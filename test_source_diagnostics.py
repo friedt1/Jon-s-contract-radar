@@ -163,5 +163,76 @@ class SourceDiagnosticsTests(unittest.TestCase):
             source_diagnostics.report({"source_status": [], "opportunities": {}})
 
 
+    def test_deferred_detail_requests_are_visible_without_claiming_open_bids(self):
+        # Synthetic scanner evidence; no live solicitation is inserted.
+        payload = {
+            "source_status": {
+                "PA statewide": ("direct fetched; 2 listing pages; "
+                                 "87 detail candidates deferred at request budget; "
+                                 "4 individual bid records deferred at detail budget; "
+                                 "0 unverified candidates"),
+                "County": "direct fetched; 1 listing pages; 0 candidates",
+            },
+            "source_health": {"sources": [
+                {"name": "PA statewide", "direct_state": "fetched_unverified",
+                 "detail_candidates_deferred": 87, "detail_budget_deferred": 4,
+                 "pdf_budget_skips": 2, "detail_errors": 0, "pagination_errors": 0},
+                {"name": "County", "direct_state": "fetched_unverified",
+                 "detail_candidates_deferred": 0, "detail_budget_deferred": 0,
+                 "detail_errors": 0, "pagination_errors": 0},
+            ]},
+            "opportunities": [],
+        }
+        result = source_diagnostics.report(payload)
+        rows = {row["source"]: row for row in result["sources"]}
+        self.assertEqual(result["detail_candidates_deferred"], 87)
+        self.assertEqual(result["detail_budget_deferred"], 4)
+        self.assertEqual(result["incomplete_detail_sources"], 1)
+        self.assertTrue(rows["PA statewide"]["coverage_incomplete"])
+        self.assertFalse(rows["PA statewide"]["error"])
+        self.assertFalse(rows["County"]["coverage_incomplete"])
+        self.assertEqual(result["verified_open_opportunities"], 0)
+
+    def test_structured_health_and_status_gaps_are_not_silently_omitted(self):
+        payload = {
+            "source_status": {
+                "County": "direct fetched; 1 listing pages",
+                "Missing health": "direct fetched; 1 listing pages",
+                "SAM.gov": "deferred",
+            },
+            "source_health": {"sources": [
+                {"name": "County", "direct_state": "fetched_unverified"},
+                {"name": "Missing status", "direct_state": "not_fetched"},
+            ]},
+            "opportunities": [],
+        }
+        result = source_diagnostics.report(payload)
+        rows = {row["source"]: row for row in result["sources"]}
+        self.assertEqual(len(rows), 4)
+        self.assertTrue(rows["Missing status"]["status_missing"])
+        self.assertTrue(rows["Missing status"]["error"])
+        self.assertTrue(rows["Missing health"]["health_missing"])
+        self.assertTrue(rows["Missing health"]["error"])
+        self.assertFalse(rows["SAM.gov"]["health_missing"])
+        self.assertFalse(rows["SAM.gov"]["error"])
+        self.assertEqual(result["diagnostic_gaps"], 2)
+
+    def test_legacy_status_fallback_reports_deferred_budget(self):
+        result = source_diagnostics.report({
+            "source_status": {
+                "Legacy": ("direct fetched; 1 listing pages; "
+                           "60 detail candidates deferred at request budget; "
+                           "3 individual bid records deferred at detail budget"),
+            },
+            "opportunities": [],
+        })
+        row = result["sources"][0]
+        self.assertEqual(row["detail_candidates_deferred"], 60)
+        self.assertEqual(row["detail_budget_deferred"], 3)
+        self.assertTrue(row["coverage_incomplete"])
+        self.assertFalse(row["health_missing"])
+        self.assertFalse(row["error"])
+
+
 if __name__ == "__main__":
     unittest.main()
