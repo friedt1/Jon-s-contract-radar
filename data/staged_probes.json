@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-31T05:52:15.530086+00:00",
+  "updated": "2026-10-31T06:44:54.263403+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 42,
+  "staged_entrypoints": 43,
   "probes": [
     {
       "name": "Broome County",
@@ -90,8 +90,8 @@
     {
       "name": "Allegany County",
       "official_entrypoint": "https://www.alleganyco.gov/departments/public-works/bids-awards/",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -407,8 +407,8 @@
     {
       "name": "Village of Bath",
       "official_entrypoint": "https://villageofbathny.gov/",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -569,8 +569,8 @@
     {
       "name": "Williamsport City",
       "official_entrypoint": "https://cityofwilliamsport.org/news/document-category/request-for-proposal/",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -589,6 +589,19 @@
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Publisher has individual /bid-projects/ pages; verify robots/terms and permitted automated extraction, separate Cornell-funded Trimble Unity from state NYSCR notices, confirm submission deadlines rather than bid-opening times, and test relevant worksite/scope before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "PennDOT District 4",
+      "official_entrypoint": "https://www.ecmssyst.penndot.pa.gov/ECMS/",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Pennsylvania DGS links PennDOT highway and bridge construction opportunities to official ECMS; ECMS offers guest entry. This is a statewide portal, not a verified District 4 individual-notice feed. Before activation confirm permitted automation and robots/terms, public guest notice extraction, District 4 and northern-PA worksite filtering, individual scope, amendments, submission deadline and open status. Do not promote statewide unrelated or expired bids.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     }
