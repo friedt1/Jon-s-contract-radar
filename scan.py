@@ -425,9 +425,23 @@ def scan_civicplus(src, listing_pages, page_errors):
  """Only individual public bidID notices; never treat the whole listing as a bid."""
  name = src['name']
  records = {}
+ # A publisher can repeat one bidID in different cards or on different
+ # listing pages with contradictory titles, statuses or deadlines. The first
+ # card is not authoritative: require the individual notice to resolve the
+ # conflict, rather than skipping a reopened bid as closed or borrowing an
+ # unrelated card's scope. Repeated links inside the SAME card are harmless.
+ row_evidence = {}
  for page, origin in listing_pages:
+  for link_index, (_, href, _) in enumerate(page.links):
+   url = civicplus_bids.individual_url(href, origin)
+   if not url:
+    continue
+   context = norm(page.link_contexts.get(link_index, page.link_rows.get(href, '')))
+   if context:
+    row_evidence.setdefault(url, set()).add(context)
   for row in civicplus_bids.listing_records(page, origin):
    records.setdefault(row['url'], row)
+ ambiguous_urls = {url for url, contexts in row_evidence.items() if len(contexts) > 1}
  found = {}
  checked = 0
  individual_details_fetched = 0
@@ -440,7 +454,8 @@ def scan_civicplus(src, listing_pages, page_errors):
  # ordering: neither a future date nor a listing "Open" label verifies a bid.
  # Inspect generic titles too; tree-work scope may exist only in the detail.
  def notice_priority(row):
-  due = row.get('deadline', '')
+  # A conflicting card cannot supply a reliable listing deadline.
+  due = '' if row['url'] in ambiguous_urls else row.get('deadline', '')
   timing = (1 if not due else
             2 if civicplus_bids.closing_passed(due, row.get('deadline_time', ''), NOW)
             else 0)
@@ -448,10 +463,11 @@ def scan_civicplus(src, listing_pages, page_errors):
   return (timing, relevant)
  prioritized = sorted(records.values(), key=notice_priority)
  eligible_count = sum(row['open_status'] not in civicplus_bids.CLOSED
-                      for row in prioritized)
+                      or row['url'] in ambiguous_urls for row in prioritized)
  deferred_at_budget = max(0, eligible_count - civicplus_bids.MAX_DETAILS)
  for row in prioritized:
-  if row['open_status'] in civicplus_bids.CLOSED:
+  ambiguous = row['url'] in ambiguous_urls
+  if row['open_status'] in civicplus_bids.CLOSED and not ambiguous:
    closed_count += 1
    continue
   # The county listing is not the worksite; routing remains unverified.
@@ -502,21 +518,25 @@ def scan_civicplus(src, listing_pages, page_errors):
    closed_count += 1
    continue
   # The individual notice takes precedence over a stale listing date.
-  due = detail_due or row['deadline']
-  due_time = detail_time if detail_due else row['deadline_time']
+  # Conflicting cards can contain a superseded deadline. Never fall back
+  # to either listing card when the individual detail omits its cutoff.
+  due = detail_due or ('' if ambiguous else row['deadline'])
+  due_time = detail_time if detail_due else ('' if ambiguous else row['deadline_time'])
   if civicplus_bids.closing_passed(due, due_time, NOW):
    expired_count += 1
    continue
-  scope = detail_scope or row['description']
-  # A fetched individual notice takes precedence over a misleading listing
-  # title. Never publish an unrelated notice merely because its title matched.
-  if not category(detail_scope if detail_scope else row['title'] + ' ' + scope):
+  # Conflicting cards must not supply the solicitation scope. Require
+  # description evidence from the fetched individual bidID notice itself.
+  scope = detail_scope if ambiguous else (detail_scope or row['description'])
+  if not category(scope if ambiguous or detail_scope else row['title'] + ' ' + scope):
    continue
   evidence = row['title'] + ' bid ' + scope + (' Due date: ' + due if due else '')
   summary = ('Bid No. ' + row['bid_number'] + '. ' if row['bid_number'] else '') + scope
   if due:
    summary += ' Due date: ' + due
-  add_lead(found, name, row['title'], row['url'], summary, 'individual county bid candidate', evidence=evidence)
+  lead_title = (detail_scope[:130] if ambiguous and not category(row['title'])
+                else row['title'])
+  add_lead(found, name, lead_title, row['url'], summary, 'individual county bid candidate', evidence=evidence)
   uid = notice_identity.notice_id(row['url'])
   if uid in found:
    found[uid].update({
@@ -526,7 +546,8 @@ def scan_civicplus(src, listing_pages, page_errors):
     'location': detail_worksite or 'Worksite unverified; county issuing authority is not a worksite',
     'location_verified': False,
     'open_status': 'detail_listed_open' if detail_status == 'open' else
-                   'listing_open' if row['open_status'] == 'open' else 'unknown',
+                   'listing_open' if not ambiguous and row['open_status'] == 'open'
+                   else 'unknown',
     'deadline_time': due_time,
     'deadline_timezone': 'unverified',
     'deadline_source': 'individual notice' if detail_due else 'listing' if due else 'unknown',
@@ -534,7 +555,9 @@ def scan_civicplus(src, listing_pages, page_errors):
     'travel_category': 'unverified',
    })
  status = (f'direct fetched; {len(listing_pages)} listing pages; '
-           f'{len(records)} individual bid records; {checked} relevant details checked; '
+           f'{len(records)} individual bid records; '
+           f'{len(ambiguous_urls)} conflicting duplicate bid cards; '
+           f'{checked} relevant details checked; '
             f'{deferred_at_budget} individual bid records deferred at detail budget; '
            f'{individual_details_fetched} individual bid details fetched; '
            f'{len(found)} unverified candidates; {closed_count} closed; {expired_count} expired')
