@@ -123,16 +123,23 @@ def closed(text):
  not evidence that bids are closed. An explicit bid-closure field still is.
  """
  text = norm(text)
- if re.fullmatch(r'(?:closed|awarded|cancelled|canceled|expired|withdrawn|rescinded)', text, re.I):
+ if re.fullmatch(r'(?:closed|awarded|cancelled|canceled|expired|withdrawn|rescinded|bid results|award notice)', text, re.I):
   return True
  question_only = (r'[\s:;,()\-–—/]+(?:(?:for|to)\s+)?'
                   r'(?:questions?|q\s*&\s*a|inquir(?:y|ies)|'
                   r'clarifications?|rfis?|addenda)\b')
  return bool(re.search(
-  r'\b(?:awarded|cancelled|canceled|expired|bid results|award notice|'
-  r'no (?:open|current|active) bids)\b'
+  # Do not interpret boilerplate ("contract will be awarded", "may be"
+  # "cancelled", "expired insurance") as evidence that intake has ended.
+  # Require a publisher status field or a completed action about this bid.
+  r'\bno (?:open|current|active) bids\b'
+  r'|\b(?:(?:bid|solicitation|notice|procurement|contract)\s+)?'
+  r'status\s*(?::|(?:is|are))\s*(?:awarded|cancelled|canceled|expired)\b'
+  r'|\b(?:bids?|contracts?|solicitations?|rfps?|rfqs?)\s+'
+  r'(?:(?:has|have)\s+been|was|were|is|are)?\s*'
+  r'(?:awarded|cancelled|canceled|expired)\b'
   r'|\b(?:bids?|bidding|solicitation|rfp|rfq|contract|opportunity)'
-  r'\s+(?:(?:is|are)\s+)?(?:now\s+)?closed\b'
+  r'\s+(?:(?:is|are)\s+)?(?:now\s+)?closed\b(?!' + question_only + r')'
   r'|\bstatus\s*(?::|(?:is|are))\s*closed\b(?!' + question_only + r')'
   r'|\bclosed\s+(?:for|to)\s+(?:bids?|proposals?|submissions?)\b'
   # A publisher may close intake without using the literal status "Closed".
