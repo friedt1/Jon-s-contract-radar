@@ -113,8 +113,8 @@ def _receipt_before_date_matches(text, with_position=False):
 
 
 _REVISION_PREFIX = re.compile(
-    r"\\b(?:amend(?:ed|ment)?|revis(?:ed|ion)?|updated|corrected|"
-    r"rescheduled|addendum)(?:\\s*(?:#|no\\.?)?\\s*\\d+)?\\s*[:\\-]?\\s*$",
+    r"\b(?:amend(?:ed|ment)?|revis(?:ed|ion)?|updated|corrected|"
+    r"rescheduled|addendum)(?:\s*(?:#|no\.?)?\s*\d+)?\s*[:\-]?\s*$",
     re.I,
 )
 
@@ -125,7 +125,7 @@ def _is_revised_submission(text, start):
     A distant addendum or an amended *question* deadline must not rewrite the
     bid submission cutoff. Date parsing and question exclusions happen first.
     """
-    prefix = re.split(r"[.;\\n]", text[max(0, start - 90):start])[-1]
+    prefix = re.split(r"[.;\n]", text[max(0, start - 90):start])[-1]
     return bool(_REVISION_PREFIX.search(prefix))
 
 
@@ -133,8 +133,8 @@ def submission_deadline_details(text):
     """Return (ISO submission date, explicit 12-hour clock) or empty values.
 
     A question, walkthrough, or pre-bid date cannot supply the closing time.
-    For revised deadlines, the latest submission date wins; on a tied date,
-    the last submission statement controls its own clock; a later date-only\n    amendment must not inherit a stale time. No time is inferred.
+    Explicitly revised deadlines supersede original dates, even when earlier;
+    otherwise the latest date wins. A later date-only amendment must not\n    inherit a stale time. No time is inferred.
     """
     if not isinstance(text, str):
         return "", ""
