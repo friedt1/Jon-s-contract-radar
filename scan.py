@@ -696,6 +696,12 @@ def scan_direct(src):
  # This is retrieval scheduling only: no source or bid is promoted as live.
  candidates = detail_rotation.rotate_boundary_ties(
   candidates, max_details, NOW, lambda item: item[0])
+ # The PDF request cap is smaller than the general detail cap. Rotate tied
+ # PDF-shaped links at that separate boundary too, without moving HTML links
+ # or letting expired/lower-priority PDFs jump ahead of current ones.
+ candidates = detail_rotation.rotate_selected_boundary_ties(
+  candidates, MAX_PDF, NOW, lambda item: item[0],
+  lambda item: likely_pdf_link(item[1], item[2]))
  # Nested bid links must be examined before unrelated siblings exhaust the
  # bounded detail budget. Python's list iterator visits inserted entries next.
  for candidate_index, (_,url,title,context) in enumerate(candidates):
@@ -801,6 +807,12 @@ def scan_direct(src):
      nested_candidates = detail_rotation.rotate_boundary_ties(
       nested_candidates, max(1, max_details - len(visited)), NOW,
       lambda item: item[0])
+     # A nested index can also contain more PDFs than the remaining PDF
+     # budget. Rotate only equal-priority PDF links; never raise the cap.
+     nested_candidates = detail_rotation.rotate_selected_boundary_ties(
+      nested_candidates, MAX_PDF - pdf_attempts, NOW,
+      lambda item: item[0],
+      lambda item: likely_pdf_link(item[1], item[2]))
      candidates[candidate_index+1:candidate_index+1] = nested_candidates
     if nested_notice_links and not p.rows:
      nested_listing_pages += 1
