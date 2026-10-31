@@ -150,8 +150,8 @@ _REVISION_PREFIX = re.compile(
 # standalone revision marker between the submission label and its date;
 # unrelated narrative text or a revised questions deadline is not evidence.
 _INLINE_REVISION_FIELD = re.compile(
-    r"^\\s*[:\\-]?\\s*\\(?\\s*(?:revised|amended|updated|corrected|rescheduled)"
-    r"\\s*\\)?\\s*[:\\-]?\\s*$", re.I,
+    r"^\s*[:\-]?\s*\(?\s*(?:revised|amended|updated|corrected|rescheduled)"
+    r"\s*\)?\s*[:\-]?\s*$", re.I,
 )
 
 
