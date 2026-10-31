@@ -30,14 +30,31 @@ def report(payload):
     expected = coverage.get("total_targets") if isinstance(coverage, dict) else None
     if isinstance(expected, bool) or not isinstance(expected, int) or expected < 0:
         expected = None
-    # SAM.gov is a separately deferred target, not one of the 102 named
-    # monitored sources. A target missing from BOTH status and health used
-    # to disappear entirely; reconcile against the published inventory size.
+    # SAM.gov is separately deferred, not one of the 102 named targets.
+    # A count-only comparison misses a source replaced by an unexpected name.
     observed_targets = (set(sources) | set(by_name)) - {"SAM.gov"}
-    unaccounted_targets = (max(0, expected - len(observed_targets))
-                           if has_health and expected is not None else 0)
-    health_inventory_shortfall = (max(0, expected - len(by_name))
-                                  if has_health and expected is not None else 0)
+    expected_names = coverage.get("expected_source_names") if isinstance(coverage, dict) else None
+    if expected_names is not None:
+        if (not isinstance(expected_names, list)
+                or any(not isinstance(name, str) or not name.strip()
+                       for name in expected_names)
+                or len(set(expected_names)) != len(expected_names)
+                or (expected is not None and len(expected_names) != expected)):
+            raise ValueError("invalid expected source inventory")
+        named_targets = set(expected_names)
+        missing_inventory_sources = sorted(named_targets - observed_targets)
+        unexpected_inventory_sources = sorted(observed_targets - named_targets)
+        unaccounted_targets = len(missing_inventory_sources)
+        health_inventory_shortfall = (len(named_targets - set(by_name))
+                                      if has_health else 0)
+    else:
+        # Backward compatibility for historical count-only feeds.
+        missing_inventory_sources = []
+        unexpected_inventory_sources = []
+        unaccounted_targets = (max(0, expected - len(observed_targets))
+                               if has_health and expected is not None else 0)
+        health_inventory_shortfall = (max(0, expected - len(by_name))
+                                      if has_health and expected is not None else 0)
     results = []
     # A source present in health but missing from source_status must not
     # disappear from diagnostics. Conversely, missing health rows are a gap
@@ -109,13 +126,15 @@ def report(payload):
             "status_missing": status_missing,
             "health_missing": health_missing,
             "duplicate_health_row": duplicate_health_row,
+            "unexpected_inventory_source": name in unexpected_inventory_sources,
             "pagination_access_state": row.get("pagination_access_state", "unknown"),
             "pdf_fetch_attempts": row.get("pdf_fetch_attempts", 0),
             "pdf_budget_skips": pdf_budget_skips,
             "result_award_links_excluded": row.get("result_award_links_excluded", 0),
             "external_provider_links_skipped": row.get("external_provider_links_skipped", 0),
             "error": (direct_error or bool(detail_errors) or bool(pagination_errors)
-                      or status_missing or health_missing or duplicate_health_row),
+                      or status_missing or health_missing or duplicate_health_row
+                      or name in unexpected_inventory_sources),
             "raw_status": message,
         })
     return {
@@ -132,8 +151,11 @@ def report(payload):
         "incomplete_detail_sources": sum(row["coverage_incomplete"] for row in results),
         "diagnostic_gaps": (sum(
             row["status_missing"] or row["health_missing"] for row in results)
-            + unaccounted_targets + len(duplicate_health_names)),
+            + unaccounted_targets + len(duplicate_health_names)
+            + len(unexpected_inventory_sources)),
         "unaccounted_targets": unaccounted_targets,
+        "missing_inventory_sources": missing_inventory_sources,
+        "unexpected_inventory_sources": unexpected_inventory_sources,
         "health_inventory_shortfall": health_inventory_shortfall,
         "duplicate_health_rows": duplicate_health_names,
         "sources": results,
@@ -141,7 +163,8 @@ def report(payload):
                     "failures, including incomplete listing pagination and deferred "
                     "detail requests, are separate. Missing per-source diagnostics "
                     "are reported rather than silently dropped; inventory-size "
-                    "shortfalls and duplicate health records are also flagged. "
+                    "shortfalls, missing/unexpected named targets and duplicate "
+                    "health records are also flagged. "
                     "A fetched page or unverified candidate "
                     "is not a verified open contract.")
     }
