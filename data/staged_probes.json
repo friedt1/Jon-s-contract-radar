@@ -1,8 +1,8 @@
 {
-  "updated": "2026-10-31T21:42:06.464343+00:00",
+  "updated": "2026-10-31T23:02:50.720653+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 52,
-  "safe_staged_entrypoints": 52,
+  "staged_entrypoints": 56,
+  "safe_staged_entrypoints": 56,
   "invalid_staged_entrypoints": 0,
   "probes": [
     {
@@ -712,6 +712,32 @@
       "direct_monitoring_activated": false
     },
     {
+      "name": "NYSEG",
+      "official_entrypoint": "https://www.nyseg.com/suppliersandpartners",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official NYSEG Suppliers and Partners page checked 2026-10-31. It describes energy supply partners and services, not an individual vegetation-management procurement index. NYSEG's tree-care information confirms vegetation work exists but not a live bid. Identify the authorized contractor procurement channel, review publisher terms/robots, and verify individual bid scope, deadlines and local worksite before activating.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "New York State DOT Region 9",
+      "official_entrypoint": "https://www.dot.ny.gov/regional-offices/region9/projects",
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official NYSDOT Region 9 Projects page checked 2026-10-31 links to Projects in Your Neighborhood and statewide contracting resources; regional project descriptions are not open solicitations. Locate the authoritative current NYSDOT letting/contract feed, verify permitted per-contract extraction, closing dates, tree/vegetation scope and ~2-hour Elmira worksite before activation. Do not promote historic design-build project pages.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
       "name": "PennDOT District 4",
       "official_entrypoint": "https://www.ecmssyst.penndot.pa.gov/ECMS/",
       "state": "official_page_reachable_no_procurement_evidence",
@@ -721,6 +747,35 @@
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Pennsylvania DGS links PennDOT highway and bridge construction opportunities to official ECMS; ECMS offers guest entry. This is a statewide portal, not a verified District 4 individual-notice feed. Before activation confirm permitted automation and robots/terms, public guest notice extraction, District 4 and northern-PA worksite filtering, individual scope, amendments, submission deadline and open status. Do not promote statewide unrelated or expired bids.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "New York Power Authority",
+      "official_entrypoint": "https://www.nypa.gov/Procurement",
+      "state": "listing_reachable_off_host_documents_review_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official NYPA Procurement page checked 2026-10-31: NYPA publishes opportunity information but uses SAP Ariba for bid events and supplier registration. A public gateway is not an authorized per-notice feed. Verify publisher robots/terms and permitted public RFQ listing extraction, then confirm individual deadline, scope, worksite and provider access before activation. Do not crawl registration-only Ariba events.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false,
+      "off_host_pdf_hosts_unverified": [
+        "edge.sitecorecloud.io"
+      ]
+    },
+    {
+      "name": "FirstEnergy Penelec",
+      "official_entrypoint": "https://www.firstenergycorp.com/supplychain/supplier_registration.html",
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official FirstEnergy supplier FAQ checked 2026-10-31 explicitly says it does NOT publish upcoming bids on its external website. Supplier registration allows consideration for invitation-only RFI/RFQ/RFP; Coupa sourcing events require supplier onboarding/invitation. No public per-notice extraction is available here. Keep blocked/access-required until publisher-approved integration exists; never scrape Coupa or treat energy-supply auctions as tree contracts.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     }
