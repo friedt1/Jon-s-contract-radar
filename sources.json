@@ -674,7 +674,9 @@
     "type": "PA education",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.athensasd.k12.pa.us/PublicBidNotices.aspx",
+    "activation_gate": "Official district Business Office Public Bid Notice page confirmed 2026-10-31; the public page exposes no individual solicitations in its visible content. This is not a working bid feed. Verify robots/publisher terms, discover stable individual notice links and authoritative deadlines, and test permitted extraction before activation. Do not treat an empty page as proof no bids exist."
   },
   {
     "name": "Wellsboro Area School District",
