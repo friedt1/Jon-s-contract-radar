@@ -397,7 +397,10 @@
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://villageofbathny.gov/",
+    "official_page_role": "publisher_entrypoint_only",
+    "activation_gate": "Official village site has news, meeting minutes and public notices but no verified current bid index. Locate authoritative individual solicitations, review robots/publisher terms and establish permitted scope, submission deadline, status and worksite extraction before activation. An unrelated water-main bid with June 2026 deadline is expired, not a live tree contract."
   },
   {
     "name": "City of Hornell",
@@ -431,7 +434,10 @@
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.villageofpennyan.gov/meetings.html",
+    "official_page_role": "mixed_public_notices_not_bid_feed",
+    "activation_gate": "Official village public-notices page mixes meeting announcements, bond notices and Tree Board meetings, not individual bid listings. A third-party listing of April 3, 2026 tree maintenance/power-line clearing is expired and cannot be seeded. Identify official current bid notice index, review robots/terms and implement permitted individual scope/deadline/worksite extraction before activation."
   },
   {
     "name": "Village of Montour Falls",
@@ -464,21 +470,30 @@
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.erwinny.gov/",
+    "official_page_role": "publisher_entrypoint_only",
+    "activation_gate": "Official Town of Erwin .gov CivicPlus homepage confirmed; older erwinny.org publications show an unrelated dog-control RFP due September 26, 2025. No verified current procurement index or per-notice adapter. Review robots/publisher terms, find stable individual bid pages and verify deadlines and scope before activation."
   },
   {
     "name": "Town of Lansing",
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.lansingtownny.gov/rfps",
+    "official_page_role": "bid_index_no_current_records",
+    "activation_gate": "Official Town of Lansing Bids and RFPs index currently says there are no bids or RFPs available. This does not prove all purchasing channels are covered. Review robots/terms and implement permitted listing/detail extraction with status, deadline and worksite verification before activation; never infer a live bid from the empty index."
   },
   {
     "name": "Town of Dryden",
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.dryden.ny.us/",
+    "official_page_role": "publisher_entrypoint_only",
+    "activation_gate": "Official Town of Dryden domain hosts historic 2025 RFP PDFs, including broadband outside-plant work and an unrelated feasibility study. Direct homepage fetch returned HTTP 403 in source review. No current procurement index or permitted individual notice adapter verified; record HTTP block accurately and review robots/terms before activation. Historical PDFs are not live bids."
   },
   {
     "name": "Town of Union NY",
