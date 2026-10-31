@@ -509,7 +509,10 @@
     "type": "NY municipalities",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.townofunion.com/government/public_notices/bid_opportunities.php",
+    "official_page_role": "stale_public_bid_index_detail_access_unverified",
+    "activation_gate": "Official Town of Union Bid Opportunities page was reviewed October 31, 2026: its visible posting deadlines end in 2024, and a linked individual PDF returned HTTP 403 during review. Current individual-notice extraction is not established. Review robots/terms, permitted notice links, publisher status, amended submission deadlines and worksite before activation. Historical bids are not live contracts."
   },
   {
     "name": "Sayre Borough",
