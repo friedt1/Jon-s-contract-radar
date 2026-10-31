@@ -81,6 +81,10 @@ LOCAL_PLACES = ('elmira','chemung','steuben','schuyler','tompkins','horseheads',
  # Syracuse city is near the two-hour boundary; worksite drive remains unverified.
  'syracuse')
 BROAD_SOURCES = {'PA procurement opportunities','PA DGS construction bids','PennBid platform','BidNet NY platform','New York State DOT Region 6','PennDOT District 3'}
+# A future-dated *out-of-region* listing must not outrank an undated nearby
+# tree-work notice merely because its date is known. This is a bounded
+# retrieval-order hint, never proof of worksite, travel time, or open status.
+BROAD_LOCAL_BOOST = 12
 
 def local_evidence(text):
  return any(re.search(r'\b'+re.escape(x)+r'\b',text,re.I) for x in LOCAL_PLACES)
@@ -678,7 +682,7 @@ def scan_direct(src):
    # This is request ordering only: place text does NOT verify worksite, route,
    # publisher status, permission, or an open solicitation.
    if name in BROAD_SOURCES and local_evidence(title+' '+context):
-    score+=7
+    score+=BROAD_LOCAL_BOOST
    candidates.append((score,url,title,context))
  # Row parsing is used to discover relevant detail URLs, not to invent bid links.
  candidates.sort(key=lambda x:-x[0])
@@ -776,7 +780,7 @@ def scan_direct(src):
       priority += 5 if category(row) else 0
       priority += listing_deadline_priority(row, NOW)
       if name in BROAD_SOURCES and local_evidence(label+' '+row):
-       priority += 7
+       priority += BROAD_LOCAL_BOOST
       nested_candidates.append((priority,target,label,row))
       nested_seen.add(target_identity)
     if nested_candidates:

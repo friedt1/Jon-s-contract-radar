@@ -57,6 +57,20 @@ class BroadPortalLocalPriorityTests(unittest.TestCase):
         self.assertIn("driving time from Elmira unverified", leads[0]["location"])
         self.assertIn("1 detail candidates deferred at request budget", status)
 
+    def test_undated_local_tree_notice_beats_future_dated_distant_bids(self):
+        # A stated future deadline is not stronger geographic evidence than
+        # a nearby tree-work row. Old ordering spent all 18 requests in Albany.
+        listing = "".join(
+            '<a href="/bid/outside-%d">Tree removal bid in Albany due November 19, 2026</a>' % n
+            for n in range(scan.MAX_DETAIL)
+        ) + '<a href="/bid/elmira-tree">Elmira tree removal bid</a>'
+        source = {"name": "PA procurement opportunities", "url": BASE}
+        leads, status, requested = self.fixture(source, listing)
+        self.assertEqual(requested[1], LOCAL)
+        self.assertEqual([lead["url"] for lead in leads], [LOCAL])
+        self.assertEqual(leads[0]["status"], "unverified")
+        self.assertIn("detail candidates deferred at request budget", status)
+
     def test_local_demolition_never_becomes_tree_lead(self):
         listing = ('<a href="/bid/owego-demolition">Owego demolition bid</a>'
                    '<a href="/bid/elmira-tree">Elmira tree removal bid</a>')

@@ -57,6 +57,19 @@ class NestedPriorityBudgetTests(unittest.TestCase):
         self.assertLessEqual(len(requested) - 1, scan.MAX_DETAIL)
         self.assertIn("detail candidates deferred at request budget", status)
 
+    def test_undated_local_tree_notice_beats_future_dated_distant_nested_bids(self):
+        # Nested statewide indexes can contain hundreds of distant, dated
+        # bids. The local undated tree row must not be starved at the cap.
+        distant = "".join(
+            '<a href="/bid/outside-%d">Albany tree removal bid due November 19, 2026</a>' % i
+            for i in range(30)
+        )
+        nested = distant + '<a href="/bid/elmira-tree">Elmira tree removal bid</a>'
+        leads, status, requested = self.scan_fixture("PA procurement opportunities", nested)
+        self.assertEqual(requested[:3], [BASE, INDEX, LOCAL])
+        self.assertEqual([lead["url"] for lead in leads], [LOCAL])
+        self.assertIn("detail candidates deferred at request budget", status)
+
     def test_relevant_tree_notice_beats_unrelated_nested_bid_ids_on_county_index(self):
         unrelated = "".join(
             '<a href="/bid/outside-%d">Road paving bid</a>' % i
