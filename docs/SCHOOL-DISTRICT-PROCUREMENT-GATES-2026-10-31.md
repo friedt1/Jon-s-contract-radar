@@ -37,8 +37,8 @@ inventory and its operational coverage counts remain unchanged.
   existing trees or vegetation is not a tree-service or substantive
   grading/clearing contract. `test_demolition_scope_gate.py` prevents it
   from entering the live candidate feed as related site prep.
-- Demolition accompanied by actual grading, excavation, clearing or grubbing
-  remains separately classified as **Related site prep**, not tree removal.
+- Demolition accompanied by actual grading or excavation can remain **Related site prep**;
+  explicit clearing retains the higher-priority **Land clearing** category.
 - Historical Erie tree/stump expiration and Owego demolition exclusions
   remain tested. No historical or synthetic fixture is inserted into
   `data/opportunities.json`.
