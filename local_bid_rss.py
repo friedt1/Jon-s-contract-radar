@@ -7,10 +7,10 @@ import datetime as dt
 import email.utils
 import xml.etree.ElementTree as ET
 from html import unescape
-from urllib.parse import urlparse
+from notice_identity import canonical_url
+from source_config import valid_public_https_url
 
 FEED_URL = "https://elmiranext.com/bids/feed.xml"
-ALLOWED_SCHEMES = ("https",)
 
 
 def _text(node, key):
@@ -28,12 +28,14 @@ def parse(xml_text, *, now=None):
         title = unescape(_text(item, "title"))
         description = unescape(_text(item, "description"))
         link = _text(item, "link")
-        parsed = urlparse(link)
-        if parsed.scheme not in ALLOWED_SCHEMES or not parsed.hostname:
+        # Normalize tracking variants, but preserve solicitation identifiers,
+        # signed query strings, and unknown parameters. Reject unsafe/private,
+        # credentialed or malformed links without discarding the whole feed.
+        canonical = canonical_url(link)
+        if not canonical or not valid_public_https_url(canonical):
             continue
-        if link in seen:
+        if canonical in seen:
             continue
-        seen.add(link)
         pub = _text(item, "pubDate")
         try:
             published = email.utils.parsedate_to_datetime(pub)
@@ -44,10 +46,13 @@ def parse(xml_text, *, now=None):
             age = None
         if age is None or age < 0 or age > 90 * 86400:
             continue
+        # Only mark a notice seen after publication-age validation. A stale
+        # duplicate must not suppress a fresh entry for the same bid.
+        seen.add(canonical)
         result.append({
             "title": title,
             "description": description,
-            "url": link,
+            "url": canonical,
             "published": published.date().isoformat(),
             "source": "Elmira Next bid RSS",
             "status": "unverified",
