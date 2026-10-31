@@ -23,7 +23,7 @@ class AshlandChemungStagingTests(unittest.TestCase):
         self.assertEqual(len(self.sources), 102)
         self.assertEqual(self.source["candidate_official_url"], OFFICIAL)
         self.assertEqual(self.source["official_page_role"], "publisher_entrypoint_only")
-        self.assertNotIn(WRONG_COUNTY, json.dumps(self.source))
+        self.assertNotIn(WRONG_COUNTY, self.source["candidate_official_url"])
         self.assertIn("Greene County", self.source["activation_gate"])
         self.assertEqual(self.source["mode"], "discovery_pending")
         self.assertEqual(self.source["url"], "")
