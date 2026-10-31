@@ -18,12 +18,12 @@ def _text(node, key):
 
 
 def parse(xml_text, *, now=None):
-    """Return individual RSS bids with original URL, deduplicated by link."""
+    """Return individual RSS bids, preferring the latest dated copy of each URL."""
     now = now or dt.datetime.now(dt.timezone.utc)
     root = ET.fromstring(xml_text)
     if root.tag != "rss":
         raise ValueError("not an RSS feed")
-    result, seen = [], set()
+    result, seen = [], {}
     for item in root.findall("./channel/item"):
         title = unescape(_text(item, "title"))
         description = unescape(_text(item, "description"))
@@ -34,22 +34,25 @@ def parse(xml_text, *, now=None):
         canonical = canonical_url(link)
         if not canonical or not valid_public_https_url(canonical):
             continue
-        if canonical in seen:
-            continue
         pub = _text(item, "pubDate")
         try:
             published = email.utils.parsedate_to_datetime(pub)
             if published.tzinfo is None:
                 published = published.replace(tzinfo=dt.timezone.utc)
-            age = (now - published.astimezone(dt.timezone.utc)).total_seconds()
+            published_utc = published.astimezone(dt.timezone.utc)
+            age = (now - published_utc).total_seconds()
         except (ValueError, TypeError, OverflowError):
             age = None
         if age is None or age < 0 or age > 90 * 86400:
             continue
-        # Only mark a notice seen after publication-age validation. A stale
-        # duplicate must not suppress a fresh entry for the same bid.
-        seen.add(canonical)
-        result.append({
+        # Feed order is not guaranteed. An older, still-recent posting may
+        # contain an expired cutoff while a later amendment extends it.
+        # Prefer the newest publication for the same notice identity, without
+        # combining stale deadline text or asserting that the bid is open.
+        previous = seen.get(canonical)
+        if previous is not None and published_utc <= previous[1]:
+            continue
+        row = {
             "title": title,
             "description": description,
             "url": canonical,
@@ -57,5 +60,12 @@ def parse(xml_text, *, now=None):
             "source": "Elmira Next bid RSS",
             "status": "unverified",
             "original_notice_confirmed": False,
-        })
+        }
+        if previous is None:
+            seen[canonical] = (len(result), published_utc)
+            result.append(row)
+        else:
+            index, _ = previous
+            seen[canonical] = (index, published_utc)
+            result[index] = row
     return result
