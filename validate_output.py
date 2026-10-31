@@ -87,9 +87,35 @@ def validate(root=scan.ROOT):
                 if row.get(field) != reference[field]:
                     raise ValueError('Source health state disagrees with scanner: '
                                      + row['name'] + ' / ' + field)
+            # A successful homepage fetch can coexist with blocked individual
+            # notices. Validate the underlying error evidence, not just the
+            # single primary direct_state displayed by older dashboards.
+            for field in ('detail_errors', 'pagination_errors',
+                          'detail_access_state', 'pagination_access_state'):
+                if row.get(field) != reference[field]:
+                    raise ValueError('Source health diagnostic disagrees with scanner: '
+                                     + row['name'] + ' / ' + field)
+            # PR #179 introduced non-exclusive failure reasons. Accept older
+            # published feeds without these arrays, but never trust a supplied
+            # array that contradicts the source's actual scan status.
+            for field in ('detail_error_types', 'pagination_error_types'):
+                if field in row and row[field] != reference[field]:
+                    raise ValueError('Source health diagnostic disagrees with scanner: '
+                                     + row['name'] + ' / ' + field)
+        access_reasons = ('robots_blocked', 'http_blocked',
+                          'redirect_blocked', 'rate_limited')
+        diagnostic_counts = (
+            'detail_errors', 'pagination_errors',
+            'pagination_incomplete_sources',
+            'detail_budget_deferred', 'detail_budget_incomplete_sources',
+            'detail_candidates_deferred', 'detail_candidate_incomplete_sources',
+        ) + tuple(
+            kind + '_' + reason + '_sources'
+            for kind in ('detail', 'pagination') for reason in access_reasons
+        )
         for field in states + ('configured_direct', 'configured_fetch_targets',
                                'configured_access_required',
-                               'configured_unimplemented_adapters'):
+                               'configured_unimplemented_adapters') + diagnostic_counts:
             if counts.get(field) != expected_health['counts'][field]:
                 raise ValueError('Source health count disagrees with scanner: ' + field)
         if counts.get('individual_bid_details_fetched', 0) != sum(
