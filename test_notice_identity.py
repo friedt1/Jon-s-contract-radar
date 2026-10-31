@@ -58,6 +58,10 @@ class NoticeIdentityTests(unittest.TestCase):
             "https://bids.local/Bids.aspx?bidID=416",
             "https://bids.internal/Bids.aspx?bidID=416",
             "https://127.0.0.1/Bids.aspx?bidID=416",
+            "https://0x7f.0.0.1/Bids.aspx?bidID=416",
+            "https://0x7f.1/Bids.aspx?bidID=416",
+            "https://0177.0x0.0.01/Bids.aspx?bidID=416",
+            "https://0xA9.0xFE.0xA9.0xFE/latest/meta-data/",
             "https://10.0.0.8/Bids.aspx?bidID=416",
             "https://169.254.169.254/latest/meta-data/",
             "https://[::1]/Bids.aspx?bidID=416",
@@ -66,6 +70,11 @@ class NoticeIdentityTests(unittest.TestCase):
             with self.subTest(url=url):
                 self.assertEqual(notice_identity.canonical_url(url), "")
                 self.assertEqual(notice_identity.notice_id(url), "")
+
+    def test_mixed_alphanumeric_public_dns_name_is_not_an_ip_alias(self):
+        url = "https://0x7f.bids.example/Bids.aspx?bidID=416"
+        self.assertEqual(notice_identity.canonical_url(url), url)
+        self.assertTrue(notice_identity.notice_id(url))
 
     def test_repeated_query_keys_preserve_order_and_bid_identity(self):
         first = "https://county.example/bids?bidID=12&bidID=13"

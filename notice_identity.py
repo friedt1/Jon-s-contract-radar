@@ -5,11 +5,9 @@ and unknown query parameters are retained; those may identify different notices.
 This module never claims a notice is open, current, or geographically eligible.
 """
 import hashlib
-import ipaddress
-import re
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-_HOST_LABEL = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$", re.I)
+from source_config import public_dns_hostname
 
 _TRACKING_KEYS = frozenset({
     "fbclid", "gclid", "gbraid", "wbraid", "msclkid",
@@ -28,18 +26,9 @@ def canonical_url(url):
             return ""
         port = parts.port
         host = parts.hostname.lower()
-        # Notice links are published on public DNS names. Reject malformed
-        # hosts and IP literals (including loopback/metadata endpoints), even
-        # if a future scanner path passes a URL through without source checks.
-        try:
-            ipaddress.ip_address(host)
-        except ValueError:
-            pass
-        else:
-            return ""
-        labels = host.split(".")
-        if (len(labels) < 2 or host.endswith((".local", ".internal", ".localhost"))
-                or not all(_HOST_LABEL.fullmatch(label) for label in labels)):
+        # Use the same public-host syntax gate as direct-source configuration
+        # so disguised IPv4 aliases cannot enter notice identity/publication.
+        if not public_dns_hostname(host):
             return ""
         default = 443 if parts.scheme.lower() == "https" else 80
         netloc = host + (":" + str(port) if port is not None and port != default else "")
