@@ -38,7 +38,7 @@ PLACES = {
     'Williamsport': ('PA', True), 'Montoursville': ('PA', False), 'Tunkhannock': ('PA', False),
 }
 REQUEST = re.compile(r"\b(?:need(?:s|ing)?|looking for|seeking|iso|in search of|can (?:anyone|someone)|recommend(?:ation)?s?|wanted|request(?:ing)? (?:a )?quote|who (?:can|does))\b", re.I)
-EXCLUDE = re.compile(r'\b(?:we (?:offer|provide)|our services|call us|free estimates|now hiring|help wanted|job opening|for sale|no longer need|already (?:found|hired)|all sorted|request (?:closed|fulfilled)|work completed|no (?:longer )?(?:need|request)|looking for (?:work|customers)|services available|book (?:now|today))\b', re.I)
+EXCLUDE = re.compile(r"\b(?:we (?:offer|provide)|our services|call us|free estimates|now hiring|help wanted|job opening|for sale|no longer need|already (?:found|hired)|(?:do not|don't|does not|doesn't) need|not looking for|recommend (?:my|our)|(?:i|we)\s+(?:would\s+)?recommend|highly recommend|we specialize|fully insured|all sorted|request (?:closed|fulfilled)|work completed|no (?:longer )?(?:need|request)|looking for (?:work|customers)|services available|contact us|we can help|our crews? (?:are|is) available|get (?:a |your )?(?:free )?quote|schedule (?:a )?free estimate|book (?:now|today))\b", re.I)
 NEWS = re.compile(r'\b(?:reported|according to|press release|news release|city council|study finds|breaking news)\b', re.I)
 
 
@@ -72,7 +72,34 @@ def safe_url(url):
 def canonical(url):
     if not safe_url(url): return ''
     p = up.urlsplit(url)
-    query = [(k, v) for k, v in up.parse_qsl(p.query) if not k.lower().startswith('utm_') and k.lower() not in ('fbclid', 'gclid')]
+    query = [(k, v) for k, v in up.parse_qsl(p.query, keep_blank_values=True)
+             if not k.lower().startswith('utm_') and k.lower() not in ('fbclid', 'gclid')]
+    # Source links are published verbatim in the dashboard and history.
+    # Never expose contact information or a residential address through
+    # query parameters even when display text has been sanitized.
+    private_keys = re.compile(r'(?:^|[_-])(?:email|e-mail|phone|mobile|cell|address|street|contact|token|auth|api_key)(?:$|[_-])', re.I)
+    # A URL may be percent-encoded more than once. Checking only the first
+    # decoding pass misses contacts such as %252B16075550199 (a double-encoded
+    # phone number). Reject rather than publishing an opaque private link.
+    def decoded_forms(value):
+        for _ in range(4):
+            yield value
+            decoded = up.unquote(value)
+            if decoded == value:
+                break
+            value = decoded
+
+    for key, value in query:
+        if any(private_keys.search(form) for form in decoded_forms(key)):
+            return ''
+        if any(redact_public_text(form) != form for form in decoded_forms(value)):
+            return ''
+    # Query filtering alone is insufficient: some public permalinks embed
+    # contact details or residential addresses in the path itself.
+    for decoded_path in decoded_forms(p.path):
+        check = decoded_path.replace('-', ' ')
+        if redact_public_text(check) != check:
+            return ''
     return up.urlunsplit(('https', p.netloc.lower(), p.path.rstrip('/') or '/', up.urlencode(sorted(query)), ''))
 
 
@@ -114,32 +141,73 @@ def location(body):
     return None
 
 
-def candidate(record, source, now):
+def redact_public_text(value):
+    """Remove incidental contacts and street addresses from public artifacts.
+
+    Original source permalinks remain the only contact route. Do not rewrite
+    fingerprints or IDs when sanitizing older history.
+    """
+    if not isinstance(value, str):
+        raise ValueError('lead text must be a string')
+    value = re.sub(r'\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b', '[contact on source]', value)
+    value = re.sub(r'(?<!\w)(?:\+?1[ .-]?)?\(?\d{3}\)?[ .-]?\d{3}[ .-]?\d{4}(?!\w)', '[contact on source]', value)
+    # Rural NY/PA street addresses commonly use numbered State/County Routes.
+    # Redact house numbers but leave road-only references like "Route 49".
+    value = re.sub(r'(?<!\w)\d{1,6}\s+(?:(?:County|State)\s+)?'
+                   r'(?:Route|Rte|Rt|Road|Rd|Highway|Hwy)\.?\s*#?\s*\d+[A-Za-z]?\b',
+                   '[address on source]', value, flags=re.I)
+    return re.sub(r'(?<!\w)\d{1,6}\s+(?:[A-Za-z0-9][A-Za-z0-9.-]*\s+){1,5}'
+                  r'(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Lane|Ln|Boulevard|Blvd|Court|Ct|Place|Pl|Way)\b\.?',
+                  '[address on source]', value, flags=re.I)
+
+
+def candidate(record, source, now, diagnostics=None):
+    def reject(reason):
+        if diagnostics is not None:
+            diagnostics[reason] = diagnostics.get(reason, 0) + 1
+        return None
     title = text(record.get('title', '')); body = text(record.get('body', ''))
     combined = title + ' ' + body
     published = date(record.get('published', ''))
-    if published is None or not 0 <= (now - published).total_seconds() <= 30 * 86400: return None
+    if published is None: return reject('undated')
+    if not 0 <= (now - published).total_seconds() <= 30 * 86400: return reject('expired_or_future')
     url = canonical(record.get('url', ''))
     place = location(combined)
     services = [name for name, pattern in SERVICES.items() if re.search(pattern, combined, re.I)]
-    if not url or not place or not services: return None
+    if not url: return reject('unsafe_permalink')
+    if not place: return reject('outside_or_unknown_location')
+    if not services: return reject('no_service_match')
     is_request = source['kind'] != 'news' and bool(REQUEST.search(combined)) and not EXCLUDE.search(combined) and not NEWS.search(combined)
     # Public social/feed advertisements and chatter are not useful customer leads.
-    if source['kind'] != 'news' and not is_request: return None
+    if source['kind'] != 'news' and not is_request:
+        return reject('advertising_or_closed' if EXCLUDE.search(combined) else 'article_or_discussion')
     kind = 'service_request' if is_request else 'news_context'
     customer = ('commercial' if re.search(r'\b(?:our business|my business|commercial property|our office|our store|our restaurant|our parking lot)\b', combined, re.I)
                 else 'homeowner' if re.search(r'\b(?:my yard|our yard|my home|our home|my house|our house|my backyard|our backyard)\b', combined, re.I) else 'unspecified')
-    # Do not republish incidental phone numbers/emails; source is the contact route.
-    def redact(s):
-        s = re.sub(r'\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b', '[contact on source]', s)
-        return re.sub(r'(?<!\w)(?:\+?1[ .-]?)?\(?\d{3}\)?[ .-]?\d{3}[ .-]?\d{4}(?!\w)', '[contact on source]', s)
+    # Sanitize current public excerpts and older historical excerpts identically.
+    redact = redact_public_text
+    evidence = redact(combined).strip()
     title = redact(title or body[:160]); body = redact(body)
     age = (now - published).days
     score = min(100, (65 if is_request else 10) + (15 if age <= 7 else 5) + (10 if customer != 'unspecified' else 0) + min(10, 5 * len(services)))
-    # Same title, town and day cross-posts are intentionally conservative matches.
-    fingerprint = hashlib.sha256((re.sub(r'\W+', ' ', title.lower()).strip() + '|' + place + '|' + published.date().isoformat()).encode()).hexdigest()[:20]
+    # A generic title can be shared by unrelated homeowners in the same town
+    # on the same day. Only merge cross-source posts when their sanitized
+    # title AND full request text match; same-URL updates still match via URL.
+    # This intentionally favors missing a cross-post over losing a real job.
+    normalized_title = re.sub(r'\W+', ' ', title.lower()).strip()
+    normalized_body = re.sub(r'\W+', ' ', body.lower()).strip()
+    fingerprint = hashlib.sha256(
+        (normalized_title + '|' + normalized_body + '|' + place + '|' +
+         published.date().isoformat()).encode()
+    ).hexdigest()[:20]
     return {'id': hashlib.sha256(url.encode()).hexdigest()[:20], 'fingerprint': fingerprint,
             'title': title[:220], 'summary': body[:550], 'url': url, 'source': source['name'],
+            'evidence_snippet': evidence[:700], 'duplicate_key': fingerprint,
+            'confidence': 'heuristic request match' if is_request else 'context only',
+            'verification_state': 'unverified_candidate' if is_request else 'not_a_request',
+            'limitations': ['Original source not manually verified; availability unknown',
+                            'Town mention may not be job location; driving time unverified',
+                            'Text classification can produce false positives and miss requests'],
             'source_links': [{'source': source['name'], 'url': url}], 'location': place,
             'geography_note': 'Nearby town screen; actual job site and two-hour driving time unverified',
             'published': published.isoformat(timespec='seconds'), 'services': services, 'customer_type': customer,
@@ -154,9 +222,24 @@ def records(source, getter=None):
         # Only operator-reviewed public feeds; honor robots and fail closed.
         if source.get('public_feed_reviewed') is not True: raise ValueError('review public feed terms before enabling')
         root = up.urlsplit(url)
+        robots_body = getter(f'{root.scheme}://{root.netloc}/robots.txt')
+        # A login page, proxy error, or HTML 200 response is not a robots
+        # policy. RobotFileParser otherwise treats unknown content as allow-all.
+        # Require an actual user-agent group for explicitly reviewed RSS feeds;
+        # unavailable/ambiguous policy means no automated collection.
+        robots_lines = robots_body.splitlines()
+        if (re.search(r'<\s*(?:!doctype|html|head|body|script)\b', robots_body, re.I)
+                or not any(re.match(r'^\s*user-agent\s*:\s*\S+', line, re.I)
+                           for line in robots_lines)):
+            raise ValueError('robots policy missing or invalid; feed not fetched')
         robots = urllib.robotparser.RobotFileParser()
-        robots.parse(getter(f'{root.scheme}://{root.netloc}/robots.txt').splitlines())
+        robots.parse(robots_lines)
         if not robots.can_fetch(USER_AGENT, url): raise ValueError('robots disallows feed')
+        delay = max(1, robots.crawl_delay(USER_AGENT) or 0)
+        rate = robots.request_rate(USER_AGENT)
+        if rate: delay = max(delay, rate.seconds / rate.requests)
+        if delay > 60: raise ValueError('feed rate limit requires operator scheduling')
+        time.sleep(delay)
     payload = getter(url)
     if kind == 'mastodon':
         entries = json.loads(payload)
@@ -167,14 +250,29 @@ def records(source, getter=None):
             yield {'title': '', 'body': body, 'url': item.get('url', ''), 'published': item.get('created_at', '')}
     else:
         root = ET.fromstring(payload)
+        if root.tag not in ('rss', '{http://www.w3.org/2005/Atom}feed', '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}RDF'):
+            raise ValueError('RSS/Atom feed expected, not an HTML login or error page')
         atom = '{http://www.w3.org/2005/Atom}'
-        for item in (root.findall('.//item') + root.findall(f'{atom}entry'))[:100]:
-            link = item.findtext('link', '')
+        rss1 = '{http://purl.org/rss/1.0/}'
+        dc = '{http://purl.org/dc/elements/1.1/}'
+        rdf = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+        # RSS 1.0 uses namespaced RDF items, unlike RSS 2.0. The previous
+        # parser accepted an RDF root but silently returned zero records.
+        items = (root.findall('.//item') + root.findall(f'.//{rss1}item') +
+                 root.findall(f'{atom}entry'))[:100]
+        for item in items:
+            link = item.findtext('link') or item.findtext(f'{rss1}link') or ''
             if not link:
-                link = next((x.get('href', '') for x in item.findall(f'{atom}link') if x.get('rel', 'alternate') == 'alternate'), '')
-            yield {'title': item.findtext('title') or item.findtext(f'{atom}title', ''),
-                   'body': item.findtext('description') or item.findtext(f'{atom}content') or item.findtext(f'{atom}summary', ''),
-                   'url': link, 'published': item.findtext('pubDate') or item.findtext(f'{atom}published') or item.findtext(f'{atom}updated', '')}
+                link = next((x.get('href', '') for x in item.findall(f'{atom}link')
+                             if x.get('rel', 'alternate') == 'alternate'), '')
+            if not link and item.tag == f'{rss1}item':
+                link = item.get(f'{rdf}about', '')
+            yield {'title': item.findtext('title') or item.findtext(f'{rss1}title') or item.findtext(f'{atom}title', ''),
+                   'body': item.findtext('description') or item.findtext(f'{rss1}description') or
+                           item.findtext(f'{atom}content') or item.findtext(f'{atom}summary', ''),
+                   'url': link,
+                   'published': item.findtext('pubDate') or item.findtext(f'{dc}date') or
+                                item.findtext(f'{atom}published') or item.findtext(f'{atom}updated', '')}
 
 
 def validate_sources(sources):
@@ -196,39 +294,87 @@ def assemble(sources, previous, now, getter=None, pause=None):
     old = previous.get('leads', {})
     # Fail rather than overwrite corrupt history.
     if not isinstance(old, dict): raise ValueError('invalid history')
+    # Previously published entries may predate privacy redaction. Preserve their
+    # IDs, timestamps and original source links while sanitizing display text.
+    old = {
+        uid: {**item, **{
+            field: redact_public_text(item[field])
+            for field in ('title', 'summary', 'evidence_snippet')
+            if field in item
+        }}
+        for uid, item in old.items()
+    }
     alias = {}
     for uid, item in old.items():
         alias[item['fingerprint']] = uid
         for link in item['source_links']: alias[canonical(link['url'])] = uid
     for source in sources:
-        staged = []
+        staged = []; inspected = 0; rejected = {}
         try:
             for record in records(source, getter):
-                lead = candidate(record, source, now)
+                inspected += 1
+                lead = candidate(record, source, now, rejected)
                 if lead: staged.append(lead)
             successful += 1
             if source['kind'] != 'news': request_successful += 1
-            status[source['name']] = {'state': 'ok', 'candidates': len(staged), 'kind': source['kind']}
+            status[source['name']] = {'state': 'ok', 'candidates': len(staged), 'kind': source['kind'],
+                                      'records_inspected': inspected, 'rejected': rejected,
+                                      'requests': sum(x['lead_type'] == 'service_request' for x in staged),
+                                      'articles': sum(x['lead_type'] == 'news_context' for x in staged),
+                                      'checked_at': now.isoformat(timespec='seconds')}
         except Exception as error:
-            status[source['name']] = {'state': 'error', 'error': type(error).__name__ + (f' HTTP {error.code}' if hasattr(error, 'code') else ''), 'kind': source['kind']}
+            status[source['name']] = {'state': 'error', 'error': type(error).__name__ + (f' HTTP {error.code}' if hasattr(error, 'code') else ''), 'kind': source['kind'], 'checked_at': now.isoformat(timespec='seconds')}
             continue
         finally:
             pause(1)  # Sequential, bounded, no retries, no credentials or destination crawling.
         for lead in staged:
             uid = alias.get(lead['url']) or alias.get(lead['fingerprint']) or lead['id']
+            existing = found.get(uid, old.get(uid, {}))
+            # An article matching an older public request is not evidence that
+            # the customer still needs service. Keep the historical request
+            # intact; do not revive it in the current feed or downgrade it.
+            if lead['lead_type'] == 'news_context' and existing.get('lead_type') == 'service_request':
+                continue
             alias[lead['url']] = alias[lead['fingerprint']] = uid
             lead['id'] = uid
-            existing = found.get(uid, old.get(uid, {}))
             links = {x['url']: x for x in existing.get('source_links', []) + lead['source_links']}
-            # A news duplicate must never downgrade an explicitly observed request.
-            if uid in found and found[uid]['lead_type'] == 'service_request' and lead['lead_type'] == 'news_context': lead = dict(found[uid])
             lead.update(source_links=list(links.values()), first_seen=existing.get('first_seen', now.isoformat(timespec='seconds')), last_seen=now.isoformat(timespec='seconds'))
             found[uid] = lead
+    # A news article can reuse the headline of a customer request while
+    # omitting the original request body. Our strict request fingerprint
+    # deliberately distinguishes customers by body; suppress matching news
+    # separately so it cannot create a second apparent opportunity, even
+    # when the news source is processed before the request source.
+    def headline_key(item):
+        return (re.sub(r'\W+', ' ', item['title'].lower()).strip(),
+                item['location'], item['published'][:10])
+    request_headlines = {
+        headline_key(item) for item in list(old.values()) + list(found.values())
+        if item.get('lead_type') == 'service_request'
+    }
+    found = {
+        uid: item for uid, item in found.items()
+        if item['lead_type'] != 'news_context'
+        or headline_key(item) not in request_headlines
+    }
     if not successful: raise RuntimeError('All local sources failed; previous feed and history preserved: ' + json.dumps(status))
+    # News is context, not evidence that request discovery is healthy. If all
+    # configured request feeds fail, publishing a news-only scan would clear
+    # still-relevant current customer requests during an outage. Fail closed;
+    # the staged workflow leaves the previous public feed/history untouched.
+    if any(source['kind'] != 'news' for source in sources) and not request_successful:
+        raise RuntimeError('All request sources failed; previous feed and history preserved: ' + json.dumps(status))
     historical = dict(old)
     historical.update(found)
-    historical = dict(sorted(historical.items(), key=lambda pair: pair[1]['last_seen'], reverse=True)[:2000])
+    # Keep the full discovery history; expiry only suppresses the current feed.
+    historical = dict(sorted(historical.items(), key=lambda pair: pair[1]['last_seen'], reverse=True))
     feed = {'updated': now.isoformat(timespec='seconds'), 'request_sources_ok': request_successful,
+            'schema_version': 2,
+            'metrics': {'records_inspected': sum(x.get('records_inspected', 0) for x in status.values()),
+                        'request_candidates': sum(x['lead_type'] == 'service_request' for x in found.values()),
+                        'news_context': sum(x['lead_type'] == 'news_context' for x in found.values()),
+                        'verified_requests': 0, 'qualified_leads': 0,
+                        'failed_sources': sum(x['state'] == 'error' for x in status.values())},
             'source_status': status, 'leads': sorted(found.values(), key=lambda x: (-x['score'], x['id'])),
             'coverage_note': 'Public hashtag timelines and reviewed feeds only; sparse coverage, not all local requests. News is context only. Town screen approximates the Elmira NY / northern PA service area; verify driving time. Failed sources are not evidence of no requests.'}
     history = {'updated': feed['updated'], 'leads': historical}
@@ -245,9 +391,10 @@ def write_json(path, data):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--sources', type=pathlib.Path, default=ROOT / 'local_sources.json', help='Operator-reviewed source configuration; no credentials')
     parser.add_argument('--data-dir', type=pathlib.Path, default=ROOT / 'data')
     args = parser.parse_args()
-    sources = json.loads((ROOT / 'local_sources.json').read_text())
+    sources = json.loads(args.sources.read_text())
     history_path = args.data_dir / 'local_history.json'
     previous = json.loads(history_path.read_text()) if history_path.exists() else {'leads': {}}
     feed, history = assemble(sources, previous, dt.datetime.now(dt.timezone.utc))

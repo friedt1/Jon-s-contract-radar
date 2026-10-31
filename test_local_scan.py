@@ -69,6 +69,19 @@ class ClassificationTests(unittest.TestCase):
         self.assertNotIn('phone', lead)
         self.assertNotIn('email', lead)
 
+    def test_residential_address_not_republished(self):
+        lead = radar.candidate(record(
+            'Looking for tree removal at 123 Main Street, Elmira NY. '
+            'Need a quote; email me at tree@example.org or call 607-555-0199.'
+        ), SOCIAL, NOW)
+        self.assertIsNotNone(lead)
+        for field in ('title', 'summary', 'evidence_snippet'):
+            self.assertNotIn('123 Main Street', lead[field])
+            self.assertNotIn('tree@example.org', lead[field])
+            self.assertNotIn('607-555-0199', lead[field])
+        self.assertIn('[address on source]', lead['evidence_snippet'])
+        self.assertEqual(lead['location'], 'Elmira, NY')
+
     def test_html_text_does_not_include_script(self):
         self.assertEqual(radar.text('<p>Need <b>tree removal</b></p><script>bad()</script>'), 'Need tree removal')
 
@@ -139,14 +152,21 @@ class PersistenceTests(unittest.TestCase):
         self.assertFalse(feed['leads'])
         self.assertEqual(len(history2['leads']), 1)
 
-    def test_partial_failures_are_visible(self):
+    def test_news_only_success_cannot_clear_request_feed(self):
         def get(url):
             if url == SOCIAL['url']: raise OSError('unreachable')
             return '<rss><channel/></rss>'
+        with self.assertRaisesRegex(RuntimeError, 'All request sources failed'):
+            assemble(sources=[SOCIAL, NEWS], getter=get)
+
+    def test_partial_failure_visible_when_request_source_succeeds(self):
+        def get(url):
+            if url == NEWS['url']: raise OSError('unreachable')
+            return timeline(BODY)
         feed, _ = assemble(sources=[SOCIAL, NEWS], getter=get)
-        self.assertEqual(feed['source_status'][SOCIAL['name']]['state'], 'error')
-        self.assertEqual(feed['request_sources_ok'], 0)
-        self.assertFalse(feed['leads'])
+        self.assertEqual(feed['source_status'][NEWS['name']]['state'], 'error')
+        self.assertEqual(feed['request_sources_ok'], 1)
+        self.assertEqual(len(feed['leads']), 1)
 
     def test_all_failure_preserves_files(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -50,7 +50,7 @@ Score: request-language base 65 (news base 10), publication within seven days +1
 
 HTTPS URLs are normalized, fragments and tracking parameters removed. Identical normalized URLs merge; matching normalized title, town, and publication day merges conservative cross-post duplicates. Source links are retained. Different wording/dates may remain separate; unrelated requests with identical short text/town/day could merge. No fuzzy match claims certainty.
 
-IDs and first-discovered dates persist across scans, even if a rediscovered post changes title. Last-observed time updates on each successful discovery. Up to 2,000 historical entries are retained, newest observation first. History is not reintroduced into the current feed and is explicitly marked as possibly inactive. No lead lifecycle/CRM status is inferred. All-source failure exits nonzero and preserves both prior files. Partial failures are shown per source; news-only success explicitly reports that request coverage is unknown. Corrupt history fails instead of silently being erased. JSON file replacement is atomic per file; CI validates matching run timestamps before committing the pair.
+IDs and first-discovered dates persist across scans, even if a rediscovered post changes title. Last-observed time updates on each successful discovery. All historical entries are retained, newest observation first; there is no automatic truncation. History is not reintroduced into the current feed and is explicitly marked as possibly inactive. No lead lifecycle/CRM status is inferred. All-source failure exits nonzero and preserves both prior files. Partial failures are shown per source; news-only success explicitly reports that request coverage is unknown. Corrupt history fails instead of silently being erased. JSON file replacement is atomic per file; CI validates matching run timestamps before committing the pair.
 
 ## Verification in this task
 
@@ -64,3 +64,7 @@ Base: `e7526497d8e1dd29feeab0adcb73d9143eedda1f`, matching fetched origin/main o
 - An actual local scanner run against all seven endpoints failed because this environment's enforced outbound policy denied Mastodon and Google News. The scan failed safely and did not alter published files. This is an environment access blocker, not proof the providers are unavailable. Live source compatibility and real request discovery remain unverified.
 
 Required domain additions were saved to the environment draft, including `mastodon.social`, `news.google.com`, `api.github.com`, and the existing contract scanner's direct hosts. Saving is separate from applying/publishing. Review and save the environment settings, then publish the environment and rerun the live commands. No extra credential has been requested: Git HTTPS authentication works, while API access is currently policy-denied. Never paste tokens in chat.
+
+## Issue #3 follow-up
+
+See [the updated runbook](LOCAL-RUNBOOK.md), [source review](LOCAL-SOURCE-REVIEW.md), and [Jarvis test report](ISSUE-3-TEST-REPORT.md) for current evidence and remaining blockers. The verification section above records the earlier implementation, not the current live access state. New feeds use schema version 2; existing published artifacts are intentionally preserved and remain readable.

@@ -18,6 +18,7 @@
 <label>View<select id="local-view"><option value="current">Latest scan</option><option value="history">Discovery history</option></select></label>
 <label>Sort<select id="local-sort"><option value="score">Relevance</option><option value="new">Newest discovery</option><option value="published">Newest post</option></select></label>
 </div>
+<p id="local-metrics" aria-live="polite"></p>
 <p id="local-status" role="status" aria-live="polite">Loading public discoveries…</p>
 <section id="local-cards" aria-label="Matching local discoveries"></section>
 <details><summary>Source coverage and scan health</summary><p id="local-coverage"></p><ul id="local-health"></ul><p>Automatic scans run every six hours after this feature is merged and GitHub Actions is enabled. Public hashtag coverage is limited. An inaccessible source means unknown coverage. Historical entries are past discoveries, not confirmed active requests.</p></details>
