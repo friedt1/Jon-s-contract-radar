@@ -42,9 +42,11 @@ class TownOfUnionOfficialStagingTests(unittest.TestCase):
         self.assertFalse(source_config.direct_fetch_target(row))
         self.assertEqual(source_health.classify(row, "")["direct_state"],
                          "staged_official_url")
-        with patch.object(scan, "scan_direct",
-                          side_effect=AssertionError("staged source fetched")) as direct, \\
-             patch.object(scan, "scan_news", return_value=[]):
+        with (
+            patch.object(scan, "scan_direct",
+                         side_effect=AssertionError("staged source fetched")) as direct,
+            patch.object(scan, "scan_news", return_value=[]),
+        ):
             _, status, leads = scan.run(row)
         direct.assert_not_called()
         self.assertEqual(leads, [])
