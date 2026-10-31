@@ -51,26 +51,12 @@ def _date(value):
 
 
 def submission_deadline(text):
-    """Return ISO date only from an explicit bid-submission date label.
+    """Return the submission date, respecting explicit deadline revisions.
 
-    When multiple actual bid submission dates appear (for example, an
-    amendment), the latest is retained; this is still unverified evidence.
+    Share the same evidence selection as submission_deadline_details so the
+    date-only and date/time scanner paths cannot disagree on an amendment.
     """
-    if not isinstance(text, str):
-        return ""
-    dates = []
-    for match in _CANDIDATE.finditer(text):
-        # Restrict prefix to the current sentence/field, so an earlier
-        # unrelated "questions" label cannot poison the next bid deadline.
-        prefix = re.split(r"[.;\n]", text[max(0, match.start()-80):match.start()])[-1]
-        between = match.group("between")
-        if _OTHER_MILESTONE_END.search(prefix) or _OTHER_MILESTONE.search(between):
-            continue
-        parsed = _date(match.group("date"))
-        if parsed:
-            dates.append(parsed)
-    dates.extend(date for date, _ in _receipt_before_date_matches(text))
-    return max(dates).isoformat() if dates else ""
+    return submission_deadline_details(text)[0]
 
 
 # A submission *date* alone cannot establish that a same-day bid has closed.
@@ -126,12 +112,29 @@ def _receipt_before_date_matches(text, with_position=False):
 
 
 
+_REVISION_PREFIX = re.compile(
+    r"\b(?:amend(?:ed|ment)?|revis(?:ed|ion)?|updated|corrected|"
+    r"rescheduled|addendum)(?:\s*(?:#|no\.?)?\s*\d+)?\s*[:\-]?\s*$",
+    re.I,
+)
+
+
+def _is_revised_submission(text, start):
+    """Require an explicit amendment immediately before this submission label.
+
+    A distant addendum or an amended *question* deadline must not rewrite the
+    bid submission cutoff. Date parsing and question exclusions happen first.
+    """
+    prefix = re.split(r"[.;\n]", text[max(0, start - 90):start])[-1]
+    return bool(_REVISION_PREFIX.search(prefix))
+
+
 def submission_deadline_details(text):
     """Return (ISO submission date, explicit 12-hour clock) or empty values.
 
     A question, walkthrough, or pre-bid date cannot supply the closing time.
-    For revised deadlines, the latest submission date wins; on a tied date,
-    the last submission statement controls its own clock; a later date-only\n    amendment must not inherit a stale time. No time is inferred.
+    Explicitly revised deadlines supersede original dates, even when earlier;
+    otherwise the latest date wins. A later date-only amendment must not\n    inherit a stale time. No time is inferred.
     """
     if not isinstance(text, str):
         return "", ""
@@ -157,16 +160,26 @@ def submission_deadline_details(text):
                 clock = dt.datetime.strptime(value, "%I:%M %p").strftime("%I:%M %p").lstrip("0")
             except ValueError:
                 pass
-        matches.append((date, clock, match.start()))
-    matches.extend(_receipt_before_date_matches(text, with_position=True))
+        matches.append((date, clock, match.start(), _is_revised_submission(text, match.start())))
+    matches.extend((date, clock, pos, _is_revised_submission(text, pos))
+                   for date, clock, pos in _receipt_before_date_matches(text, with_position=True))
     if not matches:
         return "", ""
-    latest = max(date for date, _, _ in matches)
+    # An explicit addendum can move a cutoff EARLIER as well as later.
+    # Choosing the maximum date in that case would leave an expired notice
+    # eligible for review. The last explicitly revised submission statement
+    # supersedes original dates; without one, retain the conservative latest
+    # date behavior for unordered source text.
+    revisions = [item for item in matches if item[3]]
+    if revisions:
+        chosen = max(revisions, key=lambda item: item[2])
+        return chosen[0].isoformat(), chosen[1]
+    latest = max(date for date, _, _, _ in matches)
     matches.sort(key=lambda item: item[2])
     # A later amendment may restate the same date without a clock. Do not
     # carry an earlier (possibly superseded) cutoff into that notice: the
     # latest matching submission statement controls its own time evidence.
-    latest_statement = next((clock for date, clock, _ in reversed(matches)
+    latest_statement = next((clock for date, clock, _, _ in reversed(matches)
                              if date == latest), "")
     return latest.isoformat(), latest_statement
 
