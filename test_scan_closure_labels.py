@@ -118,10 +118,12 @@ class ScannerClosureLabelTests(unittest.TestCase):
                 self.assertEqual(next(iter(found.values()))["status"], "unverified")
 
     def test_completed_award_and_cancellation_remain_closed(self):
+        # Standalone publisher status headings are decisive. A stray word
+        # elsewhere in a packet is not a reliable status field.
+        for heading in ("Awarded", "Bid results", "Award notice"):
+            with self.subTest(heading=heading):
+                self.assertTrue(scan.closed(heading))
         for label in (
-            "Awarded",
-            "Bid results",
-            "Award notice",
             "Bid status: Awarded",
             "Solicitation status: Cancelled",
             "Contract has been awarded",
