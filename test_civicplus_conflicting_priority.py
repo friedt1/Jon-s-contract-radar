@@ -20,7 +20,7 @@ def card(number, title, status, closing):
 def crowded_listing(conflicting_date="11/19/2026 2:00 PM"):
     return (card(41, "Office equipment", "Closed", "10/10/2026 9:00 AM")
             + "".join(card(i, "General office supplies", "Open",
-                           "11/20/2026 2:00 PM") for i in range(100, 125))
+                           "11/20/2026 2:00 PM") for i in range(100, 160))
             + card(41, "Tree and stump removal bid", "Open", conflicting_date))
 
 
