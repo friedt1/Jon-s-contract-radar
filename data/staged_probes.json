@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-31T00:44:55.327526+00:00",
+  "updated": "2026-10-31T01:44:33.716542+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 34,
+  "staged_entrypoints": 39,
   "probes": [
     {
       "name": "Broome County",
@@ -151,8 +151,8 @@
     {
       "name": "Bradford County PA",
       "official_entrypoint": "https://www.bradfordcountypa.gov/bids.aspx",
-      "state": "listing_reachable_no_open_bids",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -405,6 +405,19 @@
       "direct_monitoring_activated": false
     },
     {
+      "name": "Village of Bath",
+      "official_entrypoint": "https://villageofbathny.gov/",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official village site has news, meeting minutes and public notices but no verified current bid index. Locate authoritative individual solicitations, review robots/publisher terms and establish permitted scope, submission deadline, status and worksite extraction before activation. An unrelated water-main bid with June 2026 deadline is expired, not a live tree contract.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
       "name": "City of Hornell",
       "official_entrypoint": "https://www.cityofhornell.gov/upcoming-bid-projects",
       "state": "listing_reachable_off_host_documents_review_required",
@@ -447,6 +460,19 @@
       "direct_monitoring_activated": false
     },
     {
+      "name": "Village of Penn Yan",
+      "official_entrypoint": "https://www.villageofpennyan.gov/meetings.html",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official village public-notices page mixes meeting announcements, bond notices and Tree Board meetings, not individual bid listings. A third-party listing of April 3, 2026 tree maintenance/power-line clearing is expired and cannot be seeded. Identify official current bid notice index, review robots/terms and implement permitted individual scope/deadline/worksite extraction before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
       "name": "Village of Montour Falls",
       "official_entrypoint": "https://www.villageofmontourfalls.gov/",
       "state": "listing_reachable_rfp_section_reports_none",
@@ -470,6 +496,46 @@
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official Town of Southport Legal Notice index verified 2026-10-30; currently displays truck financing, budget, and hearing notices, not an individual tree-service bid. Mixed legal notices are not a dedicated bid feed. Review robots/terms and verify stable current individual procurement notices, scope, deadline and worksite before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Town of Erwin",
+      "official_entrypoint": "https://www.erwinny.gov/",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Town of Erwin .gov CivicPlus homepage confirmed; older erwinny.org publications show an unrelated dog-control RFP due September 26, 2025. No verified current procurement index or per-notice adapter. Review robots/publisher terms, find stable individual bid pages and verify deadlines and scope before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Town of Lansing",
+      "official_entrypoint": "https://www.lansingtownny.gov/rfps",
+      "state": "listing_not_found",
+      "listing_retrieved": false,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Town of Lansing Bids and RFPs index currently says there are no bids or RFPs available. This does not prove all purchasing channels are covered. Review robots/terms and implement permitted listing/detail extraction with status, deadline and worksite verification before activation; never infer a live bid from the empty index.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false,
+      "http_status": 404
+    },
+    {
+      "name": "Town of Dryden",
+      "official_entrypoint": "https://www.dryden.ny.us/",
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Town of Dryden domain hosts historic 2025 RFP PDFs, including broadband outside-plant work and an unrelated feasibility study. Direct homepage fetch returned HTTP 403 in source review. No current procurement index or permitted individual notice adapter verified; record HTTP block accurately and review robots/terms before activation. Historical PDFs are not live bids.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     },
