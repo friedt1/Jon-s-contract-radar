@@ -767,10 +767,16 @@ def scan_direct(src):
       nested_notice_links = True
      # Preserve the budget for distinct, permitted, relevant detail URLs.
      # A nested listing row only queues a candidate, never proves it open.
-     if (len(nested_candidates)<max_details and target_identity not in visited
-         and target_identity not in nested_seen
+     if (target_identity not in visited and target_identity not in nested_seen
          and (category(row) or bidlike(label+' '+href))):
+      # Do not cap in document order: statewide indexes may put dozens of
+      # unrelated bid IDs before a nearby tree-work notice. Ranking all
+      # discovered links does not increase the bounded network fetch budget.
       priority = 8 if is_individual_notice_link(target) else 0
+      priority += 5 if category(row) else 0
+      priority += listing_deadline_priority(row, NOW)
+      if name in BROAD_SOURCES and local_evidence(label+' '+row):
+       priority += 7
       nested_candidates.append((priority,target,label,row))
       nested_seen.add(target_identity)
     if nested_candidates:
