@@ -244,6 +244,41 @@ class SourceHealthTests(unittest.TestCase):
         self.assertEqual(counts["fetched_without_individual_details_sources"], 0)
         self.assertEqual(counts["fetched_with_incomplete_extraction_sources"], 1)
 
+    def test_staged_supplier_portals_have_explicit_access_gates_without_activation(self):
+        sources = [
+            {"name": "Invitation-only utility", "mode": "discovery_pending",
+             "verified_url": False, "url": "",
+             "candidate_official_url": "https://utility.example/suppliers",
+             "provider_access_required": True, "delegated_provider": "Coupa"},
+            {"name": "Registration gateway", "mode": "discovery_pending",
+             "verified_url": False, "url": "",
+             "candidate_official_url": "https://utility.example/procurement",
+             "delegated_provider": "Ariba"},
+            {"name": "Public staged listing", "mode": "discovery_pending",
+             "candidate_official_url": "https://county.example/bids"},
+            {"name": "No verified official URL", "mode": "discovery_pending",
+             "provider_access_required": True},
+            {"name": "Configured provider", "mode": "direct_page",
+             "verified_url": True, "url": "https://provider.example/bids",
+             "provider_access_required": True},
+        ]
+        result = source_health.summarize(sources, {})
+        rows = {row["name"]: row for row in result["sources"]}
+        counts = result["counts"]
+        self.assertEqual(counts["staged_provider_access_required"], 2)
+        self.assertEqual(counts["configured_access_required"], 1)
+        self.assertEqual(counts["configured_direct"], 1)
+        self.assertEqual(counts["staged_official_url"], 3)
+        self.assertEqual(counts["configured_fetch_targets"], 0)
+        for name in ("Invitation-only utility", "Registration gateway"):
+            self.assertEqual(rows[name]["direct_state"], "staged_official_url")
+            self.assertTrue(rows[name]["staged_provider_access_required"])
+            self.assertFalse(rows[name]["provider_access_required"])
+            self.assertEqual(rows[name]["direct_url"], "")
+        self.assertFalse(rows["Public staged listing"]["staged_provider_access_required"])
+        self.assertFalse(rows["No verified official URL"]["staged_provider_access_required"])
+        self.assertFalse(rows["Configured provider"]["staged_provider_access_required"])
+
 
 if __name__ == "__main__":
     unittest.main()
