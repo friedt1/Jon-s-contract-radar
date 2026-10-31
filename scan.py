@@ -399,7 +399,7 @@ def is_individual_notice_link(url):
   if any(key.lower() == 'bidid' for key in up.parse_qs(parsed.query)):
    return True
   return bool(re.search(
-   r'/(?:bids?|rfp|rfq|solicitations?|tenders?|opportunities?)/[^/]+/?$',
+   r'/(?:bids?|rfp|rfq|solicitations?|tenders?|opportunities?|bid-projects)/[^/]+/?$',
    parsed.path, re.I))
  except ValueError:
   return False
