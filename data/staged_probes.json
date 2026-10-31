@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-31T14:29:01.840171+00:00",
+  "updated": "2026-10-31T14:31:26.525524+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 45,
+  "staged_entrypoints": 46,
   "probes": [
     {
       "name": "Broome County",
@@ -496,6 +496,19 @@
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official Town of Southport Legal Notice index verified 2026-10-30; currently displays truck financing, budget, and hearing notices, not an individual tree-service bid. Mixed legal notices are not a dedicated bid feed. Review robots/terms and verify stable current individual procurement notices, scope, deadline and worksite before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Town of Ashland NY",
+      "official_entrypoint": "https://ashlandnychemung.gov/",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Town of Ashland in Chemung County website confirmed via Chemung County's town directory and townofashland.net redirect to ashlandnychemung.gov. Homepage is NOT a bid index; locate official individual solicitations, verify robots/terms and stable permitted extraction before activation. Do not confuse with ashlandny.com, the different Town of Ashland in Greene County.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     },
