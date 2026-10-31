@@ -454,12 +454,28 @@ def scan_civicplus(src, listing_pages, page_errors):
  # ordering: neither a future date nor a listing "Open" label verifies a bid.
  # Inspect generic titles too; tree-work scope may exist only in the detail.
  def notice_priority(row):
-  # A conflicting card cannot supply a reliable listing deadline.
-  due = '' if row['url'] in ambiguous_urls else row.get('deadline', '')
-  timing = (1 if not due else
-            2 if civicplus_bids.closing_passed(due, row.get('deadline_time', ''), NOW)
-            else 0)
-  relevant = 0 if category(row['title'] + ' ' + row['description']) else 1
+  if row['url'] in ambiguous_urls:
+   # A duplicate bidID may be closed in an older card and reopened in a
+   # newer one. Examine ALL card contexts for request ordering only. The
+   # fetched individual notice still controls scope, status, and deadline;
+   # conflicting listing evidence is never used to publish a candidate.
+   contexts = row_evidence.get(row['url'], ())
+   future_open = False
+   for context in contexts:
+    if civicplus_bids.status_of(context) in civicplus_bids.CLOSED:
+     continue
+    context_due, context_time = civicplus_bids.closing_of(context)
+    if context_due and not civicplus_bids.closing_passed(context_due, context_time, NOW):
+     future_open = True
+     break
+   timing = 0 if future_open else 1
+   relevant = 0 if any(category(context) for context in contexts) else 1
+  else:
+   due = row.get('deadline', '')
+   timing = (1 if not due else
+             2 if civicplus_bids.closing_passed(due, row.get('deadline_time', ''), NOW)
+             else 0)
+   relevant = 0 if category(row['title'] + ' ' + row['description']) else 1
   return (timing, relevant)
  prioritized = sorted(records.values(), key=notice_priority)
  eligible_count = sum(row['open_status'] not in civicplus_bids.CLOSED
