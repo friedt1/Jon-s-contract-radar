@@ -142,6 +142,42 @@ class SourceHealthTests(unittest.TestCase):
         self.assertEqual(clean["pagination_errors"], 0)
         self.assertEqual(clean["pagination_access_state"], "no_reported_errors")
 
+    def test_mixed_detail_and_pagination_access_failures_are_all_counted(self):
+        # Synthetic diagnostics: neither a fetch nor a live bid.
+        src = {"name": "County", "mode": "direct_page",
+               "url": "https://county.example/bids", "verified_url": True}
+        status = ("direct fetched; 1 listing pages; "
+                  "3 detail errors: RobotsDenied,HTTPError HTTP 403,HTTPError HTTP 429; "
+                  "2 pagination errors: UnsafeRedirect,RobotsDenied")
+        row = source_health.classify(src, status)
+        self.assertEqual(row["detail_access_state"], "robots_blocked")
+        self.assertEqual(row["pagination_access_state"], "robots_blocked")
+        self.assertEqual(
+            row["detail_error_types"],
+            ["robots_blocked", "http_blocked", "rate_limited"])
+        self.assertEqual(
+            row["pagination_error_types"], ["robots_blocked", "redirect_blocked"])
+        counts = source_health.summarize([src], {"County": status})["counts"]
+        for key in ("detail_robots_blocked_sources", "detail_http_blocked_sources",
+                    "detail_rate_limited_sources", "pagination_robots_blocked_sources",
+                    "pagination_redirect_blocked_sources"):
+            with self.subTest(key=key):
+                self.assertEqual(counts[key], 1)
+        self.assertEqual(counts["detail_redirect_blocked_sources"], 0)
+        self.assertEqual(counts["pagination_http_blocked_sources"], 0)
+
+    def test_zero_error_count_cannot_create_access_failure_types(self):
+        src = {"name": "County", "mode": "direct_page",
+               "url": "https://county.example/bids", "verified_url": True}
+        status = ("direct fetched; 0 detail errors: RobotsDenied; "
+                  "0 pagination errors: HTTPError HTTP 403")
+        row = source_health.classify(src, status)
+        self.assertEqual(row["detail_error_types"], [])
+        self.assertEqual(row["pagination_error_types"], [])
+        counts = source_health.summarize([src], {"County": status})["counts"]
+        self.assertEqual(counts["detail_robots_blocked_sources"], 0)
+        self.assertEqual(counts["pagination_http_blocked_sources"], 0)
+
     def test_official_feed_and_authorized_api_are_direct_modes(self):
         sources = [
             {"name": "Feed", "mode": "official_feed", "url": "https://county.example/feed.xml",
