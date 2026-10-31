@@ -4,6 +4,7 @@ from pathlib import Path
 import scan
 import notice_identity
 from source_config import direct_configured
+import source_health
 from publisher_status import publisher_closed
 from submission_deadlines import eastern_deadline_timezone
 
@@ -52,6 +53,11 @@ def validate(root=scan.ROOT):
         }
         if any(coverage.get(key) != expected for key, expected in checks.items()):
             raise ValueError('Inconsistent direct source coverage metrics')
+        # A count of 102 is insufficient if a named source was silently
+        # replaced or omitted. Old feeds without this field remain readable.
+        inventory = coverage.get('expected_source_names')
+        if inventory is not None and inventory != sorted(s['name'] for s in sources):
+            raise ValueError('Expected source inventory disagrees with sources.json')
     health = data.get('source_health')
     if health is not None:
         rows = health.get('sources', [])
@@ -67,6 +73,25 @@ def validate(root=scan.ROOT):
                   'staged_official_url', 'not_configured')
         if sum(counts.get(key, 0) for key in states) != len(sources):
             raise ValueError('Source health states do not account for all targets')
+        # Totals alone cannot detect two sources with swapped states, or
+        # misreported counts that still sum to 102. Reconcile against the
+        # publisher configuration and actual scan status, not the dashboard's
+        # own potentially stale/altered summary.
+        expected_health = source_health.summarize(sources, data['source_status'])
+        expected_rows = {row['name']: row for row in expected_health['sources']}
+        for row in rows:
+            reference = expected_rows[row['name']]
+            for field in ('direct_state', 'indirect_state',
+                          'provider_access_required', 'direct_url',
+                          'staged_official_url'):
+                if row.get(field) != reference[field]:
+                    raise ValueError('Source health state disagrees with scanner: '
+                                     + row['name'] + ' / ' + field)
+        for field in states + ('configured_direct', 'configured_fetch_targets',
+                               'configured_access_required',
+                               'configured_unimplemented_adapters'):
+            if counts.get(field) != expected_health['counts'][field]:
+                raise ValueError('Source health count disagrees with scanner: ' + field)
         if counts.get('individual_bid_details_fetched', 0) != sum(
                 row.get('individual_bid_details_fetched', 0) for row in rows):
             raise ValueError('Individual bid detail count disagrees with source health rows')
