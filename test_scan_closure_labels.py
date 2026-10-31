@@ -93,6 +93,50 @@ class ScannerClosureLabelTests(unittest.TestCase):
                     "Tree removal bid due November 13, 2026. " + label,
                     today=self.TODAY))
 
+    def test_future_award_and_cancellation_boilerplate_does_not_close_bid(self):
+        # An individual bid packet may describe how a contract *will* be
+        # awarded or cancelled. Those conditions are not a final agency
+        # decision and must not suppress an otherwise eligible notice.
+        for clause in (
+            "The contract will be awarded to the lowest responsible bidder.",
+            "The agency reserves the right to cancel this procurement.",
+            "The bid may be cancelled if funding is unavailable.",
+            "Bidders must submit current insurance; expired insurance is unacceptable.",
+            "An award notice will be published after bid opening.",
+            "Bid results will be available following the submission deadline.",
+            "Bids closed for questions; submissions remain open.",
+            "Bidding closed for questions only; bids are still accepted.",
+        ):
+            with self.subTest(clause=clause):
+                text = "Tree removal bid due November 13, 2026. " + clause
+                self.assertFalse(scan.closed(text))
+                self.assertTrue(scan.eligible(text, today=self.TODAY))
+                found = {}
+                scan.add_lead(found, "Synthetic County", text,
+                              "https://example.gov/bids/tree-notice")
+                self.assertEqual(len(found), 1)
+                self.assertEqual(next(iter(found.values()))["status"], "unverified")
+
+    def test_completed_award_and_cancellation_remain_closed(self):
+        # Standalone publisher status headings are decisive. A stray word
+        # elsewhere in a packet is not a reliable status field.
+        for heading in ("Awarded", "Bid results", "Award notice"):
+            with self.subTest(heading=heading):
+                self.assertTrue(scan.closed(heading))
+        for label in (
+            "Bid status: Awarded",
+            "Solicitation status: Cancelled",
+            "Contract has been awarded",
+            "Bid was canceled",
+            "RFP expired",
+            "Bids are closed for submissions",
+        ):
+            with self.subTest(label=label):
+                self.assertTrue(scan.closed(label))
+                self.assertFalse(scan.eligible(
+                    "Tree removal bid due November 13, 2026. " + label,
+                    today=self.TODAY))
+
     def test_one_vendor_withdrawing_offer_does_not_close_procurement(self):
         self.assertTrue(scan.closed("Rescinded"))
         text = ("Tree removal bid due November 13, 2026. "
