@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-31T17:43:49.890178+00:00",
+  "updated": "2026-10-31T18:08:21.527403+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 47,
+  "staged_entrypoints": 52,
   "probes": [
     {
       "name": "Broome County",
@@ -151,8 +151,8 @@
     {
       "name": "Bradford County PA",
       "official_entrypoint": "https://www.bradfordcountypa.gov/bids.aspx",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "listing_reachable_no_open_bids",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -566,6 +566,32 @@
       "direct_monitoring_activated": false
     },
     {
+      "name": "Sayre Borough",
+      "official_entrypoint": "https://sayreborough.org/",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official borough website has news, Public Works and council documents but no verified current bid index. Identify the authoritative individual-solicitation channel; review robots/terms and permitted per-notice access, deadline, tree-work scope and worksite before activation. Calendar clean-up events and council agendas are not contracts.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Athens Borough",
+      "official_entrypoint": "https://athensboroughpa.org/",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official borough website lists Public Works, documents and a Shade Tree meeting, not a verified procurement feed. Find a current individual bid index, confirm robots/terms and permitted extraction, distinguish shade-tree meetings from bid notices, and verify deadlines and worksites before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
       "name": "Towanda Borough",
       "official_entrypoint": "https://towandaborough.org/public-announcements/",
       "state": "listing_reachable_adapter_required",
@@ -575,6 +601,19 @@
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official borough Public Announcements page publishes individual solicitations, but mixes notices and has an expired October 27, 2026 waste-collection bid. Verify robots/terms and permitted per-notice extraction, submission deadline/amendments, tree-work scope and Elmira travel time before activation; never treat the index or expired unrelated bid as live.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Mansfield Borough",
+      "official_entrypoint": "https://mansfieldborough.org/",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official borough homepage and government news verified; no current individual bid listing established. Locate a procurement publication channel, check robots/terms and per-notice extraction permission, and verify tree-work scope, closing deadline and worksite before activation.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     },
@@ -593,6 +632,19 @@
       "section_note": "Issuer's visible bid listing reports no current open bids at probe time; other channels and individual notice access remain unverified"
     },
     {
+      "name": "Troy Borough",
+      "official_entrypoint": "https://troyborough.com/officials.php",
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Troy Borough page carries a historical June 25, 2026 roadway paving bid/results notice with bid packets requested by phone/email. It is expired and unrelated; page is not a verified current individual-notice feed. Identify authorized current solicitations, robots/terms, stable notice extraction, submission deadlines and worksites before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
       "name": "Williamsport City",
       "official_entrypoint": "https://cityofwilliamsport.org/news/document-category/request-for-proposal/",
       "state": "listing_reachable_adapter_required",
@@ -602,6 +654,19 @@
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official City of Williamsport Request for Proposal document category verified 2026-10-30: individual RFP/IFB posts exist, but the index also contains historical responses and non-service sale notices. Before activation, verify robots and publisher terms, build permitted individual-post/attachment extraction with authoritative bid submission deadlines, scope and worksite, and separately review any external provider authorization. Do not treat a dated post as an open bid.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Montrose Borough",
+      "official_entrypoint": "https://www.montroseborough.com/",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Montrose Borough homepage links to council agendas and minutes but has no verified current bid listing. Locate procurement notices, confirm robots/terms and permitted individual notice extraction, and check scope, deadlines and Elmira travel time before activation.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     },
