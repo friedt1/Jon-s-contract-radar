@@ -19,6 +19,7 @@ import xml.etree.ElementTree as ET
 import local_bid_rss
 import public_bid_pagination as public_pages
 import civicplus_bids
+import detail_rotation
 import robots_policy
 import source_health
 import source_config
@@ -485,7 +486,8 @@ def scan_civicplus(src, listing_pages, page_errors):
              else 0)
    relevant = 0 if category(row['title'] + ' ' + row['description']) else 1
   return (timing, relevant)
- prioritized = sorted(records.values(), key=notice_priority)
+ prioritized = detail_rotation.rotate_exploration_window(
+  sorted(records.values(), key=notice_priority), civicplus_bids.MAX_DETAILS, NOW)
  eligible_count = sum(row['open_status'] not in civicplus_bids.CLOSED
                       or row['url'] in ambiguous_urls for row in prioritized)
  deferred_at_budget = max(0, eligible_count - civicplus_bids.MAX_DETAILS)
@@ -688,6 +690,10 @@ def scan_direct(src):
    candidates.append((score,url,title,context))
  # Row parsing is used to discover relevant detail URLs, not to invent bid links.
  candidates.sort(key=lambda x:-x[0])
+ # A fixed bounded budget otherwise retries the same top links on every scan.
+ # Preserve the strongest 75% of requests, and advance the rest hourly.
+ # This is retrieval scheduling only: no source or bid is promoted as live.
+ candidates = detail_rotation.rotate_exploration_window(candidates, max_details, NOW)
  # Nested bid links must be examined before unrelated siblings exhaust the
  # bounded detail budget. Python's list iterator visits inserted entries next.
  for candidate_index, (_,url,title,context) in enumerate(candidates):
