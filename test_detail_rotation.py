@@ -145,8 +145,8 @@ class ScannerRotationTests(unittest.TestCase):
                     body = "<h1>Unrelated historical road paving project</h1>"
                 return (body.encode() if binary else body, "text/html", url)
 
-            with patch.object(scan, "NOW", start + dt.timedelta(hours=hour)), \\
-                 patch.object(scan, "MAX_DETAIL", 6), \\
+            with patch.object(scan, "NOW", start + dt.timedelta(hours=hour)), \
+                 patch.object(scan, "MAX_DETAIL", 6), \
                  patch.object(scan, "fetch", side_effect=fake_fetch):
                 leads, status = scan.scan_direct({
                     "name": "Synthetic County", "url": BASE, "mode": "direct_page"
