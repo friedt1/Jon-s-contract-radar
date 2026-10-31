@@ -61,7 +61,11 @@ def submission_deadline(text):
 
 # A submission *date* alone cannot establish that a same-day bid has closed.
 # Extract a clock time only when adjacent to the same validated submission label.
-_CLOCK = r"(?:0?[1-9]|1[0-2])(?::[0-5]\d)?[ \t]*[AP]\.?[ \t]*M\.?"
+_CLOCK_12 = r"(?:0?[1-9]|1[0-2])(?::[0-5]\d)?[ \t]*[AP]\.?[ \t]*M\.?"
+# Require a colon for 24-hour notation; never infer that bare '1400' is a time.
+# Do not consume the AM/PM suffix of an ordinary 12-hour time.
+_CLOCK_24 = r"(?:[01]?\d|2[0-3]):[0-5]\d(?![ \t]*[AP]\.?[ \t]*M\.?)(?:[ \t]*(?:hours?|hrs?))?"
+_CLOCK = r"(?:" + _CLOCK_12 + r"|" + _CLOCK_24 + r")"
 # Accept "due DATE at 1:30 P.M." and "due DATE, at 1:30 P.M.".
 # A word boundary after the final dot in P.M. would reject the clock.
 _AFTER_DATE = re.compile(r"^[ \t]*(?:,[ \t]*)?(?:at[ \t]+)?(?P<clock>" + _CLOCK + r")(?=$|[ \t,;.)])", re.I)
@@ -90,6 +94,25 @@ _DUE_BEFORE_DATE = re.compile(
     r"(?P<clock>" + _CLOCK + r")\s+(?:on\s+)?" + _DATE, re.I,
 )
 
+
+def _normalized_clock(value):
+    """Return normalized Eastern agency-local clock; never guess missing times."""
+    raw = re.sub(r"\b(?:hours?|hrs?)\b", "", value, flags=re.I).strip()
+    raw = re.sub(r"\.", "", raw.upper())
+    raw = re.sub(r"\s+", " ", raw).strip()
+    raw = re.sub(r"([AP])\s+(?=M\b)", r"\1", raw)
+    if re.search(r"[AP]M$", raw):
+        if ":" not in raw:
+            raw = re.sub(r"^(\d{1,2})", r"\1:00", raw)
+        fmt = "%I:%M %p"
+    else:
+        fmt = "%H:%M"
+    try:
+        return dt.datetime.strptime(raw, fmt).strftime("%I:%M %p").lstrip("0")
+    except ValueError:
+        return ""
+
+
 def _receipt_before_date_matches(text, with_position=False):
     for match in (m for pattern in (_RECEIPT_BEFORE_DATE, _DUE_BEFORE_DATE)
                   for m in pattern.finditer(text)):
@@ -99,14 +122,8 @@ def _receipt_before_date_matches(text, with_position=False):
         date = _date(match.group("date"))
         if date is None:
             continue
-        clock = re.sub(r"\.", "", match.group("clock").upper())
-        clock = re.sub(r"\s+", " ", clock).strip()
-        clock = re.sub(r"([AP])\s+(?=M\b)", r"\1", clock)
-        if ":" not in clock:
-            clock = re.sub(r"^(\d{1,2})", r"\1:00", clock)
-        try:
-            clock = dt.datetime.strptime(clock, "%I:%M %p").strftime("%I:%M %p").lstrip("0")
-        except ValueError:
+        clock = _normalized_clock(match.group("clock"))
+        if not clock:
             continue
         yield (date, clock, match.start()) if with_position else (date, clock)
 
@@ -158,14 +175,7 @@ def submission_deadline_details(text):
         raw = (after or before)
         clock = ""
         if raw:
-            value = re.sub(r"\s+", " ", re.sub(r"\.", "", raw.group("clock").upper())).strip()
-            value = re.sub(r"([AP])\s+(?=M\b)", r"\1", value)
-            if ":" not in value:
-                value = re.sub(r"^(\d{1,2})", r"\1:00", value)
-            try:
-                clock = dt.datetime.strptime(value, "%I:%M %p").strftime("%I:%M %p").lstrip("0")
-            except ValueError:
-                pass
+            clock = _normalized_clock(raw.group("clock"))
         matches.append((date, clock, match.start(), _is_revised_submission(text, match.start())))
     matches.extend((date, clock, pos, _is_revised_submission(text, pos))
                    for date, clock, pos in _receipt_before_date_matches(text, with_position=True))
