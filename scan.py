@@ -486,8 +486,9 @@ def scan_civicplus(src, listing_pages, page_errors):
              else 0)
    relevant = 0 if category(row['title'] + ' ' + row['description']) else 1
   return (timing, relevant)
- prioritized = detail_rotation.rotate_exploration_window(
-  sorted(records.values(), key=notice_priority), civicplus_bids.MAX_DETAILS, NOW)
+ prioritized = detail_rotation.rotate_boundary_ties(
+  sorted(records.values(), key=notice_priority), civicplus_bids.MAX_DETAILS,
+  NOW, notice_priority)
  eligible_count = sum(row['open_status'] not in civicplus_bids.CLOSED
                       or row['url'] in ambiguous_urls for row in prioritized)
  deferred_at_budget = max(0, eligible_count - civicplus_bids.MAX_DETAILS)
@@ -691,9 +692,10 @@ def scan_direct(src):
  # Row parsing is used to discover relevant detail URLs, not to invent bid links.
  candidates.sort(key=lambda x:-x[0])
  # A fixed bounded budget otherwise retries the same top links on every scan.
- # Preserve the strongest 75% of requests, and advance the rest hourly.
+ # Rotate only equal-priority candidates at the budget boundary each hour.
  # This is retrieval scheduling only: no source or bid is promoted as live.
- candidates = detail_rotation.rotate_exploration_window(candidates, max_details, NOW)
+ candidates = detail_rotation.rotate_boundary_ties(
+  candidates, max_details, NOW, lambda item: item[0])
  # Nested bid links must be examined before unrelated siblings exhaust the
  # bounded detail budget. Python's list iterator visits inserted entries next.
  for candidate_index, (_,url,title,context) in enumerate(candidates):
@@ -796,8 +798,9 @@ def scan_direct(src):
      # A nested procurement index may contain hundreds of bid IDs. Rotate
      # its deferred tail too; rotating only the outer index would retry the
      # same nested notices on every scheduled scan.
-     nested_candidates = detail_rotation.rotate_exploration_window(
-      nested_candidates, max(1, max_details - len(visited)), NOW)
+     nested_candidates = detail_rotation.rotate_boundary_ties(
+      nested_candidates, max(1, max_details - len(visited)), NOW,
+      lambda item: item[0])
      candidates[candidate_index+1:candidate_index+1] = nested_candidates
     if nested_notice_links and not p.rows:
      nested_listing_pages += 1
