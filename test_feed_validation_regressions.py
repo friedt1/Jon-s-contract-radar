@@ -93,6 +93,20 @@ class FeedValidationRegressions(unittest.TestCase):
                     self.validate_fixture(self.notice(
                         url=url, deadline="2026-11-05", deadline_time=""))
 
+    def test_encoded_control_notice_urls_cannot_be_published(self):
+        # The final publication gate must reject encoded control bytes even
+        # when the source page did not contain a literal newline.
+        for url in (
+            "https://county.example/Bids.aspx?bidID=321%0aX-Injected",
+            "https://county.example/Bids.aspx?bidID=321%0D",
+            "https://county.example/Bids.aspx%00?bidID=321",
+            "https://county.example/Bids.aspx?bidID=321#details%7f",
+        ):
+            with self.subTest(url=url):
+                with self.assertRaisesRegex(ValueError, "Invalid URL"):
+                    self.validate_fixture(self.notice(
+                        url=url, deadline="2026-11-05", deadline_time=""))
+
     def test_valid_http_and_https_notice_urls_remain_unverified(self):
         for url in ("http://county.example/Bids.aspx?bidID=321",
                     "https://county.example/Bids.aspx?bidID=321"):
