@@ -88,6 +88,10 @@ def _sample_priority(record, now):
     # A sampled notice is NEVER an actionable or verified contract.
     if record.get("open_status") in civicplus_bids.CLOSED:
         return 3
+    # A duplicate listing with contradictory status or cutoff must not
+    # outrank a clean future notice just because one row says "Open".
+    if record.get("listing_status_conflict") or record.get("listing_deadline_conflict"):
+        return 2
     due = record.get("deadline", "")
     if due:
         return 2 if civicplus_bids.closing_passed(
@@ -310,10 +314,11 @@ def probe(source, fetch=scan.fetch, now=None):
             # A publisher's listing and individual notice can disagree after
             # a bid closes or is amended. Neither an "Open" listing nor an
             # "Open" detail should silently override a contradictory status.
-            status_conflict = (detail_status != "unknown"
-                               and listed_status != "unknown"
-                               and ((detail_status in civicplus_bids.CLOSED)
-                                    != (listed_status in civicplus_bids.CLOSED)))
+            status_conflict = (bool(record.get("listing_status_conflict"))
+                               or (detail_status != "unknown"
+                                   and listed_status != "unknown"
+                                   and ((detail_status in civicplus_bids.CLOSED)
+                                        != (listed_status in civicplus_bids.CLOSED))))
             result["sample_notice_status"] = status
             result["sample_notice_listing_status"] = listed_status
             result["sample_notice_status_conflict"] = status_conflict
@@ -323,11 +328,12 @@ def probe(source, fetch=scan.fetch, now=None):
             detail_due, detail_time = adapter.detail_closing_of(body)
             listed_due = record["deadline"]
             listed_time = record["deadline_time"]
-            conflict = bool(detail_due and listed_due and
-                            (detail_due != listed_due or
-                             bool(detail_time and listed_time and
-                                  detail_time.replace(" ", "").upper() !=
-                                  listed_time.replace(" ", "").upper())))
+            conflict = (bool(record.get("listing_deadline_conflict"))
+                        or bool(detail_due and listed_due and
+                                (detail_due != listed_due or
+                                 bool(detail_time and listed_time and
+                                      detail_time.replace(" ", "").upper() !=
+                                      listed_time.replace(" ", "").upper()))))
             due = detail_due or listed_due
             due_time = detail_time if detail_due else listed_time
             result["sample_notice_deadline"] = due
