@@ -72,6 +72,30 @@ _CLOCK = r"(?:" + _CLOCK_12 + r"|" + _CLOCK_24 + r"|" + _CLOCK_WORD + r")"
 # Accept "due DATE at 1:30 P.M." and "due DATE, at 1:30 P.M.".
 # A word boundary after the final dot in P.M. would reject the clock.
 _AFTER_DATE = re.compile(r"^[ \t]*(?:,[ \t]*)?(?:at[ \t]+)?(?P<clock>" + _CLOCK + r")(?=$|[ \t,;.)])", re.I)
+# Machine-readable bid notices sometimes publish an ISO-8601 submission
+# timestamp instead of a separate local date and clock. An explicit offset
+# can shift the *local date*, so convert the entire instant to the NY/PA
+# issuing authority's Eastern time before applying the expiration gate.
+# Require the complete timestamp; never accept a truncated/invalid suffix.
+_ISO_AFTER_DATE = re.compile(
+    r"^T(?P<clock>(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d)?(?:\\.\\d{1,6})?)"
+    r"(?P<offset>Z|[+-](?:[01]\\d|2[0-3]):[0-5]\\d)?"
+    r"(?![0-9A-Za-z:+-])", re.I,
+)
+
+
+def _iso_closing(date, suffix):
+    """Normalize an ISO timestamp to the issuing authority's Eastern clock."""
+    from zoneinfo import ZoneInfo
+    try:
+        instant = dt.datetime.fromisoformat(date.isoformat() + "T" + suffix)
+        if instant.tzinfo is not None:
+            instant = instant.astimezone(ZoneInfo("America/New_York"))
+        return instant.date(), instant.strftime("%I:%M %p").lstrip("0")
+    except ValueError:
+        return None
+
+
 # Commas and "local time" may separate a submission clock from its date.
 # Only use this clock after a validated bid-submission label, not an opening.
 _BEFORE_DATE = re.compile(r"(?P<clock>" + _CLOCK + r")\s*(?:,\s*)?(?:local\s+time\s+)?(?:on\s+)?$", re.I)
@@ -189,12 +213,22 @@ def submission_deadline_details(text):
         date = _date(match.group("date"))
         if date is None:
             continue
-        after = _AFTER_DATE.match(text[match.end():match.end()+30])
-        before = _BEFORE_DATE.search(between)
-        raw = (after or before)
+        # ISO timestamps may carry an explicit UTC offset and even cross
+        # midnight when converted to Eastern. Do not treat the UTC date as
+        # the local submission date or discard its explicit closing hour.
+        iso = _ISO_AFTER_DATE.match(text[match.end():match.end()+40])
         clock = ""
-        if raw:
-            clock = _normalized_clock(raw.group("clock"))
+        if iso:
+            closing = _iso_closing(date, iso.group(0))
+            if closing is None:
+                continue
+            date, clock = closing
+        else:
+            after = _AFTER_DATE.match(text[match.end():match.end()+30])
+            before = _BEFORE_DATE.search(between)
+            raw = (after or before)
+            if raw:
+                clock = _normalized_clock(raw.group("clock"))
         revised = (_is_revised_submission(text, match.start())
                    or bool(_INLINE_REVISION_FIELD.fullmatch(between)))
         matches.append((date, clock, match.start(), revised))
