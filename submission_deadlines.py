@@ -72,7 +72,9 @@ _CLOCK = r"(?:" + _CLOCK_12 + r"|" + _CLOCK_24 + r"|" + _CLOCK_WORD + r")"
 # Accept "due DATE at 1:30 P.M." and "due DATE, at 1:30 P.M.".
 # A word boundary after the final dot in P.M. would reject the clock.
 _AFTER_DATE = re.compile(r"^[ \t]*(?:,[ \t]*)?(?:at[ \t]+)?(?P<clock>" + _CLOCK + r")(?=$|[ \t,;.)])", re.I)
-_BEFORE_DATE = re.compile(r"(?P<clock>" + _CLOCK + r")\s*(?:on\s+)?$", re.I)
+# Commas and "local time" may separate a submission clock from its date.
+# Only use this clock after a validated bid-submission label, not an opening.
+_BEFORE_DATE = re.compile(r"(?P<clock>" + _CLOCK + r")\s*(?:,\s*)?(?:local\s+time\s+)?(?:on\s+)?$", re.I)
 
 # Some official notices place the clock before the date and include a mailing
 # address: "Sealed bids will be received in ... until 1:45 P.M. on Oct 23,2025".
@@ -81,8 +83,8 @@ _BEFORE_DATE = re.compile(r"(?P<clock>" + _CLOCK + r")\s*(?:on\s+)?$", re.I)
 _RECEIPT_BEFORE_DATE = re.compile(
     r"\b(?:sealed\s+)?(?:bids?|proposals?|quotes?|responses?)\s+"
     r"(?:(?:will|shall|must)\s+be\s+)?received\b"
-    r"[^\n]{0,260}?\buntil\s+(?P<clock>" + _CLOCK + r")\s+"
-    r"(?:local\s+time\s+)?on\s+"
+    r"[^\n]{0,260}?\buntil\s+(?P<clock>" + _CLOCK + r")\s*(?:,\s*)?"
+    r"(?:local\s+time\s+)?(?:on\s+)?"
     r"(?:(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+)?"
     + _DATE, re.I,
 )
@@ -94,7 +96,8 @@ _RECEIPT_BEFORE_DATE = re.compile(
 _DUE_BEFORE_DATE = re.compile(
     r"\b(?:sealed\s+)?(?:bids?|proposals?|quotes?|responses?)\s+"
     r"(?:due|must\s+be\s+submitted\s+by)\s+(?:at\s+)?"
-    r"(?P<clock>" + _CLOCK + r")\s+(?:on\s+)?" + _DATE, re.I,
+    r"(?P<clock>" + _CLOCK + r")\s*(?:,\s*)?"
+    r"(?:local\s+time\s+)?(?:on\s+)?" + _DATE, re.I,
 )
 
 
