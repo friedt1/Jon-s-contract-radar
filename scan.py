@@ -284,7 +284,7 @@ def likely_pdf_link(url, title=''):
          and bool(bidlike(title) or category(title)))
 
 
-def pdf_listing_recency(title, url, year):
+def pdf_listing_recency(title, url, year, context=''):
  """Order bounded PDF checks; a year is NOT proof a solicitation is open.
 
  An archive can label every link "Bid proposal" while the document path
@@ -304,6 +304,13 @@ def pdf_listing_recency(title, url, year):
   if not re.fullmatch(r'20\d{2}', filename):
    years.extend(int(y) for y in re.findall(
     r'(?<![A-Za-z0-9])20\d{2}(?![A-Za-z0-9])', filename))
+ if not years and context:
+  # Link labels like 'Download PDF' often omit the publication year while
+  # the *same isolated listing row* identifies it. Use that row only as a
+  # request-order hint, never as proof of an open bid or submission cutoff.
+  # Do not override a year already present in the link label or URL.
+  years.extend(int(y) for y in re.findall(
+   r'(?<!\d)20\d{2}(?!\d)', norm(context)))
  if not years:
   return 0
  latest=max(years)
@@ -676,7 +683,7 @@ def scan_direct(src):
    # A 2024 PDF must not consume the five-PDF budget ahead of a
    # 2026 document on the same county archive page. A year only changes
    # retrieval order; the fetched notice must still pass all evidence gates.
-   score+=pdf_listing_recency(title,url,NOW.astimezone(ZoneInfo('America/New_York')).year)
+   score+=pdf_listing_recency(title,url,NOW.astimezone(ZoneInfo('America/New_York')).year,context)
    # Unlike a document's publication year, a row-specific submission cutoff
    # directly distinguishes current from stale bid-listing links. Never use
    # the page-wide body: neighboring rows have unrelated dates.
