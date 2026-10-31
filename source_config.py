@@ -3,6 +3,7 @@
 This is URL hygiene, NOT independent proof that a site is an official
 publisher, permits automated access, or exposes individual bid notices.
 """
+import ipaddress
 import re
 from urllib.parse import urlsplit
 
@@ -12,6 +13,29 @@ DIRECT_MODES = frozenset({"direct_page", "official_feed", "authorized_api"})
 IMPLEMENTED_DIRECT_MODES = frozenset({"direct_page"})
 _HOST_LABEL = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$", re.I)
 _ENCODED_CONTROL = re.compile(r"%(?:0[0-9a-f]|1[0-9a-f]|7f)", re.I)
+# Some resolvers accept non-decimal IPv4 labels such as 0x7f.0.0.1.
+# They are not procurement DNS hostnames, even if ipaddress rejects them.
+_IPV4_COMPONENT = re.compile(r"(?:0x[0-9a-f]+|0[0-7]+|[0-9]+)$", re.I)
+
+
+def public_dns_hostname(host):
+    """Syntactic public DNS name, not proof of DNS resolution or site permission."""
+    if not isinstance(host, str):
+        return False
+    labels = host.lower().split(".")
+    if (len(labels) < 2
+            or host.lower().endswith((".localhost", ".local", ".internal"))
+            or not all(_HOST_LABEL.fullmatch(label) for label in labels)):
+        return False
+    try:
+        ipaddress.ip_address(host)
+    except ValueError:
+        pass
+    else:
+        return False
+    # Reject dotted decimal, hexadecimal, and octal resolver aliases.
+    # A mixed alphanumeric DNS name with a real alphabetic TLD remains valid.
+    return not all(_IPV4_COMPONENT.fullmatch(label) for label in labels)
 
 
 def valid_public_https_url(value):
@@ -28,15 +52,9 @@ def valid_public_https_url(value):
                 or parsed.port not in (None, 443)
                 or parsed.fragment):
             return False
-        labels = host.split(".")
-        # Numeric IPv4 literals and private-use DNS suffixes cannot be
-        # official public procurement hostnames. Do not count or fetch them
-        # even when an inventory row incorrectly claims verified_url=True.
-        if (all(label.isascii() and label.isdecimal() for label in labels)
-                or host.lower().endswith((".localhost", ".local", ".internal"))):
-            return False
-        return (len(labels) >= 2 and all(_HOST_LABEL.fullmatch(label) for label in labels)
-                and host.lower() != "localhost")
+        # This is a syntax check, not a substitute for safe DNS/redirect
+        # resolution and permission review before fetching any publisher.
+        return public_dns_hostname(host)
     except ValueError:
         return False
 
