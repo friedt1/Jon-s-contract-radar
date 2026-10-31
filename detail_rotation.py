@@ -28,6 +28,11 @@ def rotate_boundary_ties(ordered, budget, now, priority):
     start = budget - 1
     while start > 0 and priority(items[start - 1]) == boundary:
         start -= 1
+    # Keep the first ranked link stable even if every candidate ties. This
+    # preserves predictable first-notice checks on small municipal indexes.
+    start = max(1, start)
+    if start >= budget:
+        return items
     end = budget
     while end < len(items) and priority(items[end]) == boundary:
         end += 1
