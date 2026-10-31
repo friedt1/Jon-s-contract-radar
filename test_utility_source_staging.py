@@ -72,7 +72,7 @@ class UtilityGatewayStagingTests(unittest.TestCase):
                 ):
                     _, status, leads = scan.run(self.by_name[name])
                 direct.assert_not_called()
-                self.assertIn("direct not configured", status)
+                self.assertEqual(status, "indirect RSS ok; 0 candidates")
                 self.assertEqual(leads, [])
 
 
