@@ -41,8 +41,7 @@ class ConflictingCardPriorityTests(unittest.TestCase):
                 raise AssertionError("unexpected URL " + url)
             return (body.encode() if binary else body, "text/html", url)
 
-        with patch.object(scan, "NOW", NOW), \\
-             patch.object(scan, "fetch", side_effect=fake_fetch):
+        with patch.object(scan, "NOW", NOW), patch.object(scan, "fetch", side_effect=fake_fetch):
             leads, diagnostic = scan.scan_direct(SOURCE)
         return leads, diagnostic, requested
 
