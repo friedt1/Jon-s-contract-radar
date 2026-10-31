@@ -125,7 +125,13 @@ def _is_revised_submission(text, start):
     A distant addendum or an amended *question* deadline must not rewrite the
     bid submission cutoff. Date parsing and question exclusions happen first.
     """
-    prefix = re.split(r"[.;\n]", text[max(0, start - 90):start])[-1]
+    prefix = text[max(0, start - 90):start]
+    # "Addendum No. 2: bids due ..." is one revision heading, not a
+    # sentence ending at "No.". Normalize only numbered heading markers
+    # before splitting at actual sentence/field separators. Otherwise an
+    # earlier revised cutoff can be ignored in favor of an expired original.
+    prefix = re.sub(r"\bno\.\s*(?=\d)", "no ", prefix, flags=re.I)
+    prefix = re.split(r"[.;\n]", prefix)[-1]
     return bool(_REVISION_PREFIX.search(prefix))
 
 
