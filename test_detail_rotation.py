@@ -26,6 +26,18 @@ class RotationUnitTests(unittest.TestCase):
             seen.update(result[:6])
         self.assertEqual(seen, set(ordered))
 
+    def test_all_equal_priority_slots_rotate_without_pinning_first(self):
+        ordered = list(range(12))
+        now = dt.datetime(2026, 11, 1, 10, tzinfo=UTC)
+        batches = [
+            detail_rotation.rotate_boundary_ties(
+                ordered, 3, now + dt.timedelta(hours=hour), lambda _: 0)[:3]
+            for hour in range(4)
+        ]
+        self.assertEqual(set().union(*(set(batch) for batch in batches)),
+                         set(ordered))
+        self.assertEqual(len({batch[0] for batch in batches}), 4)
+
     def test_expired_lower_priority_never_preempts_future_notices(self):
         ordered = [("future", n) for n in range(6)] + [("expired", 99)]
         priority = lambda item: item[0]

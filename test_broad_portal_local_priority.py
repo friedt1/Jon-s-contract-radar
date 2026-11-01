@@ -87,9 +87,10 @@ class BroadPortalLocalPriorityTests(unittest.TestCase):
         source = {"name": "Test County", "url": BASE}
         leads, status, requested = self.fixture(source, listing)
         # Unlike statewide sources, local text is not an artificial priority
-        # boost. The first equal-ranked link remains first. Later tied links
-        # may rotate into the bounded budget on subsequent scheduled scans.
-        self.assertEqual(requested[1], OUTSIDE)
+        # boost. Equal-ranked outside links can rotate through the bounded
+        # budget; a local label must not jump ahead of those links.
+        self.assertTrue(requested[1].startswith("https://example.gov/bid/outside-"))
+        self.assertNotEqual(requested[1], LOCAL)
         self.assertEqual(len(requested), scan.MAX_DETAIL + 1)
         self.assertTrue(all(item["status"] == "unverified" for item in leads))
         self.assertIn("1 detail candidates deferred at request budget", status)
