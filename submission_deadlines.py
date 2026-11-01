@@ -9,7 +9,7 @@ import re
 _DATE = (r"(?P<date>(?:\d{4}-\d{1,2}-\d{1,2})|"
          r"(?:\d{1,2}/\d{1,2}/\d{2,4})|"
          r"(?:(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|"
-         r"May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|"
+         r"May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember|t)?\.?|"
          r"Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2}(?:st|nd|rd|th)?,?\s*\d{4}))")
 _LABEL = (
     r"(?P<label>\b(?:due(?:\s+date)?|closing(?:\s+date(?:/time)?)?|"
@@ -44,6 +44,8 @@ def _date(value):
         try:
             cleaned = re.sub(r"(?<=\d)(?:st|nd|rd|th)(?=,?\s*\d{4}$)", "", value, flags=re.I)
             cleaned = re.sub(r",\s*(?=\d{4}$)", " ", cleaned)
+            # Python's %b accepts Sep but not Sept., Sept, or Sep.
+            cleaned = re.sub(r"\bSept?\.?(?=\s+\d{1,2}\b)", "Sep", cleaned, flags=re.I)
             return dt.datetime.strptime(cleaned.replace(",", ""), fmt).date()
         except ValueError:
             continue
