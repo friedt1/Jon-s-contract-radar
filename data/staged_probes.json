@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-01T04:27:02.506476+00:00",
+  "updated": "2026-11-01T05:56:05.937344+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 62,
   "safe_staged_entrypoints": 62,
@@ -92,8 +92,8 @@
     {
       "name": "Allegany County",
       "official_entrypoint": "https://www.alleganyco.gov/departments/public-works/bids-awards/",
-      "state": "listing_reachable_adapter_required",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -409,8 +409,8 @@
     {
       "name": "Village of Bath",
       "official_entrypoint": "https://villageofbathny.gov/",
-      "state": "official_page_reachable_no_procurement_evidence",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -636,7 +636,7 @@
     {
       "name": "Troy Borough",
       "official_entrypoint": "https://troyborough.com/officials.php",
-      "state": "listing_reachable_adapter_required",
+      "state": "official_page_reachable_no_procurement_evidence",
       "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -649,8 +649,8 @@
     {
       "name": "Williamsport City",
       "official_entrypoint": "https://cityofwilliamsport.org/news/document-category/request-for-proposal/",
-      "state": "listing_reachable_adapter_required",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
