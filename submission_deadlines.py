@@ -9,8 +9,8 @@ import re
 _DATE = (r"(?P<date>(?:\d{4}-\d{1,2}-\d{1,2})|"
          r"(?:\d{1,2}/\d{1,2}/\d{2,4})|"
          r"(?:(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|"
-         r"May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember|t)?\.?|"
-         r"Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2}(?:st|nd|rd|th)?,?\s*\d{4}))")
+         r"May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember|t)?|"
+         r"Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\.?\s+\d{1,2}(?:st|nd|rd|th)?,?\s*\d{4}))")
 _LABEL = (
     r"(?P<label>\b(?:due(?:\s+date)?|closing(?:\s+date(?:/time)?)?|"
     r"(?:sealed\s+)?bids?\s+(?:due|received|submitted|"
@@ -44,8 +44,15 @@ def _date(value):
         try:
             cleaned = re.sub(r"(?<=\d)(?:st|nd|rd|th)(?=,?\s*\d{4}$)", "", value, flags=re.I)
             cleaned = re.sub(r",\s*(?=\d{4}$)", " ", cleaned)
-            # Python's %b accepts Sep but not Sept., Sept, or Sep.
-            cleaned = re.sub(r"\bSept?\.?(?=\s+\d{1,2}\b)", "Sep", cleaned, flags=re.I)
+            # strptime %b rejects dotted month abbreviations (e.g., Oct.).
+            # Strip only a dot directly after an abbreviated month and before
+            # the day; do not change unrelated sentence punctuation.
+            cleaned = re.sub(
+                r"\b(Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept?|Oct|Nov|Dec)\.(?=\s+\d{1,2}\b)",
+                r"\1", cleaned, flags=re.I,
+            )
+            # Python accepts Sep but not the common four-letter Sept.
+            cleaned = re.sub(r"\bSept(?=\s+\d{1,2}\b)", "Sep", cleaned, flags=re.I)
             return dt.datetime.strptime(cleaned.replace(",", ""), fmt).date()
         except ValueError:
             continue
