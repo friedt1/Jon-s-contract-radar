@@ -99,6 +99,14 @@ def classify(source, status):
     else:
         indirect_state = "not_run"
 
+    # Direct metrics must come from a successfully fetched, configured adapter.
+    # Old scanner logs or handcrafted status strings must not make staged,
+    # blocked, access-required, or unimplemented sources appear to ingest bids.
+    # Keep the original diagnostic for investigation and the indirect state above.
+    raw_status = status
+    if direct_state != "fetched_unverified":
+        status = ""
+
     # A successful listing fetch can conceal blocked or failed individual
     # notice requests. Record those separately from homepage availability.
     detail_errors = _number(r"\b(\d+) detail errors:", status)
@@ -173,7 +181,7 @@ def classify(source, status):
             r"\b(\d+) external provider links skipped \(access required\)", status),
         "unverified_candidates": _number(r"\b(\d+) unverified candidates\b", status)
                                   or _number(r"; (\d+) candidates(?:;|$)", status),
-        "diagnostic": status,
+        "diagnostic": raw_status,
     }
 
 
