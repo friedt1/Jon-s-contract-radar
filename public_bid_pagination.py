@@ -76,6 +76,13 @@ def next_pages(links, listing_url, seen):
     only discovery of public listings, not evidence of an open solicitation.
     """
     base = urlparse(listing_url)
+    # The current page's non-cursor query is part of its listing identity.
+    # A pager labelled "Next" must not silently switch open to closed bids,
+    # drop an agency/category filter, or introduce a login parameter. Keep
+    # duplicate filters: a dict would hide conflicting publisher values.
+    base_filters = sorted((key, value) for key, value in
+                          parse_qsl(base.query, keep_blank_values=True)
+                          if key.lower() not in PAGE_KEYS)
     found = []
     for label, href, _ in links:
         if not isinstance(href, str) or not href or not pagination_label(label):
@@ -97,6 +104,14 @@ def next_pages(links, listing_url, seen):
                       parse_qsl(parsed.query, keep_blank_values=True)]
             if any(key == "bidid" for key, _ in params):
                 continue  # a bid detail must never masquerade as a pager
+            # Compare non-cursor filters to the page that supplied the link,
+            # not merely to the URL returned after fetching it. The latter
+            # check cannot prevent a wrong-filter request from being sent.
+            candidate_filters = sorted((key, value) for key, value in
+                                       parse_qsl(parsed.query, keep_blank_values=True)
+                                       if key.lower() not in PAGE_KEYS)
+            if candidate_filters != base_filters:
+                continue
             cursors = [value for key, value in params if key in PAGE_KEYS]
             # Publishers legitimately use page+offset or repeat the same
             # numeric page key. Reject conflicting values for one key, which
