@@ -141,6 +141,22 @@ class PublicPaginationTests(unittest.TestCase):
         self.assertTrue(pages.valid_pagination_redirect(
             requested, "https://example.gov/Bids.aspx?page=2"))
 
+    def test_pagination_redirect_rejects_literal_and_encoded_backslashes(self):
+        # A malformed publisher redirect is not a second listing, even
+        # when both URLs have matching cursor and query filters.
+        for malformed in (
+            "https://example.gov/Bids.aspx?page=2&category=tree\\\\work",
+            "https://example.gov/Bids.aspx?page=2&category=tree%5cwork",
+            "https://example.gov/Bids.aspx?page=2&category=tree%5Cwork",
+        ):
+            with self.subTest(malformed=malformed):
+                self.assertFalse(pages.valid_pagination_redirect(
+                    malformed, malformed))
+        self.assertEqual(pages.next_pages([
+            ("Next", "?page=2&category=tree%5cwork", 0),
+            ("Next", "?page=2&category=tree\\\\work", 1),
+        ], "https://example.gov/Bids.aspx", set()), [])
+
     def test_pagination_redirect_preserves_non_cursor_filters(self):
         original = "https://example.gov/Bids.aspx?page=2&status=open&category=tree"
         self.assertTrue(pages.valid_pagination_redirect(
