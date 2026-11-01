@@ -12,7 +12,7 @@ class PublisherStatusTests(unittest.TestCase):
 
     def test_qualified_publisher_closures_are_detected(self):
         for state in (
-            "Closed", "Awarded", "Cancelled", "Canceled", "Withdrawn", "Expired",
+            "Closed", "Awarded", "Cancelled", "Canceled", "Withdrawn", "Rescinded", "Expired",
             "detail_listed_awarded", "listing_cancelled",
             "Awarded to vendor", "Closed - no longer accepting bids",
             "Cancelled on October 28", "Withdrawn (reissued later)",
@@ -67,7 +67,7 @@ class PublisherStatusTests(unittest.TestCase):
         # Synthetic historical Erie-style tree/stump notices, never live work.
         # A publisher may retain the field name in the extracted status value.
         for state in (
-            "Status: Awarded", "Bid Status: Closed",
+            "Status: Awarded", "Bid Status: Closed", "Bid Status: Rescinded",
             "Solicitation Status - Withdrawn", "Notice Status: Cancelled",
             "Current Status: Expired", "Procurement Status: Canceled",
         ):
