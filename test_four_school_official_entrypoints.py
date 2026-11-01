@@ -41,6 +41,17 @@ class SchoolEntrypointStagingTests(unittest.TestCase):
                               ("publisher_entrypoint_only", "supplier_information_only",
                                "procurement_contact_only"))
 
+    def test_new_staging_has_unambiguous_utc_timestamp(self):
+        # A date-only value cannot prove that an entry was staged after an
+        # earlier scan on the same calendar day. The published feed must
+        # remain valid until the next successful scanner refresh.
+        for name in OFFICIAL:
+            with self.subTest(name=name):
+                checked = dt.datetime.fromisoformat(
+                    self.by_name[name]["official_url_checked_at"])
+                self.assertIsNotNone(checked.tzinfo)
+                self.assertIsNotNone(checked.utcoffset())
+
     def test_private_supplier_bids_require_permission(self):
         ithaca = self.by_name["Ithaca College"]
         self.assertIs(ithaca["provider_access_required"], True)
