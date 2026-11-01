@@ -1,8 +1,8 @@
 {
-  "updated": "2026-11-01T14:51:37.439108+00:00",
+  "updated": "2026-11-01T18:45:06.370733+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 76,
-  "safe_staged_entrypoints": 76,
+  "staged_entrypoints": 82,
+  "safe_staged_entrypoints": 82,
   "invalid_staged_entrypoints": 0,
   "probes": [
     {
@@ -22,15 +22,26 @@
     {
       "name": "Cortland County",
       "official_entrypoint": "https://www.cortlandcountyny.gov/Bids.aspx",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
-      "individual_notice_retrieved": false,
-      "individual_records_discovered": 0,
-      "individual_samples_attempted": 0,
+      "state": "notice_format_confirmed_terms_review_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": true,
+      "individual_records_discovered": 1,
+      "individual_samples_attempted": 1,
       "individual_sample_failures": [],
       "activation_gate": "Official CivicPlus listing confirmed; verify robots policy and live bidID detail extraction before activation.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false
+      "direct_monitoring_activated": false,
+      "sample_notice_url": "https://www.cortlandcountyny.gov/bids.aspx?bidID=285",
+      "sample_notice_status": "open",
+      "sample_notice_listing_status": "open",
+      "sample_notice_status_conflict": false,
+      "sample_notice_status_source": "individual_notice",
+      "sample_notice_unparseable_detail_closing": false,
+      "sample_notice_deadline_source": "individual_notice",
+      "sample_notice_deadline": "2026-11-19",
+      "sample_notice_deadline_time": "2:00 PM",
+      "sample_notice_deadline_conflict": false,
+      "sample_notice_temporal_evidence": "deadline_not_passed_unverified"
     },
     {
       "name": "Yates County",
@@ -98,21 +109,32 @@
     {
       "name": "Livingston County",
       "official_entrypoint": "https://www.livingstoncountyny.gov/Bids.aspx",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
-      "individual_notice_retrieved": false,
-      "individual_records_discovered": 0,
-      "individual_samples_attempted": 0,
+      "state": "notice_format_confirmed_terms_review_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": true,
+      "individual_records_discovered": 1,
+      "individual_samples_attempted": 1,
       "individual_sample_failures": [],
       "activation_gate": "Official county CivicPlus bid listings exist, but county also directs vendors to BidNet. Verify robots and publisher terms, same-host individual bidID extraction, and current listing completeness before activation.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false
+      "direct_monitoring_activated": false,
+      "sample_notice_url": "https://www.livingstoncountyny.gov/bids.aspx?bidID=361",
+      "sample_notice_status": "open",
+      "sample_notice_listing_status": "open",
+      "sample_notice_status_conflict": false,
+      "sample_notice_status_source": "individual_notice",
+      "sample_notice_unparseable_detail_closing": false,
+      "sample_notice_deadline_source": "individual_notice",
+      "sample_notice_deadline": "2026-11-20",
+      "sample_notice_deadline_time": "1:00 PM",
+      "sample_notice_deadline_conflict": false,
+      "sample_notice_temporal_evidence": "deadline_not_passed_unverified"
     },
     {
       "name": "Wayne County",
       "official_entrypoint": "https://www.waynecountyny.gov/745/Purchasing",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "listing_reachable_external_provider_access_required",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -124,8 +146,8 @@
     {
       "name": "Wyoming County",
       "official_entrypoint": "https://www.wyomingcountyny.gov/Bids.aspx",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "listing_reachable_no_open_bids",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -424,8 +446,8 @@
     {
       "name": "City of Geneva",
       "official_entrypoint": "https://cityofgenevany.gov/Bids.aspx",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "listing_reachable_no_open_bids",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -437,8 +459,8 @@
     {
       "name": "City of Cortland",
       "official_entrypoint": "https://www.cortlandny.gov/Bids.aspx",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "listing_reachable_no_open_bids",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -622,7 +644,7 @@
     {
       "name": "Troy Borough",
       "official_entrypoint": "https://troyborough.com/officials.php",
-      "state": "official_page_reachable_no_procurement_evidence",
+      "state": "listing_reachable_adapter_required",
       "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -846,7 +868,7 @@
     {
       "name": "Mansfield University",
       "official_entrypoint": "https://www.commonwealthu.edu/offices-directory/procurement-shared-services",
-      "state": "listing_reachable_adapter_required",
+      "state": "official_supplier_or_contact_gateway_access_required",
       "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -854,7 +876,8 @@
       "individual_sample_failures": [],
       "activation_gate": "Commonwealth University official procurement page checked 2026-11-01: Mansfield is served by PASSHE Procurement Shared Services; SourcePoint supplier registration is required to access opportunities. Do not fetch authenticated Ariba listings or treat this page as an individual-notice feed. Obtain approved supplier access and permitted API/export, review robots/terms, and validate Mansfield-specific worksite, scope, submission deadline and open status before activation.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false
+      "direct_monitoring_activated": false,
+      "section_note": "Official supplier/contact gateway, not a verified public individual-solicitation feed; vendor authorization or a separate permitted listing is required"
     },
     {
       "name": "NYSEG",
@@ -909,6 +932,19 @@
       "direct_monitoring_activated": false
     },
     {
+      "name": "Corning Natural Gas",
+      "official_entrypoint": "https://www.corninggas.com/",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official local utility site confirms the company and contact route but no anonymous vegetation-management contract listings. Obtain an authorized procurement contact or an explicitly permitted individual-notice feed; review robots/terms, exact worksite, scope, cutoff and status before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
       "name": "New York Power Authority",
       "official_entrypoint": "https://www.nypa.gov/Procurement",
       "state": "listing_reachable_off_host_documents_review_required",
@@ -951,10 +987,24 @@
       "direct_monitoring_activated": false
     },
     {
+      "name": "Arnot Realty",
+      "official_entrypoint": "https://www.arnotrealty.com/property-asset-management",
+      "state": "official_supplier_or_contact_gateway_access_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Arnot Realty page describes property management and capital projects, but publishes no public individual vegetation/landscaping bids. Direct property-management outreach or explicitly permitted per-notice access is required. Confirm the actual local worksite, scope, deadline, publisher status and access terms before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false,
+      "section_note": "Official supplier/contact gateway, not a verified public individual-solicitation feed; vendor authorization or a separate permitted listing is required"
+    },
+    {
       "name": "Elmira-Corning Regional Airport",
       "official_entrypoint": "https://chemungcountyny.gov/Bids.aspx",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -995,7 +1045,7 @@
     {
       "name": "UPMC Williamsport",
       "official_entrypoint": "https://www.upmc.com/about/supply-chain/inquiries/registration-non-mwdbe",
-      "state": "official_page_reachable_no_procurement_evidence",
+      "state": "official_supplier_or_contact_gateway_access_required",
       "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -1003,7 +1053,8 @@
       "individual_sample_failures": [],
       "activation_gate": "Official UPMC supplier registration route is available for prospective non-MWDBE suppliers; sourcing invitations/contract notices are not anonymously published here. Require authorized supplier onboarding or a permitted per-notice feed, robots/terms review, individual scope/deadline/status and verified Williamsport-area worksite before activation. Do not assume Pittsburgh-based or systemwide sourcing opportunities are within 2 hours of Elmira.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false
+      "direct_monitoring_activated": false,
+      "section_note": "Official supplier/contact gateway, not a verified public individual-solicitation feed; vendor authorization or a separate permitted listing is required"
     },
     {
       "name": "Corning Incorporated",
@@ -1019,15 +1070,71 @@
       "direct_monitoring_activated": false
     },
     {
+      "name": "Dandy Mini Marts",
+      "official_entrypoint": "https://www.godandy.com/contact-us/",
+      "state": "official_supplier_or_contact_gateway_access_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Dandy contact page gives the corporate office in Sayre, PA but is a customer/contact form, not a tree/grounds maintenance solicitation feed. Require property/facilities purchasing authorization or a public individual-notice listing; confirm site, scope, deadline and terms before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false,
+      "section_note": "Official supplier/contact gateway, not a verified public individual-solicitation feed; vendor authorization or a separate permitted listing is required"
+    },
+    {
+      "name": "Brixmor Property Group",
+      "official_entrypoint": "https://www.brixmor.com/contact",
+      "state": "official_supplier_or_contact_gateway_access_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Brixmor contact page lists office contacts, not current local vegetation-maintenance solicitations. Supplier/property-manager relationship or a separately verified publicly permitted individual-notice listing is required; check local property, worksite, scope, cutoff and status before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false,
+      "section_note": "Official supplier/contact gateway, not a verified public individual-solicitation feed; vendor authorization or a separate permitted listing is required"
+    },
+    {
       "name": "Kimco Realty",
       "official_entrypoint": "https://www.kimcorealty.com/vendor-opportunities",
-      "state": "official_page_reachable_no_procurement_evidence",
+      "state": "official_supplier_or_contact_gateway_access_required",
       "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official Kimco Vendor Opportunities page invites vendors to contact its team but does not expose a public individual-bid index. Vendor relationship/contact or authorized invitation is required to establish individual work orders. No authenticated access bypass or fabricated jobs; confirm the exact local property, current scope, submission deadline and publisher terms before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false,
+      "section_note": "Official supplier/contact gateway, not a verified public individual-solicitation feed; vendor authorization or a separate permitted listing is required"
+    },
+    {
+      "name": "CBRE regional property management",
+      "official_entrypoint": "https://www.cbre.com/about-us/supply-chain/suppliers-supply-chain-technologies-and-registration",
+      "state": "official_supplier_or_contact_gateway_access_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official CBRE supplier information says mySource supports RFPs and supplier onboarding is invitation/approval-based. Do not crawl authenticated supplier systems or count this page as live monitoring. Obtain CBRE-approved supplier access or a permitted public per-notice feed and independently verify Elmira/northern-PA worksite, scope, deadline and status.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false,
+      "section_note": "Official supplier/contact gateway, not a verified public individual-solicitation feed; vendor authorization or a separate permitted listing is required"
+    },
+    {
+      "name": "JLL regional property management",
+      "official_entrypoint": "https://www.jll.com/en-us/vendors",
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official JLL vendor page says onboarding begins with an employee invitation and uses Aravo for vendor due diligence. No anonymous individual landscaping/tree contract feed verified. Require JLL invitation/authorized per-notice access or a permitted public listing, and verify local worksite, scope, deadline and status before activation.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     }
