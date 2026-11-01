@@ -262,6 +262,22 @@ def probe(source, fetch=scan.fetch, now=None):
                 result["section_note"] = (
                     "RFP section reports none at probe time; other bid "
                     "channels and individual notice access remain unverified")
+            # An official supplier onboarding or property-management contact
+            # page is not an unimplemented public bid adapter. Preserve its
+            # configured access requirement instead of claiming that a
+            # listing extractor alone would make it operational. Actual
+            # outbound bid portals and individual-looking links still take
+            # precedence so future public notices can be investigated.
+            if (source.get("provider_access_required") is True
+                    and "NOT" in source.get("official_page_role", "")
+                    and not (delegated_to_provider or provider_link)
+                    and not possible_notice_links):
+                result["state"] = "official_supplier_or_contact_gateway_access_required"
+                result["section_note"] = (
+                    "Official supplier/contact gateway, not a verified public "
+                    "individual-solicitation feed; vendor authorization or "
+                    "a separate permitted listing is required")
+                return result
             result["state"] = (
                 "listing_reachable_external_provider_access_required"
                 if delegated_to_provider or provider_link else
