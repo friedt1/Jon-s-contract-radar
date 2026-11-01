@@ -86,7 +86,11 @@ def classify(source, status):
     else:
         direct_state = "not_fetched"
 
-    if "indirect RSS ok;" in status:
+    if "indirect RSS provider unavailable (Google News):" in status:
+        # One shared discovery provider refused/unavailable; this does not
+        # mean the named county or agency blocked its own bid notices.
+        indirect_state = "provider_unavailable"
+    elif "indirect RSS ok;" in status:
         indirect_state = "ok"
     elif "indirect RSS error: RobotsDenied" in status:
         indirect_state = "robots_blocked"
@@ -195,6 +199,8 @@ def summarize(sources, statuses):
         direct_fetch_target(src) and not row["provider_access_required"]
         for src, row in zip(sources, rows))
     counts["indirect_robots_blocked"] = sum(row["indirect_state"] == "robots_blocked" for row in rows)
+    counts["indirect_provider_unavailable_targets"] = sum(
+        row["indirect_state"] == "provider_unavailable" for row in rows)
     counts["individual_bid_records_found"] = sum(row["individual_bid_records_found"] for row in rows)
     counts["detail_fetches_attempted"] = sum(row["detail_fetches_attempted"] for row in rows)
     counts["detail_budget_deferred"] = sum(row["detail_budget_deferred"] for row in rows)
