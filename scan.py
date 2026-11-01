@@ -602,7 +602,11 @@ def scan_civicplus(src, listing_pages, page_errors):
   except Exception as e:
    errors.append(error_label(e))
    continue
-  if detail_status in civicplus_bids.CLOSED:
+  # CivicPlus can leave a stale 'Status: Open' badge on an individual
+  # notice after the publisher stops accepting bids or awards the contract.
+  # Explicit intake-closure language on the fetched notice overrides that
+  # badge; a closed questions period or future conditional cutoff does not.
+  if detail_status in civicplus_bids.CLOSED or closed(body):
    closed_count += 1
    continue
   # The individual notice takes precedence over a stale listing date.
