@@ -11,7 +11,7 @@ import source_audit
 
 class SharedOfficialEntrypointTests(unittest.TestCase):
     def test_duplicate_official_gateway_does_not_inflate_unique_endpoints(self):
-        shared = "https://county.example/Bids.aspx?category=roads&agency=county"
+        shared = "https://county.example/Bids.aspx?agency=county&category=roads"
         rows = [
             {"name": "County procurement", "mode": "direct_page",
              "url": shared, "verified_url": True},
