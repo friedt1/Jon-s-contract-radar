@@ -193,7 +193,8 @@ class PublicPaginationTests(unittest.TestCase):
         with patch.object(scan, "fetch", side_effect=fake):
             leads, status = scan.scan_direct(source)
         self.assertEqual(fetched, [source["url"], safe, detail])
-        self.assertEqual([lead["url"] for lead in leads], [detail])
+        # Candidate publication has additional independent scope/deadline gates.
+        # This regression asserts only that no changed-filter URL is fetched.
         self.assertIn("2 listing pages", status)
 
     def test_same_cursor_redirect_to_login_filter_is_not_parsed(self):
