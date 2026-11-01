@@ -827,7 +827,12 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.corninggas.com/",
+    "official_page_role": "Official Corning Natural Gas utility corporate website; NOT a public individual tree/ROW solicitation feed",
+    "provider_access_required": true,
+    "activation_gate": "Official local utility site confirms the company and contact route but no anonymous vegetation-management contract listings. Obtain an authorized procurement contact or an explicitly permitted individual-notice feed; review robots/terms, exact worksite, scope, cutoff and status before activation.",
+    "official_url_checked_at": "2026-11-01T18:40:00+00:00"
   },
   {
     "name": "New York Power Authority",
@@ -874,7 +879,12 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.arnotrealty.com/property-asset-management",
+    "official_page_role": "Official Horseheads-area property and asset management services page; NOT an individual landscaping/tree-service RFP listing",
+    "provider_access_required": true,
+    "activation_gate": "Official Arnot Realty page describes property management and capital projects, but publishes no public individual vegetation/landscaping bids. Direct property-management outreach or explicitly permitted per-notice access is required. Confirm the actual local worksite, scope, deadline, publisher status and access terms before activation.",
+    "official_url_checked_at": "2026-11-01T18:40:00+00:00"
   },
   {
     "name": "Elmira-Corning Regional Airport",
@@ -946,7 +956,12 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.godandy.com/contact-us/",
+    "official_page_role": "Official Dandy corporate contact form in Sayre, PA; NOT a public property-maintenance bid index",
+    "provider_access_required": true,
+    "activation_gate": "Official Dandy contact page gives the corporate office in Sayre, PA but is a customer/contact form, not a tree/grounds maintenance solicitation feed. Require property/facilities purchasing authorization or a public individual-notice listing; confirm site, scope, deadline and terms before activation.",
+    "official_url_checked_at": "2026-11-01T18:40:00+00:00"
   },
   {
     "name": "Wegmans regional properties",
@@ -962,7 +977,12 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.brixmor.com/contact",
+    "official_page_role": "Official shopping-center owner corporate contact directory; NOT a public individual tree-service bid feed",
+    "provider_access_required": true,
+    "activation_gate": "Official Brixmor contact page lists office contacts, not current local vegetation-maintenance solicitations. Supplier/property-manager relationship or a separately verified publicly permitted individual-notice listing is required; check local property, worksite, scope, cutoff and status before activation.",
+    "official_url_checked_at": "2026-11-01T18:40:00+00:00"
   },
   {
     "name": "Kimco Realty",
@@ -983,7 +1003,12 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.cbre.com/about-us/supply-chain/suppliers-supply-chain-technologies-and-registration",
+    "official_page_role": "Official CBRE supplier onboarding and mySource sourcing overview; NOT an anonymous individual RFP listing",
+    "provider_access_required": true,
+    "activation_gate": "Official CBRE supplier information says mySource supports RFPs and supplier onboarding is invitation/approval-based. Do not crawl authenticated supplier systems or count this page as live monitoring. Obtain CBRE-approved supplier access or a permitted public per-notice feed and independently verify Elmira/northern-PA worksite, scope, deadline and status.",
+    "official_url_checked_at": "2026-11-01T18:40:00+00:00"
   },
   {
     "name": "JLL regional property management",
@@ -991,6 +1016,11 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.jll.com/en-us/vendors",
+    "official_page_role": "Official JLL vendor onboarding and Aravo due-diligence information; NOT a public property-service RFP listing",
+    "provider_access_required": true,
+    "activation_gate": "Official JLL vendor page says onboarding begins with an employee invitation and uses Aravo for vendor due diligence. No anonymous individual landscaping/tree contract feed verified. Require JLL invitation/authorized per-notice access or a permitted public listing, and verify local worksite, scope, deadline and status before activation.",
+    "official_url_checked_at": "2026-11-01T18:40:00+00:00"
   }
 ]

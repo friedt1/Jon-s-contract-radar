@@ -95,7 +95,7 @@ class SharedOfficialEntrypointTests(unittest.TestCase):
         self.assertEqual(coverage["duplicate_source_names"], [])
         self.assertTrue(coverage["inventory_integrity_ok"])
         self.assertEqual(coverage["direct_configured"], 18)
-        self.assertEqual(coverage["official_urls_staged"], 76)
+        self.assertEqual(coverage["official_urls_staged"], 82)
         self.assertEqual(coverage["not_directly_monitored"], 84)
         self.assertLess(coverage["distinct_official_entrypoints"],
                         coverage["direct_configured"] + coverage["official_urls_staged"])
