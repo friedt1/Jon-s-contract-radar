@@ -78,7 +78,7 @@ class PennsylvaniaProcurementGatewayTests(unittest.TestCase):
         self.assertEqual(audit["direct_configured"], 18)
         self.assertEqual(audit["not_directly_monitored"], 84)
         self.assertEqual(audit["official_urls_staged"], 66)
-        self.assertEqual(audit["discovery_required"], 19)
+        self.assertEqual(audit["discovery_required"], 18)
         for name in GATEWAYS:
             entry = next(x for x in audit["sources"] if x["source"] == name)
             self.assertTrue(entry["official_url_staged"])
