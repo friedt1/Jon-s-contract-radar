@@ -83,6 +83,11 @@ class PennsylvaniaProcurementGatewayTests(unittest.TestCase):
             entry = next(x for x in audit["sources"] if x["source"] == name)
             self.assertTrue(entry["official_url_staged"])
             self.assertFalse(entry["direct_fetch_target"])
+            self.assertEqual(entry["staged_provider_access_required"],
+                             name in ACCESS_REQUIRED)
+            if name in ACCESS_REQUIRED:
+                self.assertIn("registration/authorization required", entry["status"])
+        self.assertGreaterEqual(audit["staged_provider_access_required"], 2)
         health = source_health.summarize(self.sources, {})
         self.assertGreaterEqual(health["counts"]["staged_provider_access_required"], 2)
 
