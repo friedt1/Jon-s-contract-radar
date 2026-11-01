@@ -35,9 +35,8 @@ class CivicPlusClosingVariantsTests(unittest.TestCase):
         for month in ("Sep", "Sep.", "Sept", "Sept.", "September",
                       "Oct.", "Nov.", "Dec."):
             with self.subTest(month=month):
-                expected_month = "09" if month.startswith("Sep") else {
-                    "Oct.": "10", "Nov.": "11", "Dec.": "12"
-                }[month] if month in ("Oct.", "Nov.", "Dec.") else "09"
+                expected_month = ("09" if month.startswith("Sep") else
+                                  {"Oct.": "10", "Nov.": "11", "Dec.": "12"}[month])
                 expected = (f"2026-{expected_month}-10", "2:30 PM")
                 self.assertEqual(
                     civic.closing_of(
