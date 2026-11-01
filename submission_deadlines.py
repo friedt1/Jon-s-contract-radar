@@ -7,7 +7,8 @@ import datetime as dt
 import re
 
 _DATE = (r"(?P<date>(?:\d{4}-\d{1,2}-\d{1,2})|"
-         r"(?:\d{1,2}/\d{1,2}/\d{2,4})|"\n         r"(?:\d{1,2}-\d{1,2}-\d{2,4})|"
+         r"(?:\d{1,2}/\d{1,2}/\d{2,4})|"
+         r"(?:\d{1,2}-\d{1,2}-\d{2,4})|"
          r"(?:(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|"
          r"May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember|t)?|"
          r"Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\.?\s+\d{1,2}(?:st|nd|rd|th)?,?\s*\d{4}))")
