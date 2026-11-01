@@ -905,7 +905,12 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.upmc.com/about/supply-chain/inquiries/registration-non-mwdbe",
+    "official_page_role": "Official UPMC Supply Chain supplier-registration form, NOT a public bid index or Williamsport-specific opportunity feed",
+    "provider_access_required": true,
+    "activation_gate": "Official UPMC supplier registration route is available for prospective non-MWDBE suppliers; sourcing invitations/contract notices are not anonymously published here. Require authorized supplier onboarding or a permitted per-notice feed, robots/terms review, individual scope/deadline/status and verified Williamsport-area worksite before activation. Do not assume Pittsburgh-based or systemwide sourcing opportunities are within 2 hours of Elmira.",
+    "official_url_checked_at": "2026-11-01T13:20:00+00:00"
   },
   {
     "name": "Corning Incorporated",
@@ -913,7 +918,12 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.corning.com/worldwide/en/sustainability/processes/supply-chain-social-responsibility/supplier-responsibility.html",
+    "official_page_role": "Official corporate supplier-responsibility and procurement policy information, NOT an open bid feed",
+    "provider_access_required": true,
+    "activation_gate": "Official Corning supplier pages describe approved supplier onboarding and purchasing controls; Corning's published enrollment guidance says unsolicited supplier applications and self-registration are not accepted and existing buyers initiate Ariba enrollment. Do not scrape authenticated Ariba or imply public solicitations. Obtain a supplier invitation or explicitly permitted per-notice source; verify local worksite, scope, deadline and status before activation.",
+    "official_url_checked_at": "2026-11-01T13:20:00+00:00"
   },
   {
     "name": "Dandy Mini Marts",
@@ -945,7 +955,12 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.kimcorealty.com/vendor-opportunities",
+    "official_page_role": "Official vendor-partnership contact page, NOT a list of current individual property-service RFPs",
+    "provider_access_required": true,
+    "activation_gate": "Official Kimco Vendor Opportunities page invites vendors to contact its team but does not expose a public individual-bid index. Vendor relationship/contact or authorized invitation is required to establish individual work orders. No authenticated access bypass or fabricated jobs; confirm the exact local property, current scope, submission deadline and publisher terms before activation.",
+    "official_url_checked_at": "2026-11-01T13:20:00+00:00"
   },
   {
     "name": "CBRE regional property management",

@@ -53,7 +53,7 @@ class SharedOfficialEntrypointTests(unittest.TestCase):
         coverage = audit_source_coverage.audit(sources)
         self.assertEqual(coverage["total"], 102)
         self.assertEqual(coverage["direct_configured"], 18)
-        self.assertEqual(coverage["official_urls_staged"], 70)
+        self.assertEqual(coverage["official_urls_staged"], 73)
         self.assertEqual(coverage["not_directly_monitored"], 84)
         self.assertLess(coverage["distinct_official_entrypoints"],
                         coverage["direct_configured"] + coverage["official_urls_staged"])
