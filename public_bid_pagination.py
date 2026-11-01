@@ -27,6 +27,42 @@ def pagination_label(label):
     ))
 
 
+def valid_pagination_redirect(requested, final):
+    """Accept a fetched page only if its publisher kept the same listing/cursor.
+
+    A public pager can redirect to a login, an unrelated bid detail, the
+    first page, or another host. Those responses must not be treated as a
+    second listing page, even if they contain tree-service keywords.
+    """
+    if not isinstance(final, str) or not final or any(
+        ord(char) < 33 or ord(char) == 127 or char == "\\\\" for char in final
+    ) or _ENCODED_CONTROL.search(final):
+        return False
+    try:
+        before, after = urlparse(requested), urlparse(final)
+        if (before.scheme != "https" or after.scheme != "https"
+                or before.hostname != after.hostname
+                or before.port not in (None, 443) or after.port not in (None, 443)
+                or after.username is not None or after.password is not None
+                or after.fragment
+                or before.path.lower().rstrip("/") != after.path.lower().rstrip("/")):
+            return False
+        def cursors(parts):
+            params = [(key.lower(), value) for key, value in
+                      parse_qsl(parts.query, keep_blank_values=True)]
+            if any(key == "bidid" for key, _ in params):
+                return []
+            return [(key, value) for key, value in params if key in PAGE_KEYS]
+        original, destination = cursors(before), cursors(after)
+        return (bool(original) and sorted(original) == sorted(destination)
+                and all(value.isascii() and value.isdigit()
+                        for _, value in original)
+                and all(len({value for key, value in original if key == name}) == 1
+                        for name, _ in original))
+    except ValueError:
+        return False
+
+
 def next_pages(links, listing_url, seen):
     """Return bounded same-page listing URLs, never individual bids or logins.
 
@@ -57,8 +93,14 @@ def next_pages(links, listing_url, seen):
             if any(key == "bidid" for key, _ in params):
                 continue  # a bid detail must never masquerade as a pager
             cursors = [value for key, value in params if key in PAGE_KEYS]
+            # Publishers legitimately use page+offset or repeat the same
+            # numeric page key. Reject conflicting values for one key, which
+            # different servers can resolve to different pages.
             if not cursors or not all(value.isascii() and value.isdigit()
                                       for value in cursors):
+                continue
+            if any(len({value for key, value in params if key == name}) > 1
+                   for name, _ in params if name in PAGE_KEYS):
                 continue
             # Fragments never change the listing page; avoid duplicate fetches.
             url = parsed._replace(fragment="").geturl()
