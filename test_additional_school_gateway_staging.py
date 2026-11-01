@@ -59,8 +59,8 @@ class AdditionalSchoolGatewayTests(unittest.TestCase):
         self.assertEqual(coverage["total"], 102)
         self.assertEqual(coverage["direct_configured"], 18)
         self.assertEqual(coverage["not_directly_monitored"], 84)
-        self.assertEqual(coverage["official_urls_staged"], 82)
-        self.assertEqual(coverage["discovery_required"], 2)
+        self.assertEqual(coverage["official_urls_staged"], 84)
+        self.assertEqual(coverage["discovery_required"], 0)
         for name in OFFICIAL:
             row = next(row for row in coverage["sources"] if row["source"] == name)
             self.assertTrue(row["official_url_staged"])
