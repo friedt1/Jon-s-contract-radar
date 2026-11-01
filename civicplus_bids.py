@@ -23,12 +23,14 @@ MAX_DETAILS = 36
 _DATE_TEXT = (
     r"(?:\d{1,2}/\d{1,2}/\d{4}|\d{4}-\d{2}-\d{2}|"
     r"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|"
-    r"Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|"
-    r"Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},?\s+\d{4})"
+    r"Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember|t)?|"
+    r"Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\.?\s+"
+    r"\d{1,2}(?:st|nd|rd|th)?,?\s+\d{4})"
 )
 # These are closing-field dates only; publication and meeting dates are not
 # submission cutoffs. Keep the clock attached to the same field.
-_CLOCK_TEXT = r"(?:0?[1-9]|1[0-2])(?::[0-5]\d)?\s*[AP]\.?\s*M\.?"
+_CLOCK_TEXT = (r"(?:(?:0?[1-9]|1[0-2])(?::[0-5]\d)?\s*[AP]\.?\s*M\.?|"
+               r"(?:[01]\d|2[0-3]):[0-5]\d(?:\s*(?:hrs|hours))?)")
 DATE = re.compile(
     r"\b(" + _DATE_TEXT + r")(?:\s*(?:,\s*)?(?:at\s+)?(" + _CLOCK_TEXT + r"))?(?![A-Za-z0-9])",
     re.I,
@@ -36,7 +38,9 @@ DATE = re.compile(
 
 
 def _closing_date(value):
-    cleaned = " ".join(value.replace(",", " ").split())
+    cleaned = " ".join(value.replace(",", " ").replace(".", " ").split())
+    cleaned = re.sub(r"\b(\d{1,2})(?:st|nd|rd|th)\b", r"\1", cleaned, flags=re.I)
+    cleaned = re.sub(r"\bSept\b", "Sep", cleaned, flags=re.I)
     for fmt in ("%m/%d/%Y", "%Y-%m-%d", "%B %d %Y", "%b %d %Y"):
         try:
             return dt.datetime.strptime(cleaned, fmt).date().isoformat()
@@ -50,6 +54,12 @@ def _clock(value):
     cleaned = re.sub(r"\.", "", value.upper())
     cleaned = re.sub(r"\s+", " ", cleaned).strip()
     cleaned = re.sub(r"([AP])\s+(?=M$)", r"\1", cleaned)
+    # A two-digit 24-hour clock is explicit; an unlabeled '2:30' is not.
+    military = re.fullmatch(
+        r"((?:[01]\d|2[0-3]):[0-5]\d)(?:\s*(?:HRS|HOURS))?", cleaned
+    )
+    if military:
+        return dt.datetime.strptime(military.group(1), "%H:%M").strftime("%I:%M %p").lstrip("0")
     if ":" not in cleaned:
         cleaned = re.sub(r"^(\d{1,2})", r"\1:00", cleaned)
     try:
