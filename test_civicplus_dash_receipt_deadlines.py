@@ -90,8 +90,8 @@ class CivicPlusDashReceiptDeadlineTests(unittest.TestCase):
         before = dt.datetime(2026, 11, 2, 19, 29, tzinfo=dt.timezone.utc)
         with patch.object(scan, "fetch", side_effect=fetch):
             with patch.object(scan, "NOW", before):
-                leads, _ = scan.scan_direct(SOURCE)
-        self.assertEqual(len(leads), 1)
+                leads, diagnostic = scan.scan_direct(SOURCE)
+        self.assertEqual(len(leads), 1, diagnostic)
         self.assertEqual(leads[0]["deadline"], "2026-11-02")
         self.assertEqual(leads[0]["deadline_time"], "2:30 PM")
         self.assertEqual(leads[0]["status"], "unverified")
