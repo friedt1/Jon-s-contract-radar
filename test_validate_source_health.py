@@ -130,6 +130,47 @@ class ValidateSourceHealthTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Source health diagnostic disagrees'):
             self.check(sources, payload)
 
+    def test_staged_gateway_added_after_feed_preserves_old_scan_metadata(self):
+        sources, payload = self.payload()
+        name = "Sayre Area School District"
+        source = next(s for s in sources if s["name"] == name)
+        source["official_url_checked_at"] = "2026-11-01T12:00:00+00:00"
+        payload["updated"] = "2026-11-01T11:00:00+00:00"
+        historical_sources = json.loads(json.dumps(sources))
+        old = next(s for s in historical_sources if s["name"] == name)
+        old.pop("candidate_official_url", None)
+        old.pop("official_url_checked_at", None)
+        payload["source_health"] = source_health.summarize(
+            historical_sources, payload["source_status"])
+        self.assertEqual(next(r for r in payload["source_health"]["sources"]
+                              if r["name"] == name)["direct_state"], "not_configured")
+        self.check(sources, payload)
+        # A feed produced after the recorded verification must report the
+        # staged state; do not allow old metadata indefinitely.
+        payload["updated"] = "2026-11-01T13:00:00+00:00"
+        with self.assertRaisesRegex(ValueError, "Source health state disagrees"):
+            self.check(sources, payload)
+
+    def test_staged_supplier_access_counts_may_lag_only_before_check(self):
+        sources, payload = self.payload()
+        name = "Mansfield University"
+        source = next(s for s in sources if s["name"] == name)
+        source["official_url_checked_at"] = "2026-11-01T12:00:00+00:00"
+        payload["updated"] = "2026-11-01T11:00:00+00:00"
+        historical_sources = json.loads(json.dumps(sources))
+        old = next(s for s in historical_sources if s["name"] == name)
+        for key in ("candidate_official_url", "official_url_checked_at",
+                    "delegated_provider", "provider_access_required"):
+            old.pop(key, None)
+        payload["source_health"] = source_health.summarize(
+            historical_sources, payload["source_status"])
+        self.check(sources, payload)
+        # Even a legitimate stale supplier row cannot hide forged direct
+        # extraction or a changed source-state count.
+        payload["source_health"]["counts"]["fetched_unverified"] += 1
+        with self.assertRaisesRegex(ValueError, "Source health states do not account"):
+            self.check(sources, payload)
+
     def test_legacy_health_without_nonexclusive_arrays_remains_readable(self):
         sources, payload = self.payload()
         for row in payload['source_health']['sources']:
