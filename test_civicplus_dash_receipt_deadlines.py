@@ -17,7 +17,7 @@ LISTING = (
 )
 DETAIL = (
     "<p>Bid Number: RFB-91</p><p>Bid Title: Roadside tree removal</p>"
-    "<p>Status: Open</p><p>Description: Remove hazardous roadside trees.</p>"
+    "<p>Status: Open</p><p>Description: Tree removal of hazardous roadside trees.</p>"
     "<p>Closing Date/Time: 11-02-2026 no later than 2:30 PM</p>"
 )
 
