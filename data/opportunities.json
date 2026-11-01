@@ -2462,7 +2462,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct blocked by robots policy: robots disallows requested path; indirect RSS provider unavailable (Google News): robots disallows requested path"
+        "diagnostic": "direct blocked by robots policy: robots policy unavailable: URLError; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "New York State DOT Region 9",
@@ -3027,7 +3027,7 @@
     ],
     "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Individual-detail robots blocks, HTTP refusals, redirects, rate limits and other errors are reported separately, including mixed failure types on the same source. Listing pagination failures, deferred individual bid records, and unfetched generic detail candidates mean extraction coverage may be incomplete. Generic candidates are not verified individual solicitations. External provider links require an approved adapter and are not followed. Provider-access requirements persist even when a scan has no status. Configured access-required portals and unimplemented feed/API adapters are not direct fetch targets. HTTP refusals, unsafe redirects, rate limits and unsupported content are distinguished from transient fetch errors. Staged provider access gates are reported separately from configured direct portals. Staged URLs are not monitored; all leads remain unverified."
   },
-  "updated": "2026-11-01T03:46:06+00:00",
+  "updated": "2026-11-01T04:34:30+00:00",
   "opportunities": [],
   "source_status": {
     "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 0 conflicting duplicate bid cards; 2 relevant details checked; 0 individual bid records deferred at detail budget; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS provider unavailable (Google News): robots disallows requested path",
@@ -3111,7 +3111,7 @@
     "Wellsboro Area School District": "indirect RSS provider unavailable (Google News): robots disallows requested path",
     "Mansfield University": "indirect RSS provider unavailable (Google News): robots disallows requested path",
     "NYSEG": "indirect RSS provider unavailable (Google News): robots disallows requested path",
-    "New York State DOT Region 6": "direct blocked by robots policy: robots disallows requested path; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "New York State DOT Region 6": "direct blocked by robots policy: robots policy unavailable: URLError; indirect RSS provider unavailable (Google News): robots disallows requested path",
     "New York State DOT Region 9": "indirect RSS provider unavailable (Google News): robots disallows requested path",
     "PennDOT District 3": "direct fetched; 1 listing pages; 0 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path",
     "PennDOT District 4": "indirect RSS provider unavailable (Google News): robots disallows requested path",
