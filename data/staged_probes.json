@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-01T09:49:19.725002+00:00",
+  "updated": "2026-11-01T10:18:02.345802+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 62,
   "safe_staged_entrypoints": 62,
@@ -159,8 +159,8 @@
     {
       "name": "Bradford County PA",
       "official_entrypoint": "https://www.bradfordcountypa.gov/bids.aspx",
-      "state": "listing_reachable_no_open_bids",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
