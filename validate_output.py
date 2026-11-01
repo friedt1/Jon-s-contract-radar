@@ -116,6 +116,13 @@ def validate(root=scan.ROOT):
         stale_staging_names = set()
         for row in rows:
             reference = expected_rows[row['name']]
+            # Preserve the original count sanity check before comparing the
+            # same fields with raw scanner evidence. Both rules matter: a
+            # fetched count cannot exceed attempts or contradict the scan.
+            fetched = row.get('individual_bid_details_fetched', 0)
+            if (not isinstance(fetched, int) or fetched < 0
+                    or fetched > row.get('detail_fetches_attempted', 0)):
+                raise ValueError('Individual bid detail count exceeds attempted fetches')
             stale_staging = _staged_after_published_scan(
                 source_by_name[row['name']], row, data.get('updated'),
                 data['source_status'][row['name']])
@@ -193,9 +200,6 @@ def validate(root=scan.ROOT):
                 row.get('individual_bid_details_fetched', 0) for row in rows):
             raise ValueError('Individual bid detail count disagrees with source health rows')
         for row in rows:
-            fetched = row.get('individual_bid_details_fetched', 0)
-            if not isinstance(fetched, int) or fetched < 0 or fetched > row.get('detail_fetches_attempted', 0):
-                raise ValueError('Individual bid detail count exceeds attempted fetches')
             # Generic same-host notice extraction may fetch detail pages
             # without CivicPlus bidID listing cards. These counters describe
             # different extraction paths and must not be compared.
