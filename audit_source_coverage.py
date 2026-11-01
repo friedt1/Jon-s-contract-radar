@@ -10,8 +10,8 @@ from pathlib import Path
 
 from notice_identity import canonical_url
 
-from scan import UNCONNECTED_PLATFORMS
-from source_config import (DIRECT_MODES, direct_configured, direct_fetch_target,
+from source_config import (DIRECT_MODES, UNCONNECTED_PLATFORMS,
+                           direct_configured, direct_fetch_target,
                            valid_public_https_url)
 
 

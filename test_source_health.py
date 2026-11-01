@@ -280,5 +280,26 @@ class SourceHealthTests(unittest.TestCase):
         self.assertFalse(rows["Configured provider"]["staged_provider_access_required"])
 
 
+    def test_named_unconnected_portal_is_not_fetchable_without_status(self):
+        # Synthetic statuses only: no provider is accessed or activated.
+        # Audit knew the provider was unconnected, but source health formerly
+        # counted its missing status as a potentially working adapter.
+        from audit_source_coverage import audit
+        src = {"name": "PennBid platform", "mode": "direct_page",
+               "url": "https://pennbid.example/bids", "verified_url": True}
+        for status in ("", "direct fetched; 3 individual bid details fetched",
+                       "direct error: HTTPError HTTP 403"):
+            with self.subTest(status=status):
+                row = source_health.classify(src, status)
+                self.assertEqual(row["direct_state"], "access_required")
+                self.assertTrue(row["provider_access_required"])
+                self.assertEqual(row["individual_bid_details_fetched"], 0)
+        counts = source_health.summarize([src], {})["counts"]
+        self.assertEqual(counts["configured_direct"], 1)
+        self.assertEqual(counts["configured_access_required"], 1)
+        self.assertEqual(counts["configured_fetch_targets"], 0)
+        self.assertEqual(audit([src])["direct_fetch_targets"], 0)
+        self.assertEqual(audit([src])["configured_provider_access_required"], 1)
+
 if __name__ == "__main__":
     unittest.main()
