@@ -141,6 +141,37 @@ class PublicPaginationTests(unittest.TestCase):
         self.assertTrue(pages.valid_pagination_redirect(
             requested, "https://example.gov/Bids.aspx?page=2"))
 
+    def test_pagination_redirect_preserves_non_cursor_filters(self):
+        original = "https://example.gov/Bids.aspx?page=2&status=open&category=tree"
+        self.assertTrue(pages.valid_pagination_redirect(
+            original, "https://example.gov/Bids.aspx?category=tree&Page=2&status=open"))
+        for final in (
+            "https://example.gov/Bids.aspx?page=2&status=closed&category=tree",
+            "https://example.gov/Bids.aspx?page=2&category=tree",
+            "https://example.gov/Bids.aspx?page=2&status=open&category=tree&login=1",
+            "https://example.gov/Bids.aspx?page=2&status=open&category=tree&bidID=44",
+            "https://example.gov/Bids.aspx?page=2&status=open&category=tree&status=closed",
+        ):
+            with self.subTest(final=final):
+                self.assertFalse(pages.valid_pagination_redirect(original, final))
+
+    def test_same_cursor_redirect_to_login_filter_is_not_parsed(self):
+        requested = "https://example.gov/Bids.aspx?page=2"
+        fetched = []
+        def fake(url, binary=False):
+            fetched.append(url)
+            if url == SOURCE["url"]:
+                return '<a href="?page=2">Next</a>', "text/html", url
+            if url == requested:
+                return ('<a href="/bid/999">Tree removal bid due 11/19/2026</a>',
+                        "text/html", requested + "&login=1")
+            raise AssertionError("redirected login content must not be followed")
+        with patch.object(scan, "fetch", side_effect=fake):
+            leads, status = scan.scan_direct(SOURCE)
+        self.assertEqual(leads, [])
+        self.assertEqual(fetched, [SOURCE["url"], requested])
+        self.assertIn("pagination redirect changed listing or cursor", status)
+
     def test_redirected_login_or_changed_cursor_cannot_supply_notice(self):
         # Synthetic publisher responses; not a live Owego/Erie solicitation.
         requested = "https://example.gov/Bids.aspx?page=2"
