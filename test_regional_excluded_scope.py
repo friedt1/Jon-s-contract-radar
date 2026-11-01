@@ -28,6 +28,23 @@ class RegionalExcludedScopeTests(unittest.TestCase):
                 self.assertIsNone(classify(notice, today=TODAY))
                 self.assertEqual(build([notice], today=TODAY)["opportunities"], [])
 
+    def test_excluded_storm_and_line_work_never_enters_regional_feed(self):
+        for title in (
+            "Owego demolition RFP; tree clearing by others",
+            "Paving contract; right-of-way clearing excluded",
+            "Bridge rehabilitation RFP; power line clearing by others",
+            "Road repair bid; line clearance not included",
+            "Building demolition contract; storm cleanup by others",
+            "Owego demolition RFP; disaster debris removal not required",
+            "Paving bid without woody debris removal",
+            "Bridge repairs RFP; roadside mowing by others",
+        ):
+            with self.subTest(title=title):
+                notice = {"title": title, "url": URL,
+                          "deadline": "2026-11-19"}
+                self.assertIsNone(classify(notice, today=TODAY))
+                self.assertEqual(build([notice], today=TODAY)["opportunities"], [])
+
     def test_positive_tree_or_brush_work_survives_other_exclusions(self):
         for title in (
             "Tree removal bid; vegetation management by others",
