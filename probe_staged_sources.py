@@ -90,19 +90,33 @@ def _safe_link(base, href):
 
 
 def _sample_priority(record, now):
-    # Prefer a listing with a future closing date over a stale "Open" label.
-    # A sampled notice is NEVER an actionable or verified contract.
+    """Sample current-looking service bids before unrelated notices.
+
+    Deadline and status evidence always outrank service relevance. This is
+    *only* the order for bounded staged adapter probes: it cannot activate a
+    source, publish a lead, or establish an open contract. In particular an
+    expired tree bid must not leap ahead of a future unrelated bid.
+    """
     if record.get("open_status") in civicplus_bids.CLOSED:
-        return 3
-    # A duplicate listing with contradictory status or cutoff must not
-    # outrank a clean future notice just because one row says "Open".
-    if record.get("listing_status_conflict") or record.get("listing_deadline_conflict"):
-        return 2
-    due = record.get("deadline", "")
-    if due:
-        return 2 if civicplus_bids.closing_passed(
-            due, record.get("deadline_time", ""), now) else 0
-    return 1
+        temporal = 3
+    elif record.get("listing_status_conflict") or record.get("listing_deadline_conflict"):
+        temporal = 2
+    else:
+        due = record.get("deadline", "")
+        temporal = (2 if civicplus_bids.closing_passed(
+            due, record.get("deadline_time", ""), now) else 0) if due else 1
+
+    # Only use isolated listing-card text. Page-wide chrome can mention tree
+    # work that belongs to a different bid. scan.category() also excludes
+    # explicit "tree work by others" and unrelated demolition-only scopes.
+    scope = " ".join(str(record.get(key) or "") for key in ("title", "description"))
+    service = scan.category(scope)
+    service_order = {
+        "Tree removal": 0, "Storm cleanup": 1, "Tree trimming": 2,
+        "Vegetation management": 3, "Land clearing": 4,
+        "Related site prep": 5,
+    }
+    return temporal, service_order.get(service, 6)
 
 
 def probe(source, fetch=scan.fetch, now=None):
