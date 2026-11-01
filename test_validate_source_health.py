@@ -70,6 +70,44 @@ class ValidateSourceHealthTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Expected source inventory"):
             self.check(sources, payload)
 
+    def test_duplicate_named_target_cannot_hide_inside_102_rows(self):
+        # Two staged agencies sharing a name can otherwise survive set-based
+        # status reconciliation, 102-row health counts and the coverage totals.
+        sources, payload = self.payload()
+        duplicate = next(s for s in sources
+                         if s["name"] == "Wegmans regional properties")
+        duplicate["name"] = "SUNY Corning Community College"
+        payload["source_status"].pop("Wegmans regional properties")
+        payload["source_health"] = source_health.summarize(
+            sources, payload["source_status"])
+        payload["source_coverage"]["indirect_rss_succeeded"] = sum(
+            "indirect RSS ok" in status
+            for status in payload["source_status"].values())
+        self.assertEqual(len(sources), 102)
+        self.assertEqual(len({s["name"] for s in sources}), 101)
+        with self.assertRaisesRegex(ValueError, "102 distinct named targets"):
+            self.check(sources, payload)
+
+    def test_staged_health_cannot_forge_individual_bid_retrieval(self):
+        # No source activation or live bid is created by this synthetic case.
+        sources, payload = self.payload()
+        row = next(r for r in payload["source_health"]["sources"]
+                   if r["name"] == "Wellsboro Area School District")
+        self.assertEqual(row["direct_state"], "staged_official_url")
+        row["detail_fetches_attempted"] = 1
+        row["individual_bid_details_fetched"] = 1
+        payload["source_health"]["counts"]["individual_bid_details_fetched"] += 1
+        with self.assertRaisesRegex(ValueError, "Source health extraction disagrees"):
+            self.check(sources, payload)
+
+    def test_fetched_health_cannot_forge_individual_record_count(self):
+        sources, payload = self.payload()
+        row = next(r for r in payload["source_health"]["sources"]
+                   if r["name"] == "Tioga County NY")
+        row["individual_bid_records_found"] = 99
+        with self.assertRaisesRegex(ValueError, "Source health extraction disagrees"):
+            self.check(sources, payload)
+
     def test_swapped_health_states_fail_even_when_totals_match(self):
         sources, payload = self.payload()
         rows = {row["name"]: row for row in payload["source_health"]["sources"]}
