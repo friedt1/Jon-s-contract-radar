@@ -20,6 +20,7 @@ OFFICIAL = {
     "Corning Incorporated":
         "https://www.corning.com/worldwide/en/sustainability/processes/supply-chain-social-responsibility/supplier-responsibility.html",
     "Kimco Realty": "https://www.kimcorealty.com/vendor-opportunities",
+    "Wegmans regional properties": "https://www.wegmans.com/service/for-our-suppliers",
 }
 
 
@@ -61,15 +62,15 @@ class CorporateSupplierGatewayTests(unittest.TestCase):
         summary = summarize(subset, {})
         self.assertEqual(summary["counts"]["configured_direct"], 0)
         self.assertEqual(summary["counts"]["configured_fetch_targets"], 0)
-        self.assertEqual(summary["counts"]["staged_official_url"], 3)
-        self.assertEqual(summary["counts"]["staged_provider_access_required"], 3)
+        self.assertEqual(summary["counts"]["staged_official_url"], 4)
+        self.assertEqual(summary["counts"]["staged_provider_access_required"], 4)
         self.assertEqual(summary["counts"]["individual_bid_details_fetched"], 0)
         coverage = audit(self.sources)
         self.assertEqual(coverage["total"], 102)
         self.assertEqual(coverage["direct_configured"], 18)
         self.assertEqual(coverage["not_directly_monitored"], 84)
-        self.assertEqual(coverage["official_urls_staged"], 82)
-        self.assertEqual(coverage["discovery_required"], 2)
+        self.assertEqual(coverage["official_urls_staged"], 84)
+        self.assertEqual(coverage["discovery_required"], 0)
         by_name = {row["source"]: row for row in coverage["sources"]}
         for name in OFFICIAL:
             self.assertTrue(by_name[name]["official_url_staged"])
