@@ -42,6 +42,7 @@ def audit(sources):
             "invalid_direct_configuration": invalid_direct,
             "candidate_official_url": source.get("candidate_official_url") if staged else None,
             "activation_gate": source.get("activation_gate", "") if staged else "",
+            "official_page_role": source.get("official_page_role", "") if staged else "",
             "target_url": url if direct else None,
             "status": ("configured URL only; provider-approved individual-listing ingestion not connected"
                        if access_required else

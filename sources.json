@@ -861,7 +861,12 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.norfolksouthern.com/en/suppliers",
+    "official_page_role": "Official railroad supplier onboarding and vendor portal; NOT a public vegetation-management or individual-bid listing",
+    "provider_access_required": true,
+    "activation_gate": "Official Norfolk Southern Suppliers page requires an NS-issued vendor number before existing suppliers can register for its portal. No anonymous individual tree/ROW contract listing verified. Require supplier approval and authorized per-notice access; verify local worksite, scope, deadline and publisher status before activation. Do not crawl authenticated supplier portal.",
+    "official_url_checked_at": "2026-11-01T14:45:00+00:00"
   },
   {
     "name": "Arnot Realty",
@@ -889,7 +894,12 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.arnothealth.org/arnot-ogden-medical-center/directory",
+    "official_page_role": "Official Arnot Ogden Medical Center purchasing contact directory; NOT an open procurement listing",
+    "provider_access_required": true,
+    "activation_gate": "Official hospital directory lists a Purchasing Department contact but publishes no verified current individual bid feed. Request supplier procurement access or identify a separate publicly permitted solicitation listing; verify terms, per-notice extraction, scope, cutoff, status and local worksite before activation. Do not treat purchasing contact details or patient information as contract opportunities.",
+    "official_url_checked_at": "2026-11-01T14:45:00+00:00"
   },
   {
     "name": "Guthrie Healthcare",
@@ -897,7 +907,12 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.guthrie.org/vendor-information",
+    "official_page_role": "Official Guthrie vendor policies and credentialing/Oracle supplier portal; NOT a public individual tree-service RFP feed",
+    "provider_access_required": true,
+    "activation_gate": "Official Guthrie vendor information says vendors must complete Green Security credentialing and references Oracle Supplier Portal and purchase-order approval. The public page does not expose current individual landscaping/tree-service bids. Require vendor approval or explicitly permitted individual-notice feed, robots/terms review, scope/deadline/status and Elmira/northern-PA worksite verification. Do not fetch gated portal.",
+    "official_url_checked_at": "2026-11-01T14:45:00+00:00"
   },
   {
     "name": "UPMC Williamsport",

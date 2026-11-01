@@ -67,8 +67,8 @@ class SchoolEntrypointStagingTests(unittest.TestCase):
         self.assertEqual(result["total"], 102)
         self.assertEqual(result["direct_configured"], 18)
         self.assertEqual(result["not_directly_monitored"], 84)
-        self.assertEqual(result["official_urls_staged"], 73)
-        self.assertEqual(result["discovery_required"], 11)
+        self.assertEqual(result["official_urls_staged"], 76)
+        self.assertEqual(result["discovery_required"], 8)
         rows = {row["source"]: row for row in result["sources"]}
         for name in OFFICIAL:
             self.assertTrue(rows[name]["official_url_staged"])
