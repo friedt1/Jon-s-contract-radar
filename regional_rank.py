@@ -15,6 +15,7 @@ from notice_identity import canonical_url
 import civicplus_bids
 from submission_deadlines import eastern_deadline_timezone
 from publisher_status import publisher_closed
+from scan import positive_scope_text
 
 KEYWORDS = ("debris removal", "disaster debris", "emergency tree", "vegetation management",
             "right-of-way", "tree removal", "stump removal", "stump grinding",
@@ -90,7 +91,7 @@ def classify(notice, today=None, now=None):
         return None
     title = str(notice.get("title") or "")
     description = str(notice.get("summary") or "")
-    content = (title + " " + description).lower()
+    content = positive_scope_text(title + " " + description)
     if not any(term in content for term in KEYWORDS):
         return None
     url = canonical_url(notice.get("url"))
@@ -165,8 +166,9 @@ def build(notices, today=None, now=None):
         # duplicate's deadline as conflicting and unverified.
         candidate_url = canonical_url(notice.get("url"))
         candidate_date = notice.get("deadline")
-        candidate_text = (str(notice.get("title") or "") + " " +
-                          str(notice.get("summary") or "")).lower()
+        candidate_text = positive_scope_text(
+            str(notice.get("title") or "") + " " +
+            str(notice.get("summary") or ""))
         # Record every independently stated valid submission date before
         # classify() drops an expired copy. An older cutoff may have been
         # superseded by an amendment, but the surviving later date is not
