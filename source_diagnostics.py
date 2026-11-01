@@ -96,7 +96,7 @@ def report(payload):
             "robots_blocked", "http_blocked", "redirect_blocked",
             "rate_limited", "unsupported_content", "fetch_error",
         }
-        indirect_error = indirect in {"robots_blocked", "error"}
+        indirect_error = indirect in {"robots_blocked", "error", "provider_unavailable"}
         if not row:  # Backward-compatible fallback for historical feeds.
             direct_error = ("direct error:" in low or "direct blocked" in low
                             or low.startswith("blocked:")
@@ -120,6 +120,7 @@ def report(payload):
             "staged_access_required": bool(row.get("staged_provider_access_required")),
             "direct_error": direct_error,
             "indirect_error": indirect_error,
+            "indirect_shared_provider_unavailable": indirect == "provider_unavailable",
             "detail_errors": detail_errors,
             "pagination_errors": pagination_errors,
             "detail_budget_deferred": detail_budget_deferred,
