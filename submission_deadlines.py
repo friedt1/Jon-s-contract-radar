@@ -80,9 +80,16 @@ _CLOCK_24 = r"(?:[01]?\d|2[0-3]):[0-5]\d(?![ \t]*[AP]\.?[ \t]*M\.?)(?:[ \t]*(?:h
 # These words are clocks only when adjacent to a validated submission label.
 _CLOCK_WORD = r"(?:12(?::00)?[ \t]+)?(?:noon|midnight)\b"
 _CLOCK = r"(?:" + _CLOCK_12 + r"|" + _CLOCK_24 + r"|" + _CLOCK_WORD + r")"
-# Accept "due DATE at 1:30 P.M." and "due DATE, at 1:30 P.M.".
+# Official forms also say "due DATE by 2:30 PM" or
+# "due DATE no later than 14:00". These are submission cutoffs, not
+# opening times. Keep the connector adjacent to the validated due date.
 # A word boundary after the final dot in P.M. would reject the clock.
-_AFTER_DATE = re.compile(r"^[ \t]*(?:,[ \t]*)?(?:at[ \t]+)?(?P<clock>" + _CLOCK + r")(?=$|[ \t,;.)])", re.I)
+_AFTER_DATE = re.compile(
+    r"^[ \t]*(?:,[ \t]*)?"
+    r"(?:(?:at|by|until|no[ \t]+later[ \t]+than)[ \t]+)?"
+    r"(?P<clock>" + _CLOCK + r")(?=$|[ \t,;.)])", re.I,
+)
+
 # Machine-readable bid notices sometimes publish an ISO-8601 submission
 # timestamp instead of a separate local date and clock. An explicit offset
 # can shift the *local date*, so convert the entire instant to the NY/PA
