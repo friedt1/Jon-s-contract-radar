@@ -1,8 +1,8 @@
 {
-  "updated": "2026-11-01T18:45:06.370733+00:00",
+  "updated": "2026-11-01T21:41:44.187140+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 82,
-  "safe_staged_entrypoints": 82,
+  "staged_entrypoints": 84,
+  "safe_staged_entrypoints": 84,
   "invalid_staged_entrypoints": 0,
   "probes": [
     {
@@ -785,6 +785,20 @@
       "direct_monitoring_activated": false
     },
     {
+      "name": "SUNY Corning Community College",
+      "official_entrypoint": "https://www.corning-cc.edu/about/regional-board-of-trustees/ccc_policy_manual-2023.pdf",
+      "state": "official_supplier_or_contact_gateway_access_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "The college's published Purchasing and Procurement Policy describes competitive quotes/bids but provides no current individual tree-service or grounds-maintenance solicitations. Contact campus purchasing or identify a separate publicly permitted per-notice listing; verify robots/terms, bid scope, deadline, open status and local worksite before activation. Do not treat historical policy text as a live bid.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false,
+      "section_note": "Official supplier/contact gateway, not a verified public individual-solicitation feed; vendor authorization or a separate permitted listing is required"
+    },
+    {
       "name": "Cornell University",
       "official_entrypoint": "https://fcs.cornell.edu/projects-out-to-bid",
       "state": "listing_reachable_adapter_required",
@@ -1082,6 +1096,19 @@
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false,
       "section_note": "Official supplier/contact gateway, not a verified public individual-solicitation feed; vendor authorization or a separate permitted listing is required"
+    },
+    {
+      "name": "Wegmans regional properties",
+      "official_entrypoint": "https://www.wegmans.com/service/for-our-suppliers",
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Wegmans' supplier page includes W-Buy purchasing tools and construction/non-construction terms, but the public page is not a listing of individual regional tree/vegetation or property-maintenance contracts. Require facilities purchasing authorization or a separately verified publicly permitted per-notice feed; confirm actual local worksite, scope, deadline, status and terms. Do not crawl W-Buy or treat food-product vendor onboarding as a landscaping bid.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
     },
     {
       "name": "Brixmor Property Group",
