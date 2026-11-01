@@ -1,9 +1,10 @@
 """Validate the dashboard feed without requiring network access."""
 import json
+import datetime as dt
 from pathlib import Path
 import scan
 import notice_identity
-from source_config import direct_configured
+from source_config import direct_configured, valid_public_https_url
 import source_health
 from publisher_status import publisher_closed
 from submission_deadlines import eastern_deadline_timezone
@@ -23,6 +24,32 @@ def validate_active_notice(lead, now):
     if (due and clock and eastern_deadline_timezone(lead.get('deadline_timezone'))
             and scan.civicplus_bids.closing_passed(due, str(clock), now)):
         raise ValueError('Elapsed submission cutoff in active feed: ' + str(lead.get('id', '')))
+
+
+def _staged_after_published_scan(source, published_row, feed_updated, status):
+    """Allow only documented post-scan staging metadata to lag in old feeds.
+
+    This never permits an active direct source, altered bid record, or changed
+    scan status to be silently treated as a newly scanned publisher.
+    """
+    if (source.get("mode") != "discovery_pending"
+            or source.get("url") or source.get("verified_url") is not False
+            or not valid_public_https_url(source.get("candidate_official_url"))
+            or published_row.get("direct_state") != "not_configured"
+            or published_row.get("staged_official_url")
+            or published_row.get("direct_url")
+            or "direct fetched" in status or "direct error" in status):
+        return False
+    checked = source.get("official_url_checked_at")
+    if not isinstance(checked, str) or not isinstance(feed_updated, str):
+        return False
+    try:
+        checked_at = dt.datetime.fromisoformat(checked.replace("Z", "+00:00"))
+        scanned_at = dt.datetime.fromisoformat(feed_updated.replace("Z", "+00:00"))
+        return (checked_at.tzinfo is not None and scanned_at.tzinfo is not None
+                and checked_at > scanned_at)
+    except ValueError:
+        return False
 
 
 def validate(root=scan.ROOT):
@@ -79,11 +106,22 @@ def validate(root=scan.ROOT):
         # own potentially stale/altered summary.
         expected_health = source_health.summarize(sources, data['source_status'])
         expected_rows = {row['name']: row for row in expected_health['sources']}
+        source_by_name = {source['name']: source for source in sources}
+        stale_staging_names = set()
         for row in rows:
             reference = expected_rows[row['name']]
+            stale_staging = _staged_after_published_scan(
+                source_by_name[row['name']], row, data.get('updated'),
+                data['source_status'][row['name']])
+            if stale_staging:
+                stale_staging_names.add(row['name'])
             for field in ('direct_state', 'indirect_state',
                           'provider_access_required', 'direct_url',
-                          'staged_official_url'):
+                          'staged_official_url', 'staged_provider_access_required'):
+                if (stale_staging and field in (
+                        'direct_state', 'staged_official_url',
+                        'staged_provider_access_required')):
+                    continue
                 if row.get(field) != reference[field]:
                     raise ValueError('Source health state disagrees with scanner: '
                                      + row['name'] + ' / ' + field)
@@ -113,10 +151,20 @@ def validate(root=scan.ROOT):
             kind + '_' + reason + '_sources'
             for kind in ('detail', 'pagination') for reason in access_reasons
         )
+        # A source can be staged after the published scan. Reconcile only
+        # the corresponding metadata counts, never direct fetches or leads.
+        expected_counts = dict(expected_health['counts'])
+        for name in stale_staging_names:
+            expected_counts['staged_official_url'] -= 1
+            expected_counts['not_configured'] += 1
+            src = source_by_name[name]
+            if src.get('provider_access_required') is True or src.get('delegated_provider'):
+                expected_counts['staged_provider_access_required'] -= 1
         for field in states + ('configured_direct', 'configured_fetch_targets',
                                'configured_access_required',
+                               'staged_provider_access_required',
                                'configured_unimplemented_adapters') + diagnostic_counts:
-            if counts.get(field) != expected_health['counts'][field]:
+            if counts.get(field) != expected_counts[field]:
                 raise ValueError('Source health count disagrees with scanner: ' + field)
         if counts.get('individual_bid_details_fetched', 0) != sum(
                 row.get('individual_bid_details_fetched', 0) for row in rows):

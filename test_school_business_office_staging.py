@@ -62,8 +62,8 @@ class SchoolBusinessGatewayTests(unittest.TestCase):
         self.assertEqual(coverage["total"], 102)
         self.assertEqual(coverage["direct_configured"], 18)
         self.assertEqual(coverage["not_directly_monitored"], 84)
-        self.assertEqual(coverage["official_urls_staged"], 62)
-        self.assertEqual(coverage["discovery_required"], 22)
+        self.assertEqual(coverage["official_urls_staged"], 65)
+        self.assertEqual(coverage["discovery_required"], 19)
         for name in GATEWAYS:
             row = next(x for x in coverage["sources"] if x["source"] == name)
             self.assertTrue(row["official_url_staged"])

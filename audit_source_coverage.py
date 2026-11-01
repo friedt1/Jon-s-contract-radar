@@ -27,6 +27,9 @@ def audit(sources):
         staged = (not direct and mode == "discovery_pending"
                   and valid_public_https_url(source.get("candidate_official_url")))
         invalid_direct = mode in DIRECT_MODES and not direct
+        staged_access_required = staged and (
+            source.get("provider_access_required") is True
+            or bool(source.get("delegated_provider")))
         results.append({
             "source": source["name"],
             "mode": mode,
@@ -34,6 +37,7 @@ def audit(sources):
             "direct_fetch_target": direct_fetch_target(source) and not access_required,
             "adapter_not_implemented": adapter_missing,
             "provider_access_required": access_required,
+            "staged_provider_access_required": staged_access_required,
             "official_url_staged": staged,
             "invalid_direct_configuration": invalid_direct,
             "candidate_official_url": source.get("candidate_official_url") if staged else None,
@@ -43,6 +47,8 @@ def audit(sources):
                        if access_required else
                        "configured URL only; direct adapter not implemented" if adapter_missing else
                        "configured; live ingestion not independently verified" if direct else
+                       "official supplier gateway staged; registration/authorization required, "
+                       "individual-notice ingestion not connected" if staged_access_required else
                        "official URL staged; individual-notice extraction and permissions not verified" if staged else
                        "invalid direct configuration; verified HTTPS URL required" if invalid_direct else
                        "not directly monitored; official source discovery required"),
@@ -75,6 +81,7 @@ def audit(sources):
         "direct_configured": sum(x["direct_configured"] for x in results),
         "direct_fetch_targets": sum(x["direct_fetch_target"] for x in results),
         "configured_provider_access_required": sum(x["provider_access_required"] for x in results),
+        "staged_provider_access_required": sum(x["staged_provider_access_required"] for x in results),
         "configured_unimplemented_adapters": sum(x["adapter_not_implemented"] for x in results),
         "not_directly_monitored": sum(not x["direct_configured"] for x in results),
         "official_urls_staged": sum(x["official_url_staged"] for x in results),
@@ -87,8 +94,10 @@ def audit(sources):
                     "without approved individual-listing ingestion are access-required, not fetch targets. "
                     "Even other fetch targets do not prove permitted or successful bid extraction. "
                     "Malformed, insecure, or unverified URLs do not count as direct "
-                    "configuration; staged URLs are not active monitoring. Shared official "
-                    "entrypoints do not represent independent operational bid feeds.")
+                    "configuration; staged URLs are not active monitoring. Staged "
+                    "supplier-registration gateways require authorization and are not "
+                    "public individual-bid feeds. Shared official entrypoints do not "
+                    "represent independent operational bid feeds.")
     }
 
 

@@ -53,9 +53,10 @@ class SharedOfficialEntrypointTests(unittest.TestCase):
         coverage = audit_source_coverage.audit(sources)
         self.assertEqual(coverage["total"], 102)
         self.assertEqual(coverage["direct_configured"], 18)
-        self.assertEqual(coverage["official_urls_staged"], 62)
+        self.assertEqual(coverage["official_urls_staged"], 65)
         self.assertEqual(coverage["not_directly_monitored"], 84)
-        self.assertLessEqual(coverage["distinct_official_entrypoints"], 80)
+        self.assertLess(coverage["distinct_official_entrypoints"],
+                        coverage["direct_configured"] + coverage["official_urls_staged"])
         today = dt.date(2026, 11, 1)
         self.assertFalse(scan.eligible(
             "Erie tree and stump removal bid due October 28, 2026",

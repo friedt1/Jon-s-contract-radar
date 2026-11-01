@@ -52,6 +52,8 @@ class SourceAuditTests(unittest.TestCase):
         self.assertEqual(result["configured_provider_access_required"],
                          canonical["configured_provider_access_required"])
         self.assertEqual(result["staged_official_urls"], canonical["official_urls_staged"])
+        self.assertEqual(result["staged_provider_access_required"],
+                         canonical["staged_provider_access_required"])
         self.assertEqual(result["pending_discovery_targets"],
                          canonical["not_directly_monitored"])
         self.assertEqual(result["discovery_required"], canonical["discovery_required"])
