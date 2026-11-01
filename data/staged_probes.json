@@ -1,8 +1,8 @@
 {
-  "updated": "2026-11-01T11:36:20.652127+00:00",
+  "updated": "2026-11-01T11:47:09.522406+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 65,
-  "safe_staged_entrypoints": 65,
+  "staged_entrypoints": 66,
+  "safe_staged_entrypoints": 66,
   "invalid_staged_entrypoints": 0,
   "probes": [
     {
@@ -159,8 +159,8 @@
     {
       "name": "Bradford County PA",
       "official_entrypoint": "https://www.bradfordcountypa.gov/bids.aspx",
-      "state": "listing_reachable_no_open_bids",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -901,6 +901,19 @@
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official FirstEnergy supplier FAQ checked 2026-10-31 explicitly says it does NOT publish upcoming bids on its external website. Supplier registration allows consideration for invitation-only RFI/RFQ/RFP; Coupa sourcing events require supplier onboarding/invitation. No public per-notice extraction is available here. Keep blocked/access-required until publisher-approved integration exists; never scrape Coupa or treat energy-supply auctions as tree contracts.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Elmira-Corning Regional Airport",
+      "official_entrypoint": "https://chemungcountyny.gov/Bids.aspx",
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Chemung County's official airport page identifies the airport as county-owned and operated; the county purchasing department publishes bids and airport solicitations on its CivicPlus Bids.aspx page. This is the SAME entrypoint as Chemung County bids, not an additional monitored feed. The county scanner may encounter airport projects but must verify each individual airport worksite, tree/clearing scope, publisher status and amended deadline. No independent airport adapter or complete airport-specific extraction is established; review publisher permissions/robots before any promotion.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     }
