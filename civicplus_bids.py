@@ -48,7 +48,7 @@ def _closing_date(value):
             continue
     return ""
 def _clock(value):
-    """Normalize explicit 12-hour clock text; never infer a missing time."""
+    """Normalize explicit 12-hour or unambiguous 24-hour clock text."""
     if not value:
         return ""
     cleaned = re.sub(r"\.", "", value.upper())
