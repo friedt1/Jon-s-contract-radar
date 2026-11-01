@@ -115,6 +115,7 @@
     "direct_fetched": 11,
     "direct_not_fetched": 7,
     "indirect_rss_succeeded": 0,
+    "indirect_provider_unavailable_targets": 102,
     "verified_open_contracts": 0,
     "warning": "A fetched listing page is not proof that all individual bids were extracted or that any bid is open."
   },
@@ -137,7 +138,8 @@
       "staged_provider_access_required": 2,
       "configured_unimplemented_adapters": 0,
       "configured_fetch_targets": 12,
-      "indirect_robots_blocked": 102,
+      "indirect_robots_blocked": 0,
+      "indirect_provider_unavailable_targets": 102,
       "individual_bid_records_found": 10,
       "detail_fetches_attempted": 86,
       "detail_budget_deferred": 0,
@@ -172,7 +174,7 @@
         "direct_state": "fetched_unverified",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://chemungcountyny.gov/Bids.aspx",
         "staged_official_url": "",
         "activation_gate": "",
@@ -192,7 +194,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 2 individual bid records; 0 conflicting duplicate bid cards; 2 relevant details checked; 0 individual bid records deferred at detail budget; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 2 individual bid records; 0 conflicting duplicate bid cards; 2 relevant details checked; 0 individual bid records deferred at detail budget; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Steuben County bids",
@@ -200,7 +202,7 @@
         "direct_state": "fetched_unverified",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://www.steubencountyny.gov/Bids.aspx",
         "staged_official_url": "",
         "activation_gate": "",
@@ -220,7 +222,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 6 individual bid records; 0 conflicting duplicate bid cards; 6 relevant details checked; 0 individual bid records deferred at detail budget; 6 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 6 individual bid records; 0 conflicting duplicate bid cards; 6 relevant details checked; 0 individual bid records deferred at detail budget; 6 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Schuyler County purchasing",
@@ -228,7 +230,7 @@
         "direct_state": "access_required",
         "provider_access_required": true,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://www.schuylercountyny.gov/174/Purchasing",
         "staged_official_url": "",
         "activation_gate": "Official Schuyler County Purchasing page directs vendors to Empire State Purchasing Group/BidNet to view available bids and RFPs. Its purchasing homepage is not an individual solicitation feed; require provider-approved per-notice access, robots/terms review, and verified scope, deadline, status, and worksite before activation.",
@@ -248,7 +250,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Tompkins County purchasing",
@@ -256,7 +258,7 @@
         "direct_state": "access_required",
         "provider_access_required": true,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://www.tompkinscountyny.gov/All-Departments/Finance-Department/Purchasing-Division",
         "staged_official_url": "",
         "activation_gate": "Official Tompkins Purchasing Division says current solicitations and specifications are on BidNet Direct; authorized individual-listing feed or permission is required before activation. County page and archived PDFs are not an individual-bid feed.",
@@ -276,7 +278,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Elmira City bids",
@@ -284,7 +286,7 @@
         "direct_state": "access_required",
         "provider_access_required": true,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://www.cityofelmirany.gov/264/Sealed-Bid-Information",
         "staged_official_url": "",
         "activation_gate": "Official City of Elmira Sealed Bid Information page states the joint Chemung County/City Purchasing Department posts bid packages, addenda, tabulations and awards on BidNet. The City information page is not a current individual-notice feed; require authorized provider access and per-notice extraction before activation. The separately configured Chemung County CivicPlus source remains independently monitored.",
@@ -304,7 +306,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Elmira Next local bids",
@@ -312,7 +314,7 @@
         "direct_state": "fetched_unverified",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://elmiranext.com/bids",
         "staged_official_url": "",
         "activation_gate": "",
@@ -332,7 +334,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 1,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 10 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 2 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 10 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 2 notices; 0 unverified tree-service candidates; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Lycoming County bids",
@@ -340,7 +342,7 @@
         "direct_state": "access_required",
         "provider_access_required": true,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://lycomingcountypa.gov/government/departments/financial_management/bids.php",
         "staged_official_url": "",
         "activation_gate": "Official Lycoming County Bid Opportunities page states all current open bid/proposal solicitations are posted to PennBid. The county gateway is not an individual-notice feed; require provider-approved access, robots/terms review, per-notice scope/deadline/status/worksite verification before activation. Surplus Municibid auctions are not procurement leads.",
@@ -360,7 +362,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "PA procurement opportunities",
@@ -368,7 +370,7 @@
         "direct_state": "fetched_unverified",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://www.pa.gov/agencies/dgs/doing-business-with-the-commonwealth/business-inclusion-and-supplier-development/finding-opportunities",
         "staged_official_url": "",
         "activation_gate": "",
@@ -388,7 +390,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 12 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 262 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 12 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 262 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "PA DGS construction bids",
@@ -396,7 +398,7 @@
         "direct_state": "fetched_unverified",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://www.pa.gov/agencies/dgs/doing-business-with-the-commonwealth/submit-proposals-and-bids-for-commonwealth-projects",
         "staged_official_url": "",
         "activation_gate": "",
@@ -416,7 +418,7 @@
         "result_award_links_excluded": 95,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 17 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 275 PDF requests skipped at budget; 95 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 17 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 275 PDF requests skipped at budget; 95 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Tioga Bradford Housing Authority",
@@ -424,7 +426,7 @@
         "direct_state": "fetched_unverified",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://www.tbhra.org/bid-information/",
         "staged_official_url": "",
         "activation_gate": "",
@@ -444,7 +446,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 2 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 2 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Chemung County purchasing",
@@ -452,7 +454,7 @@
         "direct_state": "fetched_unverified",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://chemungcountyny.gov/435/Purchasing",
         "staged_official_url": "",
         "activation_gate": "",
@@ -472,7 +474,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 2,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 4 detail candidates deferred at request budget; 2 individual bid details fetched; 4 PDFs checked; 4 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 2 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 18 details checked; 4 detail candidates deferred at request budget; 2 individual bid details fetched; 4 PDFs checked; 4 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 2 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "PennBid platform",
@@ -480,7 +482,7 @@
         "direct_state": "access_required",
         "provider_access_required": true,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://pennbid.bonfirehub.com",
         "staged_official_url": "",
         "activation_gate": "",
@@ -500,7 +502,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established"
+        "diagnostic": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path; individual listing ingestion not connected; provider-approved feed/access not established"
       },
       {
         "name": "BidNet NY platform",
@@ -508,7 +510,7 @@
         "direct_state": "access_required",
         "provider_access_required": true,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://www.bidnetdirect.com/new-york",
         "staged_official_url": "",
         "activation_gate": "",
@@ -528,7 +530,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established"
+        "diagnostic": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path; individual listing ingestion not connected; provider-approved feed/access not established"
       },
       {
         "name": "Tioga County NY",
@@ -536,7 +538,7 @@
         "direct_state": "fetched_unverified",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://tiogacountyny.com/departments/public-works/",
         "staged_official_url": "",
         "activation_gate": "",
@@ -556,7 +558,7 @@
         "result_award_links_excluded": 22,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 8 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 38 PDF requests skipped at budget; 22 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 8 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 38 PDF requests skipped at budget; 22 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Broome County",
@@ -564,7 +566,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://broomecountyny.gov/purchasing/open-solicitations",
         "activation_gate": "Official county page delegates bid documents to BidNet; provider-approved individual-notice access and robots policy review required.",
@@ -584,7 +586,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Cortland County",
@@ -592,7 +594,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.cortlandcountyny.gov/Bids.aspx",
         "activation_gate": "Official CivicPlus listing confirmed; verify robots policy and live bidID detail extraction before activation.",
@@ -612,7 +614,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Yates County",
@@ -620,7 +622,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.yatescountyny.gov/bids.aspx",
         "activation_gate": "Official CivicPlus listing confirmed; verify robots policy and live bidID detail extraction before activation.",
@@ -640,7 +642,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Ontario County",
@@ -648,7 +650,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.ontariocountyny.gov/2291/Current-Bids-RFPs-and-Results",
         "activation_gate": "Official county page delegates current solicitations to OpenGov; verify permitted portal listing and individual notice extraction.",
@@ -668,7 +670,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Seneca County",
@@ -676,7 +678,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.senecacountyny.gov/bids.aspx",
         "activation_gate": "Official CivicPlus bidID listing confirmed; verify robots policy and live individual notice extraction before activation.",
@@ -696,7 +698,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Allegany County",
@@ -704,7 +706,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.alleganyco.gov/departments/public-works/bids-awards/",
         "activation_gate": "Official DPW bid specifications/awards page confirmed; verify robots policy and isolate current individual bid documents from past awards.",
@@ -724,7 +726,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Livingston County",
@@ -732,7 +734,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.livingstoncountyny.gov/Bids.aspx",
         "activation_gate": "Official county CivicPlus bid listings exist, but county also directs vendors to BidNet. Verify robots and publisher terms, same-host individual bidID extraction, and current listing completeness before activation.",
@@ -752,7 +754,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Wayne County",
@@ -760,7 +762,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.waynecountyny.gov/745/Purchasing",
         "activation_gate": "Official county purchasing page announces OpenGov transition and vendor enrollment; identify current authoritative portal and permitted notice extraction.",
@@ -780,7 +782,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Wyoming County",
@@ -788,7 +790,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.wyomingcountyny.gov/Bids.aspx",
         "activation_gate": "Official county CivicPlus bid listings confirmed. Verify robots, terms, and individual bidID extraction before activation; currently listed food/janitorial RFQ is unrelated to tree work.",
@@ -808,7 +810,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Bradford County PA",
@@ -816,7 +818,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.bradfordcountypa.gov/bids.aspx",
         "activation_gate": "Official Bradford County PA CivicPlus bid postings page confirmed; currently reports no open bids. Review robots/terms and verify live same-host individual bidID detail extraction before activation.",
@@ -836,7 +838,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Tioga County PA",
@@ -844,7 +846,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.tiogacountypa.us/departments/commissioners",
         "activation_gate": "Official Tioga County PA Commissioners page confirmed 2026-10-30; this is an agency entrypoint, NOT a central bid listing. Locate a permitted current individual-solicitation index and verify publisher terms, deadline, worksite and adapter before activating.",
@@ -864,7 +866,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Susquehanna County",
@@ -872,7 +874,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.susqco.com/departments/county-commissioners/current-bid-specifications",
         "activation_gate": "Official county current bid specifications page confirmed. Distinguish service procurement from Municibid surplus auctions; verify robots/terms and isolate individual current solicitations before activation.",
@@ -892,7 +894,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Sullivan County PA",
@@ -900,7 +902,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.sullivancountypa.gov/public-notices",
         "activation_gate": "Official county public-notices index mixes historical bids, employment, and non-procurement notices. Review robots and publisher terms; build permitted individual-notice adapter with bid-specific scope, current submission deadline, and worksite checks before activation. Do not treat public-notices index or archived mowing bids as open contracts.",
@@ -920,7 +922,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Clinton County PA",
@@ -928,7 +930,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.clintoncountypa.gov/about-us/rfps",
         "activation_gate": "Official county RFP index confirmed; some listings still display Open without a closing date despite old start dates. Verify robots and site terms, build CivicPlus RFP component-list/detail adapter (not bidID), reject expired individual notices, and confirm worksite travel time before direct activation.",
@@ -948,7 +950,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Potter County PA",
@@ -956,7 +958,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.pottercountypa.gov/",
         "activation_gate": "Official Potter County PA website confirmed 2026-10-30; homepage is NOT a verified bid listing. Find a current official solicitation index and verify permitted individual notice extraction and terms before activating.",
@@ -976,7 +978,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Lackawanna County",
@@ -984,7 +986,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.lackawannacounty.org/government/departments/rfp_rfq.php",
         "activation_gate": "Official county RFP/RFQ listing verified 2026-10-29; individual bid_detail_T17_R*.php links sampled returned HTTP 404. Do not activate until publisher access terms/robots, stable individual detail retrieval, closing dates, and Elmira travel qualification are validated. Historic and unrelated listings are not open tree bids.",
@@ -1004,7 +1006,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Wyoming County PA",
@@ -1012,7 +1014,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://wyomingcountypa.gov/",
         "activation_gate": "Official Wyoming County PA website confirmed 2026-10-30; homepage is NOT a verified bid listing. Find current county bid notices, permitted individual listing extraction and publisher terms before activating.",
@@ -1032,7 +1034,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Town of Horseheads",
@@ -1040,7 +1042,7 @@
         "direct_state": "fetched_unverified",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://www.townofhorseheads.gov/Bids.aspx",
         "staged_official_url": "",
         "activation_gate": "",
@@ -1060,7 +1062,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 2 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 2 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Village of Horseheads",
@@ -1068,7 +1070,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.villageofhorseheads.gov/Bids.aspx",
         "activation_gate": "Official CivicPlus bid-postings page confirmed; check robots, publisher terms, same-host bidID detail extraction, and stale 'Open' labels before activating.",
@@ -1088,7 +1090,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Town of Big Flats",
@@ -1096,7 +1098,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.bigflatsny.gov/",
         "activation_gate": "Official Town of Big Flats homepage verified 2026-10-30. No dedicated current bid listing or stable individual-solicitation links established; identify authoritative procurement index, review robots/publisher terms, and verify per-notice scope/deadline/worksite before activation. A town homepage is not a bid feed.",
@@ -1116,7 +1118,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Town of Elmira",
@@ -1124,7 +1126,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://townofelmira.gov/",
         "activation_gate": "Official Town of Elmira homepage verified 2026-10-30. A town-hosted concession-stand RFP closed March 9, 2026, demonstrating occasional individual PDFs, but no stable current bid index or permitted recurring extraction verified. Find authoritative listing and review robots/terms, individual notice deadlines and worksite before activation; do not treat the expired unrelated RFP as live.",
@@ -1144,7 +1146,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "City of Corning",
@@ -1152,7 +1154,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://cityofcorningny.gov/index.asp?SEC=07CB95A9-0A8E-4D9D-B22C-7B8C866B36E5",
         "activation_gate": "Official City General Notices page includes RFQ postings but is not a dedicated bid feed; identify individual notice adapter, review robots/terms and exclude old RFQs before activation.",
@@ -1172,7 +1174,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Town of Corning",
@@ -1180,7 +1182,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://townofcorningny.gov/",
         "activation_gate": "Official town homepage links dated individual RFP posts (2026-10-21 cleaner RFP). Verify robots/publisher terms, stable notice listing or feed and individual notice extraction before activation; unrelated cleaning bid is not a tree-service lead.",
@@ -1200,7 +1202,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "City of Ithaca",
@@ -1208,7 +1210,7 @@
         "direct_state": "fetched_unverified",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://www.cityofithacany.gov/Bids.aspx",
         "staged_official_url": "",
         "activation_gate": "",
@@ -1228,7 +1230,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 2 individual bid records; 0 conflicting duplicate bid cards; 2 relevant details checked; 0 individual bid records deferred at detail budget; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 2 individual bid records; 0 conflicting duplicate bid cards; 2 relevant details checked; 0 individual bid records deferred at detail budget; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Town of Ithaca",
@@ -1236,7 +1238,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://townithacany.gov/home/bid-anouncements/",
         "activation_gate": "Official Town of Ithaca Bid/RFP Announcements page directs bid/RFP/RFQ packets to BidNet or the Town Clerk. BidNet individual notices require registration/provider-approved access; no permitted per-notice adapter is established. Keep discovery_pending.",
@@ -1256,7 +1258,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "City of Binghamton",
@@ -1264,7 +1266,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.binghamton-ny.gov/government/departments/purchasing/bids-rfps",
         "activation_gate": "Official city purchasing Bids & RFPs index and same-host individual /Home/Components/RFP/RFP/{id}/90 notices confirmed. Granicus adapter, robots/terms permission, live extraction, deadlines and status checks required before direct activation; historical Open labels may remain stale.",
@@ -1284,7 +1286,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Town of Vestal",
@@ -1292,7 +1294,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.vestalny.gov/page/bids-and-rfps-requested",
         "activation_gate": "Official Town of Vestal Bids and RFPs Requested page confirmed (Apptegy). Page availability does not prove active solicitations. Verify robots and publisher terms, identify individual bid notices and deadlines, and implement a permitted Apptegy-specific listing/detail adapter before activation; never infer no open bids from a blank page.",
@@ -1312,7 +1314,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Village of Owego",
@@ -1320,7 +1322,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://villageofowegony.gov/newslist.php",
         "activation_gate": "Official village Newslist linked from the government homepage, but no individual procurement notices are visible in the public page response. Review robots/terms and verify an authorized individual-notice listing adapter; do not treat this page as a direct bid feed.",
@@ -1340,7 +1342,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Village of Waverly",
@@ -1348,7 +1350,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://villageofwaverly.gov/",
         "activation_gate": "Official Village of Waverly homepage publishes a contractor RFQ (New York Forward Small Project Fund) with a September 15, 2026 application deadline; this is unrelated building work and past deadline. No stable public individual-bid listing adapter or permitted recurring extraction verified. Review robots/publisher terms, notice listing format, individual scope/deadlines, and live extraction before activation.",
@@ -1368,7 +1370,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Village of Watkins Glen",
@@ -1376,7 +1378,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://watkinsglen.us/public-legal-noticeshearings.php",
         "activation_gate": "Official village Public-Legal Notices/Hearings page verified 2026-10-30; currently displays an April 2026 budget hearing, not a procurement listing. Review robots and publisher terms, identify stable individual bid notices and submission deadlines, and validate permitted extraction before activation. Tree-removal permits and tree-replacement programs are not paid tree-service bids.",
@@ -1396,7 +1398,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Village of Bath",
@@ -1404,7 +1406,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://villageofbathny.gov/",
         "activation_gate": "Official village site has news, meeting minutes and public notices but no verified current bid index. Locate authoritative individual solicitations, review robots/publisher terms and establish permitted scope, submission deadline, status and worksite extraction before activation. An unrelated water-main bid with June 2026 deadline is expired, not a live tree contract.",
@@ -1424,7 +1426,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "City of Hornell",
@@ -1432,7 +1434,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.cityofhornell.gov/upcoming-bid-projects",
         "activation_gate": "Official City of Hornell Upcoming Bid Projects page observed 2026-10-30 with PDF bid documents on external irp.cdn-website.com. Stage only: review robots, publisher and CDN terms; implement permitted per-document retrieval, distinguish upcoming from past bids, verify scope/deadline/status and worksite before activation. No off-host PDF is fetched by staging.",
@@ -1452,7 +1454,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "City of Geneva",
@@ -1460,7 +1462,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://cityofgenevany.gov/Bids.aspx",
         "activation_gate": "Official City of Geneva CivicPlus Bid Postings page observed 2026-10-30 with no open postings. Stage only: review robots/publisher terms and verify future individual bidID detail extraction, status, closing dates, and Elmira drive time before direct activation. A no-open message is not proof of complete procurement coverage.",
@@ -1480,7 +1482,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "City of Cortland",
@@ -1488,7 +1490,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.cortlandny.gov/Bids.aspx",
         "activation_gate": "Official CivicPlus Bids & RFPs page confirmed; currently may show no open postings. Check robots, publisher terms, and individual bidID extraction before activating.",
@@ -1508,7 +1510,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Village of Penn Yan",
@@ -1516,7 +1518,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.villageofpennyan.gov/meetings.html",
         "activation_gate": "Official village public-notices page mixes meeting announcements, bond notices and Tree Board meetings, not individual bid listings. A third-party listing of April 3, 2026 tree maintenance/power-line clearing is expired and cannot be seeded. Identify official current bid notice index, review robots/terms and implement permitted individual scope/deadline/worksite extraction before activation.",
@@ -1536,7 +1538,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Village of Montour Falls",
@@ -1544,7 +1546,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.villageofmontourfalls.gov/",
         "activation_gate": "Official village homepage has a dedicated Request for Proposals section, reporting 'None at this time' on 2026-10-30. This does not establish complete bid coverage. Verify robots and publisher terms, identify stable individual notice URLs and deadline/status fields, and build permitted listing/detail extraction before activating; do not classify historical or unrelated notices as open tree bids.",
@@ -1564,7 +1566,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Town of Southport",
@@ -1572,7 +1574,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://townofsouthportny.gov/post.php?pid=44",
         "activation_gate": "Official Town of Southport Legal Notice index verified 2026-10-30; currently displays truck financing, budget, and hearing notices, not an individual tree-service bid. Mixed legal notices are not a dedicated bid feed. Review robots/terms and verify stable current individual procurement notices, scope, deadline and worksite before activation.",
@@ -1592,7 +1594,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Town of Ashland NY",
@@ -1600,7 +1602,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://ashlandnychemung.gov/",
         "activation_gate": "Official Town of Ashland in Chemung County website confirmed via Chemung County's town directory and townofashland.net redirect to ashlandnychemung.gov. Homepage is NOT a bid index; locate official individual solicitations, verify robots/terms and stable permitted extraction before activation. Do not confuse with ashlandny.com, the different Town of Ashland in Greene County.",
@@ -1620,7 +1622,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Town of Erwin",
@@ -1628,7 +1630,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.erwinny.gov/",
         "activation_gate": "Official Town of Erwin .gov CivicPlus homepage confirmed; older erwinny.org publications show an unrelated dog-control RFP due September 26, 2025. No verified current procurement index or per-notice adapter. Review robots/publisher terms, find stable individual bid pages and verify deadlines and scope before activation.",
@@ -1648,7 +1650,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Town of Lansing",
@@ -1656,7 +1658,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.lansingtownny.gov/rfps",
         "activation_gate": "Official Town of Lansing Bids and RFPs index currently says there are no bids or RFPs available. This does not prove all purchasing channels are covered. Review robots/terms and implement permitted listing/detail extraction with status, deadline and worksite verification before activation; never infer a live bid from the empty index.",
@@ -1676,7 +1678,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Town of Dryden",
@@ -1684,7 +1686,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.dryden.ny.us/",
         "activation_gate": "Official Town of Dryden domain hosts historic 2025 RFP PDFs, including broadband outside-plant work and an unrelated feasibility study. Direct homepage fetch returned HTTP 403 in source review. No current procurement index or permitted individual notice adapter verified; record HTTP block accurately and review robots/terms before activation. Historical PDFs are not live bids.",
@@ -1704,7 +1706,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Town of Union NY",
@@ -1712,7 +1714,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.townofunion.com/government/public_notices/bid_opportunities.php",
         "activation_gate": "Official Town of Union Bid Opportunities page was reviewed October 31, 2026: its visible posting deadlines end in 2024, and a linked individual PDF returned HTTP 403 during review. Current individual-notice extraction is not established. Review robots/terms, permitted notice links, publisher status, amended submission deadlines and worksite before activation. Historical bids are not live contracts.",
@@ -1732,7 +1734,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Sayre Borough",
@@ -1740,7 +1742,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://sayreborough.org/",
         "activation_gate": "Official borough website has news, Public Works and council documents but no verified current bid index. Identify the authoritative individual-solicitation channel; review robots/terms and permitted per-notice access, deadline, tree-work scope and worksite before activation. Calendar clean-up events and council agendas are not contracts.",
@@ -1760,7 +1762,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Athens Borough",
@@ -1768,7 +1770,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://athensboroughpa.org/",
         "activation_gate": "Official borough website lists Public Works, documents and a Shade Tree meeting, not a verified procurement feed. Find a current individual bid index, confirm robots/terms and permitted extraction, distinguish shade-tree meetings from bid notices, and verify deadlines and worksites before activation.",
@@ -1788,7 +1790,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Towanda Borough",
@@ -1796,7 +1798,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://towandaborough.org/public-announcements/",
         "activation_gate": "Official borough Public Announcements page publishes individual solicitations, but mixes notices and has an expired October 27, 2026 waste-collection bid. Verify robots/terms and permitted per-notice extraction, submission deadline/amendments, tree-work scope and Elmira travel time before activation; never treat the index or expired unrelated bid as live.",
@@ -1816,7 +1818,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Mansfield Borough",
@@ -1824,7 +1826,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://mansfieldborough.org/",
         "activation_gate": "Official borough homepage and government news verified; no current individual bid listing established. Locate a procurement publication channel, check robots/terms and per-notice extraction permission, and verify tree-work scope, closing deadline and worksite before activation.",
@@ -1844,7 +1846,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Wellsboro Borough",
@@ -1852,7 +1854,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.wellsboroborough.com/blank-12",
         "activation_gate": "Official borough Bids & Bid Packets page reports No Current Open Bids (2026-10-30). Verify robots/publisher terms and permitted individual PDF/notice extraction when new bids appear; archived 2025 street-tree and mowing solicitations are expired, not live.",
@@ -1872,7 +1874,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Troy Borough",
@@ -1880,7 +1882,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://troyborough.com/officials.php",
         "activation_gate": "Official Troy Borough page carries a historical June 25, 2026 roadway paving bid/results notice with bid packets requested by phone/email. It is expired and unrelated; page is not a verified current individual-notice feed. Identify authorized current solicitations, robots/terms, stable notice extraction, submission deadlines and worksites before activation.",
@@ -1900,7 +1902,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Williamsport City",
@@ -1908,7 +1910,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://cityofwilliamsport.org/news/document-category/request-for-proposal/",
         "activation_gate": "Official City of Williamsport Request for Proposal document category verified 2026-10-30: individual RFP/IFB posts exist, but the index also contains historical responses and non-service sale notices. Before activation, verify robots and publisher terms, build permitted individual-post/attachment extraction with authoritative bid submission deadlines, scope and worksite, and separately review any external provider authorization. Do not treat a dated post as an open bid.",
@@ -1928,7 +1930,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Montrose Borough",
@@ -1936,7 +1938,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.montroseborough.com/",
         "activation_gate": "Official Montrose Borough homepage links to council agendas and minutes but has no verified current bid listing. Locate procurement notices, confirm robots/terms and permitted individual notice extraction, and check scope, deadlines and Elmira travel time before activation.",
@@ -1956,7 +1958,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Elmira City School District",
@@ -1964,7 +1966,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.elmiracityschools.com/page/business-office",
         "activation_gate": "Official Elmira City Schools homepage links to Business Office (verified 2026-10-31). This district business page is not a verified individual-contract solicitation index. Determine where the district publishes construction and tree-service bids (including any project document host or authorized cooperative), verify robots/terms and per-notice extraction, and independently confirm worksite, tree/clearing scope, submission deadline, amendments and current open status before activation. Do not infer bids from capital-project pages or contact listings.",
@@ -1984,7 +1986,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Horseheads Central School District",
@@ -1992,7 +1994,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.horseheadsdistrict.com/",
         "activation_gate": "Official Horseheads Central School District website verified 2026-10-31. A public October 7, 2026 custodial-supplies legal notice directs bidders to the Purchasing Department, but that bid closed October 13 and is unrelated to tree work. Find the district-approved current purchasing notices or authorized BOCES provider, review robots/terms, verify individual tree/clearing scope, worksite, submission deadline, amendments and open status before activation. No inference from board policy or expired newspaper notices.",
@@ -2012,7 +2014,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Corning-Painted Post Area School District",
@@ -2020,7 +2022,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.corningareaschools.com/page/business-services",
         "activation_gate": "Official district Business Services page checked 2026-10-31: vendors must request copies of current advertised bid/RFP documents from the district. No public per-notice index, authoritative deadline or permitted automated document extraction established. Request-required document access is not a working monitor; review publisher terms/robots, identify an authorized individual-notice channel, and test scope/deadline extraction before activation.",
@@ -2040,7 +2042,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Ithaca City School District",
@@ -2048,7 +2050,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.ithacacityschools.org/page/business-services",
         "activation_gate": "Official Ithaca City School District homepage links to Business Services (verified 2026-10-31). The page does not establish a public, automatable individual-bid feed. District legal notices may require direct sealed submission; locate the publisher-approved notice index or authorized procurement channel, review robots/terms, and verify each individual solicitation's location, tree/vegetation scope, submission deadline and closing time, amendments and open status. Do not treat third-party bid summaries or school budget pages as official live bids.",
@@ -2068,7 +2070,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Binghamton City School District",
@@ -2076,7 +2078,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.binghamtonschools.org/",
         "activation_gate": "Official Binghamton City School District homepage verified 2026-10-31 and corroborated by the City of Binghamton school directory. A 2026 district capital-outlay site-work notice was due April 24, 2026 and is expired; it does not prove an open tree contract. Find district-published current individual notices or authorized project planroom, verify robots/terms, worksite, tree/clearing scope, submission deadline, amendments and open status. Do not conflate the district with City of Binghamton Bids & RFPs.",
@@ -2096,7 +2098,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Watkins Glen Central School District",
@@ -2104,7 +2106,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.wgcsd.org/page/business-office",
         "activation_gate": "Official Watkins Glen Central School District Business Office page verified 2026-10-31. It identifies business operations but does not establish an automatable current bid feed. Locate district-approved legal notices or procurement channel; verify robots/terms and individual notice extraction, tree/clearing scope, local worksite, submission deadline and time, amendments and open status before activation. No bid inferred from school budget or capital-project materials.",
@@ -2124,7 +2126,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Bath Central School District",
@@ -2132,7 +2134,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.bathcsd.org/page/business-office",
         "activation_gate": "Official Bath Central School District Business Office page verified 2026-10-31. It describes district accounting and budget operations, not a live individual-bid feed. Historical capital-project planroom material may require planholder registration or paid documents. Verify publisher-approved listing access and robots/terms, then individual tree/clearing scope, worksite, submission deadline, amendments and open status before activation. Do not treat expired or planholder-only projects as open.",
@@ -2152,7 +2154,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Waverly Central School District",
@@ -2160,7 +2162,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2180,7 +2182,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "SUNY Corning Community College",
@@ -2188,7 +2190,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2208,7 +2210,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Cornell University",
@@ -2216,7 +2218,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://fcs.cornell.edu/projects-out-to-bid",
         "activation_gate": "Publisher has individual /bid-projects/ pages; verify robots/terms and permitted automated extraction, separate Cornell-funded Trimble Unity from state NYSCR notices, confirm submission deadlines rather than bid-opening times, and test relevant worksite/scope before activation.",
@@ -2236,7 +2238,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Ithaca College",
@@ -2244,7 +2246,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2264,7 +2266,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Northern Tier Career Center",
@@ -2272,7 +2274,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2292,7 +2294,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Sayre Area School District",
@@ -2300,7 +2302,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2320,7 +2322,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Athens Area School District",
@@ -2328,7 +2330,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.athensasd.k12.pa.us/PublicBidNotices.aspx",
         "activation_gate": "Official district Business Office Public Bid Notice page confirmed 2026-10-31; the public page exposes no individual solicitations in its visible content. This is not a working bid feed. Verify robots/publisher terms, discover stable individual notice links and authoritative deadlines, and test permitted extraction before activation. Do not treat an empty page as proof no bids exist.",
@@ -2348,7 +2350,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Wellsboro Area School District",
@@ -2356,7 +2358,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2376,7 +2378,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Mansfield University",
@@ -2384,7 +2386,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2404,7 +2406,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "NYSEG",
@@ -2412,7 +2414,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.nyseg.com/suppliersandpartners",
         "activation_gate": "Official NYSEG Suppliers and Partners page checked 2026-10-31. It describes energy supply partners and services, not an individual vegetation-management procurement index. NYSEG's tree-care information confirms vegetation work exists but not a live bid. Identify the authorized contractor procurement channel, review publisher terms/robots, and verify individual bid scope, deadlines and local worksite before activating.",
@@ -2432,7 +2434,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "New York State DOT Region 6",
@@ -2440,7 +2442,7 @@
         "direct_state": "robots_blocked",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://www.dot.ny.gov/doing-business/opportunities/const-highway",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2460,7 +2462,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct blocked by robots policy: robots disallows requested path; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct blocked by robots policy: robots disallows requested path; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "New York State DOT Region 9",
@@ -2468,7 +2470,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.dot.ny.gov/regional-offices/region9/projects",
         "activation_gate": "Official NYSDOT Region 9 Projects page checked 2026-10-31 links to Projects in Your Neighborhood and statewide contracting resources; regional project descriptions are not open solicitations. Locate the authoritative current NYSDOT letting/contract feed, verify permitted per-contract extraction, closing dates, tree/vegetation scope and ~2-hour Elmira worksite before activation. Do not promote historic design-build project pages.",
@@ -2488,7 +2490,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "PennDOT District 3",
@@ -2496,7 +2498,7 @@
         "direct_state": "fetched_unverified",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "https://www.ecmssyst.penndot.pa.gov/ECMS/",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2516,7 +2518,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 0 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied"
+        "diagnostic": "direct fetched; 1 listing pages; 0 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "PennDOT District 4",
@@ -2524,7 +2526,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.ecmssyst.penndot.pa.gov/ECMS/",
         "activation_gate": "Pennsylvania DGS links PennDOT highway and bridge construction opportunities to official ECMS; ECMS offers guest entry. This is a statewide portal, not a verified District 4 individual-notice feed. Before activation confirm permitted automation and robots/terms, public guest notice extraction, District 4 and northern-PA worksite filtering, individual scope, amendments, submission deadline and open status. Do not promote statewide unrelated or expired bids.",
@@ -2544,7 +2546,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Pennsylvania American Water",
@@ -2552,7 +2554,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2572,7 +2574,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Corning Natural Gas",
@@ -2580,7 +2582,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2600,7 +2602,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "New York Power Authority",
@@ -2608,7 +2610,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": true,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.nypa.gov/Procurement",
         "activation_gate": "Official NYPA Procurement page checked 2026-10-31: NYPA publishes opportunity information but uses SAP Ariba for bid events and supplier registration. A public gateway is not an authorized per-notice feed. Verify publisher robots/terms and permitted public RFQ listing extraction, then confirm individual deadline, scope, worksite and provider access before activation. Do not crawl registration-only Ariba events.",
@@ -2628,7 +2630,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "FirstEnergy Penelec",
@@ -2636,7 +2638,7 @@
         "direct_state": "staged_official_url",
         "provider_access_required": false,
         "staged_provider_access_required": true,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "https://www.firstenergycorp.com/supplychain/supplier_registration.html",
         "activation_gate": "Official FirstEnergy supplier FAQ checked 2026-10-31 explicitly says it does NOT publish upcoming bids on its external website. Supplier registration allows consideration for invitation-only RFI/RFQ/RFP; Coupa sourcing events require supplier onboarding/invitation. No public per-notice extraction is available here. Keep blocked/access-required until publisher-approved integration exists; never scrape Coupa or treat energy-supply auctions as tree contracts.",
@@ -2656,7 +2658,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Norfolk Southern",
@@ -2664,7 +2666,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2684,7 +2686,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Arnot Realty",
@@ -2692,7 +2694,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2712,7 +2714,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Elmira-Corning Regional Airport",
@@ -2720,7 +2722,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2740,7 +2742,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Arnot Health",
@@ -2748,7 +2750,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2768,7 +2770,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Guthrie Healthcare",
@@ -2776,7 +2778,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2796,7 +2798,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "UPMC Williamsport",
@@ -2804,7 +2806,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2824,7 +2826,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Corning Incorporated",
@@ -2832,7 +2834,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2852,7 +2854,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Dandy Mini Marts",
@@ -2860,7 +2862,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2880,7 +2882,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Wegmans regional properties",
@@ -2888,7 +2890,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2908,7 +2910,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Brixmor Property Group",
@@ -2916,7 +2918,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2936,7 +2938,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Kimco Realty",
@@ -2944,7 +2946,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2964,7 +2966,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "CBRE regional property management",
@@ -2972,7 +2974,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -2992,7 +2994,7 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "JLL regional property management",
@@ -3000,7 +3002,7 @@
         "direct_state": "not_configured",
         "provider_access_required": false,
         "staged_provider_access_required": false,
-        "indirect_state": "robots_blocked",
+        "indirect_state": "provider_unavailable",
         "direct_url": "",
         "staged_official_url": "",
         "activation_gate": "",
@@ -3020,117 +3022,117 @@
         "result_award_links_excluded": 0,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "indirect RSS error: RobotsDenied"
+        "diagnostic": "indirect RSS provider unavailable (Google News): robots disallows requested path"
       }
     ],
     "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Individual-detail robots blocks, HTTP refusals, redirects, rate limits and other errors are reported separately, including mixed failure types on the same source. Listing pagination failures, deferred individual bid records, and unfetched generic detail candidates mean extraction coverage may be incomplete. Generic candidates are not verified individual solicitations. External provider links require an approved adapter and are not followed. Provider-access requirements persist even when a scan has no status. Configured access-required portals and unimplemented feed/API adapters are not direct fetch targets. HTTP refusals, unsafe redirects, rate limits and unsupported content are distinguished from transient fetch errors. Staged provider access gates are reported separately from configured direct portals. Staged URLs are not monitored; all leads remain unverified."
   },
-  "updated": "2026-11-01T01:06:26+00:00",
+  "updated": "2026-11-01T02:07:29+00:00",
   "opportunities": [],
   "source_status": {
-    "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 0 conflicting duplicate bid cards; 2 relevant details checked; 0 individual bid records deferred at detail budget; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
-    "Steuben County bids": "direct fetched; 1 listing pages; 6 individual bid records; 0 conflicting duplicate bid cards; 6 relevant details checked; 0 individual bid records deferred at detail budget; 6 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
-    "Schuyler County purchasing": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied",
-    "Tompkins County purchasing": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied",
-    "Elmira City bids": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied",
-    "Elmira Next local bids": "direct fetched; 1 listing pages; 10 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 2 notices; 0 unverified tree-service candidates; indirect RSS error: RobotsDenied",
-    "Lycoming County bids": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied",
-    "PA procurement opportunities": "direct fetched; 1 listing pages; 18 details checked; 12 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 262 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "PA DGS construction bids": "direct fetched; 1 listing pages; 18 details checked; 17 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 275 PDF requests skipped at budget; 95 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Tioga Bradford Housing Authority": "direct fetched; 1 listing pages; 2 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Chemung County purchasing": "direct fetched; 1 listing pages; 18 details checked; 4 detail candidates deferred at request budget; 2 individual bid details fetched; 4 PDFs checked; 4 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 2 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "PennBid platform": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established",
-    "BidNet NY platform": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS error: RobotsDenied; individual listing ingestion not connected; provider-approved feed/access not established",
-    "Tioga County NY": "direct fetched; 1 listing pages; 8 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 38 PDF requests skipped at budget; 22 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Broome County": "indirect RSS error: RobotsDenied",
-    "Cortland County": "indirect RSS error: RobotsDenied",
-    "Yates County": "indirect RSS error: RobotsDenied",
-    "Ontario County": "indirect RSS error: RobotsDenied",
-    "Seneca County": "indirect RSS error: RobotsDenied",
-    "Allegany County": "indirect RSS error: RobotsDenied",
-    "Livingston County": "indirect RSS error: RobotsDenied",
-    "Wayne County": "indirect RSS error: RobotsDenied",
-    "Wyoming County": "indirect RSS error: RobotsDenied",
-    "Bradford County PA": "indirect RSS error: RobotsDenied",
-    "Tioga County PA": "indirect RSS error: RobotsDenied",
-    "Susquehanna County": "indirect RSS error: RobotsDenied",
-    "Sullivan County PA": "indirect RSS error: RobotsDenied",
-    "Clinton County PA": "indirect RSS error: RobotsDenied",
-    "Potter County PA": "indirect RSS error: RobotsDenied",
-    "Lackawanna County": "indirect RSS error: RobotsDenied",
-    "Wyoming County PA": "indirect RSS error: RobotsDenied",
-    "Town of Horseheads": "direct fetched; 1 listing pages; 2 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "Village of Horseheads": "indirect RSS error: RobotsDenied",
-    "Town of Big Flats": "indirect RSS error: RobotsDenied",
-    "Town of Elmira": "indirect RSS error: RobotsDenied",
-    "City of Corning": "indirect RSS error: RobotsDenied",
-    "Town of Corning": "indirect RSS error: RobotsDenied",
-    "City of Ithaca": "direct fetched; 1 listing pages; 2 individual bid records; 0 conflicting duplicate bid cards; 2 relevant details checked; 0 individual bid records deferred at detail budget; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS error: RobotsDenied",
-    "Town of Ithaca": "indirect RSS error: RobotsDenied",
-    "City of Binghamton": "indirect RSS error: RobotsDenied",
-    "Town of Vestal": "indirect RSS error: RobotsDenied",
-    "Village of Owego": "indirect RSS error: RobotsDenied",
-    "Village of Waverly": "indirect RSS error: RobotsDenied",
-    "Village of Watkins Glen": "indirect RSS error: RobotsDenied",
-    "Village of Bath": "indirect RSS error: RobotsDenied",
-    "City of Hornell": "indirect RSS error: RobotsDenied",
-    "City of Geneva": "indirect RSS error: RobotsDenied",
-    "City of Cortland": "indirect RSS error: RobotsDenied",
-    "Village of Penn Yan": "indirect RSS error: RobotsDenied",
-    "Village of Montour Falls": "indirect RSS error: RobotsDenied",
-    "Town of Southport": "indirect RSS error: RobotsDenied",
-    "Town of Ashland NY": "indirect RSS error: RobotsDenied",
-    "Town of Erwin": "indirect RSS error: RobotsDenied",
-    "Town of Lansing": "indirect RSS error: RobotsDenied",
-    "Town of Dryden": "indirect RSS error: RobotsDenied",
-    "Town of Union NY": "indirect RSS error: RobotsDenied",
-    "Sayre Borough": "indirect RSS error: RobotsDenied",
-    "Athens Borough": "indirect RSS error: RobotsDenied",
-    "Towanda Borough": "indirect RSS error: RobotsDenied",
-    "Mansfield Borough": "indirect RSS error: RobotsDenied",
-    "Wellsboro Borough": "indirect RSS error: RobotsDenied",
-    "Troy Borough": "indirect RSS error: RobotsDenied",
-    "Williamsport City": "indirect RSS error: RobotsDenied",
-    "Montrose Borough": "indirect RSS error: RobotsDenied",
-    "Elmira City School District": "indirect RSS error: RobotsDenied",
-    "Horseheads Central School District": "indirect RSS error: RobotsDenied",
-    "Corning-Painted Post Area School District": "indirect RSS error: RobotsDenied",
-    "Ithaca City School District": "indirect RSS error: RobotsDenied",
-    "Binghamton City School District": "indirect RSS error: RobotsDenied",
-    "Watkins Glen Central School District": "indirect RSS error: RobotsDenied",
-    "Bath Central School District": "indirect RSS error: RobotsDenied",
-    "Waverly Central School District": "indirect RSS error: RobotsDenied",
-    "SUNY Corning Community College": "indirect RSS error: RobotsDenied",
-    "Cornell University": "indirect RSS error: RobotsDenied",
-    "Ithaca College": "indirect RSS error: RobotsDenied",
-    "Northern Tier Career Center": "indirect RSS error: RobotsDenied",
-    "Sayre Area School District": "indirect RSS error: RobotsDenied",
-    "Athens Area School District": "indirect RSS error: RobotsDenied",
-    "Wellsboro Area School District": "indirect RSS error: RobotsDenied",
-    "Mansfield University": "indirect RSS error: RobotsDenied",
-    "NYSEG": "indirect RSS error: RobotsDenied",
-    "New York State DOT Region 6": "direct blocked by robots policy: robots disallows requested path; indirect RSS error: RobotsDenied",
-    "New York State DOT Region 9": "indirect RSS error: RobotsDenied",
-    "PennDOT District 3": "direct fetched; 1 listing pages; 0 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS error: RobotsDenied",
-    "PennDOT District 4": "indirect RSS error: RobotsDenied",
-    "Pennsylvania American Water": "indirect RSS error: RobotsDenied",
-    "Corning Natural Gas": "indirect RSS error: RobotsDenied",
-    "New York Power Authority": "indirect RSS error: RobotsDenied",
-    "FirstEnergy Penelec": "indirect RSS error: RobotsDenied",
-    "Norfolk Southern": "indirect RSS error: RobotsDenied",
-    "Arnot Realty": "indirect RSS error: RobotsDenied",
-    "Elmira-Corning Regional Airport": "indirect RSS error: RobotsDenied",
-    "Arnot Health": "indirect RSS error: RobotsDenied",
-    "Guthrie Healthcare": "indirect RSS error: RobotsDenied",
-    "UPMC Williamsport": "indirect RSS error: RobotsDenied",
-    "Corning Incorporated": "indirect RSS error: RobotsDenied",
-    "Dandy Mini Marts": "indirect RSS error: RobotsDenied",
-    "Wegmans regional properties": "indirect RSS error: RobotsDenied",
-    "Brixmor Property Group": "indirect RSS error: RobotsDenied",
-    "Kimco Realty": "indirect RSS error: RobotsDenied",
-    "CBRE regional property management": "indirect RSS error: RobotsDenied",
-    "JLL regional property management": "indirect RSS error: RobotsDenied",
+    "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 0 conflicting duplicate bid cards; 2 relevant details checked; 0 individual bid records deferred at detail budget; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Steuben County bids": "direct fetched; 1 listing pages; 6 individual bid records; 0 conflicting duplicate bid cards; 6 relevant details checked; 0 individual bid records deferred at detail budget; 6 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Schuyler County purchasing": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Tompkins County purchasing": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Elmira City bids": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Elmira Next local bids": "direct fetched; 1 listing pages; 10 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 2 notices; 0 unverified tree-service candidates; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Lycoming County bids": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "PA procurement opportunities": "direct fetched; 1 listing pages; 18 details checked; 12 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 262 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "PA DGS construction bids": "direct fetched; 1 listing pages; 18 details checked; 17 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 275 PDF requests skipped at budget; 95 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Tioga Bradford Housing Authority": "direct fetched; 1 listing pages; 2 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Chemung County purchasing": "direct fetched; 1 listing pages; 18 details checked; 4 detail candidates deferred at request budget; 2 individual bid details fetched; 4 PDFs checked; 4 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 2 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "PennBid platform": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path; individual listing ingestion not connected; provider-approved feed/access not established",
+    "BidNet NY platform": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path; individual listing ingestion not connected; provider-approved feed/access not established",
+    "Tioga County NY": "direct fetched; 1 listing pages; 8 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 38 PDF requests skipped at budget; 22 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Broome County": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Cortland County": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Yates County": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Ontario County": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Seneca County": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Allegany County": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Livingston County": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Wayne County": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Wyoming County": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Bradford County PA": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Tioga County PA": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Susquehanna County": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Sullivan County PA": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Clinton County PA": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Potter County PA": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Lackawanna County": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Wyoming County PA": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Town of Horseheads": "direct fetched; 1 listing pages; 2 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Village of Horseheads": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Town of Big Flats": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Town of Elmira": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "City of Corning": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Town of Corning": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "City of Ithaca": "direct fetched; 1 listing pages; 2 individual bid records; 0 conflicting duplicate bid cards; 2 relevant details checked; 0 individual bid records deferred at detail budget; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Town of Ithaca": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "City of Binghamton": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Town of Vestal": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Village of Owego": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Village of Waverly": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Village of Watkins Glen": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Village of Bath": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "City of Hornell": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "City of Geneva": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "City of Cortland": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Village of Penn Yan": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Village of Montour Falls": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Town of Southport": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Town of Ashland NY": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Town of Erwin": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Town of Lansing": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Town of Dryden": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Town of Union NY": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Sayre Borough": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Athens Borough": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Towanda Borough": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Mansfield Borough": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Wellsboro Borough": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Troy Borough": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Williamsport City": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Montrose Borough": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Elmira City School District": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Horseheads Central School District": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Corning-Painted Post Area School District": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Ithaca City School District": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Binghamton City School District": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Watkins Glen Central School District": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Bath Central School District": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Waverly Central School District": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "SUNY Corning Community College": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Cornell University": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Ithaca College": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Northern Tier Career Center": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Sayre Area School District": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Athens Area School District": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Wellsboro Area School District": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Mansfield University": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "NYSEG": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "New York State DOT Region 6": "direct blocked by robots policy: robots disallows requested path; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "New York State DOT Region 9": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "PennDOT District 3": "direct fetched; 1 listing pages; 0 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "PennDOT District 4": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Pennsylvania American Water": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Corning Natural Gas": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "New York Power Authority": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "FirstEnergy Penelec": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Norfolk Southern": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Arnot Realty": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Elmira-Corning Regional Airport": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Arnot Health": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Guthrie Healthcare": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "UPMC Williamsport": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Corning Incorporated": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Dandy Mini Marts": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Wegmans regional properties": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Brixmor Property Group": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Kimco Realty": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "CBRE regional property management": "indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "JLL regional property management": "indirect RSS provider unavailable (Google News): robots disallows requested path",
     "SAM.gov": "deferred"
   },
-  "coverage_note": "102 named targets; 11 direct public home pages fetched, with bounded detail/PDF checks; 0 indirect news searches succeeded. Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. 84 targets do not have verified direct integrations. SAM.gov deferred."
+  "coverage_note": "102 named targets; 11 direct public home pages fetched, with bounded detail/PDF checks; 0 indirect news searches succeeded; 102 targets could not use the shared Google News RSS provider (not publisher-specific denials). Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. 84 targets do not have verified direct integrations. SAM.gov deferred."
 }
