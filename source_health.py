@@ -5,7 +5,8 @@ crawler is authorized. A staged official URL never counts as a live adapter.
 """
 import re
 
-from source_config import direct_configured, direct_fetch_target, valid_public_https_url
+from source_config import (UNCONNECTED_PLATFORMS, direct_configured,
+                           direct_fetch_target, valid_public_https_url)
 
 
 def _number(pattern, status):
@@ -48,7 +49,8 @@ def classify(source, status):
              or bool(source.get("delegated_provider")))
     )
     provider_access_required = configured and (
-        source.get("provider_access_required") is True
+        source.get("name") in UNCONNECTED_PLATFORMS
+        or source.get("provider_access_required") is True
         or bool(source.get("delegated_provider"))
         or "individual listing ingestion not connected" in status
     )
