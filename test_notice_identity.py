@@ -104,6 +104,8 @@ class NoticeIdentityTests(unittest.TestCase):
             "/Bids.aspx?bidID=416%0dX-Injected",
             "/Bids.aspx?bidID=416%00",
             "/Bids.aspx?bidID=416%7F",
+            "/Bids.aspx%5cprivate?bidID=416",
+            "/Bids.aspx?bidID=416%5Cshadow",
             "/Bids.aspx#details%09",
         ):
             url = "https://county.example" + suffix

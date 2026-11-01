@@ -12,7 +12,7 @@ from source_config import public_dns_hostname
 
 # Percent-encoded control bytes are unsafe even when urlsplit would treat
 # them as ordinary path/query text. Match the direct-source URL guard.
-_ENCODED_CONTROL = re.compile(r"%(?:0[0-9a-f]|1[0-9a-f]|7f)", re.I)
+_ENCODED_CONTROL = re.compile(r"%(?:0[0-9a-f]|1[0-9a-f]|7f|5c)", re.I)
 
 _TRACKING_KEYS = frozenset({
     "fbclid", "gclid", "gbraid", "wbraid", "msclkid",
