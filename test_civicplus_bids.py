@@ -238,10 +238,10 @@ class CivicPlusTests(unittest.TestCase):
         self.assertEqual(rows[0]["deadline"], "")
 
 
-    def test_withdrawn_and_expired_publisher_statuses_are_not_review_candidates(self):
+    def test_withdrawn_rescinded_and_expired_statuses_are_not_review_candidates(self):
         # Synthetic Erie-style tree/stump notice: a future date does not
         # override an explicit publisher withdrawal or expiry.
-        for state in ("Withdrawn", "Expired"):
+        for state in ("Withdrawn", "Rescinded", "Expired"):
             with self.subTest(state=state):
                 self.assertEqual(civic.status_of("Status: " + state), state.lower())
                 html = card(81, "Tree and stump removal", state, "11/19/2026")
