@@ -1,8 +1,8 @@
 {
-  "updated": "2026-11-01T10:18:02.345802+00:00",
+  "updated": "2026-11-01T11:36:20.652127+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 62,
-  "safe_staged_entrypoints": 62,
+  "staged_entrypoints": 65,
+  "safe_staged_entrypoints": 65,
   "invalid_staged_entrypoints": 0,
   "probes": [
     {
@@ -96,8 +96,8 @@
     {
       "name": "Allegany County",
       "official_entrypoint": "https://www.alleganyco.gov/departments/public-works/bids-awards/",
-      "state": "listing_reachable_adapter_required",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -159,8 +159,8 @@
     {
       "name": "Bradford County PA",
       "official_entrypoint": "https://www.bradfordcountypa.gov/bids.aspx",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "listing_reachable_no_open_bids",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -417,8 +417,8 @@
     {
       "name": "Village of Bath",
       "official_entrypoint": "https://villageofbathny.gov/",
-      "state": "official_page_reachable_no_procurement_evidence",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -657,8 +657,8 @@
     {
       "name": "Williamsport City",
       "official_entrypoint": "https://cityofwilliamsport.org/news/document-category/request-for-proposal/",
-      "state": "listing_reachable_adapter_required",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -785,6 +785,19 @@
       "direct_monitoring_activated": false
     },
     {
+      "name": "Sayre Area School District",
+      "official_entrypoint": "https://www.sayresd.org/page/business/",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Sayre Area School District Business Office page checked 2026-11-01. No individual procurement notices or deadlines were verified on this page. Discover the district's actual bid-publication channel, review publisher robots/terms, then test permitted per-notice scope, worksite, submission deadline and open status before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
       "name": "Athens Area School District",
       "official_entrypoint": "https://www.athensasd.k12.pa.us/PublicBidNotices.aspx",
       "state": "listing_reachable_adapter_required",
@@ -794,6 +807,19 @@
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official district Business Office Public Bid Notice page confirmed 2026-10-31; the public page exposes no individual solicitations in its visible content. This is not a working bid feed. Verify robots/publisher terms, discover stable individual notice links and authoritative deadlines, and test permitted extraction before activation. Do not treat an empty page as proof no bids exist.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Mansfield University",
+      "official_entrypoint": "https://www.commonwealthu.edu/offices-directory/procurement-shared-services",
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Commonwealth University official procurement page checked 2026-11-01: Mansfield is served by PASSHE Procurement Shared Services; SourcePoint supplier registration is required to access opportunities. Do not fetch authenticated Ariba listings or treat this page as an individual-notice feed. Obtain approved supplier access and permitted API/export, review robots/terms, and validate Mansfield-specific worksite, scope, submission deadline and open status before activation.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     },
@@ -826,16 +852,28 @@
     {
       "name": "PennDOT District 4",
       "official_entrypoint": "https://www.ecmssyst.penndot.pa.gov/ECMS/",
-      "state": "listing_fetch_error",
-      "listing_retrieved": false,
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Pennsylvania DGS links PennDOT highway and bridge construction opportunities to official ECMS; ECMS offers guest entry. This is a statewide portal, not a verified District 4 individual-notice feed. Before activation confirm permitted automation and robots/terms, public guest notice extraction, District 4 and northern-PA worksite filtering, individual scope, amendments, submission deadline and open status. Do not promote statewide unrelated or expired bids.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false,
-      "error_type": "TimeoutError"
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Pennsylvania American Water",
+      "official_entrypoint": "https://amwater.com/paaw/about-us/Suppliers-Vendors/supplier-diversity",
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Pennsylvania American Water supplier page checked 2026-11-01: vendor registration is required to pursue procurement; its public registration link returned HTTP 404 during this check. The page names site excavation and other contracting categories but publishes no individual tree/clearing bid with a deadline. Confirm a working authorized supplier route, permitted listing export, robots/terms, local worksite, scope, deadline and open status before activation.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
     },
     {
       "name": "New York Power Authority",
