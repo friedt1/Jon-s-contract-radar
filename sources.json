@@ -605,7 +605,10 @@
     "type": "NY education",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.horseheadsdistrict.com/",
+    "official_page_role": "Official district homepage; NOT a verified bid index or individual-notice feed",
+    "activation_gate": "Official Horseheads Central School District website verified 2026-10-31. A public October 7, 2026 custodial-supplies legal notice directs bidders to the Purchasing Department, but that bid closed October 13 and is unrelated to tree work. Find the district-approved current purchasing notices or authorized BOCES provider, review robots/terms, verify individual tree/clearing scope, worksite, submission deadline, amendments and open status before activation. No inference from board policy or expired newspaper notices."
   },
   {
     "name": "Corning-Painted Post Area School District",
@@ -632,21 +635,30 @@
     "type": "NY education",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.binghamtonschools.org/",
+    "official_page_role": "Official Binghamton City School District homepage; NOT the City of Binghamton procurement site or an individual bid feed",
+    "activation_gate": "Official Binghamton City School District homepage verified 2026-10-31 and corroborated by the City of Binghamton school directory. A 2026 district capital-outlay site-work notice was due April 24, 2026 and is expired; it does not prove an open tree contract. Find district-published current individual notices or authorized project planroom, verify robots/terms, worksite, tree/clearing scope, submission deadline, amendments and open status. Do not conflate the district with City of Binghamton Bids & RFPs."
   },
   {
     "name": "Watkins Glen Central School District",
     "type": "NY education",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.wgcsd.org/page/business-office",
+    "official_page_role": "Official district Business Office & School Budget Information page; NOT an individual solicitation listing",
+    "activation_gate": "Official Watkins Glen Central School District Business Office page verified 2026-10-31. It identifies business operations but does not establish an automatable current bid feed. Locate district-approved legal notices or procurement channel; verify robots/terms and individual notice extraction, tree/clearing scope, local worksite, submission deadline and time, amendments and open status before activation. No bid inferred from school budget or capital-project materials."
   },
   {
     "name": "Bath Central School District",
     "type": "NY education",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.bathcsd.org/page/business-office",
+    "official_page_role": "Official Bath Central School District Business Office page; NOT an individual bid index",
+    "activation_gate": "Official Bath Central School District Business Office page verified 2026-10-31. It describes district accounting and budget operations, not a live individual-bid feed. Historical capital-project planroom material may require planholder registration or paid documents. Verify publisher-approved listing access and robots/terms, then individual tree/clearing scope, worksite, submission deadline, amendments and open status before activation. Do not treat expired or planholder-only projects as open."
   },
   {
     "name": "Waverly Central School District",
