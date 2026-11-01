@@ -57,6 +57,40 @@ class PdfRowYearPriorityTests(unittest.TestCase):
         self.assertIn("5 PDF-shaped requests attempted", status)
         self.assertIn("4 PDF requests skipped at budget", status)
 
+    def test_nested_index_current_pdf_precedes_old_packets_under_cap(self):
+        index = "https://county.example/procurement"
+        old_rows = [
+            '<tr><td>Tree removal bid packet 2024</td>'
+            f'<td><a href="/media/old-{i}.pdf">Download PDF</a></td></tr>'
+            for i in range(8)
+        ]
+        current_row = (
+            '<tr><td>Tree removal bid packet 2026</td>'
+            '<td><a href="/media/current.pdf">Download PDF</a></td></tr>'
+        )
+        nested = "<table>" + "".join(old_rows) + current_row + "</table>"
+        attempted = []
+
+        def fake_fetch(url, binary=False):
+            if url == BASE:
+                body = '<a href="/procurement">Current bids</a>'
+                return body, "text/html", url
+            if url == index:
+                body = nested
+                return (body.encode() if binary else body), "text/html", url
+            attempted.append(url)
+            raise TimeoutError("synthetic PDF request failed")
+
+        with (patch.object(scan, "NOW", NOW),
+              patch.object(scan, "fetch", side_effect=fake_fetch)):
+            leads, status = scan.scan_direct(SOURCE)
+
+        self.assertEqual(leads, [])
+        self.assertEqual(attempted[0], "https://county.example/media/current.pdf")
+        self.assertEqual(len(attempted), scan.MAX_PDF)
+        self.assertIn("5 PDF-shaped requests attempted", status)
+        self.assertIn("4 PDF requests skipped at budget", status)
+
     def test_erie_and_owego_are_not_promoted(self):
         self.assertFalse(scan.eligible(
             "Erie tree and stump removal bid due October 28, 2026",

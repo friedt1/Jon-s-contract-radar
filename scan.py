@@ -913,6 +913,12 @@ def scan_direct(src):
       priority = 8 if is_individual_notice_link(target) else 0
       priority += 5 if category(row) else 0
       priority += listing_deadline_priority(row, NOW)
+      # A nested purchasing index may expose years of archived PDF packets.
+      # Apply the same row-isolated recency hint as the initial listing so
+      # current-year packets get the bounded PDF slots first. This is only
+      # retrieval priority, never evidence that a notice is open.
+      priority += pdf_listing_recency(
+       label, target, NOW.astimezone(ZoneInfo('America/New_York')).year, row)
       if name in BROAD_SOURCES and local_evidence(label+' '+row):
        priority += BROAD_LOCAL_BOOST
       nested_candidates.append((priority,target,label,row))
