@@ -665,7 +665,11 @@
     "type": "NY education",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.waverlyschools.com/",
+    "official_page_role": "publisher_entrypoint_only",
+    "activation_gate": "Official Waverly Central Schools homepage verified 2026-11-01. Homepage is not a public bid listing or individual notice feed. Identify a district-controlled procurement/RFP index or authorized invitation process, verify robots/terms, and validate each tree/clearing scope, deadline, amendments and worksite before activating.",
+    "official_url_checked_at": "2026-11-01T12:39:54+00:00"
   },
   {
     "name": "SUNY Corning Community College",
@@ -689,14 +693,23 @@
     "type": "NY education",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.ithaca.edu/procurement/information-suppliers",
+    "official_page_role": "supplier_information_only",
+    "provider_access_required": true,
+    "activation_gate": "Official Ithaca College supplier information says proposals, bids and quotations are confidential and are not made public. This is NOT a public bid feed. Only use a supplier invitation or explicitly authorized procurement access; do not scrape confidential notices or claim any open contract. Verify terms, worksite, scope and deadline before activation.",
+    "official_url_checked_at": "2026-11-01T12:39:54+00:00"
   },
   {
     "name": "Northern Tier Career Center",
     "type": "PA education",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.ntccschool.org/",
+    "official_page_role": "publisher_entrypoint_only",
+    "activation_gate": "Official Northern Tier Career Center homepage verified 2026-11-01. No authoritative public procurement listing or individual RFP notice feed verified. Locate approved bid index or procurement contact, review publisher/robots rules and verify per-notice worksite, scope, status and deadline before direct monitoring.",
+    "official_url_checked_at": "2026-11-01T12:39:54+00:00"
   },
   {
     "name": "Sayre Area School District",
@@ -723,7 +736,11 @@
     "type": "PA education",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.wellsborosd.org/page/business-office",
+    "official_page_role": "procurement_contact_only",
+    "activation_gate": "Official Wellsboro Area School District Business Office page lists purchasing contacts but is not a live bid index. A separate official 2025 technology-infrastructure RFP article demonstrates individual notices, but that unrelated April 14, 2025 deadline is expired. Identify current official listing, verify robots/terms and complete individual notice extraction before activation.",
+    "official_url_checked_at": "2026-11-01T12:39:54+00:00"
   },
   {
     "name": "Mansfield University",
