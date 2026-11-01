@@ -68,8 +68,8 @@ def _clock(value):
         return ""
 
 
-STATUS = re.compile(r"\bStatus\s*:\s*(?:Closes\s*:\s*)?(Open|Closed|Awarded|Cancelled|Canceled|Withdrawn|Expired|Reopened)\b", re.I)
-CLOSED = frozenset({"closed", "awarded", "cancelled", "canceled", "withdrawn", "expired"})
+STATUS = re.compile(r"\bStatus\s*:\s*(?:Closes\s*:\s*)?(Open|Closed|Awarded|Cancelled|Canceled|Withdrawn|Rescinded|Expired|Reopened)\b", re.I)
+CLOSED = frozenset({"closed", "awarded", "cancelled", "canceled", "withdrawn", "rescinded", "expired"})
 # A closed question period does not close submission of bids.
 QUESTION_ONLY = re.compile(
     r"[\s:;,()\-–—/]+(?:(?:for|to)\s+)?"
@@ -124,11 +124,11 @@ def status_of(text):
 
 def closing_of(text):
     """A listing deadline must be adjacent to its 'Closes' field, not a posted date."""
-    match = re.search(r"\bCloses\s*:\s*(?:Open|Closed|Awarded|Cancelled|Canceled|Withdrawn|Expired|Reopened)?\s*"
+    match = re.search(r"\bCloses\s*:\s*(?:Open|Closed|Awarded|Cancelled|Canceled|Withdrawn|Rescinded|Expired|Reopened)?\s*"
                       + DATE.pattern, text, re.I)
     if not match:
         match = re.search(r"\bStatus\s*:\s*(?:Closes\s*:\s*)?"
-                          r"(?:Open|Closed|Awarded|Cancelled|Canceled|Withdrawn|Expired|Reopened)\s+"
+                          r"(?:Open|Closed|Awarded|Cancelled|Canceled|Withdrawn|Rescinded|Expired|Reopened)\s+"
                           + DATE.pattern, text, re.I)
     if not match:
         return "", ""

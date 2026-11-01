@@ -6,7 +6,7 @@ A question-period closure is not a solicitation closure.
 import re
 
 _CLOSED = re.compile(
-    r"^(?:closed|awarded|cancelled|canceled|withdrawn|expired)"
+    r"^(?:closed|awarded|cancelled|canceled|withdrawn|rescinded|expired)"
     r"(?:$|[\s:;,()\-–—/])", re.I
 )
 # Only strip an explicit status-field label, not arbitrary scope prose.
