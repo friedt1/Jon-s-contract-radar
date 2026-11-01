@@ -159,6 +159,9 @@ def build(notices, today=None, now=None):
     # supersedes a different publisher cutoff.
     dates_by_url = {}
     clocks_by_url = {}
+    # Explicit non-Eastern clocks cannot corroborate an NY/PA local cutoff.
+    # Retain that contradictory evidence across canonical-URL duplicates.
+    incompatible_clocks_by_url = set()
     # A same-day elapsed clock can be lost when classify() rejects that copy.
     # Retain its evidence so a duplicate without a clock cannot appear
     # uncontested or implicitly reopen an already elapsed submission cutoff.
@@ -198,6 +201,9 @@ def build(notices, today=None, now=None):
                 clock = _normalized_eastern_clock(notice)
                 if clock:
                     clocks_by_url.setdefault((candidate_url, candidate_date), set()).add(clock)
+                elif (not eastern_deadline_timezone(notice.get("deadline_timezone"))
+                      and civicplus_bids._clock(str(notice.get("deadline_time") or ""))):
+                    incompatible_clocks_by_url.add((candidate_url, candidate_date))
                 # A known elapsed cutoff must survive even if classify()
                 # drops this copy and a later duplicate remains.
                 if (candidate_date == today.isoformat() and clock
@@ -239,10 +245,14 @@ def build(notices, today=None, now=None):
         elif len(dates) == 1:
             due = next(iter(dates))
             clocks = clocks_by_url.get((key, due), set())
-            if len(clocks) > 1:
-                # Preserve the existing same-day clock-conflict behavior:
-                # the date itself agrees, only the time is disputed.
-                item["deadline_conflict"] = sorted(clocks)
+            if len(clocks) > 1 or (clocks and (key, due) in incompatible_clocks_by_url):
+                # A duplicate with an explicit non-Eastern clock cannot
+                # corroborate an Eastern bid cutoff. Neither version is
+                # independently authoritative; withhold the selected time.
+                conflict = set(clocks)
+                if (key, due) in incompatible_clocks_by_url:
+                    conflict.add("explicit non-Eastern timezone")
+                item["deadline_conflict"] = sorted(conflict)
                 item["deadline_time"] = ""
                 item["deadline_timezone"] = ""
                 item["deadline_status"] = "conflicting_unverified"
