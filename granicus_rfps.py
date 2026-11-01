@@ -17,7 +17,7 @@ def individual_url(href, origin):
     """Require a same-host, stable individual RFP ID; reject external links."""
     if not isinstance(href, str) or not href or any(
         ord(ch) < 33 or ord(ch) == 127 or ch == "\\" for ch in href
-    ) or re.search(r"%(?:0[0-9a-f]|1[0-9a-f]|7f)", href, re.I):
+    ) or re.search(r"%(?:0[0-9a-f]|1[0-9a-f]|7f|5c)", href, re.I):
         return ""
     try:
         url = urljoin(origin, href)

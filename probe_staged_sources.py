@@ -80,7 +80,7 @@ def _safe_link(base, href):
         # Reject encoded controls and private/resolver-alias hosts as well as
         # credentials and unsafe ports. Preserve harmless #page fragments in
         # diagnostics, but validate the actual destination without a fragment.
-        if re.search(r"%(?:0[0-9a-f]|1[0-9a-f]|7f)", resolved, re.I):
+        if re.search(r"%(?:0[0-9a-f]|1[0-9a-f]|7f|5c)", resolved, re.I):
             return None
         if not valid_public_https_url(parsed._replace(fragment="").geturl()):
             return None
