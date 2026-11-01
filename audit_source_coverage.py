@@ -7,6 +7,8 @@ import argparse
 import json
 from pathlib import Path
 
+from notice_identity import canonical_url
+
 from scan import UNCONNECTED_PLATFORMS
 from source_config import (DIRECT_MODES, direct_configured, direct_fetch_target,
                            valid_public_https_url)
@@ -45,7 +47,30 @@ def audit(sources):
                        "invalid direct configuration; verified HTTPS URL required" if invalid_direct else
                        "not directly monitored; official source discovery required"),
         })
+    # A single official procurement gateway may represent multiple named
+    # agencies. Report those overlaps without treating a shared landing page
+    # as independent individual-bid ingestion for every named target.
+    by_entrypoint = {}
+    for row in results:
+        candidate = (row["target_url"] if row["direct_configured"] else
+                     row["candidate_official_url"] if row["official_url_staged"] else None)
+        if candidate:
+            normalized = canonical_url(candidate)
+            if normalized:
+                by_entrypoint.setdefault(normalized, []).append(row["source"])
+    shared = {url: sorted(names) for url, names in sorted(by_entrypoint.items())
+              if len(names) > 1}
+    for row in results:
+        candidate = (row["target_url"] if row["direct_configured"] else
+                     row["candidate_official_url"] if row["official_url_staged"] else None)
+        row["shared_official_entrypoint"] = bool(
+            candidate and canonical_url(candidate) in shared)
+
     return {
+        "distinct_official_entrypoints": len(by_entrypoint),
+        "shared_official_entrypoint_groups": shared,
+        "shared_official_entrypoint_targets": sum(
+            row["shared_official_entrypoint"] for row in results),
         "total": len(results),
         "direct_configured": sum(x["direct_configured"] for x in results),
         "direct_fetch_targets": sum(x["direct_fetch_target"] for x in results),
@@ -62,7 +87,8 @@ def audit(sources):
                     "without approved individual-listing ingestion are access-required, not fetch targets. "
                     "Even other fetch targets do not prove permitted or successful bid extraction. "
                     "Malformed, insecure, or unverified URLs do not count as direct "
-                    "configuration; staged URLs are not active monitoring.")
+                    "configuration; staged URLs are not active monitoring. Shared official "
+                    "entrypoints do not represent independent operational bid feeds.")
     }
 
 
