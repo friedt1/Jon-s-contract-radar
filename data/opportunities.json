@@ -141,7 +141,7 @@
       "indirect_robots_blocked": 0,
       "indirect_provider_unavailable_targets": 102,
       "individual_bid_records_found": 10,
-      "detail_fetches_attempted": 86,
+      "detail_fetches_attempted": 76,
       "detail_budget_deferred": 0,
       "detail_budget_incomplete_sources": 0,
       "detail_candidates_deferred": 33,
@@ -164,7 +164,7 @@
       "pdf_fetch_attempts": 19,
       "pdf_budget_skips": 577,
       "result_award_links_excluded": 117,
-      "external_provider_links_skipped": 3,
+      "external_provider_links_skipped": 2,
       "unverified_candidates": 0
     },
     "sources": [
@@ -319,7 +319,7 @@
         "staged_official_url": "",
         "activation_gate": "",
         "individual_bid_records_found": 0,
-        "detail_fetches_attempted": 10,
+        "detail_fetches_attempted": 0,
         "detail_budget_deferred": 0,
         "detail_candidates_deferred": 0,
         "individual_bid_details_fetched": 0,
@@ -327,14 +327,14 @@
         "pagination_errors": 0,
         "pagination_access_state": "no_reported_errors",
         "pagination_error_types": [],
-        "detail_access_state": "attempted_unverified",
+        "detail_access_state": "not_attempted",
         "detail_error_types": [],
         "pdf_fetch_attempts": 0,
         "pdf_budget_skips": 0,
         "result_award_links_excluded": 0,
-        "external_provider_links_skipped": 1,
+        "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 10 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 2 notices; 0 unverified tree-service candidates; indirect RSS provider unavailable (Google News): robots disallows requested path"
+        "diagnostic": "direct fetched; 1 listing pages; 0 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS error: ParseError HTTP 7; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Lycoming County bids",
@@ -3027,7 +3027,7 @@
     ],
     "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Individual-detail robots blocks, HTTP refusals, redirects, rate limits and other errors are reported separately, including mixed failure types on the same source. Listing pagination failures, deferred individual bid records, and unfetched generic detail candidates mean extraction coverage may be incomplete. Generic candidates are not verified individual solicitations. External provider links require an approved adapter and are not followed. Provider-access requirements persist even when a scan has no status. Configured access-required portals and unimplemented feed/API adapters are not direct fetch targets. HTTP refusals, unsafe redirects, rate limits and unsupported content are distinguished from transient fetch errors. Staged provider access gates are reported separately from configured direct portals. Staged URLs are not monitored; all leads remain unverified."
   },
-  "updated": "2026-11-01T13:40:18+00:00",
+  "updated": "2026-11-01T14:22:26+00:00",
   "opportunities": [],
   "source_status": {
     "Chemung County bids": "direct fetched; 1 listing pages; 2 individual bid records; 0 conflicting duplicate bid cards; 2 relevant details checked; 0 individual bid records deferred at detail budget; 2 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS provider unavailable (Google News): robots disallows requested path",
@@ -3035,7 +3035,7 @@
     "Schuyler County purchasing": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path",
     "Tompkins County purchasing": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path",
     "Elmira City bids": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path",
-    "Elmira Next local bids": "direct fetched; 1 listing pages; 10 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 1 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS fetched; 2 notices; 0 unverified tree-service candidates; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Elmira Next local bids": "direct fetched; 1 listing pages; 0 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 0 PDFs checked; 0 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; local bid RSS error: ParseError HTTP 7; indirect RSS provider unavailable (Google News): robots disallows requested path",
     "Lycoming County bids": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path",
     "PA procurement opportunities": "direct fetched; 1 listing pages; 18 details checked; 12 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 263 PDF requests skipped at budget; 0 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path",
     "PA DGS construction bids": "direct fetched; 1 listing pages; 18 details checked; 17 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 276 PDF requests skipped at budget; 95 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; indirect RSS provider unavailable (Google News): robots disallows requested path",
