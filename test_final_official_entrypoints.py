@@ -46,9 +46,9 @@ class FinalOfficialEntryPointTests(unittest.TestCase):
                 self.assertIn("NOT", source["official_page_role"])
                 self.assertTrue(source["activation_gate"])
                 self.assertFalse(direct_fetch_target(source))
-                with patch.object(scan, "scan_direct", side_effect=AssertionError(
-                        "Staged policy or supplier page cannot be crawled as bid feed")) as direct, \\
-                     patch.object(scan, "scan_news", return_value=[]):
+                with (patch.object(scan, "scan_direct", side_effect=AssertionError(
+                        "Staged policy or supplier page cannot be crawled as bid feed")) as direct,
+                      patch.object(scan, "scan_news", return_value=[])):
                     _, _, leads = scan.run(source)
                 direct.assert_not_called()
                 self.assertEqual(leads, [])
