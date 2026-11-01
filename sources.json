@@ -676,7 +676,11 @@
     "type": "NY education",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.corning-cc.edu/rbot/index.php",
+    "official_page_role": "Official SUNY Corning Community College trustee policies entrypoint; NOT a current individual solicitation index",
+    "activation_gate": "The official April 2026 College procurement policy describes sealed bids advertised in newspapers and processed through the Finance Office; the trustee policies page is NOT a live bid listing. Identify an official permitted individual-solicitation feed or authorized purchasing contact, verify robots/terms and each notice scope, submission cutoff, publisher status and local worksite before activation.",
+    "official_url_checked_at": "2026-11-01T21:36:00+00:00"
   },
   {
     "name": "Cornell University",
@@ -969,7 +973,12 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.wegmans.com/service/for-our-suppliers",
+    "official_page_role": "Official Wegmans supplier onboarding and contract-terms gateway; NOT a public regional tree/grounds-maintenance RFP listing",
+    "provider_access_required": true,
+    "activation_gate": "The official supplier page concerns onboarding, product suppliers and construction/non-construction terms, not anonymous individual facilities/tree-service solicitations. Require Wegmans facilities/procurement invitation or a separately permitted public per-notice listing, then verify Elmira-area worksite, scope, deadline and status before activation.",
+    "official_url_checked_at": "2026-11-01T21:36:00+00:00"
   },
   {
     "name": "Brixmor Property Group",
