@@ -56,8 +56,14 @@ def validate(root=scan.ROOT):
     sources = json.loads((root / 'sources.json').read_text())
     data = json.loads((root / 'data/opportunities.json').read_text())
     history = json.loads((root / 'data/history.json').read_text())
-    expected = {s['name'] for s in sources} | {'SAM.gov'}
-    if len(sources) != 102 or set(data['source_status']) != expected:
+    # A 102-row file can still represent only 101 agencies if a name is
+    # duplicated. A set-based feed comparison alone cannot detect this when
+    # both the scanner and the health report inherit the same duplicate.
+    names = [s['name'] for s in sources]
+    if len(names) != 102 or len(set(names)) != len(names):
+        raise ValueError('Source inventory must contain 102 distinct named targets')
+    expected = set(names) | {'SAM.gov'}
+    if set(data['source_status']) != expected:
         raise ValueError('Feed must report all 102 targets and deferred SAM.gov')
     if data['source_status']['SAM.gov'] != 'deferred':
         raise ValueError('SAM.gov must remain deferred')
@@ -132,6 +138,23 @@ def validate(root=scan.ROOT):
                           'detail_access_state', 'pagination_access_state'):
                 if row.get(field) != reference[field]:
                     raise ValueError('Source health diagnostic disagrees with scanner: '
+                                     + row['name'] + ' / ' + field)
+            # Extraction counts in a health row must agree with the raw
+            # scanner evidence, including on staged, blocked and provider-
+            # access-required sources. Otherwise a forged row can claim
+            # individual-bid retrieval simply by increasing both attempted
+            # and fetched counters (and the matching aggregate total).
+            # Keep older feeds readable when a newer metric is absent.
+            for field in ('individual_bid_records_found',
+                          'detail_fetches_attempted', 'detail_budget_deferred',
+                          'detail_candidates_deferred',
+                          'individual_bid_details_fetched',
+                          'pdf_fetch_attempts', 'pdf_budget_skips',
+                          'result_award_links_excluded',
+                          'external_provider_links_skipped',
+                          'unverified_candidates'):
+                if field in row and row[field] != reference[field]:
+                    raise ValueError('Source health extraction disagrees with scanner: '
                                      + row['name'] + ' / ' + field)
             # PR #179 introduced non-exclusive failure reasons. Accept older
             # published feeds without these arrays, but never trust a supplied
