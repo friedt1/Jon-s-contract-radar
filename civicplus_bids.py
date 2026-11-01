@@ -7,7 +7,7 @@ deadline, bid documents and travel time have been independently checked.
 """
 import datetime as dt
 import re
-from urllib.parse import parse_qs, urljoin, urlparse
+from urllib.parse import parse_qsl, urljoin, urlparse
 from zoneinfo import ZoneInfo
 
 import public_bid_pagination as public_pages
@@ -92,9 +92,14 @@ def individual_url(href, origin):
                 or parsed.username is not None or parsed.password is not None
                 or parsed.port not in (None, 443)):
             return ""
-        query = parse_qs(parsed.query)
-        if not any(k.lower() == "bidid" and values and values[0].isdigit()
-                   for k, values in query.items()):
+        # CivicPlus notices have one ASCII-numeric bidID. Duplicate keys
+        # (including case variants or blank/invalid extras) are ambiguous:
+        # different servers may choose the first or last value. Never fetch
+        # or identify such a link as a specific solicitation.
+        bid_ids = [value for key, value in
+                   parse_qsl(parsed.query, keep_blank_values=True)
+                   if key.casefold() == "bidid"]
+        if len(bid_ids) != 1 or not re.fullmatch(r"[0-9]+", bid_ids[0]):
             return ""
         if not parsed.path.lower().endswith("/bids.aspx"):
             return ""
