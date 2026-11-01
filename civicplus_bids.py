@@ -166,11 +166,11 @@ def detail_title(text):
     deadlines, and unrelated page chrome cannot become scope evidence.
     """
     match = re.search(
-        r"\\bBid\\s+Title\\s*:\\s*(.+?)(?=\\b(?:Bid\\s+(?:Number|No\\.?)|"
-        r"Description|Status|Closing\\s+Date(?:/Time)?|"
-        r"Publication\\s+Date(?:/Time)?|Project Location|"
+        r"\bBid\s+Title\s*:\s*(.+?)(?=\b(?:Bid\s+(?:Number|No\.?)|"
+        r"Description|Status|Closing\s+Date(?:/Time)?|"
+        r"Publication\s+Date(?:/Time)?|Project Location|"
         r"Work Location|Worksite|Site Location|Related Documents|"
-        r"Contact Us)\\s*:|$)",
+        r"Contact Us)\s*:|$)",
         text, re.I | re.S,
     )
     return " ".join(match.group(1).split())[:220] if match else ""
