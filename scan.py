@@ -411,7 +411,7 @@ def safe_detail_url(origin, href):
  """
  if not isinstance(href, str) or not href or any(ord(c) < 33 or ord(c) == 127 or c == '\\' for c in href):
   return ''
- if re.search(r'%(?:0[0-9a-f]|1[0-9a-f]|7f)', href, re.I):
+ if re.search(r'%(?:0[0-9a-f]|1[0-9a-f]|7f|5c)', href, re.I):
   return ''
  try:
   url = up.urljoin(origin, href)

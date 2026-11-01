@@ -82,7 +82,7 @@ def individual_url(href, origin):
     """Only well-formed same-host HTTPS CivicPlus bid notices are fetchable."""
     if not isinstance(href, str) or not href or any(
         ord(c) < 33 or ord(c) == 127 or c == "\\" for c in href
-    ) or re.search(r"%(?:0[0-9a-f]|1[0-9a-f]|7f)", href, re.I):
+    ) or re.search(r"%(?:0[0-9a-f]|1[0-9a-f]|7f|5c)", href, re.I):
         return ""
     try:
         url = urljoin(origin, href)

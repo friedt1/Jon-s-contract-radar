@@ -19,7 +19,7 @@ UNCONNECTED_PLATFORMS = frozenset({
 # official_feed or authorized_api URL is configuration, not a working adapter.
 IMPLEMENTED_DIRECT_MODES = frozenset({"direct_page"})
 _HOST_LABEL = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$", re.I)
-_ENCODED_CONTROL = re.compile(r"%(?:0[0-9a-f]|1[0-9a-f]|7f)", re.I)
+_ENCODED_CONTROL = re.compile(r"%(?:0[0-9a-f]|1[0-9a-f]|7f|5c)", re.I)
 # Some resolvers accept non-decimal IPv4 labels such as 0x7f.0.0.1.
 # They are not procurement DNS hostnames, even if ipaddress rejects them.
 _IPV4_COMPONENT = re.compile(r"(?:0x[0-9a-f]+|0[0-7]+|[0-9]+)$", re.I)
