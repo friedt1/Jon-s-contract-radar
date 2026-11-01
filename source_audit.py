@@ -22,6 +22,10 @@ def audit(sources):
     platforms = [s["name"] for s in configured if s.get("type") == "platform"]
     return {
         "total_targets": coverage["total"],
+        "unique_named_targets": coverage["unique_named_targets"],
+        "duplicate_source_names": coverage["duplicate_source_names"],
+        "duplicate_source_rows": coverage["duplicate_source_rows"],
+        "inventory_integrity_ok": coverage["inventory_integrity_ok"],
         "direct_page_targets": len(direct_pages),
         "direct_configured": coverage["direct_configured"],
         "direct_fetch_targets": coverage["direct_fetch_targets"],
@@ -46,7 +50,8 @@ def audit(sources):
             "configurations are not fetch targets. Even a successful listing "
             "fetch does not prove permitted individual-bid extraction or an open contract. "
             "Staged supplier-registration gateways remain access-required, not live feeds. "
-            "Shared publisher gateways are not independent feeds."
+            "Shared publisher gateways are not independent feeds. "
+            "Duplicate source names are not additional named targets."
         ),
     }
 
