@@ -58,7 +58,7 @@ class CivicPlusAmbiguousBidIdTests(unittest.TestCase):
                 body = (
                     "<p>Bid Number: 42</p><p>Bid Title: Tree removal</p>"
                     "<p>Status: Open</p>"
-                    "<p>Description: Remove hazardous roadside trees.</p>"
+                    "<p>Description: Tree removal of hazardous roadside trees.</p>"
                     "<p>Closing Date/Time: 11/20/2026 2:00 PM</p>"
                 )
             else:
