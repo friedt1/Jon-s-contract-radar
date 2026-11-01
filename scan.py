@@ -420,6 +420,14 @@ def safe_detail_url(origin, href):
    return ''
   if parsed.port not in (None, 80, 443):
    return ''
+  # Do not let a malformed CivicPlus bidID link fall through the generic
+  # detail scanner when no valid CivicPlus cards were found. Different
+  # servers may resolve duplicate bidID values to different notices.
+  if parsed.path.lower().endswith('/bids.aspx'):
+   ids = [value for key, value in up.parse_qsl(
+    parsed.query, keep_blank_values=True) if key.casefold() == 'bidid']
+   if ids and (len(ids) != 1 or not re.fullmatch(r'[0-9]+', ids[0])):
+    return ''
   return url if allowed_link(url, origin) else ''
  except ValueError:
   return ''
