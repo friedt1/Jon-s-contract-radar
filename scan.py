@@ -561,6 +561,7 @@ def scan_civicplus(src, listing_pages, page_errors):
   detail_time = ''
   detail_has_closing_field = False
   detail_scope = ''
+  detail_title = ''
   detail_worksite = ''
   try:
    blob, kind, final = fetch(row['url'], binary=True)
@@ -609,6 +610,7 @@ def scan_civicplus(src, listing_pages, page_errors):
     r'\bClosing\s+Date(?:/Time|\s+and\s+Time)?\s*:', body, re.I))
    detail_due, detail_time = civicplus_bids.detail_closing_of(body)
    detail_scope = civicplus_bids.detail_description(body)
+   detail_title = civicplus_bids.detail_title(body)
    detail_worksite = civicplus_bids.detail_worksite(body)
   except Exception as e:
    errors.append(error_label(e))
@@ -633,21 +635,27 @@ def scan_civicplus(src, listing_pages, page_errors):
   # Conflicting cards must not supply the solicitation scope. Require
   # description evidence from the fetched individual bidID notice itself.
   scope = detail_scope if ambiguous else (detail_scope or row['description'])
-  if not category(scope if ambiguous or detail_scope else row['title'] + ' ' + scope):
+  # A fetched notice may state its tree-work scope only in Bid Title. When
+  # Description is absent, use that *individual* title as the evidence,
+  # never a potentially stale or contradictory listing-card title.
+  if not detail_scope and detail_title:
+   scope = detail_title
+  if not category(scope if ambiguous or detail_scope or detail_title else row['title'] + ' ' + scope):
    continue
   evidence = row['title'] + ' bid ' + scope + (' Due date: ' + due if due else '')
   summary = ('Bid No. ' + row['bid_number'] + '. ' if row['bid_number']
              else 'Bid notice. ' if ambiguous else '') + scope
   if due:
    summary += ' Due date: ' + due
-  lead_title = (detail_scope[:130] if ambiguous and not category(row['title'])
+  lead_title = (detail_title[:130] if not detail_scope and detail_title
+                else detail_scope[:130] if ambiguous and not category(row['title'])
                 else row['title'])
   add_lead(found, name, lead_title, row['url'], summary, 'individual county bid candidate', evidence=evidence)
   uid = notice_identity.notice_id(row['url'])
   if uid in found:
    found[uid].update({
     'agency': name.replace(' bids', '') + ' (issuing authority)',
-    'scope': detail_scope or row['title'],
+    'scope': detail_scope or detail_title or row['title'],
     'bid_number': row['bid_number'],
     'location': detail_worksite or 'Worksite unverified; county issuing authority is not a worksite',
     'location_verified': False,
