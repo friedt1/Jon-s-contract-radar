@@ -31,7 +31,7 @@ class AirportSharedProcurementTests(unittest.TestCase):
         rows = {row["source"]: row for row in coverage["sources"]}
         self.assertEqual(coverage["total"], 102)
         self.assertEqual(coverage["direct_configured"], 18)
-        self.assertEqual(coverage["official_urls_staged"], 66)
+        self.assertEqual(coverage["official_urls_staged"], 70)
         self.assertEqual(coverage["not_directly_monitored"], 84)
         self.assertTrue(rows[airport["name"]]["shared_official_entrypoint"])
         self.assertTrue(rows[county["name"]]["shared_official_entrypoint"])
