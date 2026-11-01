@@ -154,10 +154,10 @@ class RegressionTests(unittest.TestCase):
             root=Path(tmp);(root/'data').mkdir()
             history=root/'data/history.json'
             history.write_text(json.dumps({'opportunities':{'old':{'id':'old','first_seen':'2026-01-01','last_seen':'2026-01-01'}}}))
-            def fake_run(src):
+            def fake_run(src, news_access=None):
                 out={};scanner.add_lead(out,src['name'],'Tree removal bid','https://example.org/bid')
                 return src['name'],'indirect RSS ok; 1 candidates',list(out.values())
-            with patch.object(scanner,'ROOT',root),patch.object(scanner,'OUT',root/'data/opportunities.json'),patch.object(scanner,'run',side_effect=fake_run):
+            with patch.object(scanner,'ROOT',root),patch.object(scanner,'OUT',root/'data/opportunities.json'),patch.object(scanner,'run',side_effect=fake_run),patch.object(scanner.robots_policy,'allowed',return_value=(True,'synthetic policy')):
                 scanner.main();scanner.main()
             import validate_output
             (root/'sources.json').write_text(scanner.SOURCES.read_text())
@@ -176,7 +176,7 @@ class RegressionTests(unittest.TestCase):
         import tempfile
         with tempfile.TemporaryDirectory() as tmp:
             out=Path(tmp)/'opportunities.json';out.write_text('existing')
-            with patch.object(scanner,'OUT',out),patch.object(scanner,'run',side_effect=lambda s:(s['name'],'indirect RSS error: URLError',[])):
+            with patch.object(scanner,'OUT',out),patch.object(scanner,'run',side_effect=lambda s, news_access=None:(s['name'],'indirect RSS error: URLError',[])),patch.object(scanner.robots_policy,'allowed',return_value=(True,'synthetic policy')):
                 with self.assertRaisesRegex(RuntimeError,'All sources failed'):scanner.main()
             self.assertEqual(out.read_text(),'existing')
 
