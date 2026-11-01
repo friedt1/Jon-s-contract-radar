@@ -86,7 +86,7 @@ class NoticeAccessDiagnosticsTests(unittest.TestCase):
         )["counts"]
         self.assertEqual(counts["configured_direct"], 0)
         self.assertEqual(counts["staged_official_url"], 1)
-        self.assertEqual(counts["detail_http_blocked_sources"], 1)
+        # Staged sources have no authorized direct-detail adapter; an old\n        # status string cannot be treated as a new direct HTTP refusal.\n        self.assertEqual(counts["detail_http_blocked_sources"], 0)\n        self.assertEqual(counts["detail_errors"], 0)
 
 
 if __name__ == "__main__":
