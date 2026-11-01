@@ -18,7 +18,7 @@ class ProviderStatusTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "data").mkdir()
-            with patch.object(scan, "ROOT", root), patch.object(scan, "OUT", root / "data/opportunities.json"), patch.object(scan, "run", side_effect=lambda s: (s["name"], "indirect RSS ok; 0 candidates", [])):
+            with patch.object(scan, "ROOT", root), patch.object(scan, "OUT", root / "data/opportunities.json"), patch.object(scan, "run", side_effect=lambda s, news_access=None: (s["name"], "indirect RSS ok; 0 candidates", [])), patch.object(scan.robots_policy, "allowed", return_value=(True, "synthetic policy")):
                 scan.main()
             result = json.loads((root / "data/opportunities.json").read_text())
             self.assertIn("NYS Contract Reporter", result["integration_status"])
