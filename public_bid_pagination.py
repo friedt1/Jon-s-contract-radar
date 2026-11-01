@@ -12,7 +12,7 @@ PUBLIC_LISTINGS = frozenset({
     "Elmira City bids",
 })
 PAGE_KEYS = frozenset({"page", "pagenumber", "pageno", "skip", "offset", "start"})
-_ENCODED_CONTROL = re.compile(r"%(?:0[0-9a-f]|1[0-9a-f]|7f)", re.I)
+_ENCODED_CONTROL = re.compile(r"%(?:0[0-9a-f]|1[0-9a-f]|7f|5c)", re.I)
 MAX_PAGES = 3
 MAX_PUBLIC_DETAILS = 36
 
@@ -35,7 +35,7 @@ def valid_pagination_redirect(requested, final):
     second listing page, even if they contain tree-service keywords.
     """
     if not isinstance(final, str) or not final or any(
-        ord(char) < 33 or ord(char) == 127 or char == "\\\\" for char in final
+        ord(char) < 33 or ord(char) == 127 or char == "\\" for char in final
     ) or _ENCODED_CONTROL.search(final):
         return False
     try:
