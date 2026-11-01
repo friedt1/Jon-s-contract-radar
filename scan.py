@@ -67,9 +67,14 @@ def norm(s): return re.sub(r'\s+',' ',re.sub(r'<[^>]*>',' ',s or '')).strip()
 # Broad service labels can appear solely as exclusions (for example,
 # "tree work by others" in an unrelated demolition notice). Include generic
 # labels as well as specific work so an exclusion cannot create a false lead.
-_SERVICE_SCOPE = (r"(?:tree\s+(?:removal|trimming|pruning|cutting|work|services?)|"
+_SERVICE_SCOPE = (r"(?:tree\s+(?:removal|trimming|pruning|cutting|clearing|work|services?)|"
                   r"stump\s+(?:removal|grinding)|brush\s+(?:removal|clearing)|"
-                  r"land\s+clearing|vegetation\s+management|forestry\s+mulching)")
+                  r"land\s+clearing|vegetation\s+management|forestry\s+(?:mulching|mowing)|"
+                  r"right[-\s]of[-\s]way\s+clearing|line\s+clearance|"
+                  r"power\s+line\s+clearing|roadside\s+(?:mowing|clearing)|"
+                  r"storm\s+(?:clean-?up|debris(?:\s+removal)?)|"
+                  r"disaster\s+debris(?:\s+removal)?|woody\s+debris\s+removal|"
+                  r"debris\s+removal)")
 _NEGATED_SERVICE = re.compile(
  r"\b(?:no|without|excluding)\s+" + _SERVICE_SCOPE + r"\b"
  r"|\b" + _SERVICE_SCOPE +
