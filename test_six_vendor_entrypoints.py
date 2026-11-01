@@ -82,6 +82,7 @@ class VendorEntryPointTests(unittest.TestCase):
                         "<h1>Contact our purchasing team</h1><p>Supplier registration</p>",
                         "text/html", url),
                 )
+                self.assertEqual(result["state"], "official_supplier_or_contact_gateway_access_required")
                 self.assertFalse(result["individual_notice_retrieved"])
                 self.assertFalse(result["direct_monitoring_activated"])
                 self.assertNotIn("opportunities", result)
