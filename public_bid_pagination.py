@@ -54,9 +54,11 @@ def valid_pagination_redirect(requested, final):
                 return []
             return [(key, value) for key, value in params if key in PAGE_KEYS]
         original, destination = cursors(before), cursors(after)
-        return (len(original) == len(destination) == 1
-                and original == destination
-                and original[0][1].isascii() and original[0][1].isdigit())
+        return (bool(original) and sorted(original) == sorted(destination)
+                and all(value.isascii() and value.isdigit()
+                        for _, value in original)
+                and all(len({value for key, value in original if key == name}) == 1
+                        for name, _ in original))
     except ValueError:
         return False
 
@@ -91,9 +93,14 @@ def next_pages(links, listing_url, seen):
             if any(key == "bidid" for key, _ in params):
                 continue  # a bid detail must never masquerade as a pager
             cursors = [value for key, value in params if key in PAGE_KEYS]
-            # Multiple page/offset keys can select different pages depending
-            # on server precedence; never follow an ambiguous cursor.
-            if len(cursors) != 1 or not (cursors[0].isascii() and cursors[0].isdigit()):
+            # Publishers legitimately use page+offset or repeat the same
+            # numeric page key. Reject conflicting values for one key, which
+            # different servers can resolve to different pages.
+            if not cursors or not all(value.isascii() and value.isdigit()
+                                      for value in cursors):
+                continue
+            if any(len({value for key, value in params if key == name}) > 1
+                   for name, _ in params if name in PAGE_KEYS):
                 continue
             # Fragments never change the listing page; avoid duplicate fetches.
             url = parsed._replace(fragment="").geturl()
