@@ -33,12 +33,14 @@ class SingleSlotRotationTests(unittest.TestCase):
             self.assertEqual(rotated[-1], ("expired", 3))
         self.assertEqual(seen, set(ordered[:2]))
 
-    def test_multiple_slots_keep_first_notice_stable(self):
+    def test_multiple_slots_rotate_all_tied_notices_without_pinning_first(self):
         ordered = list(range(9))
-        for hour in range(9):
-            rotated = detail_rotation.rotate_boundary_ties(
-                ordered, 3, START + dt.timedelta(hours=hour), lambda _: 0)
-            self.assertEqual(rotated[0], 0)
+        batches = [detail_rotation.rotate_boundary_ties(
+            ordered, 3, START + dt.timedelta(hours=hour), lambda _: 0)[:3]
+            for hour in range(3)]
+        self.assertEqual(set().union(*(set(batch) for batch in batches)),
+                         set(ordered))
+        self.assertEqual(len({batch[0] for batch in batches}), 3)
 
     def test_generic_scanner_one_slot_does_not_starve_tied_links(self):
         base = "https://county.example/bids"
