@@ -21,7 +21,7 @@ SOURCES = frozenset({"Chemung County bids", "Steuben County bids",
                      "City of Geneva"})
 MAX_DETAILS = 36
 _DATE_TEXT = (
-    r"(?:\d{1,2}/\d{1,2}/\d{4}|\d{4}-\d{2}-\d{2}|"
+    r"(?:\d{1,2}/\d{1,2}/\d{4}|\d{1,2}-\d{1,2}-\d{4}|\d{4}-\d{2}-\d{2}|"
     r"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|"
     r"Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember|t)?|"
     r"Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\.?\s+"
@@ -32,7 +32,7 @@ _DATE_TEXT = (
 _CLOCK_TEXT = (r"(?:(?:0?[1-9]|1[0-2])(?::[0-5]\d)?\s*[AP]\.?\s*M\.?|"
                r"(?:[01]\d|2[0-3]):[0-5]\d(?:\s*(?:hrs|hours))?)")
 DATE = re.compile(
-    r"\b(" + _DATE_TEXT + r")(?:\s*(?:,\s*)?(?:at\s+)?(" + _CLOCK_TEXT + r"))?(?![A-Za-z0-9])",
+    r"\b(" + _DATE_TEXT + r")(?:\s*,?\s*(?:(?:at|by|until)\s+|no\s+later\s+than\s+)?(" + _CLOCK_TEXT + r"))?(?![A-Za-z0-9])",
     re.I,
 )
 
@@ -41,7 +41,7 @@ def _closing_date(value):
     cleaned = " ".join(value.replace(",", " ").replace(".", " ").split())
     cleaned = re.sub(r"\b(\d{1,2})(?:st|nd|rd|th)\b", r"\1", cleaned, flags=re.I)
     cleaned = re.sub(r"\bSept\b", "Sep", cleaned, flags=re.I)
-    for fmt in ("%m/%d/%Y", "%Y-%m-%d", "%B %d %Y", "%b %d %Y"):
+    for fmt in ("%m/%d/%Y", "%m-%d-%Y", "%Y-%m-%d", "%B %d %Y", "%b %d %Y"):
         try:
             return dt.datetime.strptime(cleaned, fmt).date().isoformat()
         except ValueError:
