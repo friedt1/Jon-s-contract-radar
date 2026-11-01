@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-01T22:43:52.217921+00:00",
+  "updated": "2026-11-01T22:45:14.434021+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 84,
   "safe_staged_entrypoints": 84,
@@ -98,8 +98,8 @@
     {
       "name": "Allegany County",
       "official_entrypoint": "https://www.alleganyco.gov/departments/public-works/bids-awards/",
-      "state": "listing_reachable_adapter_required",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -214,15 +214,16 @@
     {
       "name": "Clinton County PA",
       "official_entrypoint": "https://www.clintoncountypa.gov/about-us/rfps",
-      "state": "listing_reachable_adapter_required",
-      "listing_retrieved": true,
+      "state": "listing_fetch_error",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official county RFP index confirmed; some listings still display Open without a closing date despite old start dates. Verify robots and site terms, build CivicPlus RFP component-list/detail adapter (not bidID), reject expired individual notices, and confirm worksite travel time before direct activation.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false
+      "direct_monitoring_activated": false,
+      "error_type": "URLError"
     },
     {
       "name": "Potter County PA",
@@ -421,8 +422,8 @@
     {
       "name": "Village of Bath",
       "official_entrypoint": "https://villageofbathny.gov/",
-      "state": "official_page_reachable_no_procurement_evidence",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -661,8 +662,8 @@
     {
       "name": "Williamsport City",
       "official_entrypoint": "https://cityofwilliamsport.org/news/document-category/request-for-proposal/",
-      "state": "listing_reachable_adapter_required",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
