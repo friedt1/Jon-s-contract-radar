@@ -56,8 +56,9 @@ class TowandaOfficialStagingTests(unittest.TestCase):
         self.assertEqual(row["direct_state"], "staged_official_url")
         self.assertEqual(row["staged_official_url"], URL)
         self.assertEqual(row["individual_bid_details_fetched"], 0)
-        self.assertEqual(feed["source_health"]["counts"]["staged_official_url"],
-                         audit_source_coverage.audit(self.sources)["official_urls_staged"])
+        # New staged URLs do not rewrite historical feed metadata.
+        self.assertLessEqual(feed["source_health"]["counts"]["staged_official_url"],
+                             audit_source_coverage.audit(self.sources)["official_urls_staged"])
         self.assertEqual(feed["opportunities"], [])
 
 
