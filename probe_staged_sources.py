@@ -372,7 +372,14 @@ def probe(source, fetch=scan.fetch, now=None):
             result["sample_notice_url"] = detail_url
             detail_status = adapter.status_of(body)
             listed_status = record["open_status"]
-            status = detail_status if detail_status != "unknown" else listed_status
+            # A listing's "Open" badge is not an individual-notice status.
+            # Granicus detail pages often have a closing date but no status
+            # field. Preserve the listing badge separately, rather than
+            # promoting it to the sample's notice status. A listed closure
+            # remains conservative evidence that the bid is unavailable.
+            status = (detail_status if detail_status != "unknown" else
+                      listed_status if listed_status in civicplus_bids.CLOSED
+                      else "unknown")
             # A publisher's listing and individual notice can disagree after
             # a bid closes or is amended. Neither an "Open" listing nor an
             # "Open" detail should silently override a contradictory status.
@@ -382,6 +389,7 @@ def probe(source, fetch=scan.fetch, now=None):
                                    and ((detail_status in civicplus_bids.CLOSED)
                                         != (listed_status in civicplus_bids.CLOSED))))
             result["sample_notice_status"] = status
+            result["sample_notice_detail_status"] = detail_status
             result["sample_notice_listing_status"] = listed_status
             result["sample_notice_status_conflict"] = status_conflict
             result["sample_notice_status_source"] = (

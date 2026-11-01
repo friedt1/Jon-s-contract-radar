@@ -61,9 +61,43 @@ class GranicusStagingTests(unittest.TestCase):
         self.assertEqual(row["state"], "notice_format_confirmed_terms_review_required")
         self.assertTrue(row["individual_notice_retrieved"])
         self.assertEqual(row["sample_notice_status_source"], "listing_unverified")
+        self.assertEqual(row["sample_notice_listing_status"], "open")
+        self.assertEqual(row["sample_notice_detail_status"], "unknown")
+        self.assertEqual(row["sample_notice_status"], "unknown")
         self.assertEqual(row["sample_notice_temporal_evidence"], "deadline_passed")
         self.assertFalse(row["direct_monitoring_activated"])
         self.assertNotIn("opportunities", result)
+
+    def test_future_listing_open_cannot_become_detail_open_without_status(self):
+        # A future closing date is not evidence that the individual notice
+        # explicitly remains open; Granicus details often omit Status.
+        def fetch(url, binary=False):
+            if url == ENTRY:
+                return listing("11/20/2026 10:30 AM"), "text/html", url
+            return detail("11/20/2026 10:30 AM").encode(), "text/html", url
+
+        row = staged.probe(SOURCE, fetch=fetch, now=NOW)
+        self.assertEqual(row["sample_notice_listing_status"], "open")
+        self.assertEqual(row["sample_notice_detail_status"], "unknown")
+        self.assertEqual(row["sample_notice_status"], "unknown")
+        self.assertEqual(row["sample_notice_status_source"], "listing_unverified")
+        self.assertEqual(row["sample_notice_temporal_evidence"],
+                         "deadline_not_passed_unverified")
+        self.assertFalse(row["direct_monitoring_activated"])
+
+    def test_listing_closed_is_conservative_when_detail_omits_status(self):
+        def fetch(url, binary=False):
+            if url == ENTRY:
+                return listing("11/20/2026 10:30 AM").replace(
+                    "<td>Open</td>", "<td>Closed</td>"), "text/html", url
+            return detail("11/20/2026 10:30 AM").encode(), "text/html", url
+
+        row = staged.probe(SOURCE, fetch=fetch, now=NOW)
+        self.assertEqual(row["sample_notice_detail_status"], "unknown")
+        self.assertEqual(row["sample_notice_status"], "closed")
+        self.assertEqual(row["sample_notice_temporal_evidence"],
+                         "closed_or_awarded")
+        self.assertFalse(row["direct_monitoring_activated"])
 
     def test_conflicting_closing_dates_are_explicitly_unverified(self):
         def fetch(url, binary=False):
