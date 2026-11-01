@@ -48,10 +48,52 @@ class SharedOfficialEntrypointTests(unittest.TestCase):
                          coverage["shared_official_entrypoint_groups"])
         self.assertEqual(legacy["distinct_official_entrypoints"], 2)
 
+    def test_duplicate_named_rows_are_not_counted_as_independent_publishers(self):
+        # Synthetic entries only; repeated rows cannot create a second agency.
+        url = "https://county.example/Bids.aspx"
+        rows = [
+            {"name": "County procurement", "mode": "direct_page",
+             "url": url, "verified_url": True},
+            {"name": "County procurement", "mode": "direct_page",
+             "url": url, "verified_url": True},
+        ]
+        result = audit_source_coverage.audit(rows)
+        self.assertEqual(result["total"], 2)
+        self.assertEqual(result["unique_named_targets"], 1)
+        self.assertEqual(result["duplicate_source_names"], ["County procurement"])
+        self.assertEqual(result["duplicate_source_rows"], 1)
+        self.assertFalse(result["inventory_integrity_ok"])
+        self.assertEqual(result["distinct_official_entrypoints"], 1)
+        self.assertEqual(result["shared_official_entrypoint_groups"], {})
+        self.assertEqual(result["shared_official_entrypoint_targets"], 0)
+        self.assertTrue(all(row["duplicate_source_name"] for row in result["sources"]))
+        legacy = source_audit.audit(rows)
+        self.assertEqual(legacy["unique_named_targets"], 1)
+        self.assertFalse(legacy["inventory_integrity_ok"])
+
+    def test_real_shared_gateway_counts_distinct_agencies_only(self):
+        url = "https://county.example/Bids.aspx"
+        rows = [
+            {"name": "County", "mode": "direct_page", "url": url,
+             "verified_url": True},
+            {"name": "County", "mode": "direct_page", "url": url,
+             "verified_url": True},
+            {"name": "Airport", "mode": "discovery_pending",
+             "candidate_official_url": url},
+        ]
+        result = audit_source_coverage.audit(rows)
+        self.assertEqual(result["shared_official_entrypoint_groups"],
+                         {url: ["Airport", "County"]})
+        self.assertEqual(result["shared_official_entrypoint_targets"], 2)
+        self.assertEqual(result["duplicate_source_rows"], 1)
+
     def test_current_inventory_and_historical_negative_cases_unchanged(self):
         sources = json.loads((Path(__file__).parent / "sources.json").read_text())
         coverage = audit_source_coverage.audit(sources)
         self.assertEqual(coverage["total"], 102)
+        self.assertEqual(coverage["unique_named_targets"], 102)
+        self.assertEqual(coverage["duplicate_source_names"], [])
+        self.assertTrue(coverage["inventory_integrity_ok"])
         self.assertEqual(coverage["direct_configured"], 18)
         self.assertEqual(coverage["official_urls_staged"], 76)
         self.assertEqual(coverage["not_directly_monitored"], 84)
