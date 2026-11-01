@@ -83,7 +83,7 @@ class CivicPlusDetailTests(unittest.TestCase):
         self.assertEqual(civic.detail_worksite(body), "Elmira, NY")
 
     def test_scan_does_not_mix_status_or_other_fields_into_scope(self):
-        body = ("<p>Bid Number: RFB-81</p><p>Bid Title: Tree removal</p>"
+        body = ("<p>Bid Number: RFB-2816</p><p>Bid Title: Tree removal</p>"
                 "<p>Description: Remove hazardous trees and grind stumps.</p>"
                 "<p>Status: Open</p><p>Closing Date/Time: 11/19/2026 1:30 PM</p>"
                 "<p>Project Location: Elmira, NY</p>"
