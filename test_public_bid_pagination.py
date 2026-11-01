@@ -107,6 +107,59 @@ class PublicPaginationTests(unittest.TestCase):
         self.assertIn("3 listing pages", status)
         self.assertIn("1 details checked", status)
 
+    def test_ambiguous_page_cursors_are_not_fetched(self):
+        links = [
+            ("Next", "?page=2&page=3", 0),
+            ("Next", "?page=2&offset=40", 0),
+            ("Next", "?page=2&page=2", 0),
+            ("Next", "?page=2&bidID=99", 0),
+            ("Next", "?page=2", 0),
+            ("Page 3", "?pageno=3", 0),
+        ]
+        self.assertEqual(pages.next_pages(links, SOURCE["url"], {SOURCE["url"]}), [
+            "https://example.gov/Bids.aspx?page=2",
+            "https://example.gov/Bids.aspx?pageno=3",
+        ])
+
+    def test_redirected_pagination_must_preserve_listing_and_cursor(self):
+        requested = "https://example.gov/Bids.aspx?page=2"
+        for final in (
+            "https://example.gov/Login.aspx?page=2",
+            "https://example.gov/Bids.aspx?page=1",
+            "https://example.gov/Bids.aspx?offset=2",
+            "https://example.gov/Bids.aspx?bidID=99",
+            "https://other.gov/Bids.aspx?page=2",
+            "http://example.gov/Bids.aspx?page=2",
+            "https://example.gov/Bids.aspx?page=2%0a",
+        ):
+            with self.subTest(final=final):
+                self.assertFalse(pages.valid_pagination_redirect(requested, final))
+        self.assertTrue(pages.valid_pagination_redirect(
+            requested, "https://example.gov/Bids.aspx?page=2"))
+
+    def test_redirected_login_or_changed_cursor_cannot_supply_notice(self):
+        # Synthetic publisher responses; not a live Owego/Erie solicitation.
+        requested = "https://example.gov/Bids.aspx?page=2"
+        for redirected in (
+            "https://example.gov/Login.aspx?page=2",
+            "https://example.gov/Bids.aspx?page=1",
+        ):
+            fetched = []
+            def fake(url, binary=False):
+                fetched.append(url)
+                if url == SOURCE["url"]:
+                    return '<a href="?page=2">Next</a>', "text/html", url
+                if url == requested:
+                    return ('<a href="/bid/999">Tree removal bid</a>',
+                            "text/html", redirected)
+                raise AssertionError("redirected content must not be followed")
+            with self.subTest(redirected=redirected), patch.object(
+                    scan, "fetch", side_effect=fake):
+                leads, status = scan.scan_direct(SOURCE)
+            self.assertEqual(leads, [])
+            self.assertEqual(fetched, [SOURCE["url"], requested])
+            self.assertIn("pagination redirect changed listing or cursor", status)
+
     def test_invalid_pager_does_not_consume_detail_budget(self):
         detail = "https://example.gov/bid/104"
         listing = ('<a href="?page=2&bidID=999">Next</a>'
