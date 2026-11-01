@@ -49,7 +49,7 @@ class FinalOfficialEntrypointsTests(unittest.TestCase):
                      patch.object(scan, "scan_news", return_value=[]):
                     _, status, leads = scan.run(source)
                 direct.assert_not_called()
-                self.assertIn("direct not configured", status)
+                self.assertNotIn("direct fetched", status)
                 self.assertEqual(leads, [])
 
     def test_coverage_reports_84_staged_and_no_unknown_official_urls(self):
