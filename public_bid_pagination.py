@@ -47,18 +47,23 @@ def valid_pagination_redirect(requested, final):
                 or after.fragment
                 or before.path.lower().rstrip("/") != after.path.lower().rstrip("/")):
             return False
-        def cursors(parts):
-            params = [(key.lower(), value) for key, value in
-                      parse_qsl(parts.query, keep_blank_values=True)]
-            if any(key == "bidid" for key, _ in params):
-                return []
-            return [(key, value) for key, value in params if key in PAGE_KEYS]
-        original, destination = cursors(before), cursors(after)
-        return (bool(original) and sorted(original) == sorted(destination)
+        def query_parts(parts):
+            # Preserve every non-cursor filter and its value. A redirect
+            # keeping page=2 but replacing status=open with status=closed,
+            # adding a login flag, or dropping a category is not the page
+            # we requested. Cursor key casing is harmless; other keys may
+            # be case-sensitive on the publisher.
+            return [(key.lower() if key.lower() in PAGE_KEYS else key, value)
+                    for key, value in parse_qsl(parts.query, keep_blank_values=True)]
+        original, destination = query_parts(before), query_parts(after)
+        cursors = [(key, value) for key, value in original if key in PAGE_KEYS]
+        return (bool(cursors)
+                and not any(key.lower() == "bidid" for key, _ in original + destination)
+                and sorted(original) == sorted(destination)
                 and all(value.isascii() and value.isdigit()
-                        for _, value in original)
-                and all(len({value for key, value in original if key == name}) == 1
-                        for name, _ in original))
+                        for _, value in cursors)
+                and all(len({value for key, value in cursors if key == name}) == 1
+                        for name, _ in cursors))
     except ValueError:
         return False
 
