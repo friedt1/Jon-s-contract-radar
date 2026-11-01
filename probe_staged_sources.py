@@ -370,6 +370,17 @@ def probe(source, fetch=scan.fetch, now=None):
 
             result["individual_notice_retrieved"] = True
             result["sample_notice_url"] = detail_url
+            # Listing-card scope is useful for prioritizing integrations, but
+            # is not an independently verified notice description or an open
+            # opportunity. Never classify page-wide navigation/chrome as scope.
+            listing_title = str(record.get("title") or "").strip()[:220]
+            listing_scope = " ".join(str(record.get(key) or "")
+                                     for key in ("title", "description"))
+            result["sample_notice_listing_title"] = listing_title
+            result["sample_notice_listing_scope_category"] = (
+                scan.category(listing_scope) or "not_identified"
+            )
+            result["sample_notice_scope_evidence"] = "listing_card_unverified"
             detail_status = adapter.status_of(body)
             listed_status = record["open_status"]
             # A listing's "Open" badge is not an individual-notice status.

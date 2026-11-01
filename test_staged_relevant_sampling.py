@@ -55,6 +55,28 @@ class StagedRelevantSamplingTests(unittest.TestCase):
         self.assertGreater(staged._sample_priority(erie, NOW),
                            staged._sample_priority(unrelated, NOW))
 
+    def test_sample_scope_diagnostic_is_listing_only_and_never_published(self):
+        html = ('<article><a href="/Bids.aspx?bidID=12">'
+                '67 Central Avenue demolition rebid. Tree work by others'
+                '</a><p>Status: Open</p>'
+                '<p>Closes: 11/19/2026 2:00 PM</p></article>')
+        notice = ('<h1>Bid Title: 67 Central Avenue demolition rebid</h1>'
+                  '<p>Bid Number: 12</p>'
+                  '<p>Description: Building demolition; tree work by others.</p>'
+                  '<p>Status: Open</p>'
+                  '<p>Closing Date/Time: 11/19/2026 2:00 PM</p>')
+        def fake_fetch(url, binary=False):
+            return ((html, "text/html", url) if url == ENTRY else
+                    (notice.encode(), "text/html", url))
+        result = staged.build([SOURCE], fetch=fake_fetch, now=NOW)
+        row = result["probes"][0]
+        self.assertEqual(row["sample_notice_listing_scope_category"],
+                         "not_identified")
+        self.assertEqual(row["sample_notice_scope_evidence"],
+                         "listing_card_unverified")
+        self.assertFalse(row["direct_monitoring_activated"])
+        self.assertNotIn("opportunities", result)
+
     def test_fourth_relevant_notice_sampled_before_three_unrelated_cards(self):
         cards = [
             ("101", "Office furniture procurement"),
@@ -90,6 +112,8 @@ class StagedRelevantSamplingTests(unittest.TestCase):
         self.assertEqual(calls, [ENTRY, ENTRY + "?bidID=104"])
         self.assertEqual(result["state"], "notice_format_confirmed_terms_review_required")
         self.assertTrue(result["individual_notice_retrieved"])
+        self.assertEqual(result["sample_notice_listing_scope_category"], "Tree removal")
+        self.assertEqual(result["sample_notice_scope_evidence"], "listing_card_unverified")
         self.assertFalse(result["direct_monitoring_activated"])
         self.assertNotIn("opportunities", result)
 
