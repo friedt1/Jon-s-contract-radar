@@ -906,9 +906,14 @@ def scan_direct(src):
  rendering='; dynamic/login portal: extraction incomplete' if not page.rows and any(x in html.lower() for x in ('enable javascript','ng-app','id="app"','id="root"','sign in','log in')) else ''
  return list(found.values()),f'direct fetched; {len(listing_pages)} listing pages; {len(visited)} details checked; {len(detail_budget_skipped)} detail candidates deferred at request budget; {metadata_details} individual bid details fetched; {pdfs} PDFs checked; {pdf_attempts} PDF-shaped requests attempted; {pdfs_skipped} PDF requests skipped at budget; {result_links_skipped} result/award links excluded; {len(provider_skips)} external provider links skipped (access required); {len(found)} candidates; {nested_listing_pages} nested listing pages excluded as notices'+(f'; {len(errors)} detail errors: '+','.join(sorted(set(errors))) if errors else '')+(f'; {len(page_errors)} pagination errors: '+','.join(sorted(set(page_errors))) if page_errors else '')+rendering
 
+def news_url(src):
+ """Build the exact Google News RSS URL for a per-query robots preflight."""
+ query=src.get('discovery_query',src['name'])
+ q='"'+query.replace('"','')+'" ("tree removal" OR "tree trimming" OR "vegetation management" OR "land clearing" OR "forestry mulching" OR "storm cleanup" OR "brush clearing" OR "storm debris") (bid OR RFP OR contract OR procurement)'
+ return 'https://news.google.com/rss/search?'+up.urlencode({'q':q,'hl':'en-US','gl':'US','ceid':'US:en'})
+
 def scan_news(src):
- name=src['name'];query=src.get('discovery_query',name);q='"'+query.replace('"','')+'" ("tree removal" OR "tree trimming" OR "vegetation management" OR "land clearing" OR "forestry mulching" OR "storm cleanup" OR "brush clearing" OR "storm debris") (bid OR RFP OR contract OR procurement)'
- url='https://news.google.com/rss/search?'+up.urlencode({'q':q,'hl':'en-US','gl':'US','ceid':'US:en'})
+ name=src['name'];url=news_url(src)
  xml,_,_=fetch(url);root=ET.fromstring(xml);found={}
  for item in root.findall('.//item'):
   title=norm(item.findtext('title'));summary=norm(item.findtext('description'))
@@ -926,7 +931,7 @@ def scan_news(src):
 def error_label(error):
  return type(error).__name__ + (' HTTP '+str(error.code) if hasattr(error,'code') else '')
 
-def run(src):
+def run(src, news_access=None):
  statuses=[];leads=[]
  if src.get('mode') in source_config.DIRECT_MODES:
   if not source_config.direct_configured(src):
@@ -957,9 +962,15 @@ def run(src):
    statuses.append(f'local bid RSS fetched; {len(records)} notices; {len(vetted)} unverified tree-service candidates')
   except Exception as e:
    statuses.append('local bid RSS error: '+error_label(e))
- try:
-  items=scan_news(src);leads.extend(items);statuses.append(f'indirect RSS ok; {len(items)} candidates')
- except Exception as e:statuses.append('indirect RSS error: '+error_label(e))
+ # A shared Google News robots refusal is NOT a refusal by this county,
+ # school, utility, or other named publisher. Skip the disallowed request;
+ # keep independently permitted direct-source scanning fully operational.
+ if news_access is not None and not news_access[0]:
+  statuses.append('indirect RSS provider unavailable (Google News): '+news_access[1])
+ else:
+  try:
+   items=scan_news(src);leads.extend(items);statuses.append(f'indirect RSS ok; {len(items)} candidates')
+  except Exception as e:statuses.append('indirect RSS error: '+error_label(e))
  if src['name'] in ('BidNet NY platform','PennBid platform'):
   statuses.append('individual listing ingestion not connected; provider-approved feed/access not established')
  return src['name'],'; '.join(statuses),leads
@@ -968,8 +979,13 @@ def main():
  sources=json.loads(SOURCES.read_text(encoding='utf-8'));status={};found={}
  if len(sources)!=102 or len({s['name'] for s in sources})!=102:
   raise ValueError('Expected 102 uniquely named discovery targets')
+ # Preflight the actual RSS search URL for each named target. robots_policy
+ # caches the shared origin, so this reads one provider policy and checks
+ # each query without 102 redundant forbidden RSS fetch attempts.
+ # Unknown/unreachable robots policy fails closed, never bypassed.
+ news_access={src['name']:robots_policy.allowed(news_url(src)) for src in sources}
  with cf.ThreadPoolExecutor(max_workers=5) as pool:
-  for name,st,items in pool.map(run,sources):
+  for name,st,items in pool.map(lambda src: run(src,news_access[src['name']]),sources):
    status[name]=st
    for lead in items:
     uid=lead['id']
@@ -1010,6 +1026,9 @@ def main():
   'direct_fetched':sum('direct fetched' in status.get(name,'') for name in direct_names),
   'direct_not_fetched':sum('direct fetched' not in status.get(name,'') for name in direct_names),
   'indirect_rss_succeeded':indirect,
+  'indirect_provider_unavailable_targets':sum(
+   'indirect RSS provider unavailable (Google News):' in value
+   for value in status.values()),
   'verified_open_contracts':sum(x.get('status')=='verified' and x.get('open_status')=='verified_open' for x in published_leads),
   'warning':'A fetched listing page is not proof that all individual bids were extracted or that any bid is open.'
  }
@@ -1018,7 +1037,7 @@ def main():
   'BidNet Direct':'not connected: individual bid listing interface/permission not established',
   'PennBid':'not connected: individual bid listing interface/permission not established',
  }
- data={'integration_status':integration_status,'source_coverage':coverage,'source_health':source_health.summarize(sources,status),'updated':NOW.isoformat(timespec='seconds'),'opportunities':published_leads,'source_status':status,'coverage_note':f'{len(sources)} named targets; {direct} direct public home pages fetched, with bounded detail/PDF checks; {indirect} indirect news searches succeeded. Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. {coverage['pending_direct']} targets do not have verified direct integrations. SAM.gov deferred.'}
+ data={'integration_status':integration_status,'source_coverage':coverage,'source_health':source_health.summarize(sources,status),'updated':NOW.isoformat(timespec='seconds'),'opportunities':published_leads,'source_status':status,'coverage_note':f'{len(sources)} named targets; {direct} direct public home pages fetched, with bounded detail/PDF checks; {indirect} indirect news searches succeeded; {coverage['indirect_provider_unavailable_targets']} targets could not use the shared Google News RSS provider (not publisher-specific denials). Direct page access does not guarantee complete extraction. Explicitly closed/expired and unrelated notices are filtered. Unknown deadlines and driving times remain unverified. {coverage['pending_direct']} targets do not have verified direct integrations. SAM.gov deferred.'}
  OUT.parent.mkdir(parents=True,exist_ok=True);OUT.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
  print(f'Targets {len(sources)}, direct fetched {direct}, indirect successful {indirect}, candidates {len(found)}')
 if __name__=='__main__':main()
