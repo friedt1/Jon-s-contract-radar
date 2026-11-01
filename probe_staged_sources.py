@@ -337,6 +337,20 @@ def probe(source, fetch=scan.fetch, now=None):
                 failure["state"] = "individual_notice_fields_missing"
                 result["individual_sample_failures"].append(failure)
                 continue
+            # A stable bidID URL can serve the wrong solicitation after a
+            # publisher migration or caching error. Apply the same explicit
+            # bid-number identity gate as the active CivicPlus scanner before
+            # claiming that an individual sample was retrieved.
+            if adapter is civicplus_bids and record.get("bid_number"):
+                detail_number = re.search(
+                    r"\bBid\s+(?:Number|No\.?)\s*:?\s*([A-Za-z0-9-]+)\b",
+                    body, re.I,
+                )
+                if (detail_number and detail_number.group(1).casefold()
+                        != record["bid_number"].casefold()):
+                    failure["state"] = "individual_notice_bid_number_mismatch"
+                    result["individual_sample_failures"].append(failure)
+                    continue
 
             result["individual_notice_retrieved"] = True
             result["sample_notice_url"] = detail_url
@@ -366,8 +380,24 @@ def probe(source, fetch=scan.fetch, now=None):
                                  bool(detail_time and listed_time and
                                       detail_time.replace(" ", "").upper() !=
                                       listed_time.replace(" ", "").upper()))))
-            due = detail_due or listed_due
-            due_time = detail_time if detail_due else listed_time
+            # An explicit but unparseable detail closing field supersedes
+            # the listing's possibly stale cutoff. Do not report the old
+            # listing date as future submission evidence.
+            unparseable_detail_closing = bool(
+                adapter is civicplus_bids and not detail_due
+                and re.search(
+                    r"\bClosing\s+Date(?:/Time|\s+and\s+Time)?\s*:",
+                    body, re.I,
+                )
+            )
+            due = detail_due or ("" if unparseable_detail_closing else listed_due)
+            due_time = (detail_time if detail_due else
+                        "" if unparseable_detail_closing else listed_time)
+            result["sample_notice_unparseable_detail_closing"] = unparseable_detail_closing
+            result["sample_notice_deadline_source"] = (
+                "individual_notice" if detail_due else
+                "listing" if due else "unknown"
+            )
             result["sample_notice_deadline"] = due
             result["sample_notice_deadline_time"] = due_time
             result["sample_notice_deadline_conflict"] = conflict
