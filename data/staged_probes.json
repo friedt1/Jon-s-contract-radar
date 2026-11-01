@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-01T01:48:02.972842+00:00",
+  "updated": "2026-11-01T04:27:02.506476+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 62,
   "safe_staged_entrypoints": 62,
@@ -422,15 +422,18 @@
     {
       "name": "City of Hornell",
       "official_entrypoint": "https://www.cityofhornell.gov/upcoming-bid-projects",
-      "state": "listing_robots_blocked",
-      "listing_retrieved": false,
+      "state": "listing_reachable_off_host_documents_review_required",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official City of Hornell Upcoming Bid Projects page observed 2026-10-30 with PDF bid documents on external irp.cdn-website.com. Stage only: review robots, publisher and CDN terms; implement permitted per-document retrieval, distinguish upcoming from past bids, verify scope/deadline/status and worksite before activation. No off-host PDF is fetched by staging.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false
+      "direct_monitoring_activated": false,
+      "off_host_pdf_hosts_unverified": [
+        "irp.cdn-website.com"
+      ]
     },
     {
       "name": "City of Geneva",
