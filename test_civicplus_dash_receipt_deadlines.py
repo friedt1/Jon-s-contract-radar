@@ -71,12 +71,30 @@ class CivicPlusDashReceiptDeadlineTests(unittest.TestCase):
                 leads, diagnostic = scan.scan_direct(SOURCE)
                 self.assertEqual(leads, [])
                 self.assertIn("1 expired", diagnostic)
+            # The listing still says Nov 20: the contradictory dates must
+            # remain unverified even before the individual cutoff.
             with patch.object(scan, "NOW", before):
                 leads, _ = scan.scan_direct(SOURCE)
-                self.assertEqual(len(leads), 1)
-                self.assertEqual(leads[0]["deadline"], "2026-11-02")
-                self.assertEqual(leads[0]["deadline_time"], "2:30 PM")
-                self.assertEqual(leads[0]["status"], "unverified")
+                self.assertEqual(leads, [])
+
+    def test_matching_listing_before_cutoff_is_only_unverified(self):
+        matching_listing = LISTING.replace(
+            "11/20/2026 3:00 PM", "11-02-2026 by 2:30 PM"
+        )
+
+        def fetch(url, binary=False):
+            self.assertIn(url, (BASE, DETAIL_URL))
+            body = DETAIL if binary else matching_listing
+            return (body.encode() if binary else body, "text/html", url)
+
+        before = dt.datetime(2026, 11, 2, 19, 29, tzinfo=dt.timezone.utc)
+        with patch.object(scan, "fetch", side_effect=fetch):
+            with patch.object(scan, "NOW", before):
+                leads, _ = scan.scan_direct(SOURCE)
+        self.assertEqual(len(leads), 1)
+        self.assertEqual(leads[0]["deadline"], "2026-11-02")
+        self.assertEqual(leads[0]["deadline_time"], "2:30 PM")
+        self.assertEqual(leads[0]["status"], "unverified")
 
     def test_original_formats_and_regression_exclusions(self):
         self.assertEqual(
