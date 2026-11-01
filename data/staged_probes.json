@@ -1,8 +1,8 @@
 {
-  "updated": "2026-10-31T23:44:33.246966+00:00",
+  "updated": "2026-11-01T00:22:12.296628+00:00",
   "configured_targets": 102,
-  "staged_entrypoints": 58,
-  "safe_staged_entrypoints": 58,
+  "staged_entrypoints": 62,
+  "safe_staged_entrypoints": 62,
   "invalid_staged_entrypoints": 0,
   "probes": [
     {
@@ -686,6 +686,19 @@
       "direct_monitoring_activated": false
     },
     {
+      "name": "Horseheads Central School District",
+      "official_entrypoint": "https://www.horseheadsdistrict.com/",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Horseheads Central School District website verified 2026-10-31. A public October 7, 2026 custodial-supplies legal notice directs bidders to the Purchasing Department, but that bid closed October 13 and is unrelated to tree work. Find the district-approved current purchasing notices or authorized BOCES provider, review robots/terms, verify individual tree/clearing scope, worksite, submission deadline, amendments and open status before activation. No inference from board policy or expired newspaper notices.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
       "name": "Corning-Painted Post Area School District",
       "official_entrypoint": "https://www.corningareaschools.com/page/business-services",
       "state": "official_page_reachable_no_procurement_evidence",
@@ -708,6 +721,45 @@
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Official Ithaca City School District homepage links to Business Services (verified 2026-10-31). The page does not establish a public, automatable individual-bid feed. District legal notices may require direct sealed submission; locate the publisher-approved notice index or authorized procurement channel, review robots/terms, and verify each individual solicitation's location, tree/vegetation scope, submission deadline and closing time, amendments and open status. Do not treat third-party bid summaries or school budget pages as official live bids.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Binghamton City School District",
+      "official_entrypoint": "https://www.binghamtonschools.org/",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Binghamton City School District homepage verified 2026-10-31 and corroborated by the City of Binghamton school directory. A 2026 district capital-outlay site-work notice was due April 24, 2026 and is expired; it does not prove an open tree contract. Find district-published current individual notices or authorized project planroom, verify robots/terms, worksite, tree/clearing scope, submission deadline, amendments and open status. Do not conflate the district with City of Binghamton Bids & RFPs.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Watkins Glen Central School District",
+      "official_entrypoint": "https://www.wgcsd.org/page/business-office",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Watkins Glen Central School District Business Office page verified 2026-10-31. It identifies business operations but does not establish an automatable current bid feed. Locate district-approved legal notices or procurement channel; verify robots/terms and individual notice extraction, tree/clearing scope, local worksite, submission deadline and time, amendments and open status before activation. No bid inferred from school budget or capital-project materials.",
+      "terms_review": "required; robots allowance alone is not authorization",
+      "direct_monitoring_activated": false
+    },
+    {
+      "name": "Bath Central School District",
+      "official_entrypoint": "https://www.bathcsd.org/page/business-office",
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_sample_failures": [],
+      "activation_gate": "Official Bath Central School District Business Office page verified 2026-10-31. It describes district accounting and budget operations, not a live individual-bid feed. Historical capital-project planroom material may require planholder registration or paid documents. Verify publisher-approved listing access and robots/terms, then individual tree/clearing scope, worksite, submission deadline, amendments and open status before activation. Do not treat expired or planholder-only projects as open.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false
     },
