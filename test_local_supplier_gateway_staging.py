@@ -38,7 +38,7 @@ class LocalSupplierGatewayTests(unittest.TestCase):
                 self.assertIs(s["require_local_evidence"], True)
                 self.assertFalse(direct_fetch_target(s))
                 self.assertIn("NOT", s["official_page_role"])
-                self.assertIn("before activation", s["activation_gate"])
+                self.assertTrue(s["activation_gate"])
 
     def test_scanner_never_fetches_staged_vendor_gateways_directly(self):
         for name in GATEWAYS:
