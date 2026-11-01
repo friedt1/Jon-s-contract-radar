@@ -72,6 +72,18 @@ def _deadline_state(notice, today, now=None):
     return "stated_unverified"
 
 
+def _normalized_eastern_clock(notice):
+    """Compare only valid, equivalent Eastern bid clocks across duplicates.
+
+    Different textual renderings of the same cutoff (9 AM vs 09:00 am)
+    must not manufacture a conflict. An invalid or non-Eastern clock
+    cannot certify a cutoff or conflict with a valid Eastern clock.
+    """
+    if not eastern_deadline_timezone(notice.get("deadline_timezone")):
+        return ""
+    return civicplus_bids._clock(str(notice.get("deadline_time") or "")).lower()
+
+
 def classify(notice, today=None, now=None):
     if not isinstance(notice, dict):
         return None
@@ -183,26 +195,14 @@ def build(notices, today=None, now=None):
                 pass
             else:
                 dates_by_url.setdefault(candidate_url, set()).add(candidate_date)
-        if (candidate_url.startswith("https://")
-                and isinstance(candidate_date, str)
-                and candidate_date == today.isoformat()
-                and any(term in candidate_text for term in KEYWORDS)
-                and _deadline_state(notice, today, now=now) == "expired"):
-            elapsed_same_day_clocks.setdefault(candidate_url, set()).add(
-                " ".join(str(notice.get("deadline_time") or "").lower().split()))
-        if (candidate_url.startswith("https://")
-                and isinstance(candidate_date, str)
-                and candidate_date == today.isoformat()
-                and eastern_deadline_timezone(notice.get("deadline_timezone"))
-                and any(term in candidate_text for term in KEYWORDS)):
-            candidate_clock = " ".join(str(notice.get("deadline_time") or "").lower().split())
-            try:
-                dt.datetime.strptime(candidate_clock.upper(), "%I:%M %p")
-            except ValueError:
-                pass
-            else:
-                clocks_by_url.setdefault((candidate_url, candidate_date), set()).add(
-                    candidate_clock)
+                clock = _normalized_eastern_clock(notice)
+                if clock:
+                    clocks_by_url.setdefault((candidate_url, candidate_date), set()).add(clock)
+                # A known elapsed cutoff must survive even if classify()
+                # drops this copy and a later duplicate remains.
+                if (candidate_date == today.isoformat() and clock
+                        and _deadline_state(notice, today, now=now) == "expired"):
+                    elapsed_same_day_clocks.setdefault(candidate_url, set()).add(clock)
         item = classify(notice, today=today, now=now)
         if item is None:
             continue
@@ -215,10 +215,9 @@ def build(notices, today=None, now=None):
                 pass
             else:
                 dates_by_url.setdefault(key, set()).add(due)
-                clock = str(item.get("deadline_time") or "").strip().lower()
+                clock = _normalized_eastern_clock(item)
                 if clock:
-                    clocks_by_url.setdefault((key, due), set()).add(
-                        " ".join(clock.split()))
+                    clocks_by_url.setdefault((key, due), set()).add(clock)
         previous = by_url.get(key)
         quality = lambda n: (n["priority_score"], bool(n.get("deadline")),
                              len(str(n.get("summary") or "")))
