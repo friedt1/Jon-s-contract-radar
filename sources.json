@@ -860,7 +860,11 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://chemungcountyny.gov/Bids.aspx",
+    "official_page_role": "Shared Chemung County-City of Elmira purchasing notices; airport is county-operated, not an independent airport-specific bid feed",
+    "activation_gate": "Chemung County's official airport page identifies the airport as county-owned and operated; the county purchasing department publishes bids and airport solicitations on its CivicPlus Bids.aspx page. This is the SAME entrypoint as Chemung County bids, not an additional monitored feed. The county scanner may encounter airport projects but must verify each individual airport worksite, tree/clearing scope, publisher status and amended deadline. No independent airport adapter or complete airport-specific extraction is established; review publisher permissions/robots before any promotion.",
+    "official_url_checked_at": "2026-11-01T11:41:00+00:00"
   },
   {
     "name": "Arnot Health",
