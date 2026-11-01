@@ -32,6 +32,9 @@ def audit(sources):
         # includes staged official URLs; it does not mean every URL is unknown.
         "pending_discovery_targets": coverage["not_directly_monitored"],
         "staged_official_urls": coverage["official_urls_staged"],
+        "distinct_official_entrypoints": coverage["distinct_official_entrypoints"],
+        "shared_official_entrypoint_groups": coverage["shared_official_entrypoint_groups"],
+        "shared_official_entrypoint_targets": coverage["shared_official_entrypoint_targets"],
         "discovery_required": coverage["discovery_required"],
         "invalid_direct_configurations": coverage["invalid_direct_configurations"],
         "platforms_configured_not_proven_ingested": platforms,
@@ -40,7 +43,7 @@ def audit(sources):
             "Only verified, safe HTTPS configurations count as direct targets. "
             "Staged URLs are not live monitoring; provider access-required "
             "configurations are not fetch targets. Even a successful listing "
-            "fetch does not prove permitted individual-bid extraction or an open contract."
+            "fetch does not prove permitted individual-bid extraction or an open contract. Shared publisher gateways are not independent feeds."
         ),
     }
 
