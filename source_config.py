@@ -8,6 +8,13 @@ import re
 from urllib.parse import urlsplit
 
 DIRECT_MODES = frozenset({"direct_page", "official_feed", "authorized_api"})
+# Shared provider/delegated purchasing access gate. This belongs in the
+# dependency-free configuration layer so audit and source health agree even
+# before the scanner has emitted a status.
+UNCONNECTED_PLATFORMS = frozenset({
+    "BidNet NY platform", "PennBid platform", "Tompkins County purchasing",
+    "Schuyler County purchasing", "Elmira City bids", "Lycoming County bids",
+})
 # Only HTML direct_page has a live ingestion path in scan.run. A declared
 # official_feed or authorized_api URL is configuration, not a working adapter.
 IMPLEMENTED_DIRECT_MODES = frozenset({"direct_page"})
