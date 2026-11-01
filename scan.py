@@ -67,14 +67,14 @@ def norm(s): return re.sub(r'\s+',' ',re.sub(r'<[^>]*>',' ',s or '')).strip()
 # Broad service labels can appear solely as exclusions (for example,
 # "tree work by others" in an unrelated demolition notice). Include generic
 # labels as well as specific work so an exclusion cannot create a false lead.
-_SERVICE_SCOPE = (r"(?:tree\\s+(?:removal|trimming|pruning|cutting|work|services?)|"
-                  r"stump\\s+(?:removal|grinding)|brush\\s+(?:removal|clearing)|"
-                  r"land\\s+clearing|vegetation\\s+management|forestry\\s+mulching)")
+_SERVICE_SCOPE = (r"(?:tree\s+(?:removal|trimming|pruning|cutting|work|services?)|"
+                  r"stump\s+(?:removal|grinding)|brush\s+(?:removal|clearing)|"
+                  r"land\s+clearing|vegetation\s+management|forestry\s+mulching)")
 _NEGATED_SERVICE = re.compile(
- r"\\b(?:no|without|excluding)\\s+" + _SERVICE_SCOPE + r"\\b"
- r"|\\b" + _SERVICE_SCOPE +
- r"\\s+(?:is\\s+|are\\s+)?(?:excluded|by\\s+others|"
- r"not\\s+(?:included|required|in\\s+(?:the\\s+)?scope))\\b",
+ r"\b(?:no|without|excluding)\s+" + _SERVICE_SCOPE + r"\b"
+ r"|\b" + _SERVICE_SCOPE +
+ r"\s+(?:is\s+|are\s+)?(?:excluded|by\s+others|"
+ r"not\s+(?:included|required|in\s+(?:the\s+)?scope))\b",
  re.I,
 )
 
