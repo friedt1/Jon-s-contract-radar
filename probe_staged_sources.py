@@ -343,7 +343,7 @@ def probe(source, fetch=scan.fetch, now=None):
             # claiming that an individual sample was retrieved.
             if adapter is civicplus_bids and record.get("bid_number"):
                 detail_number = re.search(
-                    r"\\bBid\\s+(?:Number|No\\.?)\\s*:?\\s*([A-Za-z0-9-]+)\\b",
+                    r"\bBid\s+(?:Number|No\.?)\s*:?\s*([A-Za-z0-9-]+)\b",
                     body, re.I,
                 )
                 if (detail_number and detail_number.group(1).casefold()
@@ -386,7 +386,7 @@ def probe(source, fetch=scan.fetch, now=None):
             unparseable_detail_closing = bool(
                 adapter is civicplus_bids and not detail_due
                 and re.search(
-                    r"\\bClosing\\s+Date(?:/Time|\\s+and\\s+Time)?\\s*:",
+                    r"\bClosing\s+Date(?:/Time|\s+and\s+Time)?\s*:",
                     body, re.I,
                 )
             )
