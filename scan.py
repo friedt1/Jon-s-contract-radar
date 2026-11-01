@@ -587,8 +587,19 @@ def scan_civicplus(src, listing_pages, page_errors):
    if not re.search(r'\b(?:Bid\s+(?:Number|Title)|Closing\s+Date/Time|Description|Status)\s*:', body, re.I):
     errors.append('missing individual bid fields')
     continue
+   # A stable bidID URL is not sufficient if the server returns another
+   # solicitation's content under that URL. Compare explicit bid numbers
+   # when BOTH listing and individual notice supply one. Missing numbers
+   # remain unverified rather than being invented from unrelated page text.
+   detail_number = re.search(
+    r'\bBid\s+(?:Number|No\.?)\s*:?\s*([A-Za-z0-9-]+)\b', body, re.I)
+   listing_number = row.get('bid_number', '')
+   if (detail_number and listing_number and
+       detail_number.group(1).casefold() != listing_number.casefold()):
+    errors.append('detail bid number mismatch')
+    continue
    # Count only a successfully fetched, non-empty notice whose bidID still
-   # matches the listing. Attempts and homepage reads are not bid details.
+   # matches the listing and whose explicit bid number does not conflict.
    individual_details_fetched += 1
    detail_status = civicplus_bids.status_of(body)
    # An explicit but unparseable individual-notice closing field is NOT
