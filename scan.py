@@ -78,8 +78,16 @@ _NEGATED_SERVICE = re.compile(
  re.I,
 )
 
+def positive_scope_text(s):
+ """Remove explicitly excluded tree/vegetation work before scope matching.
+
+ Shared by local and regional candidate classifiers so a demolition notice
+ saying tree removal is by others cannot become a regional tree lead.
+ """
+ return _NEGATED_SERVICE.sub(' ', norm(s).lower())
+
 def category(s):
- t=_NEGATED_SERVICE.sub(' ',norm(s).lower())
+ t=positive_scope_text(s)
  core=next((k for k,v in CATEGORIES.items() if any(x in t for x in v)),None)
  if core:
   return core
