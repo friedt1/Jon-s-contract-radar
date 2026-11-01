@@ -554,6 +554,7 @@ def scan_civicplus(src, listing_pages, page_errors):
   detail_status = 'unknown'
   detail_due = ''
   detail_time = ''
+  detail_has_closing_field = False
   detail_scope = ''
   detail_worksite = ''
   try:
@@ -585,6 +586,11 @@ def scan_civicplus(src, listing_pages, page_errors):
    # matches the listing. Attempts and homepage reads are not bid details.
    individual_details_fetched += 1
    detail_status = civicplus_bids.status_of(body)
+   # An explicit but unparseable individual-notice closing field is NOT
+   # permission to reuse an older listing-card deadline. Preserve unknown
+   # rather than publish a potentially superseded submission date.
+   detail_has_closing_field = bool(re.search(
+    r'\bClosing\s+Date(?:/Time|\s+and\s+Time)?\s*:', body, re.I))
    detail_due, detail_time = civicplus_bids.detail_closing_of(body)
    detail_scope = civicplus_bids.detail_description(body)
    detail_worksite = civicplus_bids.detail_worksite(body)
@@ -595,10 +601,12 @@ def scan_civicplus(src, listing_pages, page_errors):
    closed_count += 1
    continue
   # The individual notice takes precedence over a stale listing date.
-  # Conflicting cards can contain a superseded deadline. Never fall back
-  # to either listing card when the individual detail omits its cutoff.
-  due = detail_due or ('' if ambiguous else row['deadline'])
-  due_time = detail_time if detail_due else ('' if ambiguous else row['deadline_time'])
+  # Conflicting cards can contain a superseded deadline. An explicit
+  # unparseable detail cutoff also overrides any older listing-card date:
+  # retain an unknown deadline instead of presenting stale evidence.
+  listing_fallback = not ambiguous and not detail_has_closing_field
+  due = detail_due or (row['deadline'] if listing_fallback else '')
+  due_time = detail_time if detail_due else (row['deadline_time'] if listing_fallback else '')
   if civicplus_bids.closing_passed(due, due_time, NOW):
    expired_count += 1
    continue
