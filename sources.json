@@ -676,7 +676,12 @@
     "type": "NY education",
     "url": "",
     "mode": "discovery_pending",
-    "verified_url": false
+    "verified_url": false,
+    "candidate_official_url": "https://www.corning-cc.edu/about/regional-board-of-trustees/ccc_policy_manual-2023.pdf",
+    "official_page_role": "Official SUNY Corning Community College purchasing/procurement policy, NOT a public individual bid listing",
+    "provider_access_required": true,
+    "activation_gate": "The college's published Purchasing and Procurement Policy describes competitive quotes/bids but provides no current individual tree-service or grounds-maintenance solicitations. Contact campus purchasing or identify a separate publicly permitted per-notice listing; verify robots/terms, bid scope, deadline, open status and local worksite before activation. Do not treat historical policy text as a live bid.",
+    "official_url_checked_at": "2026-11-01T21:38:41.097+00:00"
   },
   {
     "name": "Cornell University",
@@ -969,7 +974,12 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "require_local_evidence": true
+    "require_local_evidence": true,
+    "candidate_official_url": "https://www.wegmans.com/service/for-our-suppliers",
+    "official_page_role": "Official Wegmans supplier information, W-Buy purchasing gateway and construction contract terms; NOT a public facilities-service RFP index",
+    "provider_access_required": true,
+    "activation_gate": "Wegmans' supplier page includes W-Buy purchasing tools and construction/non-construction terms, but the public page is not a listing of individual regional tree/vegetation or property-maintenance contracts. Require facilities purchasing authorization or a separately verified publicly permitted per-notice feed; confirm actual local worksite, scope, deadline, status and terms. Do not crawl W-Buy or treat food-product vendor onboarding as a landscaping bid.",
+    "official_url_checked_at": "2026-11-01T21:38:41.097+00:00"
   },
   {
     "name": "Brixmor Property Group",
