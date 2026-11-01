@@ -734,7 +734,7 @@
     "official_page_role": "Commonwealth University (including Mansfield campus) official PASSHE Procurement Shared Services gateway; NOT an anonymous bid feed",
     "delegated_provider": "PASSHE SourcePoint (SAP Business Network/Ariba)",
     "provider_access_required": true,
-    "activation_gate": "Commonwealth University official procurement page checked 2026-11-01: Mansfield is served by PASSHE Procurement Shared Services; SourcePoint supplier registration is required to access opportunities. Do not fetch authenticated Ariba listings or treat this page as an individual-notice feed. Obtain approved supplier access and permitted API/export, review robots/terms, and validate Mansfield-specific worksite, scope, deadlines and status before activation."
+    "activation_gate": "Commonwealth University official procurement page checked 2026-11-01: Mansfield is served by PASSHE Procurement Shared Services; SourcePoint supplier registration is required to access opportunities. Do not fetch authenticated Ariba listings or treat this page as an individual-notice feed. Obtain approved supplier access and permitted API/export, review robots/terms, and validate Mansfield-specific worksite, scope, submission deadline and open status before activation."
   },
   {
     "name": "NYSEG",
