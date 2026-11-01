@@ -22,6 +22,30 @@ class ExcludedWorkScopeTests(unittest.TestCase):
                 self.assertIsNone(scan.category(notice))
                 self.assertFalse(scan.eligible(notice, today=self.TODAY))
 
+    def test_excluded_storm_line_and_right_of_way_work_is_not_a_lead(self):
+        # A demolition/road contract can mention tree-adjacent work solely
+        # to exclude it. Such text must not create a tree-service candidate.
+        notices = (
+            "Owego demolition bid; tree clearing by others",
+            "Road paving RFP; right-of-way clearing excluded",
+            "Bridge repairs contract; line clearance not included",
+            "Building demolition RFP; storm cleanup by others",
+            "Paving contract; disaster debris removal not required",
+            "Bridge RFP without woody debris removal",
+            "Road repair bid; roadside mowing by others",
+            "Demolition RFP; forestry mowing excluded",
+        )
+        for notice in notices:
+            with self.subTest(notice=notice):
+                self.assertIsNone(scan.category(notice))
+                self.assertFalse(scan.eligible(notice, today=self.TODAY))
+
+    def test_positive_tree_work_survives_excluded_storm_work(self):
+        notice = ("Tree removal bid on county property; "
+                  "storm debris removal by others; bids due November 19, 2026")
+        self.assertEqual(scan.category(notice), "Tree removal")
+        self.assertTrue(scan.eligible(notice, today=self.TODAY))
+
     def test_actual_sitework_remains_separately_labeled(self):
         notice = ("Owego demolition and site grading RFP; "
                   "tree removal by others; bids due November 19, 2026")
