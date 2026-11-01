@@ -62,7 +62,8 @@ class RegionalClockNormalizationTests(unittest.TestCase):
         result = build([a, b], today=TODAY, now=after)["opportunities"]
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["deadline_status"], "conflicting_unverified")
-        self.assertEqual(result[0]["deadline"], "")
+        self.assertEqual(result[0]["deadline"], TODAY.isoformat())
+        self.assertEqual(result[0]["deadline_time"], "")
         self.assertEqual(result[0]["deadline_conflict"], ["2:00 pm", "9:00 am"])
 
     def test_erie_expired_and_owego_demolition_still_excluded(self):
