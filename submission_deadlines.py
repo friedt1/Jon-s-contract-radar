@@ -7,7 +7,7 @@ import datetime as dt
 import re
 
 _DATE = (r"(?P<date>(?:\d{4}-\d{1,2}-\d{1,2})|"
-         r"(?:\d{1,2}/\d{1,2}/\d{2,4})|"
+         r"(?:\d{1,2}/\d{1,2}/\d{2,4})|"\n         r"(?:\d{1,2}-\d{1,2}-\d{2,4})|"
          r"(?:(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|"
          r"May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember|t)?|"
          r"Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\.?\s+\d{1,2}(?:st|nd|rd|th)?,?\s*\d{4}))")
@@ -40,7 +40,7 @@ _OTHER_MILESTONE_END = re.compile(
 
 
 def _date(value):
-    for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y", "%B %d %Y", "%b %d %Y"):
+    for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y",\n                "%m-%d-%Y", "%m-%d-%y", "%B %d %Y", "%b %d %Y"):
         try:
             cleaned = re.sub(r"(?<=\d)(?:st|nd|rd|th)(?=,?\s*\d{4}$)", "", value, flags=re.I)
             cleaned = re.sub(r",\s*(?=\d{4}$)", " ", cleaned)
