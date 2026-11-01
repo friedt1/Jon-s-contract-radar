@@ -155,6 +155,47 @@ class PublicPaginationTests(unittest.TestCase):
             with self.subTest(final=final):
                 self.assertFalse(pages.valid_pagination_redirect(original, final))
 
+    def test_pager_links_preserve_open_bid_filters_before_fetch(self):
+        listing = "https://example.gov/Bids.aspx?status=open&category=tree"
+        links = [
+            ("Next", "?page=2&status=closed&category=tree", 0),
+            ("Next", "?page=2&category=tree", 0),
+            ("Next", "?page=2&status=open&category=tree&login=1", 0),
+            ("Next", "?page=2&status=open&category=tree&status=closed", 0),
+            ("Next", "?page=2&status=open&category=tree&bidID=88", 0),
+            ("Next", "?category=tree&page=2&status=open", 0),
+            ("Page 3", "?status=open&category=tree&Page=3", 0),
+        ]
+        self.assertEqual(pages.next_pages(links, listing, {listing}), [
+            "https://example.gov/Bids.aspx?category=tree&page=2&status=open",
+            "https://example.gov/Bids.aspx?status=open&category=tree&Page=3",
+        ])
+
+    def test_changed_filter_pager_never_sends_request(self):
+        source = dict(SOURCE, url=SOURCE["url"] + "?status=open")
+        safe = SOURCE["url"] + "?status=open&page=2"
+        detail = "https://example.gov/bid/204"
+        fetched = []
+
+        def fake(url, binary=False):
+            fetched.append(url)
+            if url == source["url"]:
+                return ('<a href="?status=closed&page=2">Next</a>'
+                        '<a href="?page=2&login=1">Next</a>'
+                        '<a href="?status=open&page=2">Next</a>',
+                        "text/html", url)
+            if url == safe:
+                return '<a href="/bid/204">Tree removal bid</a>', "text/html", url
+            if url == detail:
+                return "<h1>Tree removal bid due November 19, 2026</h1>", "text/html", url
+            raise AssertionError("unsafe pager URL was fetched: " + url)
+
+        with patch.object(scan, "fetch", side_effect=fake):
+            leads, status = scan.scan_direct(source)
+        self.assertEqual(fetched, [source["url"], safe, detail])
+        self.assertEqual([lead["url"] for lead in leads], [detail])
+        self.assertIn("2 listing pages", status)
+
     def test_same_cursor_redirect_to_login_filter_is_not_parsed(self):
         requested = "https://example.gov/Bids.aspx?page=2"
         fetched = []
