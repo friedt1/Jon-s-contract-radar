@@ -42,7 +42,7 @@ class CivicPlusAmbiguousBidIdTests(unittest.TestCase):
         html = (
             '<article><p>Tree removal fake duplicate</p>'
             '<a href="/Bids.aspx?bidID=41&amp;bidID=42">Read on</a></article>'
-            '<article><p>Tree and stump removal</p>'
+            '<article><p>Tree and stump removal bid</p><p>Bid No. 42</p>'
             '<p>Status: Closes: Open 11/20/2026 2:00 PM</p>'
             '<a href="/Bids.aspx?bidID=42">Read on</a></article>'
         )
