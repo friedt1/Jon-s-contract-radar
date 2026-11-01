@@ -85,6 +85,17 @@ class RegionalRankTests(unittest.TestCase):
             with self.subTest(url=url):
                 self.assertIsNone(classify({"title": "Tree removal", "url": url}))
 
+    def test_encoded_backslash_notice_cannot_enter_regional_feed(self):
+        # Synthetic URL only: an encoded path separator must not acquire
+        # a canonical identity or become a regional contract candidate.
+        for url in ("https://county.example/bids%5cprivate?bidID=12",
+                    "https://county.example/bids?bidID=12%5Cshadow"):
+            with self.subTest(url=url):
+                self.assertIsNone(classify({"title": "Tree removal", "url": url}))
+                self.assertEqual(build([{"title": "Tree removal", "url": url}],
+                                       today=__import__("datetime").date(2026, 11, 1)
+                                       )["opportunities"], [])
+
     def test_tracking_duplicates_collapse_but_distinct_bid_ids_remain(self):
         today = __import__("datetime").date(2026, 10, 29)
         base = {"title": "Storm cleanup", "url": "https://COUNTY.example/bids?bidID=12",
