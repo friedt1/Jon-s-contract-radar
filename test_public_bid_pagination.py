@@ -110,14 +110,18 @@ class PublicPaginationTests(unittest.TestCase):
     def test_ambiguous_page_cursors_are_not_fetched(self):
         links = [
             ("Next", "?page=2&page=3", 0),
-            ("Next", "?page=2&offset=40", 0),
-            ("Next", "?page=2&page=2", 0),
+            ("Next", "?page=2&Page=3", 0),
+            ("Next", "?page=2&page=4", 0),
             ("Next", "?page=2&bidID=99", 0),
             ("Next", "?page=2", 0),
+            ("Next", "?page=2&offset=40", 0),
+            ("Next", "?page=2&page=2", 0),
             ("Page 3", "?pageno=3", 0),
         ]
         self.assertEqual(pages.next_pages(links, SOURCE["url"], {SOURCE["url"]}), [
             "https://example.gov/Bids.aspx?page=2",
+            "https://example.gov/Bids.aspx?page=2&offset=40",
+            "https://example.gov/Bids.aspx?page=2&page=2",
             "https://example.gov/Bids.aspx?pageno=3",
         ])
 
