@@ -41,7 +41,8 @@ _OTHER_MILESTONE_END = re.compile(
 
 
 def _date(value):
-    for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y",\n                "%m-%d-%Y", "%m-%d-%y", "%B %d %Y", "%b %d %Y"):
+    for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y",
+                "%m-%d-%Y", "%m-%d-%y", "%B %d %Y", "%b %d %Y"):
         try:
             cleaned = re.sub(r"(?<=\d)(?:st|nd|rd|th)(?=,?\s*\d{4}$)", "", value, flags=re.I)
             cleaned = re.sub(r",\s*(?=\d{4}$)", " ", cleaned)
