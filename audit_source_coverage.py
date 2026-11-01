@@ -5,6 +5,7 @@ Use --strict to fail until every target has an authorized direct listing method.
 """
 import argparse
 import json
+from collections import Counter
 from pathlib import Path
 
 from notice_identity import canonical_url
@@ -54,6 +55,14 @@ def audit(sources):
                        "invalid direct configuration; verified HTTPS URL required" if invalid_direct else
                        "not directly monitored; official source discovery required"),
         })
+    # A duplicated name can masquerade as a second one of the 102 targets.
+    # Preserve raw row counts for investigation, but report distinct agencies
+    # separately and never interpret duplicate rows as a shared publisher.
+    name_counts = Counter(row["source"] for row in results)
+    duplicate_names = sorted(name for name, count in name_counts.items() if count > 1)
+    for row in results:
+        row["duplicate_source_name"] = row["source"] in duplicate_names
+
     # A single official procurement gateway may represent multiple named
     # agencies. Report those overlaps without treating a shared landing page
     # as independent individual-bid ingestion for every named target.
@@ -65,8 +74,8 @@ def audit(sources):
             normalized = canonical_url(candidate)
             if normalized:
                 by_entrypoint.setdefault(normalized, []).append(row["source"])
-    shared = {url: sorted(names) for url, names in sorted(by_entrypoint.items())
-              if len(names) > 1}
+    shared = {url: sorted(set(names)) for url, names in sorted(by_entrypoint.items())
+              if len(set(names)) > 1}
     for row in results:
         candidate = (row["target_url"] if row["direct_configured"] else
                      row["candidate_official_url"] if row["official_url_staged"] else None)
@@ -76,9 +85,12 @@ def audit(sources):
     return {
         "distinct_official_entrypoints": len(by_entrypoint),
         "shared_official_entrypoint_groups": shared,
-        "shared_official_entrypoint_targets": sum(
-            row["shared_official_entrypoint"] for row in results),
+        "shared_official_entrypoint_targets": sum(len(names) for names in shared.values()),
         "total": len(results),
+        "unique_named_targets": len(name_counts),
+        "duplicate_source_names": duplicate_names,
+        "duplicate_source_rows": sum(count - 1 for count in name_counts.values() if count > 1),
+        "inventory_integrity_ok": not duplicate_names,
         "direct_configured": sum(x["direct_configured"] for x in results),
         "direct_fetch_targets": sum(x["direct_fetch_target"] for x in results),
         "configured_provider_access_required": sum(x["provider_access_required"] for x in results),
@@ -98,7 +110,8 @@ def audit(sources):
                     "configuration; staged URLs are not active monitoring. Staged "
                     "supplier-registration gateways require authorization and are not "
                     "public individual-bid feeds. Shared official entrypoints do not "
-                    "represent independent operational bid feeds.")
+                    "represent independent operational bid feeds. Duplicate named "
+                    "source rows are inventory defects, not additional monitored targets.")
     }
 
 
@@ -111,7 +124,8 @@ def main():
     print(json.dumps(results, indent=2))
     return 1 if args.strict and (results["not_directly_monitored"] or
                                  results["configured_provider_access_required"] or
-                                 results["configured_unimplemented_adapters"]) else 0
+                                 results["configured_unimplemented_adapters"] or
+                                 not results["inventory_integrity_ok"]) else 0
 
 
 if __name__ == "__main__":
