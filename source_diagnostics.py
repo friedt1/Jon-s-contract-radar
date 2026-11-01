@@ -67,6 +67,12 @@ def report(payload):
         def count(pattern):
             match = re.search(pattern, low)
             return int(match.group(1)) if match else None
+        # Raw source_status is retained for investigation, but a feed with
+        # structured health must not reconstruct missing direct-extraction
+        # evidence from a stale status string. Only legacy feeds lacking
+        # source_health entirely use text counters as a fallback.
+        def legacy_count(pattern):
+            return count(pattern) if not has_health else None
         row = by_name.get(name, {})
         direct = row.get("direct_state", "unknown")
         indirect = row.get("indirect_state", "unknown")
@@ -74,10 +80,10 @@ def report(payload):
         pagination_errors = row.get("pagination_errors", 0)
         detail_budget_deferred = row.get(
             "detail_budget_deferred",
-            count(r"(\d+) individual bid records deferred at detail budget") or 0)
+            legacy_count(r"(\d+) individual bid records deferred at detail budget") or 0)
         detail_candidates_deferred = row.get(
             "detail_candidates_deferred",
-            count(r"(\d+) detail candidates deferred at request budget") or 0)
+            legacy_count(r"(\d+) detail candidates deferred at request budget") or 0)
         pdf_budget_skips = row.get("pdf_budget_skips", 0)
         # SAM.gov is intentionally deferred and excluded from the 102-source
         # structured health report; it is not a missing health record.
@@ -104,13 +110,15 @@ def report(payload):
             indirect_error = "indirect rss error:" in low
         results.append({
             "source": name,
-            "listing_pages": count(r"(\d+) listing pages"),
+            "listing_pages": (count(r"(\d+) listing pages") if
+                              not has_health or direct == "fetched_unverified"
+                              else None),
             "individual_records": row.get("individual_bid_records_found",
-                                          count(r"(\d+) individual bid records")),
+                                          legacy_count(r"(\d+) individual bid records")),
             "details_checked": row.get("detail_fetches_attempted",
-                                       count(r"(\d+) (?:relevant )?details checked")),
+                                       legacy_count(r"(\d+) (?:relevant )?details checked")),
             "candidates": row.get("unverified_candidates",
-                                  count(r"(\d+) (?:unverified )?candidates")),
+                                  legacy_count(r"(\d+) (?:unverified )?candidates")),
             "direct_state": direct,
             "indirect_state": indirect,
             "detail_access_state": row.get("detail_access_state", "unknown"),
