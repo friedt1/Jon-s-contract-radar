@@ -735,6 +735,8 @@ def scan_direct(src):
     seen_pages.add(next_url)
     try:
      extra,extra_type,extra_final=fetch(next_url)
+     if not public_pages.valid_pagination_redirect(next_url,extra_final):
+      page_errors.append('pagination redirect changed listing or cursor');continue
      if 'html' not in extra_type and not extra.lstrip().startswith('<'):
       page_errors.append('unsupported pagination content');continue
      listing_pages.append((parse_html(extra),extra_final))
