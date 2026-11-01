@@ -32,7 +32,16 @@ EVIDENCE_POINTS = {
 def review_assessment(lead, today=None, now=None):
     """Add transparent triage metadata; leave original status untouched."""
     today = today or dt.date.today()
-    score = CATEGORY_POINTS.get(lead.get("category"), 0)
+    # A notice without a supported service category is not a review lead.
+    # Strong metadata (individual detail, future deadline, worksite text) must
+    # never compensate for unrelated work such as demolition-only Owego bids.
+    if lead.get("category") not in CATEGORY_POINTS:
+        return {
+            "review_score": 0, "review_priority": "excluded",
+            "review_factors": ["no supported tree/clearing/site-prep category"],
+            "review_disclaimer": "Triage only; not an open-contract or travel verification",
+        }
+    score = CATEGORY_POINTS[lead["category"]]
     factors = ["service-category match (not worksite verification)"]
     kind = lead.get("lead_type", "")
     score += EVIDENCE_POINTS.get(kind, 0)
