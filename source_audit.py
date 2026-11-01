@@ -26,6 +26,7 @@ def audit(sources):
         "direct_configured": coverage["direct_configured"],
         "direct_fetch_targets": coverage["direct_fetch_targets"],
         "configured_provider_access_required": coverage["configured_provider_access_required"],
+        "staged_provider_access_required": coverage["staged_provider_access_required"],
         "unique_direct_page_hosts": len(hosts),
         "hosts": hosts,
         # This legacy field means *not configured for direct retrieval*, and
@@ -43,7 +44,9 @@ def audit(sources):
             "Only verified, safe HTTPS configurations count as direct targets. "
             "Staged URLs are not live monitoring; provider access-required "
             "configurations are not fetch targets. Even a successful listing "
-            "fetch does not prove permitted individual-bid extraction or an open contract. Shared publisher gateways are not independent feeds."
+            "fetch does not prove permitted individual-bid extraction or an open contract. "
+            "Staged supplier-registration gateways remain access-required, not live feeds. "
+            "Shared publisher gateways are not independent feeds."
         ),
     }
 
