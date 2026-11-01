@@ -71,11 +71,14 @@ class CivicPlusDashReceiptDeadlineTests(unittest.TestCase):
                 leads, diagnostic = scan.scan_direct(SOURCE)
                 self.assertEqual(leads, [])
                 self.assertIn("1 expired", diagnostic)
-            # The listing still says Nov 20: the contradictory dates must
-            # remain unverified even before the individual cutoff.
+            # The individual notice supersedes the older listing date.
+            # Before its cutoff, the result is only an unverified candidate.
             with patch.object(scan, "NOW", before):
-                leads, _ = scan.scan_direct(SOURCE)
-                self.assertEqual(leads, [])
+                leads, diagnostic = scan.scan_direct(SOURCE)
+                self.assertEqual(len(leads), 1, diagnostic)
+                self.assertEqual(leads[0]["deadline"], "2026-11-02")
+                self.assertEqual(leads[0]["deadline_source"], "individual notice")
+                self.assertEqual(leads[0]["status"], "unverified")
 
     def test_matching_listing_before_cutoff_is_only_unverified(self):
         matching_listing = LISTING.replace(
