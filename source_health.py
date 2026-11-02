@@ -30,6 +30,8 @@ def _access_error_types(names, count):
         types.append("robots_policy_unavailable")
     if re.search(r"\bHTTPError HTTP (?:401|403)\b", names):
         types.append("http_blocked")
+    if "AccessChallenge" in names:
+        types.append("challenge_blocked")
     if "UnsafeRedirect" in names:
         types.append("redirect_blocked")
     if "HTTPError HTTP 429" in names:
@@ -82,6 +84,8 @@ def classify(source, status):
     # label it as HTTP-blocked, not "credentials required".
     elif re.search(r"\bdirect error: HTTPError HTTP (?:401|403)\b", status):
         direct_state = "http_blocked"
+    elif "direct error: AccessChallenge" in status:
+        direct_state = "challenge_blocked"
     elif "direct error: UnsafeRedirect" in status:
         direct_state = "redirect_blocked"
     elif "direct error: HTTPError HTTP 429" in status:
@@ -128,6 +132,8 @@ def classify(source, status):
         detail_access_state = "robots_blocked"
     elif "http_blocked" in detail_error_types:
         detail_access_state = "http_blocked"
+    elif "challenge_blocked" in detail_error_types:
+        detail_access_state = "challenge_blocked"
     elif "redirect_blocked" in detail_error_types:
         detail_access_state = "redirect_blocked"
     elif "rate_limited" in detail_error_types:
@@ -153,6 +159,8 @@ def classify(source, status):
         pagination_access_state = "robots_blocked"
     elif "http_blocked" in pagination_error_types:
         pagination_access_state = "http_blocked"
+    elif "challenge_blocked" in pagination_error_types:
+        pagination_access_state = "challenge_blocked"
     elif "redirect_blocked" in pagination_error_types:
         pagination_access_state = "redirect_blocked"
     elif "rate_limited" in pagination_error_types:
@@ -202,7 +210,7 @@ def summarize(sources, statuses):
     rows = [classify(src, statuses.get(src["name"], "")) for src in sources]
     states = ("fetched_unverified", "robots_blocked", "robots_policy_unavailable",
               "access_required",
-              "http_blocked", "redirect_blocked", "rate_limited",
+              "http_blocked", "challenge_blocked", "redirect_blocked", "rate_limited",
               "unsupported_content", "fetch_error", "not_fetched",
               "staged_official_url", "not_configured", "adapter_not_implemented")
     counts = {state: sum(row["direct_state"] == state for row in rows) for state in states}
@@ -256,7 +264,7 @@ def summarize(sources, statuses):
     # Per-reason counts are intentionally non-exclusive: mixed failures in
     # one source must appear under every observed access restriction.
     for state in ("robots_blocked", "robots_policy_unavailable",
-                  "http_blocked", "redirect_blocked", "rate_limited"):
+                  "http_blocked", "challenge_blocked", "redirect_blocked", "rate_limited"):
         counts["detail_" + state + "_sources"] = sum(
             state in row["detail_error_types"] for row in rows)
         counts["pagination_" + state + "_sources"] = sum(
