@@ -4,14 +4,19 @@ No login bypass, no silent assumption that a reachable page permits crawling.
 Unknown policy (timeouts, 5xx, malformed URLs) fails closed. HTTP 404/410
 means no robots policy is published, per robots conventions.
 """
+import re
 from threading import Lock
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlparse, urlsplit
+from urllib.parse import urlsplit
 from urllib.request import Request, HTTPRedirectHandler, build_opener
 from urllib.robotparser import RobotFileParser
 
+from source_config import public_dns_hostname
+
 USER_AGENT = "JonsContractRadar"
 MAX_ROBOTS_BYTES = 250_000
+# Reject encoded control bytes before even requesting the publisher's robots.txt.
+_UNSAFE_ENCODED = re.compile(r"%(?:0[0-9a-f]|1[0-9a-f]|7f|5c)", re.I)
 _CACHE = {}
 _LOCK = Lock()
 
@@ -76,8 +81,24 @@ def _policy(origin):
 
 
 def allowed(url):
-    parsed = urlparse(url)
-    if parsed.scheme not in ("https", "http") or not parsed.netloc or parsed.username:
+    # All callers, including redirects and newly discovered notice links,
+    # must pass the public-host guard *before* requesting robots.txt. A
+    # private/loopback address must not become reachable merely because its
+    # robots policy is missing (HTTP 404/410 means allow for public hosts).
+    if (not isinstance(url, str) or not url
+            or any(ord(char) < 33 or ord(char) == 127 or char == "\\" for char in url)
+            or _UNSAFE_ENCODED.search(url)):
+        return False, "invalid public URL"
+    try:
+        parsed = urlsplit(url)
+        expected_port = 443 if parsed.scheme == "https" else 80
+        if (parsed.scheme not in ("https", "http") or not parsed.netloc
+                or not public_dns_hostname(parsed.hostname)
+                or parsed.username is not None or parsed.password is not None
+                or parsed.port not in (None, expected_port)
+                or parsed.fragment):
+            return False, "invalid public URL"
+    except ValueError:
         return False, "invalid public URL"
     origin = parsed.scheme + "://" + parsed.netloc
     with _LOCK:

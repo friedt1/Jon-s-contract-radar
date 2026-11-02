@@ -108,5 +108,47 @@ class RobotsPolicyTests(unittest.TestCase):
                                          "https://agency.example/private")
 
 
+    def test_unsafe_targets_never_request_robots_policy(self):
+        # Synthetic URLs only. This guard protects scanner-discovered links
+        # as well as configured direct sources; none is fetched or published.
+        for url in (
+            "https://127.0.0.1/bids",
+            "http://127.0.0.1/bids",
+            "https://169.254.169.254/latest/meta-data/",
+            "https://10.0.0.8/bids",
+            "https://[::1]/bids",
+            "https://0x7f.1/bids",
+            "https://0177.0x0.0.01/bids",
+            "https://agency.local/bids",
+            "https://agency.internal/bids",
+            "https://agency.example:8443/bids",
+            "https://agency.example:broken/bids",
+            "https://user:pw@agency.example/bids",
+            "https://agency.example/bids%0dInjected",
+            "https://agency.example/bids%5cprivate",
+            "https://agency.example/bids#fragment",
+            "https://agency.example\\@127.0.0.1/bids",
+            "https://agency.example/bids\nInjected",
+            "javascript:alert(1)",
+            None,
+        ):
+            with self.subTest(url=url), patch.object(
+                robots_policy, "urlopen"
+            ) as download:
+                self.assertEqual(
+                    robots_policy.allowed(url), (False, "invalid public URL")
+                )
+                download.assert_not_called()
+
+    def test_public_http_host_remains_supported(self):
+        # Preserve the existing HTTP public-source behavior, but do not
+        # permit arbitrary ports or private hostnames.
+        with patch.object(robots_policy, "urlopen", return_value=RobotsResponse(
+                b"User-agent: *\\nAllow: /\\n")) as download:
+            self.assertTrue(robots_policy.allowed(
+                "http://agency.example/public/bids")[0])
+            download.assert_called_once()
+
+
 if __name__ == "__main__":
     unittest.main()
