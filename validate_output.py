@@ -104,14 +104,19 @@ def _staged_url_changed_after_published_scan(source, published_row, feed_updated
 
 def _staged_provider_gate_changed_after_published_scan(source, published_row,
                                                        stale_staged_url):
-    """Accept a newly documented provider restriction on a post-scan URL.
+    """Accept a stricter staged provider gate after a timestamped URL change.
 
-    This never waives direct-fetch evidence or a previously claimed provider
-    gate. Only a staged, timestamped URL replacement onto a known procurement
-    provider may add the stricter access-required label in configuration.
+    Some official county bid pages embed a delegated provider rather than
+    redirecting to its host. The explicit gateway role covers those cases;
+    ordinary county pages cannot silently acquire a provider exception.
+    Neither case waives direct-fetch evidence or any published bid metadata.
     """
+    provider_destination = scan.provider_link(
+        source.get("candidate_official_url", ""))
+    official_delegated_gateway = (
+        source.get("official_page_role") == "delegated_provider_gateway_only")
     return (stale_staged_url
-            and scan.provider_link(source.get("candidate_official_url", ""))
+            and (provider_destination or official_delegated_gateway)
             and source.get("provider_access_required") is True
             and bool(source.get("delegated_provider"))
             and published_row.get("staged_provider_access_required") is False)
