@@ -412,7 +412,7 @@ class StagedProbeTests(unittest.TestCase):
         def fetch(url, binary=False):
             if url == ENTRY:
                 return listing(), "text/html", url
-            raise robots_policy.RobotsDenied("detail disallowed")
+            raise robots_policy.RobotsDenied("robots disallows requested path")
         row = staged.probe(SOURCE, fetch=fetch)
         self.assertEqual(row["state"], "individual_notice_robots_blocked")
         self.assertTrue(row["listing_retrieved"])
@@ -457,7 +457,7 @@ class StagedProbeTests(unittest.TestCase):
             if url == ENTRY:
                 return listing, "text/html", url
             if "bidID=4" in url:
-                raise robots_policy.RobotsDenied("notice path denied")
+                raise robots_policy.RobotsDenied("robots disallows requested path")
             if "bidID=5" in url:
                 return b"<h1>County purchasing homepage</h1>", "text/html", url
             return detail().encode(), "text/html", url
