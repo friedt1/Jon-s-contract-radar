@@ -621,11 +621,10 @@ def scan_civicplus(src, listing_pages, page_errors):
    # solicitation's content under that URL. Compare explicit bid numbers
    # when BOTH listing and individual notice supply one. Missing numbers
    # remain unverified rather than being invented from unrelated page text.
-   detail_number = re.search(
-    r'\bBid\s+(?:Number|No\.?)\s*:?\s*([A-Za-z0-9-]+)\b', body, re.I)
+   detail_number = civicplus_bids.bid_number_of(body)
    listing_number = row.get('bid_number', '')
    if (detail_number and listing_number and
-       detail_number.group(1).casefold() != listing_number.casefold()):
+       detail_number.casefold() != listing_number.casefold()):
     errors.append('detail bid number mismatch')
     continue
    # Count only a successfully fetched, non-empty notice whose bidID still
