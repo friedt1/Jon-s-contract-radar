@@ -114,6 +114,27 @@ class FeedValidationRegressions(unittest.TestCase):
                 self.validate_fixture(self.notice(
                     url=url, deadline="2026-11-05", deadline_time=""))
 
+    def test_impossible_or_non_iso_submission_dates_fail_closed(self):
+        # These are synthetic malformed publisher/parser outputs, not bids.
+        # A future-looking string must not evade the expiration check.
+        for due in ("2026-11-99", "2026-02-30", "2026/11/20",
+                    "Nov 20 2026", "2026-11-20T14:00:00", 20261120):
+            with self.subTest(due=due):
+                with self.assertRaisesRegex(ValueError, "Invalid submission date"):
+                    self.validate_fixture(self.notice(
+                        deadline=due, deadline_time=""))
+
+    def test_clock_without_submission_date_fails_closed(self):
+        # Never treat a clock without a calendar date as a known cutoff.
+        with self.assertRaisesRegex(ValueError, "Closing time without submission date"):
+            self.validate_fixture(self.notice(
+                deadline="", deadline_time="2:00 PM"))
+
+    def test_real_future_iso_date_remains_unverified(self):
+        self.validate_fixture(self.notice(
+            deadline="2026-11-20", deadline_time="2:00 PM",
+            status="unverified", open_status="unverified"))
+
     def test_owego_demolition_without_tree_scope_is_still_ineligible(self):
         with self.assertRaisesRegex(ValueError, "Ineligible lead"):
             self.validate_fixture(self.notice(

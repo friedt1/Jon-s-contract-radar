@@ -20,7 +20,25 @@ def validate_active_notice(lead, now):
     if publisher_closed(lead) or lead.get('review_priority') == 'expired_check':
         raise ValueError('Closed/expired notice in active feed: ' + str(lead.get('id', '')))
     due = lead.get('deadline')
+    # A scanner/parser regression must not publish an impossible or malformed
+    # date as a future submission cutoff. Lexicographic ISO comparisons alone
+    # accept values such as 2026-11-99 and make the dashboard look current.
+    if due not in (None, ''):
+        if (not isinstance(due, str) or len(due) != 10
+                or due[4] != '-' or due[7] != '-'
+                or not (due[:4] + due[5:7] + due[8:]).isascii()
+                or not (due[:4] + due[5:7] + due[8:]).isdigit()):
+            raise ValueError('Invalid submission date in active feed: '
+                             + str(lead.get('id', '')))
+        try:
+            dt.date.fromisoformat(due)
+        except ValueError as exc:
+            raise ValueError('Invalid submission date in active feed: '
+                             + str(lead.get('id', ''))) from exc
     clock = lead.get('deadline_time')
+    if clock and not due:
+        raise ValueError('Closing time without submission date in active feed: '
+                         + str(lead.get('id', '')))
     if (due and clock and eastern_deadline_timezone(lead.get('deadline_timezone'))
             and scan.civicplus_bids.closing_passed(due, str(clock), now)):
         raise ValueError('Elapsed submission cutoff in active feed: ' + str(lead.get('id', '')))
