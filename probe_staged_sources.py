@@ -585,11 +585,11 @@ def probe(source, fetch=scan.fetch, now=None):
             # bid-number identity gate as the active CivicPlus scanner before
             # claiming that an individual sample was retrieved.
             if adapter is civicplus_bids and record.get("bid_number"):
-                detail_number = re.search(
-                    r"\bBid\s+(?:Number|No\.?)\s*:?\s*([A-Za-z0-9-]+)\b",
-                    body, re.I,
-                )
-                if (detail_number and detail_number.group(1).casefold()
+                # Match the active scanner's complete CivicPlus bid-number
+                # parser. IDs such as "RFP 26-ADM-014" must not be truncated
+                # to "RFP" and incorrectly marked as mismatched.
+                detail_number = civicplus_bids.bid_number_of(body)
+                if (detail_number and detail_number.casefold()
                         != record["bid_number"].casefold()):
                     failure["state"] = "individual_notice_bid_number_mismatch"
                     result["individual_sample_failures"].append(failure)
