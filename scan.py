@@ -78,7 +78,12 @@ _SERVICE_SCOPE = (r"(?:tree\s*(?:and|&|/)\s*vegetation\s+removal|"
                   r"power\s+line\s+clearing|roadside\s+(?:mowing|clearing)|"
                   r"storm\s+(?:clean-?up|debris(?:\s+removal)?)|"
                   r"disaster\s+debris(?:\s+removal)?|woody\s+debris\s+removal|"
-                  r"debris\s+removal)")
+                  r"debris\s+removal|"
+                  # Adjacent site-prep phrases also need explicit-exclusion
+                  # handling. Otherwise "site grading by owner" in a
+                  # demolition notice becomes a false site-prep opportunity.
+                  r"site\s+prep(?:aration)?|site\s+grading|"
+                  r"earthwork\s+and\s+grading|grading\s+and\s+grubbing)")
 # Scope exclusions can apply to coordinated work items, e.g. 'no tree
 # removal or stump grinding' or 'tree removal and stump grinding by owner'.
 # Consume only an explicitly negated group; unrelated positive scope in the

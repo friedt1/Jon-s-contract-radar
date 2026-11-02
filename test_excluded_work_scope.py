@@ -49,6 +49,39 @@ class ExcludedWorkScopeTests(unittest.TestCase):
         self.assertEqual(scan.category(notice), "Tree removal")
         self.assertTrue(scan.eligible(notice, today=self.TODAY))
 
+    def test_disclaimed_site_prep_does_not_create_adjacent_work(self):
+        # A demolition bid can name grading only to assign it to the
+        # owner/another contractor. These are not site-prep opportunities.
+        notices = (
+            "Owego demolition RFP: site grading excluded",
+            "Owego demolition RFP: no site preparation",
+            "Owego demolition RFP: earthwork and grading by owner",
+            "Road repair bid: grading and grubbing not included",
+            "Building demolition RFP without site prep",
+            "Demolition contract: site grading will be completed by another contractor",
+        )
+        for notice in notices:
+            with self.subTest(notice=notice):
+                self.assertIsNone(scan.category(notice))
+                self.assertFalse(scan.eligible(notice, today=self.TODAY))
+
+    def test_positive_work_survives_separate_site_prep_exclusion(self):
+        # Strip only the disclaimed service; preserve independent work.
+        self.assertEqual(
+            scan.category("Brush clearing bid; site grading by owner"),
+            "Vegetation management")
+        self.assertEqual(
+            scan.category("Tree removal RFP; site preparation excluded"),
+            "Tree removal")
+        self.assertEqual(
+            scan.category("Owego demolition RFP: tree removal by owner; "
+                          "site grading is required"),
+            "Related site prep")
+        self.assertTrue(scan.eligible(
+            "Owego demolition RFP: tree removal by owner; "
+            "site grading is required; bids due November 19, 2026",
+            today=self.TODAY))
+
     def test_actual_sitework_remains_separately_labeled(self):
         notice = ("Owego demolition and site grading RFP; "
                   "tree removal by others; bids due November 19, 2026")
