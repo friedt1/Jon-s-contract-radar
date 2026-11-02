@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-02T16:43:56.183475+00:00",
+  "updated": "2026-11-02T17:14:53.554878+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 84,
   "safe_staged_entrypoints": 84,
@@ -733,8 +733,8 @@
     {
       "name": "Towanda Borough",
       "official_entrypoint": "https://towandaborough.org/public-announcements/",
-      "state": "listing_reachable_adapter_required",
-      "listing_retrieved": true,
+      "state": "listing_robots_policy_unavailable",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -804,17 +804,7 @@
       "individual_sample_failures": [],
       "activation_gate": "Official City of Williamsport Request for Proposal document category verified 2026-10-30: individual RFP/IFB posts exist, but the index also contains historical responses and non-service sale notices. Before activation, verify robots and publisher terms, build permitted individual-post/attachment extraction with authoritative bid submission deadlines, scope and worksite, and separately review any external provider authorization. Do not treat a dated post as an open bid.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false,
-      "official_bid_index_links_unverified": [
-        {
-          "label": "Request for Proposal: Invitation for Bids \u2013 Sale of City Hall",
-          "url": "https://cityofwilliamsport.org/news/document-center/request-for-proposal-invitation-for-bids-sale-of-city-hall/"
-        },
-        {
-          "label": "City of Williamsport Levee Rehabilitation Project \u2013 Professional Services Procurement",
-          "url": "https://cityofwilliamsport.org/news/document-center/city-of-williamsport-levee-rehabilitation-project-professional-services-procurement/"
-        }
-      ]
+      "direct_monitoring_activated": false
     },
     {
       "name": "Montrose Borough",
@@ -1394,7 +1384,7 @@
       "direct_monitoring_activated": false
     }
   ],
-  "unverified_bid_index_link_targets": 3,
-  "unverified_bid_index_links_found": 4,
+  "unverified_bid_index_link_targets": 2,
+  "unverified_bid_index_links_found": 2,
   "warning": "Diagnostic only: no source is activated by these probes. A fetched page or parsed historical notice is not an open bid. Sample 'Open' labels can be stale; inspect temporal evidence. Review publisher terms, individual extraction, and live scan before changing discovery_pending."
 }
