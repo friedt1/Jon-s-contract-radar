@@ -20,6 +20,11 @@ _LABEL = (
     r"(?:must|will|shall)\s+be\s+(?:received|submitted))|"
     r"(?:quotes?|responses?)\s+(?:due|received|submitted|"
     r"(?:must|will|shall)\s+be\s+(?:received|submitted))|"
+    # Some public bid notices say "bids close" or "bids accepted until"
+    # rather than "bids due". These are submission cutoffs, unlike a
+    # bid-opening, question, or site-visit date.
+    r"(?:sealed\s+)?(?:bids?|proposals?|quotes?|responses?)\s+"
+    r"(?:(?:(?:will|shall)\s+)?close(?:s)?|(?:are\s+)?accepted\s+until)|"
     r"(?:bid|proposal|quote|response)\s+(?:submission\s+)?deadline|"
     r"submission\s+deadline|submit(?:ted)?\s+(?:by|until)|deadline))"
 )
