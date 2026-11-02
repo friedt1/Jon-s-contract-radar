@@ -134,8 +134,11 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "candidate_official_url": "https://broomecountyny.gov/purchasing/open-solicitations",
-    "activation_gate": "Official county page delegates bid documents to BidNet; provider-approved individual-notice access and robots policy review required."
+    "candidate_official_url": "https://www.bidnetdirect.com/new-york/broome-county",
+    "activation_gate": "The former county /purchasing/open-solicitations URL returned live HTTP 404 on 2026-11-02. Broome County's official vendor registration instructions and purchasing documents identify BidNet Direct / Empire State Purchasing Group as the official solicitation portal. Its public entrypoint returned HTTP 403 to external inspection on 2026-11-02. Keep discovery_pending; obtain provider-approved individual-notice access, verify publisher terms and robots policy, then independently confirm scope, worksite, submission deadline, status and completeness before activating.",
+    "delegated_provider": "BidNet Direct",
+    "provider_access_required": true,
+    "official_page_role": "County-endorsed delegated BidNet Direct procurement gateway, NOT a county-hosted individual-notice feed."
   },
   {
     "name": "Cortland County",
@@ -496,7 +499,7 @@
     "candidate_official_url": "https://www.lansingtownny.gov/Bids.aspx",
     "official_page_role": "current_official_civicplus_bid_index_access_unverified",
     "official_url_checked_at": "2026-11-02T06:40:00Z",
-    "activation_gate": "Town\u0027s current official homepage links to /Bids.aspx (CivicPlus); the previous /rfps index is obsolete and the hosted probe returned HTTP 404. Live listing retrieval is not yet established and may be robots-restricted. Review publisher terms and robots policy, verify permitted bidID notice extraction, deadlines, worksite and listing completeness before activation. Do not infer a live bid or publisher authorization."
+    "activation_gate": "Town's current official homepage links to /Bids.aspx (CivicPlus); the previous /rfps index is obsolete and the hosted probe returned HTTP 404. Live listing retrieval is not yet established and may be robots-restricted. Review publisher terms and robots policy, verify permitted bidID notice extraction, deadlines, worksite and listing completeness before activation. Do not infer a live bid or publisher authorization."
   },
   {
     "name": "Town of Dryden",
