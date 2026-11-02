@@ -23,7 +23,8 @@ KEYWORDS = ("debris removal", "disaster debris", "emergency tree", "vegetation m
             "brush clearing", "forestry mulching", "hazard tree", "debris hauling", "road clearing", "roadside clearing",
             "highway clearing", "roadway debris", "blocked road", "downed trees",
             "line clearance", "line clearing", "power line clearing", "powerline clearing",
-            "transmission line clearing", "distribution line clearing", "utility right-of-way",
+            "transmission line clearing", "distribution line clearing", "utility line clearing",
+            "roadway vegetation clearing", "utility right-of-way",
             "utility vegetation", "electric utility vegetation", "storm restoration")
 AGENCIES = ("fema", "usace", "army corps", "department of transportation",
             "state dot", "penndot", "nysdot", "emergency management")
