@@ -1,6 +1,6 @@
 import unittest
 
-from audit_source_coverage import audit
+from audit_source_coverage import audit, strict_failures
 
 
 class CoverageAuditTests(unittest.TestCase):
@@ -78,6 +78,53 @@ class CoverageAuditTests(unittest.TestCase):
         self.assertTrue(result["sources"][0]["staged_publisher_entrypoint_only"])
         self.assertIn("bid index not identified", result["sources"][0]["status"])
         self.assertFalse(result["sources"][1]["staged_publisher_entrypoint_only"])
+
+    def test_strict_gate_rejects_missing_target_even_if_every_remaining_page_is_direct(self):
+        # A silently dropped agency must not make a 101/101 direct audit pass.
+        rows = [
+            {"name": f"Agency {n}", "mode": "direct_page",
+             "url": f"https://agency{n}.example/bids", "verified_url": True}
+            for n in range(101)
+        ]
+        report = audit(rows)
+        self.assertEqual(report["not_directly_monitored"], 0)
+        self.assertEqual(report["direct_fetch_targets"], 101)
+        blockers = strict_failures(report)
+        self.assertTrue(any("inventory rows: 101" in b for b in blockers))
+        self.assertTrue(any("unique named targets: 101" in b for b in blockers))
+
+    def test_strict_gate_rejects_unnamed_and_duplicate_target_rows(self):
+        rows = [
+            {"name": f"Agency {n}", "mode": "direct_page",
+             "url": f"https://agency{n}.example/bids", "verified_url": True}
+            for n in range(100)
+        ]
+        rows += [
+            {"name": "Agency 0", "mode": "direct_page",
+             "url": "https://duplicate.example/bids", "verified_url": True},
+            {"name": "   ", "mode": "direct_page",
+             "url": "https://unnamed.example/bids", "verified_url": True},
+        ]
+        report = audit(rows)
+        self.assertEqual(report["total"], 102)
+        self.assertEqual(report["unique_named_targets"], 100)
+        self.assertEqual(report["unnamed_source_rows"], 1)
+        self.assertEqual(report["duplicate_source_rows"], 1)
+        self.assertFalse(report["inventory_integrity_ok"])
+        self.assertTrue(any("inventory names invalid" in b
+                            for b in strict_failures(report)))
+
+    def test_strict_gate_is_structural_not_live_extraction_proof(self):
+        rows = [
+            {"name": f"Agency {n}", "mode": "direct_page",
+             "url": f"https://agency{n}.example/bids", "verified_url": True}
+            for n in range(102)
+        ]
+        report = audit(rows)
+        self.assertEqual(strict_failures(report), [])
+        self.assertIn("not independently verified", report["sources"][0]["status"])
+        self.assertTrue(any("inventory rows" in b
+                            for b in strict_failures(report, expected_targets=103)))
 
     def test_current_102_source_inventory_is_accounted_for(self):
         import json

@@ -1,7 +1,8 @@
 """Audit configured source monitoring: indirect news is not direct bid monitoring.
 
 Run: python audit_source_coverage.py
-Use --strict to fail until every target has an authorized direct listing method.
+Use --strict to enforce the 102-target inventory and configured direct-access gates.
+Passing this structural audit does not prove live, permitted bid extraction.
 """
 import argparse
 import json
@@ -9,6 +10,8 @@ from collections import Counter
 from pathlib import Path
 
 from notice_identity import canonical_url
+
+EXPECTED_NAMED_TARGETS = 102
 
 from source_config import (DIRECT_MODES, UNCONNECTED_PLATFORMS,
                            direct_configured, direct_fetch_target,
@@ -18,10 +21,12 @@ from source_config import (DIRECT_MODES, UNCONNECTED_PLATFORMS,
 def audit(sources):
     results = []
     for source in sources:
+        name = source.get("name", "")
+        name = name if isinstance(name, str) and name.strip() else ""
         mode = source.get("mode", "missing")
         url = source.get("url", "")
         direct = direct_configured(source)
-        access_required = direct and (source["name"] in UNCONNECTED_PLATFORMS
+        access_required = direct and (name in UNCONNECTED_PLATFORMS
                                       or source.get("provider_access_required") is True
                                       or bool(source.get("delegated_provider")))
         adapter_missing = direct and not direct_fetch_target(source)
@@ -35,7 +40,7 @@ def audit(sources):
             source.get("provider_access_required") is True
             or bool(source.get("delegated_provider")))
         results.append({
-            "source": source["name"],
+            "source": name,
             "mode": mode,
             "direct_configured": direct,
             "direct_fetch_target": direct_fetch_target(source) and not access_required,
@@ -63,7 +68,8 @@ def audit(sources):
     # A duplicated name can masquerade as a second one of the 102 targets.
     # Preserve raw row counts for investigation, but report distinct agencies
     # separately and never interpret duplicate rows as a shared publisher.
-    name_counts = Counter(row["source"] for row in results)
+    unnamed_source_rows = sum(not row["source"] for row in results)
+    name_counts = Counter(row["source"] for row in results if row["source"])
     duplicate_names = sorted(name for name, count in name_counts.items() if count > 1)
     for row in results:
         row["duplicate_source_name"] = row["source"] in duplicate_names
@@ -94,8 +100,9 @@ def audit(sources):
         "total": len(results),
         "unique_named_targets": len(name_counts),
         "duplicate_source_names": duplicate_names,
+        "unnamed_source_rows": unnamed_source_rows,
         "duplicate_source_rows": sum(count - 1 for count in name_counts.values() if count > 1),
-        "inventory_integrity_ok": not duplicate_names,
+        "inventory_integrity_ok": not duplicate_names and not unnamed_source_rows,
         "direct_configured": sum(x["direct_configured"] for x in results),
         "direct_fetch_targets": sum(x["direct_fetch_target"] for x in results),
         "configured_provider_access_required": sum(x["provider_access_required"] for x in results),
@@ -119,21 +126,51 @@ def audit(sources):
                     "supplier-registration gateways require authorization and are not "
                     "public individual-bid feeds. Shared official entrypoints do not "
                     "represent independent operational bid feeds. Duplicate named "
-                    "source rows are inventory defects, not additional monitored targets.")
+                    "source rows and unnamed targets are inventory defects, not additional monitored targets.")
     }
+
+
+def strict_failures(report, expected_targets=EXPECTED_NAMED_TARGETS):
+    """Structural blockers for a complete named-source configuration.
+
+    This deliberately does not certify robots/terms permission, current bid
+    retrieval, or individual-notice verification; those require live evidence.
+    """
+    failures = []
+    if report["total"] != expected_targets:
+        failures.append(f"inventory rows: {report['total']} (expected {expected_targets})")
+    if report["unique_named_targets"] != expected_targets:
+        failures.append(
+            f"unique named targets: {report['unique_named_targets']} "
+            f"(expected {expected_targets})")
+    if not report["inventory_integrity_ok"]:
+        failures.append(
+            f"inventory names invalid: {report['duplicate_source_rows']} duplicate rows, "
+            f"{report['unnamed_source_rows']} unnamed rows")
+    for key, label in (
+        ("not_directly_monitored", "not directly configured"),
+        ("configured_provider_access_required", "provider access required"),
+        ("configured_unimplemented_adapters", "adapter not implemented"),
+        ("invalid_direct_configurations", "invalid direct configurations"),
+    ):
+        if report[key]:
+            failures.append(f"{label}: {report[key]}")
+    return failures
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--strict", action="store_true")
     parser.add_argument("--sources", default="sources.json")
+    parser.add_argument("--expected-targets", type=int, default=EXPECTED_NAMED_TARGETS,
+                        help="Required distinct named sources (default: 102)")
     args = parser.parse_args()
+    if args.expected_targets < 1:
+        parser.error("--expected-targets must be a positive integer")
     results = audit(json.loads(Path(args.sources).read_text(encoding="utf-8")))
+    results["strict_blockers"] = strict_failures(results, args.expected_targets)
     print(json.dumps(results, indent=2))
-    return 1 if args.strict and (results["not_directly_monitored"] or
-                                 results["configured_provider_access_required"] or
-                                 results["configured_unimplemented_adapters"] or
-                                 not results["inventory_integrity_ok"]) else 0
+    return 1 if args.strict and results["strict_blockers"] else 0
 
 
 if __name__ == "__main__":
