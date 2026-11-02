@@ -253,9 +253,11 @@ def validate(root=scan.ROOT):
             # Older published feeds predate per-notice policy-lookup metrics.
             # Missing new zero-valued counts are compatible; nonzero claims
             # still require matching raw scanner evidence.
-            optional_new = {'robots_policy_unavailable',
+            optional_new = {'robots_policy_unavailable', 'challenge_blocked',
                             'detail_robots_policy_unavailable_sources',
-                            'pagination_robots_policy_unavailable_sources'}
+                            'pagination_robots_policy_unavailable_sources',
+                            'detail_challenge_blocked_sources',
+                            'pagination_challenge_blocked_sources'}
             if counts.get(field, 0 if field in optional_new else None) != expected_counts[field]:
                 raise ValueError('Source health count disagrees with scanner: ' + field)
         if counts.get('individual_bid_details_fetched', 0) != sum(
