@@ -495,6 +495,7 @@
     "verified_url": false,
     "candidate_official_url": "https://www.lansingtownny.gov/Bids.aspx",
     "official_page_role": "current_official_civicplus_bid_index_access_unverified",
+    "official_url_checked_at": "2026-11-02T06:40:00Z",
     "activation_gate": "Town\u0027s current official homepage links to /Bids.aspx (CivicPlus); the previous /rfps index is obsolete and the hosted probe returned HTTP 404. Live listing retrieval is not yet established and may be robots-restricted. Review publisher terms and robots policy, verify permitted bidID notice extraction, deadlines, worksite and listing completeness before activation. Do not infer a live bid or publisher authorization."
   },
   {
