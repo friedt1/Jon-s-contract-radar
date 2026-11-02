@@ -130,7 +130,9 @@ _BEFORE_DATE = re.compile(r"(?P<clock>" + _CLOCK + r")\s*(?:,\s*)?(?:local\s+tim
 _RECEIPT_BEFORE_DATE = re.compile(
     r"\b(?:sealed\s+)?(?:bids?|proposals?|quotes?|responses?)\s+"
     r"(?:(?:will|shall|must)\s+be\s+)?received\b"
-    # Long agency/address text can separate the receipt verb from the\n    # cutoff. Both "until" and "no later than" identify submission time.\n    r"[^\n]{0,260}?\b(?:until|no\s+later\s+than)\s+(?P<clock>" + _CLOCK + r")\s*(?:,\s*)?"
+    # Long agency/address text can separate the receipt verb from the
+    # cutoff. Both "until" and "no later than" identify submission time.
+    r"[^\n]{0,260}?\b(?:until|no\s+later\s+than)\s+(?P<clock>" + _CLOCK + r")\s*(?:,\s*)?"
     r"(?:local\s+time\s+)?(?:on\s+)?"
     r"(?:(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+)?"
     + _DATE, re.I,
