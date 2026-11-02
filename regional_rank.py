@@ -84,6 +84,34 @@ def _normalized_eastern_clock(notice):
     return civicplus_bids._clock(str(notice.get("deadline_time") or "")).lower()
 
 
+def _normalized_bid_number(notice):
+    """Normalize an explicit issuer bid number, never infer one from prose."""
+    value = notice.get("bid_number")
+    return " ".join(value.casefold().split()) if isinstance(value, str) else ""
+
+
+def _shared_listing_numbered_urls(notices):
+    """Split a shared URL only with evidence of distinct relevant bid numbers.
+
+    A single bid number and an unnumbered copy retain the old URL-based
+    deduplication behavior. Distinct explicit numbers on the same official
+    listing page must not overwrite one another or share deadline conflicts.
+    """
+    numbers = {}
+    for notice in notices:
+        if not isinstance(notice, dict):
+            continue
+        number = _normalized_bid_number(notice)
+        url = canonical_url(notice.get("url"))
+        scope = positive_scope_text(
+            str(notice.get("title") or "") + " " +
+            str(notice.get("summary") or ""))
+        if (number and url.startswith("https://")
+                and any(term in scope for term in KEYWORDS)):
+            numbers.setdefault(url, set()).add(number)
+    return {url for url, values in numbers.items() if len(values) > 1}
+
+
 def classify(notice, today=None, now=None):
     if not isinstance(notice, dict):
         return None
@@ -152,6 +180,16 @@ def build(notices, today=None, now=None):
     # an otherwise-open duplicate may be stale. Withhold the conflicting
     # identity from active review until its current publisher status is checked.
     # An old date alone does not trigger this gate (amendments can extend bids).
+    notices = list(notices)
+    numbered_listing_urls = _shared_listing_numbered_urls(notices)
+
+    def identity(notice, url):
+        # Only split a shared URL after seeing at least two independently
+        # numbered relevant notices. Never manufacture bid IDs from titles.
+        number = (_normalized_bid_number(notice)
+                  if url in numbered_listing_urls else "")
+        return (url, number)
+
     by_url = {}
     publisher_closed_urls = set()
     # Keep all independently stated submission cutoffs for the same notice.
@@ -172,7 +210,7 @@ def build(notices, today=None, now=None):
         if publisher_closed(notice):
             closed_url = canonical_url(notice.get("url"))
             if closed_url.startswith("https://"):
-                publisher_closed_urls.add(closed_url)
+                publisher_closed_urls.add(identity(notice, closed_url))
             continue
         # Preserve valid Eastern same-day clock evidence *before* classify()
         # discards an already elapsed copy. Otherwise a 9 AM copy disappears
@@ -180,6 +218,7 @@ def build(notices, today=None, now=None):
         # This never revives an elapsed notice: it only marks a surviving
         # duplicate's deadline as conflicting and unverified.
         candidate_url = canonical_url(notice.get("url"))
+        candidate_key = identity(notice, candidate_url)
         candidate_date = notice.get("deadline")
         candidate_text = positive_scope_text(
             str(notice.get("title") or "") + " " +
@@ -197,22 +236,22 @@ def build(notices, today=None, now=None):
             except ValueError:
                 pass
             else:
-                dates_by_url.setdefault(candidate_url, set()).add(candidate_date)
+                dates_by_url.setdefault(candidate_key, set()).add(candidate_date)
                 clock = _normalized_eastern_clock(notice)
                 if clock:
-                    clocks_by_url.setdefault((candidate_url, candidate_date), set()).add(clock)
+                    clocks_by_url.setdefault((candidate_key, candidate_date), set()).add(clock)
                 elif (not eastern_deadline_timezone(notice.get("deadline_timezone"))
                       and civicplus_bids._clock(str(notice.get("deadline_time") or ""))):
-                    incompatible_clocks_by_url.add((candidate_url, candidate_date))
+                    incompatible_clocks_by_url.add((candidate_key, candidate_date))
                 # A known elapsed cutoff must survive even if classify()
                 # drops this copy and a later duplicate remains.
                 if (candidate_date == today.isoformat() and clock
                         and _deadline_state(notice, today, now=now) == "expired"):
-                    elapsed_same_day_clocks.setdefault(candidate_url, set()).add(clock)
+                    elapsed_same_day_clocks.setdefault(candidate_key, set()).add(clock)
         item = classify(notice, today=today, now=now)
         if item is None:
             continue
-        key = item["url"]
+        key = identity(notice, item["url"])
         due = item.get("deadline")
         if isinstance(due, str):
             try:
@@ -229,8 +268,19 @@ def build(notices, today=None, now=None):
                              len(str(n.get("summary") or "")))
         if previous is None or quality(item) > quality(previous):
             by_url[key] = item
-    for closed_url in publisher_closed_urls:
-        by_url.pop(closed_url, None)
+    for closed_key in publisher_closed_urls:
+        if closed_key[1]:
+            # A numbered closure applies to that solicitation only.
+            by_url.pop(closed_key, None)
+            # An unnumbered copy cannot independently establish that it is
+            # a different live solicitation on the same listing page.
+            by_url.pop((closed_key[0], ""), None)
+        else:
+            # A generic listing-level Closed status is ambiguous. Fail
+            # closed rather than reviving one of its numbered candidates.
+            for key in tuple(by_url):
+                if key[0] == closed_key[0]:
+                    by_url.pop(key, None)
     for key, item in by_url.items():
         dates = dates_by_url.get(key, set())
         if len(dates) > 1:
