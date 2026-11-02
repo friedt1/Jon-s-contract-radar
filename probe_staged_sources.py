@@ -428,6 +428,29 @@ def probe(source, fetch=scan.fetch, now=None):
                 scan.category(listing_scope) or "not_identified"
             )
             result["sample_notice_scope_evidence"] = "listing_card_unverified"
+            # CivicPlus exposes labelled title/description fields on the
+            # individual notice. Keep this evidence separate from the listing
+            # card: a stale or misleading card must not imply tree-work scope
+            # in a different solicitation. Granicus has no isolated detail
+            # scope extractor yet; never classify its page-wide chrome.
+            detail_scope = ""
+            if adapter is civicplus_bids:
+                detail_scope = " ".join(filter(None, (
+                    civicplus_bids.detail_title(body),
+                    civicplus_bids.detail_description(body),
+                )))
+            detail_category = scan.category(detail_scope) if detail_scope else None
+            listing_category = scan.category(listing_scope)
+            result["sample_notice_detail_scope_category"] = (
+                detail_category or "not_identified" if detail_scope else "unknown"
+            )
+            result["sample_notice_detail_scope_evidence"] = (
+                "individual_notice_labelled_fields_unverified" if detail_scope
+                else "not_extracted"
+            )
+            result["sample_notice_listing_detail_scope_disagreement"] = bool(
+                detail_scope and bool(listing_category) != bool(detail_category)
+            )
             detail_status = adapter.status_of(body)
             listed_status = record["open_status"]
             # A listing's "Open" badge is not an individual-notice status.
