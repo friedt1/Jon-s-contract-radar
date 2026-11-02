@@ -245,6 +245,40 @@ class ValidateSourceHealthTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Source health state disagrees"):
             self.check(bad_sources, payload)
 
+    def test_timestamped_wayne_county_embedded_provider_gateway(self):
+        # A county-hosted page can embed OpenGov without redirecting to the
+        # provider's domain. Preserve the earlier feed's staged health until
+        # a fresh scan reflects the documented delegation. No bid is seeded.
+        sources, payload = self.payload()
+        payload["updated"] = "2026-11-02T16:53:56+00:00"
+        historical_sources = json.loads(json.dumps(sources))
+        old = next(s for s in historical_sources
+                   if s["name"] == "Wayne County")
+        old["candidate_official_url"] = (
+            "https://www.waynecountyny.gov/745/Purchasing")
+        for key in ("delegated_provider", "provider_access_required",
+                    "official_url_checked_at", "official_page_role"):
+            old.pop(key, None)
+        payload["source_health"] = source_health.summarize(
+            historical_sources, payload["source_status"])
+        previous = next(row for row in payload["source_health"]["sources"]
+                        if row["name"] == "Wayne County")
+        self.assertEqual(previous["direct_state"], "staged_official_url")
+        self.assertFalse(previous["staged_provider_access_required"])
+        self.check(sources, payload)
+
+        # This exception is timestamp-bound and never accepts a new claim
+        # about direct monitoring or a fabricated publisher access state.
+        payload["updated"] = "2026-11-02T18:00:00+00:00"
+        with self.assertRaisesRegex(ValueError, "Source health state disagrees"):
+            self.check(sources, payload)
+        payload["updated"] = "2026-11-02T16:53:56+00:00"
+        unmarked = json.loads(json.dumps(sources))
+        next(s for s in unmarked if s["name"] == "Wayne County").pop(
+            "official_page_role", None)
+        with self.assertRaisesRegex(ValueError, "Source health state disagrees"):
+            self.check(unmarked, payload)
+
     def test_legacy_health_without_nonexclusive_arrays_remains_readable(self):
         sources, payload = self.payload()
         for row in payload['source_health']['sources']:
