@@ -59,7 +59,7 @@ class SourceDiagnosticsTests(unittest.TestCase):
             "Rate": ("rate_limited", "direct error: HTTPError HTTP 429"),
             "NonHTML": ("unsupported_content", "unsupported content type"),
             "Robots": ("robots_blocked", "direct blocked by robots policy: robots disallows requested path"),
-            "PolicyUnknown": ("robots_policy_unavailable", "direct blocked by robots policy: robots policy unavailable: URLError"),
+            "PolicyUnknown": ("robots_policy_unavailable", "direct robots policy unavailable: robots policy unavailable: URLError"),
             "Timeout": ("fetch_error", "direct error: TimeoutError"),
             "Portal": ("access_required", "individual listing ingestion not connected"),
             "Working": ("fetched_unverified", "direct fetched; 1 listing pages"),
