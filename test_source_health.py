@@ -5,6 +5,21 @@ import source_health
 
 
 class SourceHealthTests(unittest.TestCase):
+    def test_publisher_homepage_is_staged_but_not_a_bid_feed(self):
+        sources = [
+            {"name": "Publisher homepage", "mode": "discovery_pending",
+             "candidate_official_url": "https://county.example/",
+             "official_page_role": "publisher_entrypoint_only"},
+            {"name": "Bid index", "mode": "discovery_pending",
+             "candidate_official_url": "https://county.example/Bids.aspx"},
+        ]
+        summary = source_health.summarize(sources, {})
+        self.assertEqual(summary["counts"]["staged_official_url"], 2)
+        self.assertEqual(summary["counts"]["staged_publisher_entrypoints_only"], 1)
+        self.assertEqual(summary["counts"]["configured_fetch_targets"], 0)
+        self.assertTrue(summary["sources"][0]["staged_publisher_entrypoint_only"])
+        self.assertFalse(summary["sources"][1]["staged_publisher_entrypoint_only"])
+
     def test_fetched_homepage_is_not_verified_bid_extraction(self):
         src = {"name": "County", "mode": "direct_page", "url": "https://county.example/Bids.aspx",
                "verified_url": True}
