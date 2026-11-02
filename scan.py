@@ -498,6 +498,28 @@ def redirect_preserves_notice(requested, final):
 
 
 
+def is_procurement_index_link(url):
+ """Known collection routes are not individual solicitation evidence.
+
+ A collection can mention tree work and deadlines without being a bid.
+ Do not publish its URL as an individual notice.
+ """
+ try:
+  parsed = up.urlsplit(url)
+  # CivicPlus Bids.aspx?bidID=42 is an individual notice, not an index.
+  if any(key.casefold() in {'bidid', 'bid_id', 'noticeid', 'solicitationid', 'rfpid'}
+         for key, _ in up.parse_qsl(parsed.query)):
+   return False
+  path = up.unquote(parsed.path).rstrip('/').lower()
+  if re.search(r'/(?:procurement|purchasing|bids?|rfps?|rfqs?|solicitations?|tenders?|opportunities?|bid-projects)(?:\.(?:aspx?|html?|php))?$', path):
+   return True
+  return bool(re.search(
+   r'/(?:bids?|rfps?|rfqs?|solicitations?|tenders?|opportunities?|bid-projects)/'
+   r'(?:current|open|active|all|latest|upcoming|archive|archived|past|previous|history|results|awards?|listing|list|index|search|current-bids|open-bids|all-bids|(?:19|20)\d{2})$', path))
+ except ValueError:
+  return False
+
+
 def is_individual_notice_link(url):
  """A bid-detail shaped link, not a procurement index or PDF attachment.
 
@@ -510,12 +532,13 @@ def is_individual_notice_link(url):
    return False
   if any(key.lower() == 'bidid' for key in up.parse_qs(parsed.query)):
    return True
+  if is_procurement_index_link(url):
+   return False
   return bool(re.search(
    r'/(?:bids?|rfp|rfq|solicitations?|tenders?|opportunities?|bid-projects)/[^/]+/?$',
    parsed.path, re.I))
  except ValueError:
   return False
-
 
 
 def navigation_only_detail_link(title, context, url):
@@ -1016,7 +1039,7 @@ def scan_direct(src):
     # Description field, never from unrelated navigation/list items.
     scope = (metadata_description(body) if metadata_notice else
              heading_scope if heading_notice else body)
-    if (not p.rows or metadata_notice or heading_notice) and not nested_notice_links and category(scope) and eligible(scope + (' bid' if metadata_notice else '') + (' Due date: ' + deadline(body) if deadline(body) else ''), name) and not closed(body) and not explicit_closing_passed(body,NOW):
+    if (not p.rows or metadata_notice or heading_notice) and not nested_notice_links and not is_procurement_index_link(final_url) and category(scope) and eligible(scope + (' bid' if metadata_notice else '') + (' Due date: ' + deadline(body) if deadline(body) else ''), name) and not closed(body) and not explicit_closing_passed(body,NOW):
      key=category(scope);match=next((t for t in CATEGORIES.get(key, SITE_PREP_PHRASES) if t in scope.lower()),'')
      ix=scope.lower().find(match);snippet=scope[max(0,ix-160):ix+520]
      add_lead(found,name,title if category(title) else snippet[:130],final_url,('Bid description: ' if metadata_notice else '')+snippet+' '+('Deadline: '+deadline(body) if deadline(body) else ''),'individual metadata bid candidate' if metadata_notice else 'direct detail candidate',evidence=body)
