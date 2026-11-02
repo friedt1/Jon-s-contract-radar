@@ -64,16 +64,13 @@ def classify(source, status):
         # refusal in the raw diagnostic, but do not misclassify the source
         # as a robot-only integration that would activate if robots changed.
         direct_state = "access_required"
-    elif re.search(
-            r"\bdirect blocked by robots policy:\s*(?:robots disallows requested path|disallowed)\b",
-            status,
-    ):
-        # An explicit path refusal is different from a robots.txt lookup
-        # failure. The latter fails closed but does NOT prove the publisher
-        # prohibited crawling this page.
-        direct_state = "robots_blocked"
-    elif "direct blocked by robots policy" in status:
+    elif "direct robots policy unavailable:" in status:
         direct_state = "robots_policy_unavailable"
+    elif "direct blocked by robots policy" in status:
+        # Historical feeds used this prefix for both actual refusals and
+        # lookup failures. Preserve their original state until the next
+        # scanner run emits the new, unambiguous status prefix.
+        direct_state = "robots_blocked"
     elif not direct_fetch_target(source):
         # Feed/API configuration is not operational until its own adapter exists.
         direct_state = "adapter_not_implemented"
