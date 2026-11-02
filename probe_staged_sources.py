@@ -3,6 +3,8 @@
 Never activates a source, changes sources.json, or creates opportunity records.
 robots.txt is a necessary gate, not proof of site terms or API authorization.
 At most three individual notices per source are fetched to test adapter shape.
+When a listing exceeds that cap, inspect all three selected samples rather
+than stopping at the first success; otherwise daily rotation can be illusory.
 """
 import datetime as dt
 import json
@@ -207,6 +209,8 @@ def probe(source, fetch=scan.fetch, now=None):
         "individual_notice_retrieved": False,
         "individual_records_discovered": 0,
         "individual_samples_attempted": 0,
+        "individual_samples_confirmed": 0,
+        "additional_sample_notice_urls_confirmed": [],
         "individual_sample_failures": [],
         "activation_gate": source.get("activation_gate", ""),
         "terms_review": "required; robots allowance alone is not authorization",
@@ -381,8 +385,11 @@ def probe(source, fetch=scan.fetch, now=None):
         # Stale or broken notices are common. Prefer listings with a future
         # deadline, then unknown deadlines, then expired/closed listings.
         # Rotate equal-priority records daily so a fixed three-notice budget
-        # does not indefinitely hide later notices. Stop on a well-shaped
-        # sample; no candidate is emitted and no source is activated.
+        # does not indefinitely hide later notices. With overflow, actually
+        # inspect every selected slot: returning after the first good notice
+        # would starve the rotating boundary slot. For short listings, retain
+        # the original first-good-sample behavior to minimize requests.
+        # No candidate is emitted and no source is activated.
         for record in _daily_sample_candidates(records, now):
             detail_url = record["url"]
             result["individual_samples_attempted"] += 1
@@ -446,6 +453,13 @@ def probe(source, fetch=scan.fetch, now=None):
                     result["individual_sample_failures"].append(failure)
                     continue
 
+            result["individual_samples_confirmed"] += 1
+            if result["individual_notice_retrieved"]:
+                # Keep the first, highest-priority verified-shape sample as
+                # the primary diagnostic; record additional valid notice URLs
+                # without replacing its title, deadline, or scope evidence.
+                result["additional_sample_notice_urls_confirmed"].append(detail_url)
+                continue
             result["individual_notice_retrieved"] = True
             result["sample_notice_url"] = detail_url
             # Listing-card scope is useful for prioritizing integrations, but
@@ -552,8 +566,11 @@ def probe(source, fetch=scan.fetch, now=None):
                 "deadline_not_passed_unverified" if due else "deadline_unknown"
             )
             result["state"] = "notice_format_confirmed_terms_review_required"
-            return result
+            if len(records) <= MAX_SAMPLE_DETAILS:
+                return result
 
+        if result["individual_notice_retrieved"]:
+            return result
         failures = result["individual_sample_failures"]
         distinct_states = {failure["state"] for failure in failures}
         result["state"] = (next(iter(distinct_states)) if len(distinct_states) == 1
