@@ -119,6 +119,33 @@ class NoticeIdentityTests(unittest.TestCase):
         signed = "https://county.example/bid?X-Amz-Signature=abc%2Fdef&bidID=416"
         self.assertEqual(notice_identity.canonical_url(signed), signed)
 
+    def test_nonstandard_ports_cannot_be_published_as_bid_links(self):
+        # A public-looking DNS hostname is not enough to authorize arbitrary
+        # service ports, especially in indirect RSS/news notice links.
+        for url in (
+            "https://county.example:8443/Bids.aspx?bidID=416",
+            "http://county.example:8080/Bids.aspx?bidID=416",
+            "https://county.example:80/Bids.aspx?bidID=416",
+            "http://county.example:443/Bids.aspx?bidID=416",
+            "https://county.example:0/Bids.aspx?bidID=416",
+        ):
+            with self.subTest(url=url):
+                self.assertEqual(notice_identity.canonical_url(url), "")
+                self.assertEqual(notice_identity.notice_id(url), "")
+                out = {}
+                scan.add_lead(out, "County", "Tree removal bid",
+                              url, "Tree removal contract")
+                self.assertEqual(out, {})
+        # Explicit standard ports remain harmless identity variants.
+        self.assertEqual(
+            notice_identity.canonical_url(
+                "https://county.example:443/Bids.aspx?bidID=416"),
+            "https://county.example/Bids.aspx?bidID=416")
+        self.assertEqual(
+            notice_identity.canonical_url(
+                "http://county.example:80/Bids.aspx?bidID=416"),
+            "http://county.example/Bids.aspx?bidID=416")
+
     def test_add_lead_deduplicates_tracking_variants(self):
         out = {}
         scan.add_lead(out, "County", "Tree removal bid",
