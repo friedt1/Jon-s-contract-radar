@@ -231,6 +231,26 @@ def detail_worksite(text):
     )
     return " ".join(match.group(1).split())[:180] if match else ""
 
+# Publisher bid identifiers may have a type prefix separated by a space,
+# e.g. "RFP 26-ADM-014". Capturing only the first word ("RFP") makes two
+# different solicitations look identical during listing/detail validation.
+# Permit a second token only for common type prefixes and when that token
+# contains a digit, so adjacent "Status:" or "Description:" labels cannot
+# accidentally become part of an identifier.
+_BID_NUMBER = re.compile(
+    r"\\bBid\\s+(?:Number|No\\.?)\\s*:?\\s*"
+    r"(?P<number>(?:(?:RFP|RFB|RFQ|IFB|ITB|ITQ)\\s+"
+    r"(?=[A-Za-z0-9._/-]*\\d))?[A-Za-z0-9][A-Za-z0-9._/-]*)\\b",
+    re.I,
+)
+
+
+def bid_number_of(text):
+    """Extract a complete, explicitly labeled CivicPlus bid identifier."""
+    match = _BID_NUMBER.search(text)
+    return " ".join(match.group("number").split()) if match else ""
+
+
 def listing_records(page, origin):
     """Use link positions to isolate each individual bid from adjacent bid cards.
 
@@ -276,10 +296,10 @@ def listing_records(page, origin):
         text = card_text[:1600] if card_text else " ".join(page.parts[start:min(stop, start + 180)])
         status = status_of(text)
         due, due_time = closing_of(text)
-        number = re.search(r"\bBid\s+No\.?\s*:?\s*([A-Za-z0-9-]+)", text, re.I)
+        number = bid_number_of(text)
         records.append({
             "title": title.strip(), "url": url, "description": text[:1400],
-            "bid_number": number.group(1) if number else "",
+            "bid_number": number,
             "open_status": status, "deadline": due, "deadline_time": due_time,
         })
     return records
