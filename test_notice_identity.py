@@ -48,8 +48,8 @@ class NoticeIdentityTests(unittest.TestCase):
         base = "https://county.example/procurement"
         a, b = base + "#/bids/123", base + "#/bids/124"
         out = {}
-        scan.add_lead(out, "County", "Tree removal", a, "Tree removal scope")
-        scan.add_lead(out, "County", "Tree removal", b, "Tree removal scope")
+        scan.add_lead(out, "County", "Tree removal bid", a, "Tree removal contract")
+        scan.add_lead(out, "County", "Tree removal bid", b, "Tree removal contract")
         self.assertEqual(len(out), 2)
         notices = [
             {"title": "Tree removal", "url": a, "deadline": "2026-11-10"},
