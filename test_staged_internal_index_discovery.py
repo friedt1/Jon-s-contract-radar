@@ -76,6 +76,36 @@ class StagedInternalIndexDiscoveryTests(unittest.TestCase):
         ])
         self.assertFalse(row["direct_monitoring_activated"])
 
+    def test_individual_notice_urls_with_generic_bid_labels_are_not_indexes(self):
+        # The label may say "Bids & RFPs" while the URL points to a
+        # single CivicPlus notice, a numbered detail route, or a news post.
+        # Stripping bidID would falsely suggest an authoritative index.
+        html = (
+            '<h1>Town Hall</h1>'
+            '<a href="/Bids.aspx?bidID=416&token=private">Bids &amp; RFPs</a>'
+            '<a href="/Bids.aspx?BID_ID=417">Current Bids</a>'
+            '<a href="/procurement?notice-id=418">Procurement</a>'
+            '<a href="/news/2026/11/tree-removal">Bids &amp; RFPs</a>'
+            '<a href="/bids/419">Current Bids</a>'
+            '<a href="/rfps/420">RFPs</a>'
+            '<a href="/Bids.aspx?status=open">Current Bids</a>'
+            '<a href="/procurement?category=services">Procurement</a>'
+        )
+        calls = []
+
+        def fetch(url, binary=False):
+            calls.append(url)
+            return html, "text/html", url
+
+        row = staged.probe(SOURCE, fetch=fetch)
+        self.assertEqual(calls, [SOURCE["candidate_official_url"]])
+        self.assertEqual(row["official_bid_index_links_unverified"], [
+            {"label": "Current Bids", "url": "https://town.example/Bids.aspx"},
+            {"label": "Procurement", "url": "https://town.example/procurement"},
+        ])
+        self.assertFalse(row["direct_monitoring_activated"])
+        self.assertFalse(row["individual_notice_retrieved"])
+
     def test_unlabeled_internal_links_are_not_inferred_as_bid_indexes(self):
         html = (
             '<h1>Town Hall</h1>'

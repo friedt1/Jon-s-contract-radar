@@ -10,7 +10,7 @@ import datetime as dt
 import json
 import pathlib
 import re
-from urllib.parse import urljoin, urlparse
+from urllib.parse import parse_qsl, urljoin, urlparse
 from urllib.error import HTTPError
 
 import civicplus_bids
@@ -137,6 +137,27 @@ def _official_bid_index_candidates(links, official_url, limit=5):
             continue
         path = parsed.path.rstrip("/") or "/"
         if path in ("/", current):
+            continue
+        # Even a generic "Bids & RFPs" link label can point to one individual
+        # notice. Never strip its bidID and then suggest the resulting index
+        # URL as a verified discovery candidate. Only ordinary list filters
+        # (e.g. category or status) may be discarded for this diagnostic hint.
+        query_keys = {
+            key.lower().replace("_", "").replace("-", "")
+            for key, _ in parse_qsl(parsed.query, keep_blank_values=True)
+        }
+        if query_keys & {
+            "bidid", "rfpid", "rfqid", "noticeid", "solicitationid",
+            "projectid", "postingid", "eventid", "bidnumber",
+        }:
+            continue
+        # News articles and numbered bid-detail routes are individual posts,
+        # not reusable procurement indexes, regardless of the link text.
+        if (re.search(r"/(?:news|posts?|articles?)/\d{4}(?:/|$)",
+                      path, re.I)
+                or re.search(
+                    r"/(?:bids?|rfps?|rfqs?|solicitations?)/\d+(?:/|$)",
+                    path, re.I)):
             continue
         # Strip fragments and queries: diagnostics must not publish tokens or
         # infer that a filtered query page is an authoritative procurement feed.
