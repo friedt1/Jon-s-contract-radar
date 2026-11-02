@@ -36,7 +36,11 @@ CATEGORIES = {
  'Tree trimming': ('tree trimming','trimming of trees','tree pruning','tree maintenance','tree care','tree management','limb removal'),
  'Land clearing': ('land clearing','site clearing','lot clearing','clearing and grubbing','forestry mulching'),
  'Vegetation management': ('vegetation management','vegetation removal','removal of vegetation','vegetation clearing','invasive vegetation removal','brush clearing','brush removal','brush cutting','right of way clearing','right-of-way clearing','line clearance','roadside mowing','forestry mowing','vegetation control','brush hogging','brush mowing'),
- 'Storm cleanup': ('storm debris','storm clean-up','storm cleanup','woody debris removal','disaster debris','emergency tree','storm damage','storm response'),
+ # Generic "storm damage" and "storm response" also describe roofing, roads,
+ # insurance and electrical repairs. Require debris/tree-work evidence before
+ # treating a storm-related procurement notice as relevant to tree crews.
+ 'Storm cleanup': ('storm debris','storm clean-up','storm cleanup','woody debris removal','disaster debris','emergency tree',
+                   'downed trees','fallen trees','storm-damaged tree','storm damaged tree'),
 }
 SITE_PREP_PHRASES = ('site preparation', 'site prep', 'site grading',
                      'earthwork and grading', 'grading and grubbing')
