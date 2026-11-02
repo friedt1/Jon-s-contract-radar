@@ -4,6 +4,7 @@ Only same-host HTTPS /Home/Components/RFP/RFP/{id}/{module} pages are
 recognized. This parser supplies staging evidence, NOT a live bid feed.
 """
 import datetime as dt
+import html
 import re
 from urllib.parse import urljoin, urlsplit
 
@@ -120,6 +121,39 @@ def listing_records(page, origin):
                  for _, _, date, time in observations if date}),
         })
     return records
+
+
+
+def detail_title_html(html_text):
+    """Only a notice-specific H1 with a bid/RFP/RFQ prefix is scope evidence.
+
+    Granicus pages contain navigation, purchasing boilerplate and sometimes
+    other notices. Never classify their page-wide text or an unlabeled heading
+    as the current solicitation's title.
+    """
+    for match in re.finditer(r"<h1\b[^>]*>(.*?)</h1\s*>", html_text, re.I | re.S):
+        heading = " ".join(html.unescape(
+            re.sub(r"<[^>]*>", " ", match.group(1))).split())
+        if re.match(r"^(?:BID|RFP|RFQ)\s*:", heading, re.I):
+            return heading[:220]
+    return ""
+
+
+def detail_description(text):
+    """Read only a labelled description AFTER individual close-date metadata.
+
+    Unlabelled legal notices and site-wide boilerplate are not isolated scope
+    evidence. Return unknown rather than guessing from the rest of the page.
+    """
+    closing = re.search(r"\bClose\s+Date\s*:\s*" + DATE.pattern, text, re.I)
+    if not closing:
+        return ""
+    match = re.search(
+        r"\bDescription\s*:\s*(.+?)(?=\b(?:Start Date|Close Date|"
+        r"Department|Status)\s*:|\b(?:Contact Us|Return to full list)\b|$)",
+        text[closing.end():], re.I | re.S,
+    )
+    return " ".join(match.group(1).split())[:1200] if match else ""
 
 
 def detail_closing_of(text):
