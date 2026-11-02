@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-02T06:16:34.275884+00:00",
+  "updated": "2026-11-02T06:45:12.682793+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 84,
   "safe_staged_entrypoints": 84,
@@ -66,7 +66,7 @@
     {
       "name": "Yates County",
       "official_entrypoint": "https://www.yatescountyny.gov/bids.aspx",
-      "state": "listing_robots_blocked",
+      "state": "listing_robots_policy_unavailable",
       "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -81,7 +81,7 @@
     {
       "name": "Ontario County",
       "official_entrypoint": "https://www.ontariocountyny.gov/2291/Current-Bids-RFPs-and-Results",
-      "state": "listing_robots_blocked",
+      "state": "listing_robots_policy_unavailable",
       "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -303,7 +303,7 @@
     {
       "name": "Clinton County PA",
       "official_entrypoint": "https://www.clintoncountypa.gov/about-us/rfps",
-      "state": "listing_robots_blocked",
+      "state": "listing_robots_policy_unavailable",
       "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -333,7 +333,7 @@
     {
       "name": "Lackawanna County",
       "official_entrypoint": "https://www.lackawannacounty.org/government/departments/rfp_rfq.php",
-      "state": "listing_robots_blocked",
+      "state": "listing_robots_policy_unavailable",
       "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -387,7 +387,7 @@
     {
       "name": "Town of Big Flats",
       "official_entrypoint": "https://www.bigflatsny.gov/",
-      "state": "listing_robots_blocked",
+      "state": "listing_robots_policy_unavailable",
       "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -462,7 +462,7 @@
     {
       "name": "City of Binghamton",
       "official_entrypoint": "https://www.binghamton-ny.gov/government/departments/purchasing/bids-rfps",
-      "state": "listing_robots_blocked",
+      "state": "listing_robots_policy_unavailable",
       "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -492,7 +492,7 @@
     {
       "name": "Village of Owego",
       "official_entrypoint": "https://villageofowegony.gov/newslist.php",
-      "state": "listing_robots_blocked",
+      "state": "listing_robots_policy_unavailable",
       "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -710,7 +710,7 @@
     {
       "name": "Town of Dryden",
       "official_entrypoint": "https://www.dryden.ny.us/",
-      "state": "listing_robots_blocked",
+      "state": "listing_robots_policy_unavailable",
       "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -725,7 +725,7 @@
     {
       "name": "Town of Union NY",
       "official_entrypoint": "https://www.townofunion.com/government/public_notices/bid_opportunities.php",
-      "state": "listing_robots_blocked",
+      "state": "listing_robots_policy_unavailable",
       "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -1106,7 +1106,7 @@
     {
       "name": "NYSEG",
       "official_entrypoint": "https://www.nyseg.com/suppliersandpartners",
-      "state": "listing_robots_blocked",
+      "state": "listing_robots_policy_unavailable",
       "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -1151,7 +1151,7 @@
     {
       "name": "Pennsylvania American Water",
       "official_entrypoint": "https://amwater.com/paaw/about-us/Suppliers-Vendors/supplier-diversity",
-      "state": "listing_robots_blocked",
+      "state": "listing_robots_policy_unavailable",
       "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -1309,7 +1309,7 @@
     {
       "name": "Corning Incorporated",
       "official_entrypoint": "https://www.corning.com/worldwide/en/sustainability/processes/supply-chain-social-responsibility/supplier-responsibility.html",
-      "state": "listing_robots_blocked",
+      "state": "listing_robots_policy_unavailable",
       "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -1371,7 +1371,7 @@
     {
       "name": "Kimco Realty",
       "official_entrypoint": "https://www.kimcorealty.com/vendor-opportunities",
-      "state": "listing_robots_blocked",
+      "state": "listing_robots_policy_unavailable",
       "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
