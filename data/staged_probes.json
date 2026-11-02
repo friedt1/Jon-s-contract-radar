@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-02T06:45:12.682793+00:00",
+  "updated": "2026-11-02T06:46:52.082622+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 84,
   "safe_staged_entrypoints": 84,
@@ -693,19 +693,27 @@
     },
     {
       "name": "Town of Lansing",
-      "official_entrypoint": "https://www.lansingtownny.gov/rfps",
-      "state": "listing_not_found",
-      "listing_retrieved": false,
+      "official_entrypoint": "https://www.lansingtownny.gov/Bids.aspx",
+      "state": "listing_reachable_no_open_bids",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
       "individual_samples_confirmed": 0,
       "additional_sample_notice_urls_confirmed": [],
       "individual_sample_failures": [],
-      "activation_gate": "Official Town of Lansing Bids and RFPs index currently says there are no bids or RFPs available. This does not prove all purchasing channels are covered. Review robots/terms and implement permitted listing/detail extraction with status, deadline and worksite verification before activation; never infer a live bid from the empty index.",
+      "activation_gate": "Town's current official homepage links to /Bids.aspx (CivicPlus); the previous /rfps index is obsolete and the hosted probe returned HTTP 404. Live listing retrieval is not yet established and may be robots-restricted. Review publisher terms and robots policy, verify permitted bidID notice extraction, deadlines, worksite and listing completeness before activation. Do not infer a live bid or publisher authorization.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false,
-      "http_status": 404
+      "listing_scope_evidence": "isolated_listing_cards_unverified",
+      "listing_relevant_count": 0,
+      "listing_relevant_by_temporal_evidence": {
+        "future_or_today_unverified": 0,
+        "deadline_unknown": 0,
+        "closed_or_elapsed": 0,
+        "conflicting_evidence": 0
+      },
+      "listing_relevant_examples": []
     },
     {
       "name": "Town of Dryden",
