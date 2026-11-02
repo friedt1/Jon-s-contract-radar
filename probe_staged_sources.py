@@ -105,6 +105,49 @@ def _safe_link(base, href):
         return None
 
 
+def _official_bid_index_candidates(links, official_url, limit=5):
+    """Suggest same-host procurement indexes without requesting or verifying them.
+
+    Link labels are only discovery hints, not proof of a current bid listing,
+    publisher permission, or individual-notice extraction. Reject archives,
+    awards, login pages, files, and unsafe/off-host links. Do not expose query
+    strings that could contain access tokens in public diagnostic output.
+    """
+    host = (urlparse(official_url).hostname or "").lower()
+    current = urlparse(official_url).path.rstrip("/") or "/"
+    candidates = []
+    seen = set()
+    for label, parsed in links:
+        label = " ".join(str(label).split())
+        if not re.search(
+                r"\b(?:bids?|rfps?|rfqs?|procurement|solicitations?|"
+                r"requests?\s+for\s+proposals?)\b", label, re.I):
+            continue
+        if re.search(
+                r"\b(?:awards?|results?|archives?|historical|past|closed|"
+                r"minutes?|polic(?:y|ies)|manual|forms?|register|"
+                r"registration|login|sign\s*in)\b", label, re.I):
+            continue
+        if (not parsed.hostname or parsed.hostname.lower() != host
+                or parsed.path.lower().endswith(
+                    (".pdf", ".doc", ".docx", ".xls", ".xlsx", ".zip"))
+                or re.search(r"/(?:account|login|sign-?in)(?:/|$)",
+                             parsed.path, re.I)):
+            continue
+        path = parsed.path.rstrip("/") or "/"
+        if path in ("/", current):
+            continue
+        # Strip fragments and queries: diagnostics must not publish tokens or
+        # infer that a filtered query page is an authoritative procurement feed.
+        candidate = parsed._replace(query="", fragment="").geturl()
+        if candidate not in seen:
+            seen.add(candidate)
+            candidates.append({"label": label[:100], "url": candidate})
+        if len(candidates) >= limit:
+            break
+    return candidates
+
+
 def _listing_scope_category(record):
     """Classify one listing card, not page chrome or an individual notice.
 
@@ -325,6 +368,12 @@ def probe(source, fetch=scan.fetch, now=None):
                       for label, href, _ in page.links
                       for parsed in [_safe_link(final, href)]
                       if parsed is not None]
+            # Discovery hints from an agency homepage or unadapted index.
+            # Only already-parsed links are inspected; no extra fetches.
+            # They remain unverified and cannot activate a source or lead.
+            index_candidates = _official_bid_index_candidates(linked, final)
+            if index_candidates:
+                result["official_bid_index_links_unverified"] = index_candidates
             provider_link = any(
                 scan.provider_link(parsed.geturl())
                 and re.search(r"\b(?:bids?|rfps?|rfqs?|solicitations?|procurement|proposals?)\b",
@@ -678,6 +727,13 @@ def build(sources, fetch=scan.fetch, now=None):
             not valid_public_https_url(s.get("candidate_official_url")) for s in staged
         ),
         "probes": rows,
+        "unverified_bid_index_link_targets": sum(
+            bool(row.get("official_bid_index_links_unverified")) for row in rows
+        ),
+        "unverified_bid_index_links_found": sum(
+            len(row.get("official_bid_index_links_unverified", []))
+            for row in rows
+        ),
         "warning": ("Diagnostic only: no source is activated by these probes. "
                     "A fetched page or parsed historical notice is not an open bid. "
                     "Sample 'Open' labels can be stale; inspect temporal evidence. "
