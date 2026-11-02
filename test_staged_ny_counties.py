@@ -25,24 +25,47 @@ class NewYorkStagedCountyTests(unittest.TestCase):
                 self.assertTrue(row["activation_gate"])
                 self.assertIn(name, civicplus_bids.SOURCES)
 
-    def test_broome_canonical_official_page_delegates_to_bidnet(self):
+    def test_broome_endorsed_provider_entrypoint_is_not_direct_monitoring(self):
         sources = json.loads(probe_staged_sources.SOURCES.read_text(encoding="utf-8"))
+        self.assertEqual(len(sources), 102)
+        self.assertEqual(sum(s["mode"] == "direct_page" for s in sources), 18)
+        self.assertEqual(sum(s["mode"] == "discovery_pending" for s in sources), 84)
         row = next(x for x in sources if x["name"] == "Broome County")
-        self.assertEqual(row["candidate_official_url"],
-                         "https://broomecountyny.gov/purchasing/open-solicitations")
+        url = "https://www.bidnetdirect.com/new-york/broome-county"
+        self.assertEqual(row["candidate_official_url"], url)
         self.assertEqual(row["mode"], "discovery_pending")
         self.assertFalse(row["verified_url"])
         self.assertEqual(row["url"], "")
+        self.assertEqual(row["delegated_provider"], "BidNet Direct")
+        self.assertTrue(row["provider_access_required"])
 
-        # Synthetic official-page shape, not a live bid or authorization.
+        # Synthetic provider landing page: even if it returns HTTP 200 and
+        # mentions bids, no individual-notice feed or permission is proven.
         def fetch(url, binary=False):
-            return ('<h1>Open Solicitations</h1><p>Bid documents are available '
-                    'on BidNet Direct. Register to view official bids.</p>',
+            return ('<h1>Broome County Bid Opportunities</h1>'
+                    '<p>Register to view official solicitations.</p>',
                     "text/html", url)
 
         result = probe_staged_sources.probe(row, fetch=fetch)
         self.assertEqual(result["state"],
                          "listing_reachable_external_provider_access_required")
+        self.assertEqual(result["external_provider_host"], "www.bidnetdirect.com")
+        self.assertTrue(result["listing_retrieved"])
+        self.assertFalse(result["individual_notice_retrieved"])
+        self.assertFalse(result["direct_monitoring_activated"])
+
+    def test_broome_provider_403_is_access_forbidden_not_missing_or_open(self):
+        from urllib.error import HTTPError
+        sources = json.loads(probe_staged_sources.SOURCES.read_text(encoding="utf-8"))
+        row = next(x for x in sources if x["name"] == "Broome County")
+
+        def forbidden(url, binary=False):
+            raise HTTPError(url, 403, "Forbidden", {}, None)
+
+        result = probe_staged_sources.probe(row, fetch=forbidden)
+        self.assertEqual(result["state"], "listing_access_forbidden")
+        self.assertEqual(result["http_status"], 403)
+        self.assertFalse(result["listing_retrieved"])
         self.assertFalse(result["individual_notice_retrieved"])
         self.assertFalse(result["direct_monitoring_activated"])
 
