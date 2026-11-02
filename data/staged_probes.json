@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-02T11:23:17.580162+00:00",
+  "updated": "2026-11-02T15:52:24.601864+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 84,
   "safe_staged_entrypoints": 84,
@@ -25,45 +25,17 @@
     {
       "name": "Cortland County",
       "official_entrypoint": "https://www.cortlandcountyny.gov/Bids.aspx",
-      "state": "notice_format_confirmed_terms_review_required",
-      "listing_retrieved": true,
-      "individual_notice_retrieved": true,
-      "individual_records_discovered": 1,
-      "individual_samples_attempted": 1,
-      "individual_samples_confirmed": 1,
+      "state": "listing_robots_policy_unavailable",
+      "listing_retrieved": false,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_samples_confirmed": 0,
       "additional_sample_notice_urls_confirmed": [],
       "individual_sample_failures": [],
       "activation_gate": "Official CivicPlus listing confirmed; verify robots policy and live bidID detail extraction before activation.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false,
-      "listing_scope_evidence": "isolated_listing_cards_unverified",
-      "listing_relevant_count": 0,
-      "listing_relevant_by_temporal_evidence": {
-        "future_or_today_unverified": 0,
-        "deadline_unknown": 0,
-        "closed_or_elapsed": 0,
-        "conflicting_evidence": 0
-      },
-      "listing_relevant_examples": [],
-      "sample_notice_url": "https://www.cortlandcountyny.gov/bids.aspx?bidID=285",
-      "sample_notice_listing_title": "RFP - Cortland County Courthouse Spray Foam Installation",
-      "sample_notice_listing_scope_category": "not_identified",
-      "sample_notice_scope_evidence": "listing_card_unverified",
-      "sample_notice_detail_scope_category": "not_identified",
-      "sample_notice_detail_scope_evidence": "individual_notice_labelled_fields_unverified",
-      "sample_notice_detail_scope_basis": "individual_notice_title",
-      "sample_notice_listing_detail_scope_disagreement": false,
-      "sample_notice_status": "open",
-      "sample_notice_detail_status": "open",
-      "sample_notice_listing_status": "open",
-      "sample_notice_status_conflict": false,
-      "sample_notice_status_source": "individual_notice",
-      "sample_notice_unparseable_detail_closing": false,
-      "sample_notice_deadline_source": "individual_notice",
-      "sample_notice_deadline": "2026-11-19",
-      "sample_notice_deadline_time": "2:00 PM",
-      "sample_notice_deadline_conflict": false,
-      "sample_notice_temporal_evidence": "deadline_not_passed_unverified"
+      "direct_monitoring_activated": false
     },
     {
       "name": "Yates County",
@@ -113,8 +85,8 @@
     {
       "name": "Allegany County",
       "official_entrypoint": "https://www.alleganyco.gov/departments/public-works/bids-awards/",
-      "state": "listing_robots_policy_unavailable",
-      "listing_retrieved": false,
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -128,51 +100,23 @@
     {
       "name": "Livingston County",
       "official_entrypoint": "https://www.livingstoncountyny.gov/Bids.aspx",
-      "state": "notice_format_confirmed_terms_review_required",
-      "listing_retrieved": true,
-      "individual_notice_retrieved": true,
-      "individual_records_discovered": 1,
-      "individual_samples_attempted": 1,
-      "individual_samples_confirmed": 1,
+      "state": "listing_robots_policy_unavailable",
+      "listing_retrieved": false,
+      "individual_notice_retrieved": false,
+      "individual_records_discovered": 0,
+      "individual_samples_attempted": 0,
+      "individual_samples_confirmed": 0,
       "additional_sample_notice_urls_confirmed": [],
       "individual_sample_failures": [],
       "activation_gate": "Official county CivicPlus bid listings exist, but county also directs vendors to BidNet. Verify robots and publisher terms, same-host individual bidID extraction, and current listing completeness before activation.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false,
-      "listing_scope_evidence": "isolated_listing_cards_unverified",
-      "listing_relevant_count": 0,
-      "listing_relevant_by_temporal_evidence": {
-        "future_or_today_unverified": 0,
-        "deadline_unknown": 0,
-        "closed_or_elapsed": 0,
-        "conflicting_evidence": 0
-      },
-      "listing_relevant_examples": [],
-      "sample_notice_url": "https://www.livingstoncountyny.gov/bids.aspx?bidID=361",
-      "sample_notice_listing_title": "Boat Trailer Bid",
-      "sample_notice_listing_scope_category": "not_identified",
-      "sample_notice_scope_evidence": "listing_card_unverified",
-      "sample_notice_detail_scope_category": "not_identified",
-      "sample_notice_detail_scope_evidence": "individual_notice_labelled_fields_unverified",
-      "sample_notice_detail_scope_basis": "individual_notice_description",
-      "sample_notice_listing_detail_scope_disagreement": false,
-      "sample_notice_status": "open",
-      "sample_notice_detail_status": "open",
-      "sample_notice_listing_status": "open",
-      "sample_notice_status_conflict": false,
-      "sample_notice_status_source": "individual_notice",
-      "sample_notice_unparseable_detail_closing": false,
-      "sample_notice_deadline_source": "individual_notice",
-      "sample_notice_deadline": "2026-11-20",
-      "sample_notice_deadline_time": "1:00 PM",
-      "sample_notice_deadline_conflict": false,
-      "sample_notice_temporal_evidence": "deadline_not_passed_unverified"
+      "direct_monitoring_activated": false
     },
     {
       "name": "Wayne County",
       "official_entrypoint": "https://www.waynecountyny.gov/745/Purchasing",
-      "state": "listing_reachable_external_provider_access_required",
-      "listing_retrieved": true,
+      "state": "listing_robots_policy_unavailable",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -186,8 +130,8 @@
     {
       "name": "Wyoming County",
       "official_entrypoint": "https://www.wyomingcountyny.gov/Bids.aspx",
-      "state": "listing_reachable_no_open_bids",
-      "listing_retrieved": true,
+      "state": "listing_robots_policy_unavailable",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -196,21 +140,12 @@
       "individual_sample_failures": [],
       "activation_gate": "Official county CivicPlus bid listings confirmed. Verify robots, terms, and individual bidID extraction before activation; currently listed food/janitorial RFQ is unrelated to tree work.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false,
-      "listing_scope_evidence": "isolated_listing_cards_unverified",
-      "listing_relevant_count": 0,
-      "listing_relevant_by_temporal_evidence": {
-        "future_or_today_unverified": 0,
-        "deadline_unknown": 0,
-        "closed_or_elapsed": 0,
-        "conflicting_evidence": 0
-      },
-      "listing_relevant_examples": []
+      "direct_monitoring_activated": false
     },
     {
       "name": "Bradford County PA",
       "official_entrypoint": "https://www.bradfordcountypa.gov/bids.aspx",
-      "state": "listing_robots_policy_unavailable",
+      "state": "listing_access_challenge",
       "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -400,7 +335,13 @@
       "individual_sample_failures": [],
       "activation_gate": "Official town homepage links dated individual RFP posts (2026-10-21 cleaner RFP). Verify robots/publisher terms, stable notice listing or feed and individual notice extraction before activation; unrelated cleaning bid is not a tree-service lead.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false
+      "direct_monitoring_activated": false,
+      "official_bid_index_links_unverified": [
+        {
+          "label": "Request for Proposal",
+          "url": "https://townofcorningny.gov/2026/10/21/request-for-proposal/"
+        }
+      ]
     },
     {
       "name": "Town of Ithaca",
@@ -475,7 +416,13 @@
       "individual_sample_failures": [],
       "activation_gate": "Official Village of Waverly homepage publishes a contractor RFQ (New York Forward Small Project Fund) with a September 15, 2026 application deadline; this is unrelated building work and past deadline. No stable public individual-bid listing adapter or permitted recurring extraction verified. Review robots/publisher terms, notice listing format, individual scope/deadlines, and live extraction before activation.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false
+      "direct_monitoring_activated": false,
+      "official_bid_index_links_unverified": [
+        {
+          "label": "Seeking RFQ for Contractors for NYF Grant",
+          "url": "https://villageofwaverly.gov/post.php"
+        }
+      ]
     },
     {
       "name": "Village of Watkins Glen",
@@ -495,8 +442,8 @@
     {
       "name": "Village of Bath",
       "official_entrypoint": "https://villageofbathny.gov/",
-      "state": "listing_robots_policy_unavailable",
-      "listing_retrieved": false,
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -528,8 +475,8 @@
     {
       "name": "City of Geneva",
       "official_entrypoint": "https://cityofgenevany.gov/Bids.aspx",
-      "state": "listing_reachable_no_open_bids",
-      "listing_retrieved": true,
+      "state": "listing_robots_policy_unavailable",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -538,22 +485,13 @@
       "individual_sample_failures": [],
       "activation_gate": "Official City of Geneva CivicPlus Bid Postings page observed 2026-10-30 with no open postings. Stage only: review robots/publisher terms and verify future individual bidID detail extraction, status, closing dates, and Elmira drive time before direct activation. A no-open message is not proof of complete procurement coverage.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false,
-      "listing_scope_evidence": "isolated_listing_cards_unverified",
-      "listing_relevant_count": 0,
-      "listing_relevant_by_temporal_evidence": {
-        "future_or_today_unverified": 0,
-        "deadline_unknown": 0,
-        "closed_or_elapsed": 0,
-        "conflicting_evidence": 0
-      },
-      "listing_relevant_examples": []
+      "direct_monitoring_activated": false
     },
     {
       "name": "City of Cortland",
       "official_entrypoint": "https://www.cortlandny.gov/Bids.aspx",
-      "state": "listing_reachable_no_open_bids",
-      "listing_retrieved": true,
+      "state": "listing_robots_policy_unavailable",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -562,16 +500,7 @@
       "individual_sample_failures": [],
       "activation_gate": "Official CivicPlus Bids & RFPs page confirmed; currently may show no open postings. Check robots, publisher terms, and individual bidID extraction before activating.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false,
-      "listing_scope_evidence": "isolated_listing_cards_unverified",
-      "listing_relevant_count": 0,
-      "listing_relevant_by_temporal_evidence": {
-        "future_or_today_unverified": 0,
-        "deadline_unknown": 0,
-        "closed_or_elapsed": 0,
-        "conflicting_evidence": 0
-      },
-      "listing_relevant_examples": []
+      "direct_monitoring_activated": false
     },
     {
       "name": "Village of Penn Yan",
@@ -788,8 +717,8 @@
     {
       "name": "Williamsport City",
       "official_entrypoint": "https://cityofwilliamsport.org/news/document-category/request-for-proposal/",
-      "state": "listing_robots_policy_unavailable",
-      "listing_retrieved": false,
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -798,7 +727,29 @@
       "individual_sample_failures": [],
       "activation_gate": "Official City of Williamsport Request for Proposal document category verified 2026-10-30: individual RFP/IFB posts exist, but the index also contains historical responses and non-service sale notices. Before activation, verify robots and publisher terms, build permitted individual-post/attachment extraction with authoritative bid submission deadlines, scope and worksite, and separately review any external provider authorization. Do not treat a dated post as an open bid.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false
+      "direct_monitoring_activated": false,
+      "official_bid_index_links_unverified": [
+        {
+          "label": "City Hall IFB \u2013 Bid Sheet",
+          "url": "https://cityofwilliamsport.org/news/document-center/city-hall-ifb-bid-sheet/"
+        },
+        {
+          "label": "City of Williamsport Codes RFP 2026",
+          "url": "https://cityofwilliamsport.org/news/document-center/city-of-williamsport-codes-rfp-2026/"
+        },
+        {
+          "label": "Request for Proposal: Liability Broker/Consulting Services",
+          "url": "https://cityofwilliamsport.org/news/document-center/request-for-proposal-liability-broker-consulting-services-broker-consulting-services/"
+        },
+        {
+          "label": "Request for Proposal: Invitation for Bids \u2013 Sale of City Hall",
+          "url": "https://cityofwilliamsport.org/news/document-center/request-for-proposal-invitation-for-bids-sale-of-city-hall/"
+        },
+        {
+          "label": "Request for Proposal: Liability and Employee Benefit Broker/Consulting Services",
+          "url": "https://cityofwilliamsport.org/news/document-center/request-for-proposal-liability-and-employee-benefit-broker-consulting-services/"
+        }
+      ]
     },
     {
       "name": "Montrose Borough",
@@ -980,6 +931,12 @@
       "activation_gate": "Official Ithaca College supplier information says proposals, bids and quotations are confidential and are not made public. This is NOT a public bid feed. Only use a supplier invitation or explicitly authorized procurement access; do not scrape confidential notices or claim any open contract. Verify terms, worksite, scope and deadline before activation.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false,
+      "official_bid_index_links_unverified": [
+        {
+          "label": "Procurement",
+          "url": "https://www.ithaca.edu/procurement"
+        }
+      ],
       "off_host_pdf_hosts_unverified": [
         "ithacaedu.sharepoint.com"
       ]
@@ -1202,8 +1159,8 @@
     {
       "name": "Elmira-Corning Regional Airport",
       "official_entrypoint": "https://chemungcountyny.gov/Bids.aspx",
-      "state": "listing_reachable_adapter_required",
-      "listing_retrieved": true,
+      "state": "listing_robots_policy_unavailable",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -1372,5 +1329,7 @@
       "direct_monitoring_activated": false
     }
   ],
+  "unverified_bid_index_link_targets": 4,
+  "unverified_bid_index_links_found": 8,
   "warning": "Diagnostic only: no source is activated by these probes. A fetched page or parsed historical notice is not an open bid. Sample 'Open' labels can be stale; inspect temporal evidence. Review publisher terms, individual extraction, and live scan before changing discovery_pending."
 }
