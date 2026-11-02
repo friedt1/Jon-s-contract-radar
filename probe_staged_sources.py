@@ -105,6 +105,22 @@ def _safe_link(base, href):
         return None
 
 
+def _listing_scope_category(record):
+    """Classify one listing card, not page chrome or an individual notice.
+
+    Specific card descriptions take precedence over headings, as they do for
+    fetched individual notices. A title mentioning tree removal must not
+    override a description excluding it. Attachment-only boilerplate does
+    not describe work, so retain the title as fallback. This is unverified
+    listing evidence, never a publishable opportunity.
+    """
+    title = str(record.get("title") or "").strip()
+    description = str(record.get("description") or "").strip()
+    scope = (description if description and not
+             civicplus_bids.generic_detail_description(description) else title)
+    return scan.category(scope) if scope else None
+
+
 def _sample_priority(record, now):
     """Sample current-looking service bids before unrelated notices.
 
@@ -122,11 +138,9 @@ def _sample_priority(record, now):
         temporal = (2 if civicplus_bids.closing_passed(
             due, record.get("deadline_time", ""), now) else 0) if due else 1
 
-    # Only use isolated listing-card text. Page-wide chrome can mention tree
-    # work that belongs to a different bid. scan.category() also excludes
-    # explicit "tree work by others" and unrelated demolition-only scopes.
-    scope = " ".join(str(record.get(key) or "") for key in ("title", "description"))
-    service = scan.category(scope)
+    # Only use isolated listing-card scope, with specific descriptions
+    # overriding misleading titles. No page-wide navigation/chrome.
+    service = _listing_scope_category(record)
     service_order = {
         "Tree removal": 0, "Storm cleanup": 1, "Tree trimming": 2,
         "Vegetation management": 3, "Land clearing": 4,
@@ -147,9 +161,7 @@ def _listing_scope_inventory(records, now):
                "closed_or_elapsed": 0, "conflicting_evidence": 0}
     matches = []
     for record in records:
-        scope = " ".join(str(record.get(key) or "")
-                         for key in ("title", "description"))
-        kind = scan.category(scope)
+        kind = _listing_scope_category(record)
         if not kind:
             continue
         due = record.get("deadline") or ""
@@ -520,11 +532,10 @@ def probe(source, fetch=scan.fetch, now=None):
             # is not an independently verified notice description or an open
             # opportunity. Never classify page-wide navigation/chrome as scope.
             listing_title = str(record.get("title") or "").strip()[:220]
-            listing_scope = " ".join(str(record.get(key) or "")
-                                     for key in ("title", "description"))
+            listing_category = _listing_scope_category(record)
             result["sample_notice_listing_title"] = listing_title
             result["sample_notice_listing_scope_category"] = (
-                scan.category(listing_scope) or "not_identified"
+                listing_category or "not_identified"
             )
             result["sample_notice_scope_evidence"] = "listing_card_unverified"
             # Classify only isolated individual-notice scope. A specific
@@ -548,7 +559,6 @@ def probe(source, fetch=scan.fetch, now=None):
                 detail_scope = detail_title
                 detail_basis = "individual_notice_title" if detail_title else "unknown"
             detail_category = scan.category(detail_scope) if detail_scope else None
-            listing_category = scan.category(listing_scope)
             result["sample_notice_detail_scope_category"] = (
                 detail_category or "not_identified" if detail_scope else "unknown"
             )
