@@ -101,6 +101,23 @@ def _staged_url_changed_after_published_scan(source, published_row, feed_updated
         return False
 
 
+
+def _staged_provider_gate_changed_after_published_scan(source, published_row,
+                                                       stale_staged_url):
+    """Accept a newly documented provider restriction on a post-scan URL.
+
+    This never waives direct-fetch evidence or a previously claimed provider
+    gate. Only a staged, timestamped URL replacement onto a known procurement
+    provider may add the stricter access-required label in configuration.
+    """
+    return (stale_staged_url
+            and scan.provider_link(source.get("candidate_official_url", ""))
+            and source.get("provider_access_required") is True
+            and bool(source.get("delegated_provider"))
+            and published_row.get("staged_provider_access_required") is False)
+
+
+
 def validate(root=scan.ROOT):
     sources = json.loads((root / 'sources.json').read_text())
     data = json.loads((root / 'data/opportunities.json').read_text())
@@ -164,6 +181,7 @@ def validate(root=scan.ROOT):
         expected_rows = {row['name']: row for row in expected_health['sources']}
         source_by_name = {source['name']: source for source in sources}
         stale_staging_names = set()
+        stale_provider_names = set()
         for row in rows:
             reference = expected_rows[row['name']]
             # Preserve the original count sanity check before comparing the
@@ -181,6 +199,10 @@ def validate(root=scan.ROOT):
             stale_staged_url = _staged_url_changed_after_published_scan(
                 source_by_name[row['name']], row, data.get('updated'),
                 data['source_status'][row['name']])
+            stale_provider = _staged_provider_gate_changed_after_published_scan(
+                source_by_name[row['name']], row, stale_staged_url)
+            if stale_provider:
+                stale_provider_names.add(row['name'])
             for field in ('direct_state', 'indirect_state',
                           'provider_access_required', 'direct_url',
                           'staged_official_url', 'staged_provider_access_required'):
@@ -189,6 +211,8 @@ def validate(root=scan.ROOT):
                         'staged_provider_access_required')):
                     continue
                 if stale_staged_url and field == 'staged_official_url':
+                    continue
+                if stale_provider and field == 'staged_provider_access_required':
                     continue
                 if row.get(field) != reference[field]:
                     raise ValueError('Source health state disagrees with scanner: '
@@ -246,6 +270,8 @@ def validate(root=scan.ROOT):
             src = source_by_name[name]
             if src.get('provider_access_required') is True or src.get('delegated_provider'):
                 expected_counts['staged_provider_access_required'] -= 1
+        for name in stale_provider_names:
+            expected_counts['staged_provider_access_required'] -= 1
         for field in states + ('configured_direct', 'configured_fetch_targets',
                                'configured_access_required',
                                'staged_provider_access_required',
