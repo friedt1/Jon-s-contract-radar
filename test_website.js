@@ -72,6 +72,8 @@ setImmediate(() => {
   assert.ok(element('#health-summary').textContent.includes('0 rate-limited sources (429)'));
   assert.ok(element('#health-summary').textContent.includes('0 unsupported source formats'));
   assert.ok(html.includes('<option value="robots_policy_unavailable">'));
+  assert.ok(html.includes('<option value="challenge_blocked">'));
+  assert.ok(element('#health-summary').textContent.includes('0 HTTP-200 anti-bot challenges'));
   assert.ok(element('#health-summary').textContent.includes('0 robots policy checks unavailable (not publisher denials)'));
   assert.ok(element('#health-list').innerHTML.includes('Individual notice access: robots blocked'));
   assert.ok(element('#health-list').innerHTML.includes('2 detail errors'));

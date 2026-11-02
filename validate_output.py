@@ -151,7 +151,7 @@ def validate(root=scan.ROOT):
         states = ('fetched_unverified', 'robots_blocked',
                   'robots_policy_unavailable', 'access_required',
                   'adapter_not_implemented',
-                  'http_blocked', 'redirect_blocked', 'rate_limited',
+                  'http_blocked', 'challenge_blocked', 'redirect_blocked', 'rate_limited',
                   'unsupported_content', 'fetch_error', 'not_fetched',
                   'staged_official_url', 'not_configured')
         if sum(counts.get(key, 0) for key in states) != len(sources):
@@ -226,7 +226,7 @@ def validate(root=scan.ROOT):
                     raise ValueError('Source health diagnostic disagrees with scanner: '
                                      + row['name'] + ' / ' + field)
         access_reasons = ('robots_blocked', 'robots_policy_unavailable',
-                          'http_blocked',
+                          'http_blocked', 'challenge_blocked',
                           'redirect_blocked', 'rate_limited')
         diagnostic_counts = (
             'detail_errors', 'pagination_errors',
@@ -253,9 +253,11 @@ def validate(root=scan.ROOT):
             # Older published feeds predate per-notice policy-lookup metrics.
             # Missing new zero-valued counts are compatible; nonzero claims
             # still require matching raw scanner evidence.
-            optional_new = {'robots_policy_unavailable',
+            optional_new = {'robots_policy_unavailable', 'challenge_blocked',
                             'detail_robots_policy_unavailable_sources',
-                            'pagination_robots_policy_unavailable_sources'}
+                            'pagination_robots_policy_unavailable_sources',
+                            'detail_challenge_blocked_sources',
+                            'pagination_challenge_blocked_sources'}
             if counts.get(field, 0 if field in optional_new else None) != expected_counts[field]:
                 raise ValueError('Source health count disagrees with scanner: ' + field)
         if counts.get('individual_bid_details_fetched', 0) != sum(
