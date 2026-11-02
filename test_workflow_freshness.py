@@ -51,5 +51,22 @@ class WorkflowFreshnessTests(unittest.TestCase):
                                 workflow.index("if git push origin HEAD:main; then"))
 
 
+    def test_staged_probe_conflict_does_not_replace_newer_report(self):
+        # A prior post-merge probe failed when another probe had already
+        # published data/staged_probes.json to main during its network run.
+        workflow = (ROOT / ".github/workflows/staged-probe.yml").read_text()
+        self.assertIn("if ! git pull --rebase origin main; then", workflow)
+        self.assertIn('conflicted="$(git diff --name-only --diff-filter=U)"',
+                      workflow)
+        self.assertIn("git rebase --abort", workflow)
+        self.assertIn('if [ "$conflicted" = "data/staged_probes.json" ]; then',
+                      workflow)
+        self.assertIn("skip this stale report", workflow)
+        # All other rebase conflicts must remain failures; no force pushes.
+        self.assertIn('echo "Unexpected rebase conflict: $conflicted" >&2',
+                      workflow)
+        self.assertNotIn("git push --force", workflow)
+
+
 if __name__ == "__main__":
     unittest.main()
