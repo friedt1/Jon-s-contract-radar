@@ -202,6 +202,25 @@ def detail_description(text):
     return " ".join(match.group(1).split())[:1200] if match else ""
 
 
+def generic_detail_description(text):
+    """Recognize only boilerplate directing bidders to attachments.
+
+    A detail's actual Description normally outranks its Bid Title: the title
+    may say tree removal while the scope excludes that work. When the entire
+    description merely says "See attached specifications", however, it gives
+    no scope evidence and the fetched individual Bid Title may be used.
+    """
+    value = " ".join(text.casefold().strip(" .:;").split())
+    return bool(re.fullmatch(
+        r"(?:please\s+)?(?:see|review|refer\s+to)\s+(?:the\s+)?"
+        r"(?:(?:attached|enclosed|linked|included)\s+)?"
+        r"(?:(?:bid|rfp|rfq|solicitation|project)\s+)?"
+        r"(?:documents?|specifications?|packets?|attachments?|scope\s+of\s+work)"
+        r"(?:\s+for\s+(?:additional|more|full|complete)\s+(?:details?|information))?",
+        value,
+    ))
+
+
 def detail_worksite(text):
     """Only explicit worksite labels count; a purchasing office is not a job site."""
     match = re.search(

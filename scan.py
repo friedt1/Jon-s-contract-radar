@@ -657,10 +657,12 @@ def scan_civicplus(src, listing_pages, page_errors):
   # Conflicting cards must not supply the solicitation scope. Require
   # description evidence from the fetched individual bidID notice itself.
   scope = detail_scope if ambiguous else (detail_scope or row['description'])
-  # A fetched notice may state its tree-work scope only in Bid Title. When
-  # Description is absent, use that *individual* title as the evidence,
-  # never a potentially stale or contradictory listing-card title.
-  if not detail_scope and detail_title:
+  # A fetched notice may put its scope only in Bid Title while
+  # Description is empty or says only "See attached specifications".
+  # Specific descriptions, including explicit exclusions, still control.
+  title_is_scope = bool(detail_title) and (
+   not detail_scope or civicplus_bids.generic_detail_description(detail_scope))
+  if title_is_scope:
    scope = detail_title
   if not category(scope if ambiguous or detail_scope or detail_title else row['title'] + ' ' + scope):
    continue
@@ -669,7 +671,7 @@ def scan_civicplus(src, listing_pages, page_errors):
              else 'Bid notice. ' if ambiguous else '') + scope
   if due:
    summary += ' Due date: ' + due
-  lead_title = (detail_title[:130] if not detail_scope and detail_title
+  lead_title = (detail_title[:130] if title_is_scope
                 else detail_scope[:130] if ambiguous and not category(row['title'])
                 else row['title'])
   add_lead(found, name, lead_title, row['url'], summary, 'individual county bid candidate', evidence=evidence)
@@ -677,7 +679,7 @@ def scan_civicplus(src, listing_pages, page_errors):
   if uid in found:
    found[uid].update({
     'agency': name.replace(' bids', '') + ' (issuing authority)',
-    'scope': detail_scope or detail_title or row['title'],
+    'scope': detail_title if title_is_scope else detail_scope or detail_title or row['title'],
     'bid_number': row['bid_number'],
     'location': detail_worksite or 'Worksite unverified; county issuing authority is not a worksite',
     'location_verified': False,
