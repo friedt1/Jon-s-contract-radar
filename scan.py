@@ -65,39 +65,39 @@ def norm(s): return re.sub(r'\s+',' ',re.sub(r'<[^>]*>',' ',s or '')).strip()
 # Broad service labels can appear solely as exclusions (for example,
 # "tree work by others" in an unrelated demolition notice). Include generic
 # labels as well as specific work so an exclusion cannot create a false lead.
-_SERVICE_SCOPE = (r"(?:tree\\s*(?:and|&|/)\\s*vegetation\\s+removal|"
-                  r"tree\\s*(?:and|&|/)\\s*(?:stumps?|brush)\\s+removal|"
-                  r"removal\\s+of\\s+trees\\s+and\\s+vegetation|"
-                  r"removal\\s+of\\s+trees|"
-                  r"tree\\s+(?:removal|trimming|pruning|cutting|clearing|work|services?)|"
-                  r"stump\\s+(?:removal|grinding)|vegetation\\s+(?:removal|clearing)|"
-                  r"removal\\s+of\\s+vegetation|invasive\\s+vegetation\\s+removal|"
-                  r"brush\\s+(?:removal|clearing)|"
-                  r"land\\s+clearing|vegetation\\s+management|forestry\\s+(?:mulching|mowing)|"
-                  r"right[-\\s]of[-\\s]way\\s+clearing|line\\s+clearance|"
-                  r"power\\s+line\\s+clearing|roadside\\s+(?:mowing|clearing)|"
-                  r"storm\\s+(?:clean-?up|debris(?:\\s+removal)?)|"
-                  r"disaster\\s+debris(?:\\s+removal)?|woody\\s+debris\\s+removal|"
-                  r"debris\\s+removal)")
+_SERVICE_SCOPE = (r"(?:tree\s*(?:and|&|/)\s*vegetation\s+removal|"
+                  r"tree\s*(?:and|&|/)\s*(?:stumps?|brush)\s+removal|"
+                  r"removal\s+of\s+trees\s+and\s+vegetation|"
+                  r"removal\s+of\s+trees|"
+                  r"tree\s+(?:removal|trimming|pruning|cutting|clearing|work|services?)|"
+                  r"stump\s+(?:removal|grinding)|vegetation\s+(?:removal|clearing)|"
+                  r"removal\s+of\s+vegetation|invasive\s+vegetation\s+removal|"
+                  r"brush\s+(?:removal|clearing)|"
+                  r"land\s+clearing|vegetation\s+management|forestry\s+(?:mulching|mowing)|"
+                  r"right[-\s]of[-\s]way\s+clearing|line\s+clearance|"
+                  r"power\s+line\s+clearing|roadside\s+(?:mowing|clearing)|"
+                  r"storm\s+(?:clean-?up|debris(?:\s+removal)?)|"
+                  r"disaster\s+debris(?:\s+removal)?|woody\s+debris\s+removal|"
+                  r"debris\s+removal)")
 # Scope exclusions can apply to coordinated work items, e.g. 'no tree
 # removal or stump grinding' or 'tree removal and stump grinding by owner'.
 # Consume only an explicitly negated group; unrelated positive scope in the
 # same notice must survive (such as 'brush clearing is required').
 _EXCLUDED_WORK_GROUP = _SERVICE_SCOPE + (
-    r"(?:\\s+(?:and|or)\\s+" + _SERVICE_SCOPE + r")*"
+    r"(?:\s+(?:and|or)\s+" + _SERVICE_SCOPE + r")*"
 )
 _NEGATED_SERVICE = re.compile(
-    r"\\b(?:no|without|excluding)\\s+" + _EXCLUDED_WORK_GROUP + r"\\b"
-    r"|\\b" + _EXCLUDED_WORK_GROUP
-    + r"\\s+(?:(?:is|are|was|were)\\s+(?:to\\s+be\\s+)?|"
-      r"(?:will|shall|must)\\s+be\\s+|to\\s+be\\s+)?"
-    + r"(?:excluded\\b|"
-      r"by\\s+(?:others|(?:the\\s+)?owner|another\\s+contractor)\\b|"
-      r"not\\s+(?:included|required|in\\s+(?:the\\s+)?scope|"
-      r"in\\s+(?:this|the)\\s+(?:contract|scope|project)|"
-      r"part\\s+of\\s+(?:this|the)\\s+(?:contract|project|scope))\\b|"
-      r"(?:performed|handled|provided|completed|done|carried\\s+out)\\s+"
-      r"by\\s+(?:others|(?:the\\s+)?owner|another\\s+contractor)\\b)",
+    r"\b(?:no|without|excluding)\s+" + _EXCLUDED_WORK_GROUP + r"\b"
+    r"|\b" + _EXCLUDED_WORK_GROUP
+    + r"\s+(?:(?:is|are|was|were)\s+(?:to\s+be\s+)?|"
+      r"(?:will|shall|must)\s+be\s+|to\s+be\s+)?"
+    + r"(?:excluded\b|"
+      r"by\s+(?:others|(?:the\s+)?owner|another\s+contractor)\b|"
+      r"not\s+(?:included|required|in\s+(?:the\s+)?scope|"
+      r"in\s+(?:this|the)\s+(?:contract|scope|project)|"
+      r"part\s+of\s+(?:this|the)\s+(?:contract|project|scope))\b|"
+      r"(?:performed|handled|provided|completed|done|carried\s+out)\s+"
+      r"by\s+(?:others|(?:the\s+)?owner|another\s+contractor)\b)",
     re.I,
 )
 
