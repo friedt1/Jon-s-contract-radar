@@ -49,7 +49,8 @@ def _http_failure(code, scope):
 def _authentication_landing(html, final):
     """Identify an actual sign-in destination, not an ordinary login link."""
     login_path = bool(re.search(
-        r"/(?:log-?in|sign-?in)(?:/|$)", urlparse(final).path, re.I))
+        r"/(?:log-?in|sign-?in)(?:\.(?:aspx?|php|html?))?(?:/|$)",
+        urlparse(final).path, re.I))
     login_form = bool(
         re.search(r"""<input\b[^>]*\btype\s*=\s*['"]?password\b""", html, re.I)
         and re.search(
@@ -440,6 +441,31 @@ def probe(source, fetch=scan.fetch, now=None):
             except Exception as exc:
                 failure["state"] = "individual_notice_fetch_error"
                 failure["error_type"] = _error(exc)
+                result["individual_sample_failures"].append(failure)
+                continue
+            # A future fetcher or injected adapter may return a final URL
+            # without enforcing the active scanner's redirect preflight.
+            # Reject unsafe destinations before parsing any returned HTML.
+            if not valid_public_https_url(detail_final):
+                failure["state"] = (
+                    "individual_notice_insecure_redirect"
+                    if isinstance(detail_final, str)
+                    and detail_final.lower().startswith("http://")
+                    else "individual_notice_unsafe_redirect"
+                )
+                result["individual_sample_failures"].append(failure)
+                continue
+            if urlparse(detail_final).hostname != urlparse(final).hostname:
+                # Provider delegation is an access requirement, not a
+                # successfully extracted notice. Lookalike hosts must not
+                # inherit the known provider classification.
+                if scan.provider_link(detail_final):
+                    failure["state"] = (
+                        "individual_notice_redirected_to_external_provider_access_required"
+                    )
+                    failure["external_provider_host"] = urlparse(detail_final).hostname
+                else:
+                    failure["state"] = "individual_notice_redirected_off_official_host"
                 result["individual_sample_failures"].append(failure)
                 continue
             if "html" not in ctype and not blob.lstrip().startswith(b"<"):
