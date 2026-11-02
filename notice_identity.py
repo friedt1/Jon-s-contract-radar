@@ -51,7 +51,18 @@ def canonical_url(url):
                 for key, _ in pairs
             )
             if not protected:
-                filtered = [(key, value) for key, value in pairs
+                # CivicPlus treats the bidID query key case-insensitively.
+                # One numeric bidID on Bids.aspx is one notice even if the
+                # listing uses bidID, bidid, or BIDID. Do not rewrite keys on
+                # unrelated portals, signed links, or ambiguous duplicate IDs.
+                bid_ids = [(key, value) for key, value in pairs
+                           if key.casefold() == "bidid"]
+                civicplus_id = (parts.path.casefold().endswith("/bids.aspx")
+                                and len(bid_ids) == 1
+                                and re.fullmatch(r"[0-9]+", bid_ids[0][1]))
+                filtered = [("bidID" if civicplus_id and key.casefold() == "bidid"
+                             else key, value)
+                            for key, value in pairs
                             if not (key.lower().startswith("utm_")
                                     or key.lower() in _TRACKING_KEYS)]
                 # Ordinary distinct query keys are order-independent for
