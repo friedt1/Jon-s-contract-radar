@@ -673,14 +673,29 @@ def scan_civicplus(src, listing_pages, page_errors):
    scope = detail_title
   if not category(scope if ambiguous or detail_scope or detail_title else row['title'] + ' ' + scope):
    continue
-  evidence = row['title'] + ' bid ' + scope + (' Due date: ' + due if due else '')
+  # Once a notice supplies its own scope, the listing-card title must not
+  # contaminate classification. A listing called "Tree removal" may actually
+  # describe grading with tree work excluded, or the reverse.
+  notice_scope_available = bool(detail_scope or detail_title)
+  evidence = (('Individual bid notice: ' if notice_scope_available
+               else row['title'] + ' bid ') + scope
+              + (' Due date: ' + due if due else ''))
   summary = ('Bid No. ' + row['bid_number'] + '. ' if row['bid_number']
              else 'Bid notice. ' if ambiguous else '') + scope
   if due:
    summary += ' Due date: ' + due
-  lead_title = (detail_title[:130] if title_is_scope
-                else detail_scope[:130] if ambiguous and not category(row['title'])
-                else row['title'])
+  listing_category = category(row['title'])
+  actual_category = category(scope)
+  if title_is_scope:
+   lead_title = detail_title[:130]
+  elif detail_scope and actual_category != listing_category:
+   # Prefer the individual title only if it agrees with the actual scope.
+   lead_title = (detail_title if category(detail_title) == actual_category
+                 else detail_scope)[:130]
+  elif ambiguous and not listing_category:
+   lead_title = detail_scope[:130]
+  else:
+   lead_title = row['title']
   add_lead(found, name, lead_title, row['url'], summary, 'individual county bid candidate', evidence=evidence)
   uid = notice_identity.notice_id(row['url'])
   if uid in found:
