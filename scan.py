@@ -35,7 +35,10 @@ CATEGORIES = {
  'Tree removal': ('tree removal','removal of trees','removal of hazardous trees','hazardous tree','tree and stump removal','tree & stump removal','trees & stumps removal','tree/stump removal','tree and stumps removal','tree and brush removal','tree & brush removal','tree/brush removal','tree and vegetation removal','tree & vegetation removal','tree/vegetation removal','removal of trees and vegetation','tree cutting','tree felling','hazard tree','tree service','tree work','tree clearing','stump removal','stump grinding','arborist'),
  'Tree trimming': ('tree trimming','trimming of trees','tree pruning','tree maintenance','tree care','tree management','limb removal'),
  'Land clearing': ('land clearing','site clearing','lot clearing','clearing and grubbing','forestry mulching'),
- 'Vegetation management': ('vegetation management','vegetation removal','removal of vegetation','vegetation clearing','invasive vegetation removal','brush clearing','brush removal','brush cutting','right of way clearing','right-of-way clearing','line clearance','roadside mowing','forestry mowing','vegetation control','brush hogging','brush mowing'),
+ 'Vegetation management': ('vegetation management','vegetation removal','removal of vegetation','vegetation clearing','invasive vegetation removal','brush clearing','brush removal','brush cutting','right of way clearing','right-of-way clearing','line clearance','roadside mowing','forestry mowing','vegetation control','brush hogging','brush mowing',
+                           'power line clearing','powerline clearing','transmission line clearing',
+                           'distribution line clearing','utility line clearing','roadside clearing',
+                           'roadway vegetation clearing'),
  # Generic "storm damage" and "storm response" also describe roofing, roads,
  # insurance and electrical repairs. Require debris/tree-work evidence before
  # treating a storm-related procurement notice as relevant to tree crews.
@@ -79,7 +82,8 @@ _SERVICE_SCOPE = (r"(?:tree\s*(?:and|&|/)\s*vegetation\s+removal|"
                   r"brush\s+(?:removal|clearing)|"
                   r"land\s+clearing|vegetation\s+management|forestry\s+(?:mulching|mowing)|"
                   r"right[-\s]of[-\s]way\s+clearing|line\s+clearance|"
-                  r"power\s+line\s+clearing|roadside\s+(?:mowing|clearing)|"
+                  r"(?:power\s*line|transmission\s+line|distribution\s+line|utility\s+line)\s+clearing|"
+                                      r"roadside\s+(?:mowing|clearing)|roadway\s+vegetation\s+clearing|"
                   r"storm\s+(?:clean-?up|debris(?:\s+removal)?)|"
                   r"disaster\s+debris(?:\s+removal)?|woody\s+debris\s+removal|"
                   r"debris\s+removal|"
