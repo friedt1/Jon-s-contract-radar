@@ -452,8 +452,11 @@ def probe(source, fetch=scan.fetch, now=None):
                 "individual_notice_labelled_fields_unverified" if detail_scope
                 else "not_extracted"
             )
+            # Compare the actual categories, not just whether both are relevant.
+            # A tree-removal listing pointing to a site-grading notice is a
+            # material scope mismatch even though both are in our review set.
             result["sample_notice_listing_detail_scope_disagreement"] = bool(
-                detail_scope and bool(listing_category) != bool(detail_category)
+                detail_scope and listing_category != detail_category
             )
             detail_status = adapter.status_of(body)
             listed_status = record["open_status"]

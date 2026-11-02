@@ -70,6 +70,10 @@ class GranicusDetailScopeTests(unittest.TestCase):
              "Remove hazardous trees and grind stumps.", "Tree removal", True),
             ("BID: Hazardous tree removal", "BID: Hazardous tree removal",
              "Remove hazardous trees and grind stumps.", "Tree removal", False),
+            ("BID: Hazardous tree removal", "BID: Site grading and earthwork",
+             "Grading and earthwork for site preparation.", "Related site prep", True),
+            ("BID: Site grading and earthwork", "BID: Hazardous tree removal",
+             "Remove hazardous trees and grind stumps.", "Tree removal", True),
         ]
         for listed, detailed, description, category, mismatch in cases:
             with self.subTest(detailed=detailed):

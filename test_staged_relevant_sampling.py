@@ -108,6 +108,10 @@ class StagedRelevantSamplingTests(unittest.TestCase):
              "Remove hazardous trees and grind stumps.", "Tree removal", True),
             ("Hazardous tree removal bid", "Hazardous tree removal bid",
              "Remove hazardous trees and grind stumps.", "Tree removal", False),
+            ("Hazardous tree removal bid", "Site grading and earthwork bid",
+             "Grading and earthwork for site preparation.", "Related site prep", True),
+            ("Site grading and earthwork bid", "Hazardous tree removal bid",
+             "Remove hazardous trees and grind stumps.", "Tree removal", True),
         ]
         for listing_title, detail_title, description, expected, disagreement in cases:
             with self.subTest(detail_title=detail_title):
