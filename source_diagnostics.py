@@ -106,7 +106,8 @@ def report(payload):
         if not row:  # Backward-compatible fallback for historical feeds.
             direct_error = ("direct error:" in low or "direct blocked" in low
                             or low.startswith("blocked:")
-                            or "unsupported content type" in low)
+                            or "unsupported content type" in low
+                            or "direct robots policy unavailable:" in low)
             indirect_error = "indirect rss error:" in low
         results.append({
             "source": name,
