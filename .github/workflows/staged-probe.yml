@@ -78,7 +78,19 @@ jobs:
             # Retry only optimistic, non-force pushes; a genuine rebase
             # conflict still fails closed rather than overwriting data.
             for attempt in 1 2 3 4 5; do
-              git pull --rebase origin main
+              if ! git pull --rebase origin main; then
+                # Concurrent probes can both write the same generated JSON.
+                # Never overwrite the newer published report with a stale
+                # snapshot, and never hide an unrelated source-code conflict.
+                conflicted="$(git diff --name-only --diff-filter=U)"
+                git rebase --abort
+                if [ "$conflicted" = "data/staged_probes.json" ]; then
+                  echo "Another run already published a newer staged report; skip this stale report."
+                  exit 0
+                fi
+                echo "Unexpected rebase conflict: $conflicted" >&2
+                exit 1
+              fi
               if git push origin HEAD:main; then
                 break
               fi
