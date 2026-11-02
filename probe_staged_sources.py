@@ -57,6 +57,18 @@ def _authentication_landing(html, final):
     return login_path or login_form
 
 
+def _robots_denial_state(exc, scope):
+    """Distinguish explicit publisher disallow from unverifiable robots policy.
+
+    Both fail closed. A timeout, 503, redirect or malformed policy is not
+    evidence that the publisher expressly forbids the requested path.
+    Do not expose exception messages (which could contain URLs or tokens).
+    """
+    return (f"{scope}_robots_blocked"
+            if str(exc) == "robots disallows requested path"
+            else f"{scope}_robots_policy_unavailable")
+
+
 def _blocked_redirect_state(exc, scope):
     # The fetcher blocks redirects *before* requesting their destinations.
     # Never imply that an external provider was actually accessed.
@@ -396,8 +408,8 @@ def probe(source, fetch=scan.fetch, now=None):
             failure = {"url": detail_url}
             try:
                 blob, ctype, detail_final = fetch(detail_url, binary=True)
-            except robots_policy.RobotsDenied:
-                failure["state"] = "individual_notice_robots_blocked"
+            except robots_policy.RobotsDenied as exc:
+                failure["state"] = _robots_denial_state(exc, "individual_notice")
                 result["individual_sample_failures"].append(failure)
                 continue
             except scan.UnsafeRedirect as exc:
@@ -578,8 +590,8 @@ def probe(source, fetch=scan.fetch, now=None):
         if len(failures) == 1 and "error_type" in failures[0]:
             result["error_type"] = failures[0]["error_type"]
         return result
-    except robots_policy.RobotsDenied:
-        result["state"] = "listing_robots_blocked"
+    except robots_policy.RobotsDenied as exc:
+        result["state"] = _robots_denial_state(exc, "listing")
     except scan.UnsafeRedirect as exc:
         result["state"] = _blocked_redirect_state(exc, "listing")
     except HTTPError as exc:
