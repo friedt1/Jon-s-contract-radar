@@ -155,6 +155,11 @@ def _official_bid_index_candidates(links, official_url, limit=5):
         # not reusable procurement indexes, regardless of the link text.
         if (re.search(r"/(?:news|posts?|articles?)/\d{4}(?:/|$)",
                       path, re.I)
+                # Municipal document-center news items have descriptive slugs,
+                # not numeric IDs. An RFP title still describes one article,
+                # not a reusable procurement listing index.
+                or re.search(r"/news/document-center/[^/]+(?:/|$)",
+                             path, re.I)
                 or re.search(
                     r"/(?:bids?|rfps?|rfqs?|solicitations?)/\d+(?:/|$)",
                     path, re.I)):

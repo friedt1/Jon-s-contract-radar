@@ -76,6 +76,33 @@ class StagedInternalIndexDiscoveryTests(unittest.TestCase):
         ])
         self.assertFalse(row["direct_monitoring_activated"])
 
+    def test_document_center_news_articles_are_not_bid_indexes(self):
+        # Synthetic Williamsport-shaped article URLs. A procurement phrase
+        # in the link label does not make an individual news post a bid index.
+        html = (
+            '<h1>City News</h1>'
+            '<a href="/news/document-center/request-for-proposal-city-hall/">'
+            'Request for Proposal: Invitation for Bids - Sale of City Hall</a>'
+            '<a href="/news/document-center/levee-project-professional-services/">'
+            'Levee Project - Professional Services Procurement</a>'
+            '<a href="/news/document-center/2026/another-rfp/">'
+            'Bids &amp; RFPs</a>'
+            '<a href="/Bids.aspx">Current Bids</a>'
+        )
+        calls = []
+
+        def fetch(url, binary=False):
+            calls.append(url)
+            return html, "text/html", url
+
+        row = staged.probe(SOURCE, fetch=fetch)
+        self.assertEqual(calls, [SOURCE["candidate_official_url"]])
+        self.assertEqual(row["official_bid_index_links_unverified"], [
+            {"label": "Current Bids", "url": "https://town.example/Bids.aspx"}
+        ])
+        self.assertFalse(row["individual_notice_retrieved"])
+        self.assertFalse(row["direct_monitoring_activated"])
+
     def test_individual_notice_urls_with_generic_bid_labels_are_not_indexes(self):
         # The label may say "Bids & RFPs" while the URL points to a
         # single CivicPlus notice, a numbered detail route, or a news post.
