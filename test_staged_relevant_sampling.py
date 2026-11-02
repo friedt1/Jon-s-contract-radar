@@ -161,11 +161,12 @@ class StagedRelevantSamplingTests(unittest.TestCase):
             if url == ENTRY:
                 return html, "text/html", url
             self.assertTrue(binary)
-            self.assertEqual(url, ENTRY + "?bidID=104")
+            bidid = url.split("bidID=")[1]
+            title = dict(cards)[bidid]
             detail = (
-                "<h1>Bid Title: Hazardous tree removal bid</h1>"
-                "<p>Bid Number: 104</p>"
-                "<p>Description: Removal of hazardous trees.</p>"
+                f"<h1>Bid Title: {title}</h1>"
+                f"<p>Bid Number: {bidid}</p>"
+                f"<p>Description: {title}.</p>"
                 "<p>Status: Open</p>"
                 "<p>Closing Date/Time: 11/19/2026 2:00 PM</p>"
             )
@@ -176,8 +177,12 @@ class StagedRelevantSamplingTests(unittest.TestCase):
         self.assertEqual(result["listing_relevant_count"], 1)
         self.assertEqual(result["listing_relevant_by_temporal_evidence"]["future_or_today_unverified"], 1)
         self.assertEqual(result["listing_relevant_examples"][0]["category"], "Tree removal")
-        self.assertEqual(result["individual_samples_attempted"], 1)
-        self.assertEqual(calls, [ENTRY, ENTRY + "?bidID=104"])
+        self.assertEqual(result["individual_samples_attempted"], 3)
+        self.assertEqual(result["individual_samples_confirmed"], 3)
+        self.assertEqual(len(calls), 4)
+        self.assertEqual(calls[1], ENTRY + "?bidID=104")
+        self.assertEqual(len(set(calls[1:])), 3)
+        self.assertEqual(len(result["additional_sample_notice_urls_confirmed"]), 2)
         self.assertEqual(result["state"], "notice_format_confirmed_terms_review_required")
         self.assertTrue(result["individual_notice_retrieved"])
         self.assertEqual(result["sample_notice_listing_scope_category"], "Tree removal")
