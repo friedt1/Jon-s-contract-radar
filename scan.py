@@ -19,6 +19,7 @@ import xml.etree.ElementTree as ET
 import local_bid_rss
 import public_bid_pagination as public_pages
 import civicplus_bids
+import access_challenge
 import detail_rotation
 import robots_policy
 import source_health
@@ -245,6 +246,12 @@ def fetch(url, binary=False):
   content=r.read(MAX_BYTES+1)
   if len(content)>MAX_BYTES: raise ValueError('page too large')
   ctype=r.headers.get('Content-Type','').lower()
+  # HTTP 200 can contain a bot-check page rather than a bid listing. Reject
+  # explicit interstitial signatures before HTML or notice extraction; do
+  # not count the response as fetched procurement content or a live bid.
+  challenge=access_challenge.challenge_kind(content,ctype)
+  if challenge:
+   raise access_challenge.AccessChallenge(challenge)
   return (content,ctype,r.url) if binary else (content.decode('utf-8','replace'),ctype,r.url)
 
 class Page(HTMLParser):
