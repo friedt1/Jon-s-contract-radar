@@ -58,7 +58,8 @@ class SourceDiagnosticsTests(unittest.TestCase):
             "Redirect": ("redirect_blocked", "direct error: UnsafeRedirect"),
             "Rate": ("rate_limited", "direct error: HTTPError HTTP 429"),
             "NonHTML": ("unsupported_content", "unsupported content type"),
-            "Robots": ("robots_blocked", "direct blocked by robots policy"),
+            "Robots": ("robots_blocked", "direct blocked by robots policy: robots disallows requested path"),
+            "PolicyUnknown": ("robots_policy_unavailable", "direct blocked by robots policy: robots policy unavailable: URLError"),
             "Timeout": ("fetch_error", "direct error: TimeoutError"),
             "Portal": ("access_required", "individual listing ingestion not connected"),
             "Working": ("fetched_unverified", "direct fetched; 1 listing pages"),
@@ -78,7 +79,7 @@ class SourceDiagnosticsTests(unittest.TestCase):
             "opportunities": [],
         }
         rows = {row["source"]: row for row in source_diagnostics.report(payload)["sources"]}
-        for name in ("Denied", "Redirect", "Rate", "NonHTML", "Robots", "Timeout"):
+        for name in ("Denied", "Redirect", "Rate", "NonHTML", "Robots", "PolicyUnknown", "Timeout"):
             with self.subTest(source=name):
                 self.assertTrue(rows[name]["direct_error"])
                 self.assertTrue(rows[name]["error"])
