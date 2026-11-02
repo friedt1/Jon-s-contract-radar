@@ -38,6 +38,9 @@ class ProcurementIndexIdentityTests(unittest.TestCase):
     def test_collection_routes_not_individual_notice_links(self):
         for path in ("/bids", "/bids/current", "/bids/open",
                      "/bids/2026", "/rfp/archive", "/solicitations/results",
+                     "/bids/current.html", "/bids/open.aspx",
+                     "/rfp/archive.php", "/solicitations/2026.htm",
+                     "/bids/closed", "/bids/bid-results.html",
                      "/purchasing", "/procurement", "/Bids.aspx"):
             with self.subTest(path=path):
                 url = "https://example.gov" + path
@@ -74,6 +77,29 @@ class ProcurementIndexIdentityTests(unittest.TestCase):
         self.assertEqual(leads[0]["status"], "unverified")
         self.assertEqual(requests, [SOURCE["url"], INDEX, NOTICE])
         self.assertIn("2 details checked", status)
+
+    def test_file_suffixed_collection_is_not_a_bid(self):
+        index = "https://example.gov/bids/current.html"
+        leads, status, requests = self.scan_pages({
+            SOURCE["url"]: '<a href="/bids/current.html">Current bids</a>',
+            index: ('<h1>Tree removal bid due November 19, 2026</h1>'
+                    '<p>Browse the current procurement listings.</p>'),
+        })
+        self.assertEqual(leads, [])
+        self.assertEqual(requests, [SOURCE["url"], index])
+        self.assertIn("1 details checked", status)
+
+    def test_file_suffixed_collection_can_link_real_notice_detail(self):
+        index = "https://example.gov/bids/current.html"
+        notice = "https://example.gov/bids/42.html"
+        leads, _, requests = self.scan_pages({
+            SOURCE["url"]: '<a href="/bids/current.html">Current bids</a>',
+            index: '<a href="/bids/42.html">Tree removal bid due November 19, 2026</a>',
+            notice: '<h1>Tree removal bid due November 19, 2026</h1>',
+        })
+        self.assertEqual([lead["url"] for lead in leads], [notice])
+        self.assertEqual(leads[0]["status"], "unverified")
+        self.assertEqual(requests, [SOURCE["url"], index, notice])
 
     def test_historical_erie_and_unrelated_owego_stay_excluded(self):
         self.assertFalse(scan.eligible(

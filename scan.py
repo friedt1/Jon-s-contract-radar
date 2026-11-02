@@ -515,7 +515,8 @@ def is_procurement_index_link(url):
    return True
   return bool(re.search(
    r'/(?:bids?|rfps?|rfqs?|solicitations?|tenders?|opportunities?|bid-projects)/'
-   r'(?:current|open|active|all|latest|upcoming|archive|archived|past|previous|history|results|awards?|listing|list|index|search|current-bids|open-bids|all-bids|(?:19|20)\d{2})$', path))
+   r'(?:current|open|active|closed|expired|pending|all|latest|upcoming|archive|archived|past|previous|history|results|bid-results|awards?|bid-awards|listing|list|index|search|current-bids|open-bids|all-bids|(?:19|20)\d{2})'
+   r'(?:\.(?:aspx?|html?|php))?$', path))
  except ValueError:
   return False
 
