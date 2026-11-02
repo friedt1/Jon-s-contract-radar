@@ -493,9 +493,9 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "candidate_official_url": "https://www.lansingtownny.gov/rfps",
-    "official_page_role": "bid_index_no_current_records",
-    "activation_gate": "Official Town of Lansing Bids and RFPs index currently says there are no bids or RFPs available. This does not prove all purchasing channels are covered. Review robots/terms and implement permitted listing/detail extraction with status, deadline and worksite verification before activation; never infer a live bid from the empty index."
+    "candidate_official_url": "https://www.lansingtownny.gov/Bids.aspx",
+    "official_page_role": "current_official_civicplus_bid_index_access_unverified",
+    "activation_gate": "Town\u0027s current official homepage links to /Bids.aspx (CivicPlus); the previous /rfps index is obsolete and the hosted probe returned HTTP 404. Live listing retrieval is not yet established and may be robots-restricted. Review publisher terms and robots policy, verify permitted bidID notice extraction, deadlines, worksite and listing completeness before activation. Do not infer a live bid or publisher authorization."
   },
   {
     "name": "Town of Dryden",
