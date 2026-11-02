@@ -5,6 +5,7 @@ that a bid is open, local, eligible, or worth a particular contract value.
 Never use this module to promote a source or verify an opportunity.
 """
 import datetime as dt
+from zoneinfo import ZoneInfo
 
 import civicplus_bids
 from submission_deadlines import eastern_deadline_timezone
@@ -31,7 +32,14 @@ EVIDENCE_POINTS = {
 
 def review_assessment(lead, today=None, now=None):
     """Add transparent triage metadata; leave original status untouched."""
-    today = today or dt.date.today()
+    # Procurement deadlines are agency-local Eastern, not the runner's UTC
+    # calendar day. Prefer the caller's aware scan timestamp when available.
+    # A date-only caller can still provide an explicit `today` for tests.
+    if today is None:
+        clock = (now if isinstance(now, dt.datetime) and now.tzinfo is not None
+                 and now.utcoffset() is not None
+                 else dt.datetime.now(ZoneInfo("America/New_York")))
+        today = clock.astimezone(ZoneInfo("America/New_York")).date()
     # A notice without a supported service category is not a review lead.
     # Strong metadata (individual detail, future deadline, worksite text) must
     # never compensate for unrelated work such as demolition-only Owego bids.
@@ -88,8 +96,14 @@ def review_assessment(lead, today=None, now=None):
         score += 12
         factors.append("submission date stated; amendments still unverified")
         if lead.get("deadline_time"):
-            score += 4
-            factors.append("submission time stated; timezone still requires confirmation")
+            # A malformed clock or an explicitly non-Eastern timezone cannot
+            # improve a candidate's evidence score or imply a local cutoff.
+            if (eastern_deadline_timezone(lead.get("deadline_timezone"))
+                    and civicplus_bids._clock(str(lead["deadline_time"]))):
+                score += 4
+                factors.append("parseable Eastern submission time stated; amendments unverified")
+            else:
+                factors.append("submission time ambiguous or non-Eastern; verify with issuer")
     else:
         score -= 10
         factors.append("submission deadline unknown")
