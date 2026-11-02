@@ -997,6 +997,11 @@ def scan_news(src):
  return list(found.values())
 
 def error_label(error):
+ # A failed robots lookup is not evidence that a publisher disallowed a
+ # notice. Preserve the distinction for detail and pagination requests,
+ # without logging URLs or exception messages that may contain secrets.
+ if isinstance(error, robots_policy.RobotsDenied) and str(error) != 'robots disallows requested path':
+  return 'RobotsPolicyUnavailable'
  return type(error).__name__ + (' HTTP '+str(error.code) if hasattr(error,'code') else '')
 
 def run(src, news_access=None):
