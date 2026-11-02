@@ -60,6 +60,22 @@ class StagedInternalIndexDiscoveryTests(unittest.TestCase):
         self.assertNotIn("official_bid_index_links_unverified", row)
         self.assertFalse(row["direct_monitoring_activated"])
 
+    def test_individual_rfps_and_bid_sheets_are_not_index_links(self):
+        # A singular notice or document-center entry is not a bid index.
+        html = (
+            '<h1>Town News</h1>'
+            '<a href="/2026/10/request-for-proposal">Request for Proposal</a>'
+            '<a href="/post.php?id=42">Seeking RFQ for Contractors</a>'
+            '<a href="/news/codes-rfp-2026">Codes RFP 2026</a>'
+            '<a href="/news/city-hall-bid-sheet">City Hall IFB - Bid Sheet</a>'
+            '<a href="/procurement">Procurement</a>'
+        )
+        row = staged.probe(SOURCE, fetch=lambda url: (html, "text/html", url))
+        self.assertEqual(row["official_bid_index_links_unverified"], [
+            {"label": "Procurement", "url": "https://town.example/procurement"}
+        ])
+        self.assertFalse(row["direct_monitoring_activated"])
+
     def test_unlabeled_internal_links_are_not_inferred_as_bid_indexes(self):
         html = (
             '<h1>Town Hall</h1>'
