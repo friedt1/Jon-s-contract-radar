@@ -929,6 +929,16 @@ def scan_direct(src):
          or target_identity == listing_identity):
       # Excluded archives and same-page fragments are not individual bids.
       continue
+     # Nested bid indexes have the same historical results/award tabs as
+     # top-level listings, often behind opaque PDF URLs. Never spend a
+     # detail/PDF request on a publisher-labeled award or bid tabulation.
+     # Mark an index containing only result links as a listing too; it
+     # must not become an individual tree-removal notice by inheritance.
+     if published_result_link(label):
+      result_links_skipped += 1
+      if not is_individual_notice_link(final_url):
+       nested_notice_links = True
+      continue
      # A page linking to distinct individual bid URLs is a listing, even
      # when it uses divs rather than tr/article/li elements. Do not emit
      # the listing URL as an individual solicitation.
