@@ -36,8 +36,13 @@ def canonical_url(url):
         # so disguised IPv4 aliases cannot enter notice identity/publication.
         if not public_dns_hostname(host):
             return ""
+        # RSS/news links also pass through this canonicalizer before being
+        # published. Match the direct-source/detail URL safety boundary:
+        # a valid DNS hostname does not make an arbitrary service port safe.
         default = 443 if parts.scheme.lower() == "https" else 80
-        netloc = host + (":" + str(port) if port is not None and port != default else "")
+        if port is not None and port != default:
+            return ""
+        netloc = host
         # Leave all substantive query parameters intact, including duplicate
         # bidID keys. Do not strip generic 'ref' or arbitrary unknown keys.
         query = parts.query
