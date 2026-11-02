@@ -209,6 +209,42 @@ class ValidateSourceHealthTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Source health states do not account"):
             self.check(sources, payload)
 
+    def test_timestamped_broome_provider_upgrade_keeps_old_scan_evidence(self):
+        # Synthetic historical feed: the county's former URL was recorded
+        # before a verified move to its endorsed BidNet gateway. Do not
+        # rewrite the old feed or pretend provider notice access is connected.
+        sources, payload = self.payload()
+        payload["updated"] = "2026-11-02T08:44:05+00:00"
+        historical_sources = json.loads(json.dumps(sources))
+        old = next(s for s in historical_sources
+                   if s["name"] == "Broome County")
+        old["candidate_official_url"] = (
+            "https://broomecountyny.gov/purchasing/open-solicitations")
+        for key in ("delegated_provider", "provider_access_required",
+                    "official_url_checked_at", "official_page_role"):
+            old.pop(key, None)
+        payload["source_health"] = source_health.summarize(
+            historical_sources, payload["source_status"])
+        previous = next(row for row in payload["source_health"]["sources"]
+                        if row["name"] == "Broome County")
+        self.assertEqual(previous["direct_state"], "staged_official_url")
+        self.assertFalse(previous["staged_provider_access_required"])
+        self.check(sources, payload)
+
+        # After the recorded URL check, a fresh scan must report the new
+        # provider restriction; the old metadata cannot lag indefinitely.
+        payload["updated"] = "2026-11-02T09:20:00+00:00"
+        with self.assertRaisesRegex(ValueError, "Source health state disagrees"):
+            self.check(sources, payload)
+
+        # A provider-lookalike URL cannot receive this special exception.
+        payload["updated"] = "2026-11-02T08:44:05+00:00"
+        bad_sources = json.loads(json.dumps(sources))
+        bad = next(s for s in bad_sources if s["name"] == "Broome County")
+        bad["candidate_official_url"] = "https://bidnetdirect.com.evil.example/bids"
+        with self.assertRaisesRegex(ValueError, "Source health state disagrees"):
+            self.check(bad_sources, payload)
+
     def test_legacy_health_without_nonexclusive_arrays_remains_readable(self):
         sources, payload = self.payload()
         for row in payload['source_health']['sources']:

@@ -270,6 +270,17 @@ def probe(source, fetch=scan.fetch, now=None):
             result["state"] = "listing_authentication_required"
             return result
         result["listing_retrieved"] = True
+        # A county-endorsed provider URL may itself be the staged entrypoint.
+        # Even a public HTTP-200 landing page on BidNet/PennBid/Bonfire is
+        # not proof of permitted individual-notice extraction. Do not mistake
+        # its generic listing text for a county-hosted adapter opportunity.
+        if scan.provider_link(final):
+            result["state"] = "listing_reachable_external_provider_access_required"
+            result["external_provider_host"] = urlparse(final).hostname
+            result["section_note"] = (
+                "Delegated procurement provider entrypoint only; publisher "
+                "permission and individual-notice extraction are not verified")
+            return result
         if source["name"] in civicplus_bids.SOURCES:
             adapter = civicplus_bids
         elif source["name"] in granicus_rfps.SOURCES:
