@@ -153,10 +153,10 @@ def _official_bid_index_candidates(links, official_url, limit=5):
             continue
         # News articles and numbered bid-detail routes are individual posts,
         # not reusable procurement indexes, regardless of the link text.
-        if (re.search(r"/(?:news|posts?|articles?)/\\d{4}(?:/|$)",
+        if (re.search(r"/(?:news|posts?|articles?)/\d{4}(?:/|$)",
                       path, re.I)
                 or re.search(
-                    r"/(?:bids?|rfps?|rfqs?|solicitations?)/\\d+(?:/|$)",
+                    r"/(?:bids?|rfps?|rfqs?|solicitations?)/\d+(?:/|$)",
                     path, re.I)):
             continue
         # Strip fragments and queries: diagnostics must not publish tokens or
