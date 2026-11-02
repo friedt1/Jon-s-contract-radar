@@ -428,16 +428,20 @@ def probe(source, fetch=scan.fetch, now=None):
                 scan.category(listing_scope) or "not_identified"
             )
             result["sample_notice_scope_evidence"] = "listing_card_unverified"
-            # CivicPlus exposes labelled title/description fields on the
-            # individual notice. Keep this evidence separate from the listing
-            # card: a stale or misleading card must not imply tree-work scope
-            # in a different solicitation. Granicus has no isolated detail
-            # scope extractor yet; never classify its page-wide chrome.
+            # Use only isolated individual-notice title/description evidence.
+            # CivicPlus has labelled metadata; Granicus has a notice-specific
+            # BID/RFP/RFQ H1 and, occasionally, a labelled description.
+            # Never classify Granicus page-wide navigation or legal boilerplate.
             detail_scope = ""
             if adapter is civicplus_bids:
                 detail_scope = " ".join(filter(None, (
                     civicplus_bids.detail_title(body),
                     civicplus_bids.detail_description(body),
+                )))
+            elif adapter is granicus_rfps:
+                detail_scope = " ".join(filter(None, (
+                    granicus_rfps.detail_title_html(detail_html),
+                    granicus_rfps.detail_description(body),
                 )))
             detail_category = scan.category(detail_scope) if detail_scope else None
             listing_category = scan.category(listing_scope)
