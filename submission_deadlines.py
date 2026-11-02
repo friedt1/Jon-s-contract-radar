@@ -177,6 +177,16 @@ def _receipt_before_date_matches(text, with_position=False):
         prefix = re.split(r"[.;\n]", text[max(0, match.start()-80):match.start()])[-1]
         if _OTHER_MILESTONE_END.search(prefix):
             continue
+        # The long-address receipt pattern deliberately permits periods in
+        # agency addresses (e.g. "St."), but must not borrow a cutoff from a
+        # following questions, addenda, or site-visit sentence. A semicolon
+        # also separates independent procurement milestones.
+        receipt_context = text[match.start():match.start("clock")]
+        if (re.search(r"[;\n]", receipt_context)
+                or _OTHER_MILESTONE.search(receipt_context)
+                or re.search(r"\b(?:bids?\s+opening|opening\s+of\s+(?:sealed\s+)?bids?|award\s+date)\b",
+                             receipt_context, re.I)):
+            continue
         date = _date(match.group("date"))
         if date is None:
             continue
