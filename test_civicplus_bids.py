@@ -164,6 +164,49 @@ class CivicPlusTests(unittest.TestCase):
         self.assertEqual([r["url"] for r in leads], [BASE + "?bidID=999"])
         self.assertIn("36 relevant details checked", status)
 
+    def test_individual_scope_controls_category_when_listing_title_disagrees(self):
+        # Synthetic CivicPlus notices: listing titles are not authority for
+        # the actual service category. Site prep must stay separately labeled.
+        cases = (
+            ("Tree removal contract", "Tree removal contract",
+             "Site grading and earthwork; tree removal by others.",
+             "Related site prep", "Site grading"),
+            ("Site grading and earthwork", "Tree trimming along local roads",
+             "Tree trimming and pruning along Elmira roads.",
+             "Tree trimming", "Tree trimming"),
+        )
+        for listing_title, notice_title, scope, expected, title_start in cases:
+            with self.subTest(listing_title=listing_title):
+                html = card(78, listing_title, "Open", "11/19/2026 1:45 PM")
+                detail = ('<p>Bid Title: ' + notice_title + '</p>'
+                          '<p>Bid Number: RFB-78</p>'
+                          '<p>Description: ' + scope + '</p>'
+                          '<p>Status: Open</p>'
+                          '<p>Closing Date/Time: 11/19/2026 1:45 PM</p>')
+                def fake(url, binary=False):
+                    return ((detail.encode(), "text/html", url) if binary
+                            else (html, "text/html", url))
+                with patch.object(scan, "fetch", side_effect=fake):
+                    leads, _ = scan.scan_direct(SOURCE)
+                self.assertEqual(len(leads), 1)
+                self.assertEqual(leads[0]["category"], expected)
+                self.assertTrue(leads[0]["title"].startswith(title_start))
+                self.assertEqual(leads[0]["status"], "unverified")
+                self.assertFalse(leads[0]["travel_verified"])
+
+    def test_excluded_tree_work_does_not_revive_demolition_listing(self):
+        html = card(79, "Tree removal", "Open", "11/19/2026")
+        detail = ('<p>Bid Title: Building demolition</p>'
+                  '<p>Description: Building demolition only; tree removal by others.</p>'
+                  '<p>Status: Open</p>'
+                  '<p>Closing Date/Time: 11/19/2026 1:45 PM</p>')
+        def fake(url, binary=False):
+            return ((detail.encode(), "text/html", url) if binary
+                    else (html, "text/html", url))
+        with patch.object(scan, "fetch", side_effect=fake):
+            leads, _ = scan.scan_direct(SOURCE)
+        self.assertEqual(leads, [])
+
     def test_more_than_eighteen_individual_bid_cards(self):
         html = "".join(card(i, "Tree removal bid", "Open", "11/19/2026")
                        for i in range(100, 125))
