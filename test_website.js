@@ -52,7 +52,9 @@ setImmediate(() => {
 
   assert.ok(element('#health-summary').textContent.includes('16 other configured fetch targets (not verified ingestion)'));
   assert.ok(element('#health-summary').textContent.includes('1 individual bid detail pages retrieved'));
-  assert.ok(element('#health-summary').textContent.includes('1 sources with individual-notice robots blocks'));
+  assert.ok(element('#health-summary').textContent.includes('1 sources with individual-notice robots disallows'));
+  assert.ok(element('#health-summary').textContent.includes('individual-notice robots checks unavailable (not publisher denials)'));
+  assert.ok(element('#health-summary').textContent.includes('pagination robots checks unavailable (not publisher denials)'));
   assert.ok(element('#health-summary').textContent.includes('3 PDF requests skipped at budget'));
   assert.ok(element('#health-summary').textContent.includes('2 listing pagination errors across 1 sources'));
   assert.ok(element('#health-list').innerHTML.includes('Incomplete listing: 2 pagination errors (robots_blocked)'));
