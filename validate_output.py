@@ -117,7 +117,8 @@ def validate(root=scan.ROOT):
             raise ValueError('Source health must report all 102 named targets')
         if counts.get('configured_direct') != coverage['direct_configured']:
             raise ValueError('Source health direct configuration disagrees with coverage')
-        states = ('fetched_unverified', 'robots_blocked', 'access_required',
+        states = ('fetched_unverified', 'robots_blocked',
+                  'robots_policy_unavailable', 'access_required',
                   'adapter_not_implemented',
                   'http_blocked', 'redirect_blocked', 'rate_limited',
                   'unsupported_content', 'fetch_error', 'not_fetched',
@@ -212,7 +213,7 @@ def validate(root=scan.ROOT):
                                'configured_access_required',
                                'staged_provider_access_required',
                                'configured_unimplemented_adapters') + diagnostic_counts:
-            if counts.get(field) != expected_counts[field]:
+            if counts.get(field, 0 if field == 'robots_policy_unavailable' else None) != expected_counts[field]:
                 raise ValueError('Source health count disagrees with scanner: ' + field)
         if counts.get('individual_bid_details_fetched', 0) != sum(
                 row.get('individual_bid_details_fetched', 0) for row in rows):

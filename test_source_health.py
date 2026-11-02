@@ -49,6 +49,58 @@ class SourceHealthTests(unittest.TestCase):
         self.assertEqual(summary["counts"]["not_configured"], 1)
         self.assertEqual(summary["counts"]["individual_bid_details_fetched"], 0)
 
+    def test_unavailable_robots_policy_is_not_explicit_publisher_denial(self):
+        # Synthetic access outcomes, not evidence of actual publisher policy.
+        statuses = {
+            "Explicit": "direct blocked by robots policy: robots disallows requested path",
+            "DNS": "direct robots policy unavailable: robots policy unavailable: URLError",
+            "Server": "direct robots policy unavailable: robots HTTP 503",
+            "Redirect": "direct robots policy unavailable: robots redirect blocked: different origin",
+        }
+        sources = [
+            {"name": name, "mode": "direct_page", "verified_url": True,
+             "url": f"https://{name.lower()}.example/Bids.aspx"}
+            for name in statuses
+        ]
+        summary = source_health.summarize(sources, statuses)
+        rows = {row["name"]: row for row in summary["sources"]}
+        self.assertEqual(rows["Explicit"]["direct_state"], "robots_blocked")
+        for name in ("DNS", "Server", "Redirect"):
+            self.assertEqual(rows[name]["direct_state"], "robots_policy_unavailable")
+            self.assertEqual(rows[name]["individual_bid_details_fetched"], 0)
+        self.assertEqual(summary["counts"]["robots_blocked"], 1)
+        self.assertEqual(summary["counts"]["robots_policy_unavailable"], 3)
+        self.assertEqual(summary["counts"]["fetched_unverified"], 0)
+
+    def test_scanner_emits_distinct_robots_status_prefixes(self):
+        from unittest.mock import patch
+        import scan
+        import robots_policy
+        source = {"name": "County", "mode": "direct_page",
+                  "url": "https://county.example/Bids.aspx",
+                  "verified_url": True}
+        for reason, expected in (
+            ("robots disallows requested path", "robots_blocked"),
+            ("robots policy unavailable: URLError", "robots_policy_unavailable"),
+            ("robots HTTP 503", "robots_policy_unavailable"),
+        ):
+            with self.subTest(reason=reason), patch.object(
+                scan, "scan_direct", side_effect=robots_policy.RobotsDenied(reason)
+            ):
+                _, status, leads = scan.run(
+                    source, news_access=(False, "shared provider blocked"))
+                self.assertEqual(leads, [])
+                self.assertEqual(source_health.classify(source, status)["direct_state"],
+                                 expected)
+
+    def test_legacy_unavailable_prefix_stays_readable_until_rescan(self):
+        source = {"name": "County", "mode": "direct_page",
+                  "url": "https://county.example/Bids.aspx",
+                  "verified_url": True}
+        old = "direct blocked by robots policy: robots policy unavailable: URLError"
+        self.assertEqual(source_health.classify(source, old)["direct_state"],
+                         "robots_blocked")
+
     def test_failed_fetch_and_missing_status_are_visible(self):
         src = {"name": "County", "mode": "direct_page", "url": "https://county.example/bids",
                "verified_url": True}

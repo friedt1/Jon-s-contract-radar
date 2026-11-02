@@ -64,7 +64,12 @@ def classify(source, status):
         # refusal in the raw diagnostic, but do not misclassify the source
         # as a robot-only integration that would activate if robots changed.
         direct_state = "access_required"
+    elif "direct robots policy unavailable:" in status:
+        direct_state = "robots_policy_unavailable"
     elif "direct blocked by robots policy" in status:
+        # Historical feeds used this prefix for both actual refusals and
+        # lookup failures. Preserve their original state until the next
+        # scanner run emits the new, unambiguous status prefix.
         direct_state = "robots_blocked"
     elif not direct_fetch_target(source):
         # Feed/API configuration is not operational until its own adapter exists.
@@ -189,7 +194,8 @@ def classify(source, status):
 
 def summarize(sources, statuses):
     rows = [classify(src, statuses.get(src["name"], "")) for src in sources]
-    states = ("fetched_unverified", "robots_blocked", "access_required",
+    states = ("fetched_unverified", "robots_blocked", "robots_policy_unavailable",
+              "access_required",
               "http_blocked", "redirect_blocked", "rate_limited",
               "unsupported_content", "fetch_error", "not_fetched",
               "staged_official_url", "not_configured", "adapter_not_implemented")
@@ -271,6 +277,8 @@ def summarize(sources, statuses):
                     "Provider-access requirements persist even when a scan has no status. " 
                      "Configured access-required portals and unimplemented feed/API adapters "
                     "are not direct fetch targets. "
+                    "Explicit robots disallows are distinct from unavailable robots "
+                    "policy checks (which fail closed without proving denial). "
                     "HTTP refusals, unsafe redirects, rate limits and unsupported "
                     "content are distinguished from transient fetch errors. "
                     "Staged provider access gates are reported separately from "

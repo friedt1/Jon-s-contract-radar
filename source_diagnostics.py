@@ -99,14 +99,15 @@ def report(payload):
         # responses are direct-source failures too. Keep access-required
         # portals separate: missing authorization is not a transient error.
         direct_error = direct in {
-            "robots_blocked", "http_blocked", "redirect_blocked",
+            "robots_blocked", "robots_policy_unavailable", "http_blocked", "redirect_blocked",
             "rate_limited", "unsupported_content", "fetch_error",
         }
         indirect_error = indirect in {"robots_blocked", "error", "provider_unavailable"}
         if not row:  # Backward-compatible fallback for historical feeds.
             direct_error = ("direct error:" in low or "direct blocked" in low
                             or low.startswith("blocked:")
-                            or "unsupported content type" in low)
+                            or "unsupported content type" in low
+                            or "direct robots policy unavailable:" in low)
             indirect_error = "indirect rss error:" in low
         results.append({
             "source": name,
