@@ -65,6 +65,18 @@ class CivicPlusTests(unittest.TestCase):
         self.assertEqual(records[1]["deadline_time"], "1:45 PM")
         self.assertNotIn("Closed/Awarded/Cancelled", records[1]["description"])
 
+    def test_case_variant_bidid_cards_are_one_record(self):
+        # Case variants are one CivicPlus notice, not two detail requests.
+        html = (card(81, "Tree removal bid", "Open", "11/19/2026")
+                + card(81, "Office supplies bid", "Closed", "10/22/2026")
+                  .replace("bidID=81", "BIDID=81"))
+        records = civic.listing_records(scan.parse_html(html), BASE)
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0]["url"], BASE + "?bidID=81")
+        # Conflicting row scopes still require the individual bid notice.
+        self.assertEqual(civic.individual_url("/Bids.aspx?BIDID=81", BASE),
+                         BASE + "?bidID=81")
+
     def test_pager_label_with_bidid_is_not_an_individual_bid(self):
         html = ('<a href="/Bids.aspx?page=2&bidID=999">Next</a>'
                 + card(18, "Tree removal bid", "Open", "11/19/2026"))
