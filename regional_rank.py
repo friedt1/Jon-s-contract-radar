@@ -29,6 +29,21 @@ AGENCIES = ("fema", "usace", "army corps", "department of transportation",
             "state dot", "penndot", "nysdot", "emergency management")
 
 
+def _scope_text(notice):
+    """Use specific notice scope over a potentially misleading headline.
+
+    A title may advertise tree removal while the actual summary says it is
+    excluded or the contract concerns unrelated work. Attachment-only
+    boilerplate supplies no scope evidence, so the title remains a fallback.
+    This is classification of unverified input, never proof of an open bid.
+    """
+    title = str(notice.get("title") or "")
+    summary = str(notice.get("summary") or "")
+    selected = (summary if summary.strip() and not
+                civicplus_bids.generic_detail_description(summary) else title)
+    return positive_scope_text(selected)
+
+
 def finite_number(value):
     """Treat malformed, non-finite and boolean numeric claims as unknown."""
     if isinstance(value, bool) or value is None:
@@ -103,9 +118,7 @@ def _shared_listing_numbered_urls(notices):
             continue
         number = _normalized_bid_number(notice)
         url = canonical_url(notice.get("url"))
-        scope = positive_scope_text(
-            str(notice.get("title") or "") + " " +
-            str(notice.get("summary") or ""))
+        scope = _scope_text(notice)
         if (number and url.startswith("https://")
                 and any(term in scope for term in KEYWORDS)):
             numbers.setdefault(url, set()).add(number)
@@ -131,7 +144,7 @@ def classify(notice, today=None, now=None):
         return None
     title = str(notice.get("title") or "")
     description = str(notice.get("summary") or "")
-    content = positive_scope_text(title + " " + description)
+    content = _scope_text(notice)
     if not any(term in content for term in KEYWORDS):
         return None
     url = canonical_url(notice.get("url"))
@@ -154,7 +167,7 @@ def classify(notice, today=None, now=None):
     elif amount is not None and amount >= 100000: score += 2
     if days is not None and days >= 7: score += 2
     if any(term in content for term in ("disaster debris", "emergency tree", "debris removal", "road clearing", "power line clearing", "line clearance", "storm restoration")): score += 2
-    if any(term in content for term in AGENCIES): score += 1
+    if any(term in (title + " " + description).lower() for term in AGENCIES): score += 1
     if notice.get("subcontracting_available") is True: score += 1
     result = dict(notice)
     result["url"] = url
@@ -220,9 +233,7 @@ def build(notices, today=None, now=None):
         candidate_url = canonical_url(notice.get("url"))
         candidate_key = identity(notice, candidate_url)
         candidate_date = notice.get("deadline")
-        candidate_text = positive_scope_text(
-            str(notice.get("title") or "") + " " +
-            str(notice.get("summary") or ""))
+        candidate_text = _scope_text(notice)
         # Record every independently stated valid submission date before
         # classify() drops an expired copy. An older cutoff may have been
         # superseded by an amendment, but the surviving later date is not
