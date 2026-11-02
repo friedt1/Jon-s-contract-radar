@@ -165,6 +165,37 @@ def _listing_scope_inventory(records, now):
     }
 
 
+
+def _daily_sample_candidates(records, now, budget=MAX_SAMPLE_DETAILS):
+    """Rotate only equal-priority notices at the staged sample boundary.
+
+    A fixed top-three sample can recheck the same notices every day while
+    equally ranked records remain untested indefinitely. Rotate the boundary
+    tie on a UTC calendar-day cadence without increasing requests or moving
+    expired/closed/conflicting notices ahead of higher-priority records.
+    This is adapter diagnostics only, never live contract publication.
+    """
+    ordered = sorted(records, key=lambda row: _sample_priority(row, now))
+    if budget <= 0:
+        return []
+    if len(ordered) <= budget:
+        return ordered
+    boundary = _sample_priority(ordered[budget - 1], now)
+    start = budget - 1
+    while start > 0 and _sample_priority(ordered[start - 1], now) == boundary:
+        start -= 1
+    end = budget
+    while end < len(ordered) and _sample_priority(ordered[end], now) == boundary:
+        end += 1
+    if end > budget:
+        tied = ordered[start:end]
+        slots = budget - start
+        day = now.astimezone(dt.timezone.utc).date().toordinal()
+        offset = (day * slots) % len(tied)
+        ordered[start:end] = tied[offset:] + tied[:offset]
+    return ordered[:budget]
+
+
 def probe(source, fetch=scan.fetch, now=None):
     now = now or dt.datetime.now(dt.timezone.utc)
     url = source["candidate_official_url"]
@@ -349,10 +380,10 @@ def probe(source, fetch=scan.fetch, now=None):
             return result
         # Stale or broken notices are common. Prefer listings with a future
         # deadline, then unknown deadlines, then expired/closed listings.
-        # Probe at most three distinct public URLs, stopping at the first
-        # well-shaped record. A sample is diagnostic evidence only:
-        # no candidate is emitted and no source is activated.
-        for record in sorted(records, key=lambda record: _sample_priority(record, now))[:MAX_SAMPLE_DETAILS]:
+        # Rotate equal-priority records daily so a fixed three-notice budget
+        # does not indefinitely hide later notices. Stop on a well-shaped
+        # sample; no candidate is emitted and no source is activated.
+        for record in _daily_sample_candidates(records, now):
             detail_url = record["url"]
             result["individual_samples_attempted"] += 1
             failure = {"url": detail_url}
