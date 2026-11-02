@@ -120,8 +120,9 @@ def _official_bid_index_candidates(links, official_url, limit=5):
     for label, parsed in links:
         label = " ".join(str(label).split())
         if not re.search(
-                r"\b(?:bids?|rfps?|rfqs?|procurement|solicitations?|"
-                r"requests?\s+for\s+proposals?)\b", label, re.I):
+                r"\b(?:bids|rfps|rfqs|procurement|solicitations|"
+                r"bid\s+opportunities|requests?\s+for\s+proposals)\b",
+                label, re.I):
             continue
         if re.search(
                 r"\b(?:awards?|results?|archives?|historical|past|closed|"
