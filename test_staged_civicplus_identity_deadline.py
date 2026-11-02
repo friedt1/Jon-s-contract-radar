@@ -101,6 +101,42 @@ class StagedCivicPlusIdentityAndDeadlineTests(unittest.TestCase):
                          "conflicting_deadlines_unverified")
         self.assertFalse(row["direct_monitoring_activated"])
 
+    def test_compound_bid_number_matches_full_individual_identifier(self):
+        # CivicPlus may publish type-prefixed IDs separated by a space.
+        # A matching full ID is valid adapter-shape evidence, not a live bid.
+        listing = LISTING.replace("RFB-101", "RFP 26-ADM-014")
+        calls = []
+
+        def fetch(url, binary=False):
+            calls.append(url)
+            if url == ENTRY:
+                return listing, "text/html", url
+            if url == NOTICE:
+                return notice("rfp 26-adm-014").encode(), "text/html", url
+            raise AssertionError("unexpected request: " + url)
+
+        row = staged.probe(SOURCE, fetch=fetch, now=NOW)
+        self.assertEqual(calls, [ENTRY, NOTICE])
+        self.assertEqual(row["state"], "notice_format_confirmed_terms_review_required")
+        self.assertTrue(row["individual_notice_retrieved"])
+        self.assertEqual(row["sample_notice_deadline"], "2026-11-20")
+        self.assertFalse(row["direct_monitoring_activated"])
+        self.assertNotIn("opportunities", row)
+
+    def test_compound_bid_number_mismatch_rejects_wrong_notice(self):
+        listing = LISTING.replace("RFB-101", "RFP 26-ADM-014")
+
+        def fetch(url, binary=False):
+            if url == ENTRY:
+                return listing, "text/html", url
+            return notice("RFP 26-ADM-015").encode(), "text/html", url
+
+        row = staged.probe(SOURCE, fetch=fetch, now=NOW)
+        self.assertEqual(row["state"], "individual_notice_bid_number_mismatch")
+        self.assertFalse(row["individual_notice_retrieved"])
+        self.assertEqual(row["individual_samples_attempted"], 1)
+        self.assertFalse(row["direct_monitoring_activated"])
+
     def test_historical_erie_and_unrelated_owego_are_not_live(self):
         self.assertFalse(scan.eligible(
             "Erie PA tree and stump removal due October 29, 2026",
