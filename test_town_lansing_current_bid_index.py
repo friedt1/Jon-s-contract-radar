@@ -14,6 +14,7 @@ import civicplus_bids
 import probe_staged_sources as staged
 import scan
 import source_health
+import validate_output
 
 
 URL = "https://www.lansingtownny.gov/Bids.aspx"
@@ -92,6 +93,35 @@ class TownLansingCurrentBidIndexTests(unittest.TestCase):
         self.assertEqual(result["sample_notice_deadline"], "2026-11-30")
         self.assertFalse(result["direct_monitoring_activated"])
         self.assertNotIn("opportunities", result)
+
+    def test_old_published_staged_url_can_lag_only_after_checked_update(self):
+        # Published scan predates the official URL correction. Keep its raw
+        # historical source-health evidence intact, without forging a rescan.
+        old_row = {
+            "direct_state": "staged_official_url",
+            "staged_official_url": "https://www.lansingtownny.gov/rfps",
+            "direct_url": "",
+        }
+        status = "indirect RSS provider unavailable (Google News): robots disallows requested path"
+        old_feed = "2026-11-02T06:04:45+00:00"
+        self.assertTrue(validate_output._staged_url_changed_after_published_scan(
+            self.source, old_row, old_feed, status))
+        self.assertFalse(validate_output._staged_url_changed_after_published_scan(
+            self.source, old_row, "2026-11-02T06:41:00+00:00", status))
+        self.assertFalse(validate_output._staged_url_changed_after_published_scan(
+            {**self.source, "official_url_checked_at": ""},
+            old_row, old_feed, status))
+        self.assertFalse(validate_output._staged_url_changed_after_published_scan(
+            self.source, {**old_row, "direct_state": "fetched_unverified"},
+            old_feed, status))
+        self.assertFalse(validate_output._staged_url_changed_after_published_scan(
+            self.source, {**old_row, "staged_official_url": "http://unsafe.example/bids"},
+            old_feed, status))
+        self.assertFalse(validate_output._staged_url_changed_after_published_scan(
+            self.source, old_row, old_feed, "direct fetched; 1 listing pages"))
+        self.assertFalse(validate_output._staged_url_changed_after_published_scan(
+            {**self.source, "mode": "direct_page", "verified_url": True, "url": URL},
+            old_row, old_feed, status))
 
     def test_historical_erie_and_unrelated_owego_are_excluded(self):
         today = dt.date(2026, 11, 2)
