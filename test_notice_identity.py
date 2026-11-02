@@ -1,9 +1,11 @@
 """Synthetic URL fixtures only; no real procurement notices are invented."""
 import unittest
+import datetime as dt
 from unittest.mock import patch
 
 import notice_identity
 import scan
+import regional_rank
 
 
 class NoticeIdentityTests(unittest.TestCase):
@@ -26,6 +28,39 @@ class NoticeIdentityTests(unittest.TestCase):
         self.assertEqual(len({notice_identity.notice_id(x) for x in variants}), 1)
         self.assertEqual(notice_identity.canonical_url(variants[2]),
                          "https://county.example/Bids.aspx?bidID=416")
+
+    def test_hash_routed_solicitations_are_distinct_but_anchors_are_not(self):
+        # Synthetic SPA links: the fragment is the actual notice route.
+        base = "https://county.example/procurement"
+        first = base + "#/bids/123"
+        second = base + "#/bids/124"
+        self.assertEqual(notice_identity.canonical_url(first), first)
+        self.assertNotEqual(notice_identity.notice_id(first),
+                            notice_identity.notice_id(second))
+        self.assertEqual(notice_identity.canonical_url(base + "#details"), base)
+        self.assertEqual(notice_identity.canonical_url(base + "#/about/team"), base)
+        self.assertEqual(notice_identity.canonical_url(base + "#!/solicitations/RFP-42"),
+                         base + "#!/solicitations/RFP-42")
+
+    def test_hash_routed_bids_survive_scan_and_regional_dedup(self):
+        # Neither record is verified open. Distinct routes must not merge
+        # unrelated scopes or create a fabricated deadline conflict.
+        base = "https://county.example/procurement"
+        a, b = base + "#/bids/123", base + "#/bids/124"
+        out = {}
+        scan.add_lead(out, "County", "Tree removal bid", a, "Tree removal contract")
+        scan.add_lead(out, "County", "Tree removal bid", b, "Tree removal contract")
+        self.assertEqual(len(out), 2)
+        notices = [
+            {"title": "Tree removal", "url": a, "deadline": "2026-11-10"},
+            {"title": "Tree removal", "url": b, "deadline": "2026-11-11"},
+        ]
+        result = regional_rank.build(notices, today=dt.date(2026, 11, 2))
+        self.assertEqual(len(result["opportunities"]), 2)
+        self.assertEqual({x["deadline"] for x in result["opportunities"]},
+                         {"2026-11-10", "2026-11-11"})
+        self.assertTrue(all(x["status"] == "review required"
+                            for x in result["opportunities"]))
 
     def test_bid_identifiers_and_unknown_parameters_are_preserved(self):
         a = "https://county.example/Bids.aspx?bidID=416&ref=vendor"
