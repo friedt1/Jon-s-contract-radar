@@ -57,6 +57,36 @@ class CivicPlusDetailTitleScopeTests(unittest.TestCase):
         self.assertEqual(leads, [])
         self.assertIn("1 individual bid details fetched", diagnostic)
 
+    def test_attachment_only_description_uses_fetched_bid_title(self):
+        for description in (
+            "See attached specifications.",
+            "Please refer to the enclosed bid documents for more information.",
+            "Review the project packet",
+        ):
+            with self.subTest(description=description):
+                leads, diagnostic = scan_detail(
+                    "Roadside hazardous tree removal", description)
+                self.assertEqual(len(leads), 1)
+                self.assertEqual(leads[0]["scope"], "Roadside hazardous tree removal")
+                self.assertEqual(leads[0]["title"], "Roadside hazardous tree removal")
+                self.assertEqual(leads[0]["status"], "unverified")
+                self.assertIn("1 individual bid details fetched", diagnostic)
+
+    def test_attachment_boilerplate_does_not_make_demolition_a_tree_bid(self):
+        leads, _ = scan_detail(
+            "Owego building demolition and site restoration",
+            "See attached specifications.")
+        self.assertEqual(leads, [])
+
+    def test_specific_or_excluded_description_still_controls(self):
+        for description in (
+            "Tree removal by others; see attached specifications.",
+            "Purchase of office furniture and paper supplies.",
+        ):
+            with self.subTest(description=description):
+                leads, _ = scan_detail("Tree removal", description)
+                self.assertEqual(leads, [])
+
     def test_title_does_not_override_excluded_description(self):
         leads, _ = scan_detail("Tree removal", "Tree removal by others.")
         self.assertEqual(leads, [])
