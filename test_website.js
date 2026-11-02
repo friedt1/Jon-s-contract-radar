@@ -108,7 +108,21 @@ setImmediate(() => {
   vm.runInContext('renderHealth()', context);
   assert.ok(element('#health-list').innerHTML.includes('Synthetic publisher homepage'));
   assert.ok(!element('#health-list').innerHTML.includes('Yates County'));
+  // A source can exhaust its PDF budget without attempting any detail page.
+  // Its incomplete coverage must remain visible in both the per-source card
+  // and the dedicated filter, not hidden behind detail_access_state.
+  assert.ok(html.includes('<option value="incomplete_extraction">'));
+  vm.runInContext("healthRows.push({name:'Budget-only source',direct_state:'fetched_unverified',indirect_state:'not_run',detail_access_state:'not_attempted',pdf_budget_skips:5,result_award_links_excluded:2})", context);
+  element('#health-filter').value = 'incomplete_extraction';
+  vm.runInContext('renderHealth()', context);
+  assert.ok(element('#health-list').innerHTML.includes('Budget-only source'));
+  assert.ok(element('#health-list').innerHTML.includes('Incomplete PDF coverage: 5 PDF requests skipped at budget'));
+  assert.ok(element('#health-list').innerHTML.includes('2 result/award links excluded before download'));
+  assert.ok(element('#health-list').innerHTML.includes('Chemung County'));
+  assert.ok(!element('#health-list').innerHTML.includes('Yates County'));
+  assert.ok(!element('#health-list').innerHTML.includes('Synthetic supplier'));
   element('#health-filter').value = '';
+  vm.runInContext('renderHealth()', context);
   element('#type').value = 'Storm cleanup';
   vm.runInContext('render()', context);
   assert.equal(element('#count').textContent, 0);
