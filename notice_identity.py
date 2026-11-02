@@ -14,6 +14,15 @@ from source_config import public_dns_hostname
 # them as ordinary path/query text. Match the direct-source URL guard.
 _ENCODED_CONTROL = re.compile(r"%(?:0[0-9a-f]|1[0-9a-f]|7f|5c)", re.I)
 
+# Ordinary #details anchors do not identify another notice. Some procurement
+# applications instead put the individual solicitation ID in a client-side
+# hash route (e.g. #/bids/123). Dropping that route merges distinct bids and
+# their deadlines. Preserve only explicit notice-like routes, not page anchors.
+_NOTICE_HASH_ROUTE = re.compile(
+    r"^!?/(?:bids?|solicitations?|opportunities|notices?|projects?|procurements?)/[^/?#]+(?:[/?][^#]*)?$",
+    re.I,
+)
+
 _TRACKING_KEYS = frozenset({
     "fbclid", "gclid", "gbraid", "wbraid", "msclkid",
     "mc_cid", "mc_eid", "igshid", "ref_src",
@@ -77,7 +86,12 @@ def canonical_url(url):
                     filtered.sort(key=lambda pair: pair[0])
                 if filtered != pairs:
                     query = urlencode(filtered)
-        return urlunsplit((parts.scheme.lower(), netloc, parts.path, query, ""))
+        # Fragment identifiers normally describe a section of the same page.
+        # A recognized hash route identifies a *different solicitation* and
+        # must survive deduplication, even though it is not sent over HTTP.
+        fragment = (parts.fragment if _NOTICE_HASH_ROUTE.fullmatch(parts.fragment)
+                    else "")
+        return urlunsplit((parts.scheme.lower(), netloc, parts.path, query, fragment))
     except (ValueError, TypeError):
         return ""
 
