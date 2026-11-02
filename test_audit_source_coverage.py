@@ -63,6 +63,22 @@ class CoverageAuditTests(unittest.TestCase):
                          "https://county.example/bids")
         self.assertIn("robots", result["sources"][0]["activation_gate"])
 
+    def test_publisher_homepage_does_not_masquerade_as_bid_index(self):
+        sources = [
+            {"name": "Homepage", "mode": "discovery_pending", "url": "",
+             "verified_url": False, "candidate_official_url": "https://county.example/",
+             "official_page_role": "publisher_entrypoint_only"},
+            {"name": "Bid index", "mode": "discovery_pending", "url": "",
+             "verified_url": False, "candidate_official_url": "https://town.example/Bids.aspx"},
+        ]
+        result = audit(sources)
+        self.assertEqual(result["official_urls_staged"], 2)
+        self.assertEqual(result["staged_publisher_entrypoints_only"], 1)
+        self.assertEqual(result["direct_configured"], 0)
+        self.assertTrue(result["sources"][0]["staged_publisher_entrypoint_only"])
+        self.assertIn("bid index not identified", result["sources"][0]["status"])
+        self.assertFalse(result["sources"][1]["staged_publisher_entrypoint_only"])
+
     def test_current_102_source_inventory_is_accounted_for(self):
         import json
         from pathlib import Path
