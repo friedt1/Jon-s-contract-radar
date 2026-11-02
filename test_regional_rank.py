@@ -99,7 +99,7 @@ class RegionalRankTests(unittest.TestCase):
     def test_tracking_duplicates_collapse_but_distinct_bid_ids_remain(self):
         today = __import__("datetime").date(2026, 10, 29)
         base = {"title": "Storm cleanup", "url": "https://COUNTY.example/bids?bidID=12",
-                "summary": "Short description"}
+                "summary": "Storm cleanup services required"}
         variant = dict(base, url="https://county.example:443/bids?bidID=12&utm_source=mail",
                        estimated_value_usd=500000)
         distinct = dict(base, url="https://county.example/bids?bidID=13")
