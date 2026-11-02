@@ -96,12 +96,58 @@ class StagedProbeTests(unittest.TestCase):
         self.assertFalse(row["sample_notice_status_conflict"])
         self.assertEqual(row["sample_notice_temporal_evidence"], "closed_or_awarded")
 
-    def test_robots_blocked_never_fetches_notice(self):
-        fetch = Mock(side_effect=robots_policy.RobotsDenied("disallowed"))
+    def test_explicit_listing_robots_disallow_never_fetches_notice(self):
+        fetch = Mock(side_effect=robots_policy.RobotsDenied(
+            "robots disallows requested path"))
         row = staged.probe(SOURCE, fetch=fetch)
         self.assertEqual(row["state"], "listing_robots_blocked")
         self.assertFalse(row["listing_retrieved"])
+        self.assertFalse(row["direct_monitoring_activated"])
         self.assertEqual(fetch.call_count, 1)
+
+    def test_unavailable_listing_robots_policy_is_not_publisher_disallow(self):
+        # All fixtures are synthetic; no network access or source activation.
+        for reason in (
+            "robots policy unavailable: URLError",
+            "robots HTTP 503",
+            "robots redirect blocked: different origin or policy path",
+            "robots policy too large",
+        ):
+            with self.subTest(reason=reason):
+                fetch = Mock(side_effect=robots_policy.RobotsDenied(reason))
+                row = staged.probe(SOURCE, fetch=fetch)
+                self.assertEqual(row["state"], "listing_robots_policy_unavailable")
+                self.assertFalse(row["listing_retrieved"])
+                self.assertFalse(row["direct_monitoring_activated"])
+                self.assertEqual(fetch.call_count, 1)
+                self.assertNotIn("opportunities", row)
+                self.assertNotIn("URLError", str(row))
+
+    def test_detail_robots_diagnostics_preserve_access_distinction(self):
+        cases = (
+            ("robots disallows requested path", "individual_notice_robots_blocked"),
+            ("robots policy unavailable: URLError",
+             "individual_notice_robots_policy_unavailable"),
+            ("robots HTTP 503", "individual_notice_robots_policy_unavailable"),
+        )
+        for reason, expected in cases:
+            with self.subTest(reason=reason):
+                calls = []
+                def fetch(url, binary=False):
+                    calls.append(url)
+                    if url == ENTRY:
+                        return listing(), "text/html", url
+                    raise robots_policy.RobotsDenied(reason)
+
+                row = staged.probe(SOURCE, fetch=fetch)
+                self.assertTrue(row["listing_retrieved"])
+                self.assertFalse(row["individual_notice_retrieved"])
+                self.assertEqual(row["individual_samples_attempted"], 1)
+                self.assertEqual(row["state"], expected)
+                self.assertEqual(row["individual_sample_failures"][0]["state"], expected)
+                self.assertFalse(row["direct_monitoring_activated"])
+                self.assertEqual(len(calls), 2)
+                self.assertNotIn("opportunities", row)
 
     def test_no_bidid_is_not_marked_as_live_adapter(self):
         def fetch(url, binary=False):
@@ -366,7 +412,7 @@ class StagedProbeTests(unittest.TestCase):
         def fetch(url, binary=False):
             if url == ENTRY:
                 return listing(), "text/html", url
-            raise robots_policy.RobotsDenied("detail disallowed")
+            raise robots_policy.RobotsDenied("robots disallows requested path")
         row = staged.probe(SOURCE, fetch=fetch)
         self.assertEqual(row["state"], "individual_notice_robots_blocked")
         self.assertTrue(row["listing_retrieved"])
@@ -411,7 +457,7 @@ class StagedProbeTests(unittest.TestCase):
             if url == ENTRY:
                 return listing, "text/html", url
             if "bidID=4" in url:
-                raise robots_policy.RobotsDenied("notice path denied")
+                raise robots_policy.RobotsDenied("robots disallows requested path")
             if "bidID=5" in url:
                 return b"<h1>County purchasing homepage</h1>", "text/html", url
             return detail().encode(), "text/html", url
