@@ -114,6 +114,28 @@ class CoverageAuditTests(unittest.TestCase):
         self.assertTrue(any("inventory names invalid" in b
                             for b in strict_failures(report)))
 
+    def test_case_and_whitespace_aliases_cannot_inflate_named_inventory(self):
+        # A 102-row inventory can otherwise hide a missing agency behind
+        # differently formatted copies of another named source.
+        rows = [
+            {"name": "Tioga County NY", "mode": "direct_page",
+             "url": "https://county.example/bids", "verified_url": True},
+            {"name": "  tIoGa   COUNTY NY  ", "mode": "direct_page",
+             "url": "https://duplicate.example/bids", "verified_url": True},
+            {"name": "Other County", "mode": "direct_page",
+             "url": "https://other.example/bids", "verified_url": True},
+        ]
+        report = audit(rows)
+        self.assertEqual(report["total"], 3)
+        self.assertEqual(report["unique_named_targets"], 2)
+        self.assertEqual(report["duplicate_source_rows"], 1)
+        self.assertEqual(report["duplicate_source_names"], ["Tioga County NY"])
+        self.assertEqual([r["duplicate_source_name"] for r in report["sources"]],
+                         [True, True, False])
+        self.assertEqual(report["sources"][1]["source"], "tIoGa COUNTY NY")
+        self.assertTrue(any("inventory names invalid" in b
+                            for b in strict_failures(report, expected_targets=3)))
+
     def test_strict_gate_is_structural_not_live_extraction_proof(self):
         rows = [
             {"name": f"Agency {n}", "mode": "direct_page",
