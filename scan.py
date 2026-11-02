@@ -1012,7 +1012,15 @@ def run(src, news_access=None):
   else:
    try:
     items,st=scan_direct(src);leads.extend(items);statuses.append(st)
-   except robots_policy.RobotsDenied as e:statuses.append('direct blocked by robots policy: '+str(e))
+   except robots_policy.RobotsDenied as e:
+    # Only an explicit robots path refusal is a publisher disallow.
+    # Failed/unavailable policy checks also fail closed, but are a
+    # separate retryable diagnostic, not evidence of a site's prohibition.
+    reason = str(e)
+    if reason == 'robots disallows requested path':
+     statuses.append('direct blocked by robots policy: ' + reason)
+    else:
+     statuses.append('direct robots policy unavailable: ' + reason)
    except Exception as e:statuses.append('direct error: '+error_label(e))
  if src['name']=='Elmira Next local bids':
   try:
