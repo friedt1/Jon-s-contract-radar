@@ -55,6 +55,29 @@ class StagedRelevantSamplingTests(unittest.TestCase):
         self.assertGreater(staged._sample_priority(erie, NOW),
                            staged._sample_priority(unrelated, NOW))
 
+    def test_listing_inventory_keeps_expired_and_unrelated_separate(self):
+        rows = [
+            record("Hazardous tree removal", due="2026-11-19"),
+            record("Erie tree and stump removal", due="2026-10-28"),
+            record("Storm cleanup", due=""),
+            dict(record("Tree trimming"), listing_deadline_conflict=True),
+            record("67 Central Avenue Owego demolition; tree removal by others"),
+            record("Office furniture RFP"),
+        ]
+        inventory = staged._listing_scope_inventory(rows, NOW)
+        self.assertEqual(inventory["listing_relevant_count"], 4)
+        self.assertEqual(inventory["listing_relevant_by_temporal_evidence"], {
+            "future_or_today_unverified": 1,
+            "deadline_unknown": 1,
+            "closed_or_elapsed": 1,
+            "conflicting_evidence": 1,
+        })
+        self.assertEqual(inventory["listing_scope_evidence"],
+                         "isolated_listing_cards_unverified")
+        self.assertNotIn("Erie", inventory["listing_relevant_examples"][0]["title"])
+        self.assertFalse(any("demolition" in row["title"].lower()
+                             for row in inventory["listing_relevant_examples"]))
+
     def test_sample_scope_diagnostic_is_listing_only_and_never_published(self):
         html = ('<article><a href="/Bids.aspx?bidID=12">'
                 '67 Central Avenue demolition rebid. Tree work by others'
@@ -108,6 +131,9 @@ class StagedRelevantSamplingTests(unittest.TestCase):
 
         result = staged.probe(SOURCE, fetch=fake_fetch, now=NOW)
         self.assertEqual(result["individual_records_discovered"], 4)
+        self.assertEqual(result["listing_relevant_count"], 1)
+        self.assertEqual(result["listing_relevant_by_temporal_evidence"]["future_or_today_unverified"], 1)
+        self.assertEqual(result["listing_relevant_examples"][0]["category"], "Tree removal")
         self.assertEqual(result["individual_samples_attempted"], 1)
         self.assertEqual(calls, [ENTRY, ENTRY + "?bidID=104"])
         self.assertEqual(result["state"], "notice_format_confirmed_terms_review_required")

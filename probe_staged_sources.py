@@ -119,6 +119,52 @@ def _sample_priority(record, now):
     return temporal, service_order.get(service, 6)
 
 
+
+def _listing_scope_inventory(records, now):
+    """Report isolated listing-card scope, never verified open opportunities.
+
+    Scan all already-parsed rows without fetching extra documents. This
+    prevents the first successful (possibly unrelated) sample from hiding
+    other potentially relevant records on the same public listing.
+    """
+    buckets = {"future_or_today_unverified": 0, "deadline_unknown": 0,
+               "closed_or_elapsed": 0, "conflicting_evidence": 0}
+    matches = []
+    for record in records:
+        scope = " ".join(str(record.get(key) or "")
+                         for key in ("title", "description"))
+        kind = scan.category(scope)
+        if not kind:
+            continue
+        due = record.get("deadline") or ""
+        if (record.get("listing_status_conflict")
+                or record.get("listing_deadline_conflict")):
+            bucket = "conflicting_evidence"
+        elif (record.get("open_status") in civicplus_bids.CLOSED
+              or (due and civicplus_bids.closing_passed(
+                  due, record.get("deadline_time", ""), now))):
+            bucket = "closed_or_elapsed"
+        elif due:
+            bucket = "future_or_today_unverified"
+        else:
+            bucket = "deadline_unknown"
+        buckets[bucket] += 1
+        matches.append((record, kind, bucket))
+    matches.sort(key=lambda item: _sample_priority(item[0], now))
+    return {
+        "listing_scope_evidence": "isolated_listing_cards_unverified",
+        "listing_relevant_count": len(matches),
+        "listing_relevant_by_temporal_evidence": buckets,
+        "listing_relevant_examples": [
+            {"title": str(row.get("title") or "")[:220], "category": kind,
+             "deadline": row.get("deadline") or "",
+             "listing_status": row.get("open_status") or "unknown",
+             "temporal_evidence": bucket}
+            for row, kind, bucket in matches[:3]
+        ],
+    }
+
+
 def probe(source, fetch=scan.fetch, now=None):
     now = now or dt.datetime.now(dt.timezone.utc)
     url = source["candidate_official_url"]
@@ -291,6 +337,7 @@ def probe(source, fetch=scan.fetch, now=None):
             return result
         records = adapter.listing_records(scan.parse_html(html), final)
         result["individual_records_discovered"] = len(records)
+        result.update(_listing_scope_inventory(records, now))
         if not records:
             listing_text = " ".join(scan.parse_html(html).parts)
             if re.search(r"\b(?:there are )?no (?:currently )?open bids?(?: postings)?(?: at this time)?\b", listing_text, re.I):
