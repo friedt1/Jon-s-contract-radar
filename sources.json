@@ -201,8 +201,10 @@
     "url": "",
     "mode": "discovery_pending",
     "verified_url": false,
-    "candidate_official_url": "https://www.waynecountyny.gov/745/Purchasing",
-    "activation_gate": "Official county purchasing page announces OpenGov transition and vendor enrollment; identify current authoritative portal and permitted notice extraction."
+    "candidate_official_url": "https://www.waynecountyny.gov/922/Solicitations-After-192026",
+    "activation_gate": "Wayne County's official Purchasing page links to 'Solicitations After 1/9/2026', which states that current solicitations are presented in an embedded OpenGov e-Procurement portal. The county gateway is verified, but the iframe/provider notices are NOT independently extracted or authorized for automation. Keep discovery_pending; review provider and county terms/robots, obtain permitted per-notice listing/detail access, then verify worksite, scope, status, amendments and submission deadline before activation. The former /745/Purchasing page remains informational.",
+    "delegated_provider": "OpenGov",
+    "provider_access_required": true
   },
   {
     "name": "Wyoming County",
