@@ -23,12 +23,12 @@ def listing(title, due="11/19/2026 10:30 AM"):
     )
 
 
-def notice(title, description=""):
+def notice(title, description="", due="11/19/2026 10:30 AM"):
     return (
         '<h1>Bids &amp; RFPs</h1><p>City procurement information.</p>'
         '<h1>' + title + '</h1>'
         '<p>Department: Purchasing</p><p>Start Date: 10/20/2026</p>'
-        '<p>Close Date: 11/19/2026 10:30 AM</p>'
+        '<p>Close Date: ' + due + '</p>'
         + ('<p>Description: ' + description + '</p>' if description else '')
         + '<p>Contact Us</p><p>City hall</p>'
     )
@@ -106,7 +106,7 @@ class GranicusDetailScopeTests(unittest.TestCase):
                 def fake_fetch(url, binary=False):
                     if url == ENTRY:
                         return listing(listed, due), "text/html", url
-                    return notice(detailed).encode(), "text/html", url
+                    return notice(detailed, due=due).encode(), "text/html", url
                 report = staged.build([SOURCE], fetch=fake_fetch, now=NOW)
                 row = report["probes"][0]
                 self.assertEqual(row["sample_notice_detail_scope_category"], category)
