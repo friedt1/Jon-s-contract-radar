@@ -21,12 +21,24 @@ class TreeStumpWordingTests(unittest.TestCase):
             "Tree and Stumps Removal",
             "Tree & Brush Removal",
             "Tree/Brush Removal",
+            "Tree and Vegetation Removal",
+            "Tree & Vegetation Removal",
+            "Tree/Vegetation Removal",
+            "Removal of Trees and Vegetation",
         ):
             with self.subTest(wording=wording):
                 self.assertEqual(scan.category(wording + " Bid"), "Tree removal")
                 self.assertTrue(scan.eligible(
                     wording + " Bid due November 19, 2026",
                     today=dt.date(2026, 10, 31)))
+
+    def test_historical_tioga_tree_vegetation_bid_is_not_live(self):
+        # Historical Tioga County Emergency Services 2025 bid wording.
+        self.assertEqual(scan.category("TREE AND VEGETATION REMOVAL BID"),
+                         "Tree removal")
+        self.assertFalse(scan.eligible(
+            "TREE AND VEGETATION REMOVAL BID due July 17, 2025",
+            today=dt.date(2026, 11, 1)))
 
     def test_historical_erie_is_expired_and_broad_pa_gate_still_applies(self):
         self.assertFalse(scan.eligible(

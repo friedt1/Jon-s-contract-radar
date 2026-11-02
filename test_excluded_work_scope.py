@@ -16,6 +16,9 @@ class ExcludedWorkScopeTests(unittest.TestCase):
             "Building demolition RFP; tree trimming not included",
             "Demolition bid: stump grinding not required",
             "Demolition RFP without brush removal",
+            "Owego demolition RFP: tree and vegetation removal by others",
+            "Owego demolition bid: no tree & vegetation removal required",
+            "Owego demolition RFP: removal of trees and vegetation excluded",
         )
         for notice in notices:
             with self.subTest(notice=notice):
