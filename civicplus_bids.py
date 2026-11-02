@@ -238,9 +238,9 @@ def detail_worksite(text):
 # contains a digit, so adjacent "Status:" or "Description:" labels cannot
 # accidentally become part of an identifier.
 _BID_NUMBER = re.compile(
-    r"\\bBid\\s+(?:Number|No\\.?)\\s*:?\\s*"
-    r"(?P<number>(?:(?:RFP|RFB|RFQ|IFB|ITB|ITQ)\\s+"
-    r"(?=[A-Za-z0-9._/-]*\\d))?[A-Za-z0-9][A-Za-z0-9._/-]*)\\b",
+    r"\bBid\s+(?:Number|No\.?)\s*:?\s*"
+    r"(?P<number>(?:(?:RFP|RFB|RFQ|IFB|ITB|ITQ)\s+"
+    r"(?=[A-Za-z0-9._/-]*\d))?[A-Za-z0-9][A-Za-z0-9._/-]*)\b",
     re.I,
 )
 
