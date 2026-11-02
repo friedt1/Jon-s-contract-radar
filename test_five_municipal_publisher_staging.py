@@ -23,7 +23,7 @@ EXPECTED = {
     "Town of Erwin": (
         "https://www.erwinny.gov/", "publisher_entrypoint_only"),
     "Town of Lansing": (
-        "https://www.lansingtownny.gov/rfps", "bid_index_no_current_records"),
+        "https://www.lansingtownny.gov/Bids.aspx", "current_official_civicplus_bid_index_access_unverified"),
     "Town of Dryden": (
         "https://www.dryden.ny.us/", "publisher_entrypoint_only"),
 }
@@ -87,10 +87,10 @@ class FiveMunicipalPublisherStagingTests(unittest.TestCase):
             "Owego NY demolition and site restoration bid due November 13, 2026",
             "Tioga County NY", today=today))
 
-    def test_empty_lansing_index_not_proof_of_full_coverage(self):
+    def test_current_lansing_index_still_requires_permission_and_extraction(self):
         row = self.by_name["Town of Lansing"]
-        self.assertIn("no bids", row["activation_gate"])
-        self.assertIn("not prove", row["activation_gate"])
+        self.assertIn("previous /rfps index is obsolete", row["activation_gate"])
+        self.assertIn("not yet established", row["activation_gate"])
         self.assertFalse(source_config.direct_fetch_target(row))
 
     def test_dryden_access_error_documented_not_active(self):
