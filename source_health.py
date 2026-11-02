@@ -26,6 +26,8 @@ def _access_error_types(names, count):
     types = []
     if "RobotsDenied" in names:
         types.append("robots_blocked")
+    if "RobotsPolicyUnavailable" in names:
+        types.append("robots_policy_unavailable")
     if re.search(r"\bHTTPError HTTP (?:401|403)\b", names):
         types.append("http_blocked")
     if "UnsafeRedirect" in names:
@@ -130,6 +132,8 @@ def classify(source, status):
         detail_access_state = "redirect_blocked"
     elif "rate_limited" in detail_error_types:
         detail_access_state = "rate_limited"
+    elif "robots_policy_unavailable" in detail_error_types:
+        detail_access_state = "robots_policy_unavailable"
     elif detail_errors:
         detail_access_state = "partial_fetch_errors" if details_fetched else "fetch_error"
     elif details_fetched:
@@ -153,6 +157,8 @@ def classify(source, status):
         pagination_access_state = "redirect_blocked"
     elif "rate_limited" in pagination_error_types:
         pagination_access_state = "rate_limited"
+    elif "robots_policy_unavailable" in pagination_error_types:
+        pagination_access_state = "robots_policy_unavailable"
     elif pagination_errors:
         pagination_access_state = "partial_listing_errors"
     else:
@@ -249,7 +255,8 @@ def summarize(sources, statuses):
     # The primary access state remains a single value for older dashboards.
     # Per-reason counts are intentionally non-exclusive: mixed failures in
     # one source must appear under every observed access restriction.
-    for state in ("robots_blocked", "http_blocked", "redirect_blocked", "rate_limited"):
+    for state in ("robots_blocked", "robots_policy_unavailable",
+                  "http_blocked", "redirect_blocked", "rate_limited"):
         counts["detail_" + state + "_sources"] = sum(
             state in row["detail_error_types"] for row in rows)
         counts["pagination_" + state + "_sources"] = sum(
@@ -267,7 +274,8 @@ def summarize(sources, statuses):
         "warning": ("A source can be fetched without extracting individual bids. "
                     "Detail fetch attempts do not establish valid notices; "
                     "individual details fetched prove retrieval, not open status. "
-                    "Individual-detail robots blocks, HTTP refusals, redirects, rate limits "
+                    "Individual-detail explicit robots blocks and unavailable robots checks, "
+                    "HTTP refusals, redirects, rate limits "
                     "and other errors are reported separately, including mixed failure "
                     "types on the same source. "
                     "Listing pagination failures, deferred individual bid records, and "
