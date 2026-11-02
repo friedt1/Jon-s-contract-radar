@@ -151,7 +151,7 @@ def validate(root=scan.ROOT):
         states = ('fetched_unverified', 'robots_blocked',
                   'robots_policy_unavailable', 'access_required',
                   'adapter_not_implemented',
-                  'http_blocked', 'redirect_blocked', 'rate_limited',
+                  'http_blocked', 'challenge_blocked', 'redirect_blocked', 'rate_limited',
                   'unsupported_content', 'fetch_error', 'not_fetched',
                   'staged_official_url', 'not_configured')
         if sum(counts.get(key, 0) for key in states) != len(sources):
@@ -226,7 +226,7 @@ def validate(root=scan.ROOT):
                     raise ValueError('Source health diagnostic disagrees with scanner: '
                                      + row['name'] + ' / ' + field)
         access_reasons = ('robots_blocked', 'robots_policy_unavailable',
-                          'http_blocked',
+                          'http_blocked', 'challenge_blocked',
                           'redirect_blocked', 'rate_limited')
         diagnostic_counts = (
             'detail_errors', 'pagination_errors',
