@@ -100,6 +100,44 @@ class StagedRelevantSamplingTests(unittest.TestCase):
         self.assertFalse(row["direct_monitoring_activated"])
         self.assertNotIn("opportunities", result)
 
+    def test_individual_notice_scope_is_distinct_from_listing_claim(self):
+        cases = [
+            ("Hazardous tree removal bid", "Office furniture purchase",
+             "Purchase desks and chairs.", "not_identified", True),
+            ("Office furniture purchase", "Hazardous tree removal bid",
+             "Remove hazardous trees and grind stumps.", "Tree removal", True),
+            ("Hazardous tree removal bid", "Hazardous tree removal bid",
+             "Remove hazardous trees and grind stumps.", "Tree removal", False),
+        ]
+        for listing_title, detail_title, description, expected, disagreement in cases:
+            with self.subTest(detail_title=detail_title):
+                listing = (
+                    '<article><a href="/Bids.aspx?bidID=15">' + listing_title +
+                    '</a><p>Status: Open</p><p>Closes: 11/19/2026 2:00 PM</p></article>'
+                )
+                notice = (
+                    '<h1>Bid Title: ' + detail_title + '</h1>'
+                    '<p>Bid Number: 15</p>'
+                    '<p>Description: ' + description + '</p>'
+                    '<p>Status: Open</p>'
+                    '<p>Closing Date/Time: 11/19/2026 2:00 PM</p>'
+                )
+                def fake_fetch(url, binary=False):
+                    return ((listing, "text/html", url) if url == ENTRY else
+                            (notice.encode(), "text/html", url))
+                report = staged.build([SOURCE], fetch=fake_fetch, now=NOW)
+                row = report["probes"][0]
+                self.assertEqual(row["state"],
+                                 "notice_format_confirmed_terms_review_required")
+                self.assertEqual(row["sample_notice_detail_scope_category"], expected)
+                self.assertEqual(row["sample_notice_detail_scope_evidence"],
+                                 "individual_notice_labelled_fields_unverified")
+                self.assertEqual(
+                    row["sample_notice_listing_detail_scope_disagreement"],
+                    disagreement)
+                self.assertFalse(row["direct_monitoring_activated"])
+                self.assertNotIn("opportunities", report)
+
     def test_fourth_relevant_notice_sampled_before_three_unrelated_cards(self):
         cards = [
             ("101", "Office furniture procurement"),
