@@ -97,5 +97,31 @@ class AntiBotChallengeTests(unittest.TestCase):
         self.assertEqual(counts["pagination_challenge_blocked_sources"], 1)
 
 
+    def test_staged_probe_reports_listing_and_notice_challenges(self):
+        import probe_staged_sources
+        source = {"name": "Cortland County", "mode": "discovery_pending",
+                  "candidate_official_url": URL, "activation_gate": "Terms review"}
+        def blocked(url, binary=False):
+            raise access_challenge.AccessChallenge("cloudflare_challenge")
+        row = probe_staged_sources.probe(source, fetch=blocked)
+        self.assertEqual(row["state"], "listing_access_challenge")
+        self.assertFalse(row["listing_retrieved"])
+        self.assertFalse(row["direct_monitoring_activated"])
+
+        listing = ('<article><a href="/Bids.aspx?bidID=4">Tree removal</a>'
+                   '<p>Status: Open</p></article>')
+        def blocked_detail(url, binary=False):
+            if url == URL:
+                return listing, "text/html", URL
+            raise access_challenge.AccessChallenge("captcha_challenge")
+        row = probe_staged_sources.probe(source, fetch=blocked_detail)
+        self.assertEqual(row["state"], "individual_notice_access_challenge")
+        self.assertEqual(row["individual_samples_attempted"], 1)
+        self.assertEqual(row["individual_sample_failures"][0]["state"],
+                         "individual_notice_access_challenge")
+        self.assertFalse(row["individual_notice_retrieved"])
+        self.assertFalse(row["direct_monitoring_activated"])
+
+
 if __name__ == "__main__":
     unittest.main()
