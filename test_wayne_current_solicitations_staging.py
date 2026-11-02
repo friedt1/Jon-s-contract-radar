@@ -35,6 +35,8 @@ class WayneCurrentSolicitationsStagingTests(unittest.TestCase):
         self.assertEqual(row["url"], "")
         self.assertIs(row["verified_url"], False)
         self.assertEqual(row["delegated_provider"], "OpenGov")
+        self.assertEqual(row["official_page_role"], "delegated_provider_gateway_only")
+        self.assertEqual(row["official_url_checked_at"], "2026-11-02T17:40:00+00:00")
         self.assertIs(row["provider_access_required"], True)
         self.assertIn("iframe", row["activation_gate"])
         self.assertIn("per-notice", row["activation_gate"])
