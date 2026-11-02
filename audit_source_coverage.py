@@ -21,8 +21,10 @@ from source_config import (DIRECT_MODES, UNCONNECTED_PLATFORMS,
 def audit(sources):
     results = []
     for source in sources:
-        name = source.get("name", "")
-        name = name if isinstance(name, str) and name.strip() else ""
+        raw_name = source.get("name", "")
+        # Agency labels are inventory identities, not display-only strings.
+        # Whitespace/case variants must not silently count as distinct targets.
+        name = " ".join(raw_name.split()) if isinstance(raw_name, str) else ""
         mode = source.get("mode", "missing")
         url = source.get("url", "")
         direct = direct_configured(source)
@@ -69,10 +71,15 @@ def audit(sources):
     # Preserve raw row counts for investigation, but report distinct agencies
     # separately and never interpret duplicate rows as a shared publisher.
     unnamed_source_rows = sum(not row["source"] for row in results)
-    name_counts = Counter(row["source"] for row in results if row["source"])
-    duplicate_names = sorted(name for name, count in name_counts.items() if count > 1)
+    name_counts = Counter(row["source"].casefold() for row in results if row["source"])
+    display_names = {}
     for row in results:
-        row["duplicate_source_name"] = row["source"] in duplicate_names
+        if row["source"]:
+            display_names.setdefault(row["source"].casefold(), row["source"])
+    duplicate_keys = {key for key, count in name_counts.items() if count > 1}
+    duplicate_names = sorted(display_names[key] for key in duplicate_keys)
+    for row in results:
+        row["duplicate_source_name"] = row["source"].casefold() in duplicate_keys
 
     # A single official procurement gateway may represent multiple named
     # agencies. Report those overlaps without treating a shared landing page
