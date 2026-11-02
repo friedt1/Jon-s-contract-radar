@@ -189,7 +189,8 @@ def validate(root=scan.ROOT):
                 if field in row and row[field] != reference[field]:
                     raise ValueError('Source health diagnostic disagrees with scanner: '
                                      + row['name'] + ' / ' + field)
-        access_reasons = ('robots_blocked', 'http_blocked',
+        access_reasons = ('robots_blocked', 'robots_policy_unavailable',
+                          'http_blocked',
                           'redirect_blocked', 'rate_limited')
         diagnostic_counts = (
             'detail_errors', 'pagination_errors',
@@ -213,7 +214,13 @@ def validate(root=scan.ROOT):
                                'configured_access_required',
                                'staged_provider_access_required',
                                'configured_unimplemented_adapters') + diagnostic_counts:
-            if counts.get(field, 0 if field == 'robots_policy_unavailable' else None) != expected_counts[field]:
+            # Older published feeds predate per-notice policy-lookup metrics.
+            # Missing new zero-valued counts are compatible; nonzero claims
+            # still require matching raw scanner evidence.
+            optional_new = {'robots_policy_unavailable',
+                            'detail_robots_policy_unavailable_sources',
+                            'pagination_robots_policy_unavailable_sources'}
+            if counts.get(field, 0 if field in optional_new else None) != expected_counts[field]:
                 raise ValueError('Source health count disagrees with scanner: ' + field)
         if counts.get('individual_bid_details_fetched', 0) != sum(
                 row.get('individual_bid_details_fetched', 0) for row in rows):
