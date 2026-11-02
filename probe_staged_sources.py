@@ -14,6 +14,7 @@ from urllib.parse import urljoin, urlparse
 from urllib.error import HTTPError
 
 import civicplus_bids
+import access_challenge
 import granicus_rfps
 import robots_policy
 import scan
@@ -416,6 +417,10 @@ def probe(source, fetch=scan.fetch, now=None):
                 failure["state"] = _blocked_redirect_state(exc, "individual_notice")
                 result["individual_sample_failures"].append(failure)
                 continue
+            except access_challenge.AccessChallenge:
+                failure["state"] = "individual_notice_access_challenge"
+                result["individual_sample_failures"].append(failure)
+                continue
             except HTTPError as exc:
                 failure["state"] = _http_failure(exc.code, "individual_notice")
                 failure["http_status"] = exc.code
@@ -600,6 +605,8 @@ def probe(source, fetch=scan.fetch, now=None):
         result["state"] = _robots_denial_state(exc, "listing")
     except scan.UnsafeRedirect as exc:
         result["state"] = _blocked_redirect_state(exc, "listing")
+    except access_challenge.AccessChallenge:
+        result["state"] = "listing_access_challenge"
     except HTTPError as exc:
         result["state"] = _http_failure(exc.code, "listing")
         result["http_status"] = exc.code
