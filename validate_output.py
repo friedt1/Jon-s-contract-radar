@@ -70,6 +70,37 @@ def _staged_after_published_scan(source, published_row, feed_updated, status):
         return False
 
 
+
+def _staged_url_changed_after_published_scan(source, published_row, feed_updated, status):
+    """Permit only a timestamped, post-scan change of staged URL metadata.
+
+    Both old and new entrypoints must be safe HTTPS URLs, and neither scan
+    nor configuration may claim direct monitoring. This is not permission
+    to change a fetched source, access state, contract, or scanner counters.
+    """
+    old = published_row.get("staged_official_url")
+    new = source.get("candidate_official_url")
+    if (source.get("mode") != "discovery_pending"
+            or source.get("url") or source.get("verified_url") is not False
+            or published_row.get("direct_state") != "staged_official_url"
+            or published_row.get("direct_url")
+            or not valid_public_https_url(old)
+            or not valid_public_https_url(new)
+            or old == new
+            or "direct fetched" in status or "direct error" in status):
+        return False
+    checked = source.get("official_url_checked_at")
+    if not isinstance(checked, str) or not isinstance(feed_updated, str):
+        return False
+    try:
+        checked_at = dt.datetime.fromisoformat(checked.replace("Z", "+00:00"))
+        scanned_at = dt.datetime.fromisoformat(feed_updated.replace("Z", "+00:00"))
+        return (checked_at.tzinfo is not None and scanned_at.tzinfo is not None
+                and checked_at > scanned_at)
+    except ValueError:
+        return False
+
+
 def validate(root=scan.ROOT):
     sources = json.loads((root / 'sources.json').read_text())
     data = json.loads((root / 'data/opportunities.json').read_text())
@@ -147,12 +178,17 @@ def validate(root=scan.ROOT):
                 data['source_status'][row['name']])
             if stale_staging:
                 stale_staging_names.add(row['name'])
+            stale_staged_url = _staged_url_changed_after_published_scan(
+                source_by_name[row['name']], row, data.get('updated'),
+                data['source_status'][row['name']])
             for field in ('direct_state', 'indirect_state',
                           'provider_access_required', 'direct_url',
                           'staged_official_url', 'staged_provider_access_required'):
                 if (stale_staging and field in (
                         'direct_state', 'staged_official_url',
                         'staged_provider_access_required')):
+                    continue
+                if stale_staged_url and field == 'staged_official_url':
                     continue
                 if row.get(field) != reference[field]:
                     raise ValueError('Source health state disagrees with scanner: '
