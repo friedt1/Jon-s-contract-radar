@@ -120,7 +120,7 @@ class StagedDescriptionPrecedenceTests(unittest.TestCase):
         self.assertEqual(owego["sample_notice_detail_scope_category"],
                          "not_identified")
         erie = self.assert_unverified(civic_probe(
-            "Erie tree and stump removal", "Remove trees and stumps.",
+            "Erie tree and stump removal", "Tree removal and stump grinding.",
             due="10/28/2026 2:00 PM"
         ))
         self.assertEqual(erie["sample_notice_detail_scope_category"], "Tree removal")
