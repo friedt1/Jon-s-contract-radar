@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-02T17:14:53.554878+00:00",
+  "updated": "2026-11-02T17:46:21.493717+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 84,
   "safe_staged_entrypoints": 84,
@@ -170,7 +170,7 @@
     },
     {
       "name": "Wayne County",
-      "official_entrypoint": "https://www.waynecountyny.gov/745/Purchasing",
+      "official_entrypoint": "https://www.waynecountyny.gov/922/Solicitations-After-192026",
       "state": "listing_reachable_external_provider_access_required",
       "listing_retrieved": true,
       "individual_notice_retrieved": false,
@@ -179,15 +179,9 @@
       "individual_samples_confirmed": 0,
       "additional_sample_notice_urls_confirmed": [],
       "individual_sample_failures": [],
-      "activation_gate": "Official county purchasing page announces OpenGov transition and vendor enrollment; identify current authoritative portal and permitted notice extraction.",
+      "activation_gate": "Wayne County's official Purchasing page links to 'Solicitations After 1/9/2026', which states that current solicitations are presented in an embedded OpenGov e-Procurement portal. The county gateway is verified, but the iframe/provider notices are NOT independently extracted or authorized for automation. Keep discovery_pending; review provider and county terms/robots, obtain permitted per-notice listing/detail access, then verify worksite, scope, status, amendments and submission deadline before activation. The former /745/Purchasing page remains informational.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false,
-      "official_bid_index_links_unverified": [
-        {
-          "label": "Solicitations After 1/9/2026",
-          "url": "https://www.waynecountyny.gov/922/Solicitations-After-192026"
-        }
-      ]
+      "direct_monitoring_activated": false
     },
     {
       "name": "Wyoming County",
@@ -733,8 +727,8 @@
     {
       "name": "Towanda Borough",
       "official_entrypoint": "https://towandaborough.org/public-announcements/",
-      "state": "listing_robots_policy_unavailable",
-      "listing_retrieved": false,
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -1384,7 +1378,7 @@
       "direct_monitoring_activated": false
     }
   ],
-  "unverified_bid_index_link_targets": 2,
-  "unverified_bid_index_links_found": 2,
+  "unverified_bid_index_link_targets": 1,
+  "unverified_bid_index_links_found": 1,
   "warning": "Diagnostic only: no source is activated by these probes. A fetched page or parsed historical notice is not an open bid. Sample 'Open' labels can be stale; inspect temporal evidence. Review publisher terms, individual extraction, and live scan before changing discovery_pending."
 }
