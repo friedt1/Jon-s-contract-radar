@@ -52,6 +52,11 @@ def classify(source, status):
         and (source.get("provider_access_required") is True
              or bool(source.get("delegated_provider")))
     )
+    staged_publisher_only = (
+        not configured and mode == "discovery_pending"
+        and valid_public_https_url(source.get("candidate_official_url"))
+        and source.get("official_page_role") == "publisher_entrypoint_only"
+    )
     provider_access_required = configured and (
         source.get("name") in UNCONNECTED_PLATFORMS
         or source.get("provider_access_required") is True
@@ -178,6 +183,7 @@ def classify(source, status):
         "direct_state": direct_state,
         "provider_access_required": provider_access_required,
         "staged_provider_access_required": staged_provider_access_required,
+        "staged_publisher_entrypoint_only": staged_publisher_only,
         "indirect_state": indirect_state,
         "direct_url": source.get("url", "") if configured else "",
         "staged_official_url": source.get("candidate_official_url", "") if not configured else "",
@@ -223,6 +229,8 @@ def summarize(sources, statuses):
     # Report it separately; it is NOT a configured direct integration.
     counts["staged_provider_access_required"] = sum(
         row["staged_provider_access_required"] for row in rows)
+    counts["staged_publisher_entrypoints_only"] = sum(
+        row["staged_publisher_entrypoint_only"] for row in rows)
     counts["configured_unimplemented_adapters"] = sum(
         direct_configured(src) and not direct_fetch_target(src) for src in sources)
     counts["configured_fetch_targets"] = sum(

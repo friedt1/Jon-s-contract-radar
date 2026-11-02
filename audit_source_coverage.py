@@ -28,6 +28,9 @@ def audit(sources):
         staged = (not direct and mode == "discovery_pending"
                   and valid_public_https_url(source.get("candidate_official_url")))
         invalid_direct = mode in DIRECT_MODES and not direct
+        # An official agency homepage is not an identified procurement index.
+        # Keep it in staged coverage, but expose the separate discovery gate.
+        publisher_only = staged and source.get("official_page_role") == "publisher_entrypoint_only"
         staged_access_required = staged and (
             source.get("provider_access_required") is True
             or bool(source.get("delegated_provider")))
@@ -40,6 +43,7 @@ def audit(sources):
             "provider_access_required": access_required,
             "staged_provider_access_required": staged_access_required,
             "official_url_staged": staged,
+            "staged_publisher_entrypoint_only": publisher_only,
             "invalid_direct_configuration": invalid_direct,
             "candidate_official_url": source.get("candidate_official_url") if staged else None,
             "activation_gate": source.get("activation_gate", "") if staged else "",
@@ -51,6 +55,7 @@ def audit(sources):
                        "configured; live ingestion not independently verified" if direct else
                        "official supplier gateway staged; registration/authorization required, "
                        "individual-notice ingestion not connected" if staged_access_required else
+                       "official publisher entrypoint only; current bid index not identified or monitored" if publisher_only else
                        "official URL staged; individual-notice extraction and permissions not verified" if staged else
                        "invalid direct configuration; verified HTTPS URL required" if invalid_direct else
                        "not directly monitored; official source discovery required"),
@@ -98,6 +103,8 @@ def audit(sources):
         "configured_unimplemented_adapters": sum(x["adapter_not_implemented"] for x in results),
         "not_directly_monitored": sum(not x["direct_configured"] for x in results),
         "official_urls_staged": sum(x["official_url_staged"] for x in results),
+        "staged_publisher_entrypoints_only": sum(
+            x["staged_publisher_entrypoint_only"] for x in results),
         "invalid_direct_configurations": sum(x["invalid_direct_configuration"] for x in results),
         "discovery_required": sum(not x["direct_configured"] and not x["official_url_staged"]
                                   and not x["invalid_direct_configuration"] for x in results),
@@ -108,6 +115,7 @@ def audit(sources):
                     "Even other fetch targets do not prove permitted or successful bid extraction. "
                     "Malformed, insecure, or unverified URLs do not count as direct "
                     "configuration; staged URLs are not active monitoring. Staged "
+                    "publisher-only homepages still need a real bid index; "
                     "supplier-registration gateways require authorization and are not "
                     "public individual-bid feeds. Shared official entrypoints do not "
                     "represent independent operational bid feeds. Duplicate named "
