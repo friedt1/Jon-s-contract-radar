@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-02T01:48:39.302946+00:00",
+  "updated": "2026-11-02T02:48:11.590511+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 84,
   "safe_staged_entrypoints": 84,
@@ -660,8 +660,8 @@
     {
       "name": "Sayre Borough",
       "official_entrypoint": "https://sayreborough.org/",
-      "state": "official_page_reachable_no_procurement_evidence",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -673,8 +673,8 @@
     {
       "name": "Athens Borough",
       "official_entrypoint": "https://athensboroughpa.org/",
-      "state": "official_page_reachable_no_procurement_evidence",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -699,8 +699,8 @@
     {
       "name": "Mansfield Borough",
       "official_entrypoint": "https://mansfieldborough.org/",
-      "state": "official_page_reachable_no_procurement_evidence",
-      "listing_retrieved": true,
+      "state": "listing_robots_blocked",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -1004,15 +1004,16 @@
     {
       "name": "PennDOT District 4",
       "official_entrypoint": "https://www.ecmssyst.penndot.pa.gov/ECMS/",
-      "state": "official_page_reachable_no_procurement_evidence",
-      "listing_retrieved": true,
+      "state": "listing_server_error",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
       "individual_sample_failures": [],
       "activation_gate": "Pennsylvania DGS links PennDOT highway and bridge construction opportunities to official ECMS; ECMS offers guest entry. This is a statewide portal, not a verified District 4 individual-notice feed. Before activation confirm permitted automation and robots/terms, public guest notice extraction, District 4 and northern-PA worksite filtering, individual scope, amendments, submission deadline and open status. Do not promote statewide unrelated or expired bids.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false
+      "direct_monitoring_activated": false,
+      "http_status": 500
     },
     {
       "name": "Pennsylvania American Water",
