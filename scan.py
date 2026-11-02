@@ -31,7 +31,7 @@ SOURCES = ROOT / 'sources.json'
 OUT = ROOT / 'data' / 'opportunities.json'
 NOW = dt.datetime.now(dt.timezone.utc)
 CATEGORIES = {
- 'Tree removal': ('tree removal','removal of trees','removal of hazardous trees','hazardous tree','tree and stump removal','tree & stump removal','trees & stumps removal','tree/stump removal','tree and stumps removal','tree and brush removal','tree & brush removal','tree/brush removal','tree cutting','tree felling','hazard tree','tree service','tree work','tree clearing','stump removal','stump grinding','arborist'),
+ 'Tree removal': ('tree removal','removal of trees','removal of hazardous trees','hazardous tree','tree and stump removal','tree & stump removal','trees & stumps removal','tree/stump removal','tree and stumps removal','tree and brush removal','tree & brush removal','tree/brush removal','tree and vegetation removal','tree & vegetation removal','tree/vegetation removal','removal of trees and vegetation','tree cutting','tree felling','hazard tree','tree service','tree work','tree clearing','stump removal','stump grinding','arborist'),
  'Tree trimming': ('tree trimming','trimming of trees','tree pruning','tree maintenance','tree care','tree management','limb removal'),
  'Land clearing': ('land clearing','site clearing','lot clearing','clearing and grubbing','forestry mulching'),
  'Vegetation management': ('vegetation management','brush clearing','brush removal','brush cutting','right of way clearing','right-of-way clearing','line clearance','roadside mowing','forestry mowing','vegetation control','brush hogging','brush mowing'),
@@ -64,7 +64,9 @@ def norm(s): return re.sub(r'\s+',' ',re.sub(r'<[^>]*>',' ',s or '')).strip()
 # Broad service labels can appear solely as exclusions (for example,
 # "tree work by others" in an unrelated demolition notice). Include generic
 # labels as well as specific work so an exclusion cannot create a false lead.
-_SERVICE_SCOPE = (r"(?:tree\s+(?:removal|trimming|pruning|cutting|clearing|work|services?)|"
+_SERVICE_SCOPE = (r"(?:tree\s*(?:and|&|/)\s*vegetation\s+removal|"
+                  r"removal\s+of\s+trees\s+and\s+vegetation|"
+                  r"tree\s+(?:removal|trimming|pruning|cutting|clearing|work|services?)|"
                   r"stump\s+(?:removal|grinding)|brush\s+(?:removal|clearing)|"
                   r"land\s+clearing|vegetation\s+management|forestry\s+(?:mulching|mowing)|"
                   r"right[-\s]of[-\s]way\s+clearing|line\s+clearance|"
