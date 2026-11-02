@@ -72,6 +72,56 @@ class StagedDailySampleRotationTests(unittest.TestCase):
                 DAY + dt.timedelta(days=days))
             self.assertEqual(chosen, future)
 
+    def test_overflow_probe_fetches_rotating_slot_after_first_good_notice(self):
+        # Before this regression, the selection rotated but probe() returned
+        # after the first good detail. The third, rotating URL was never fetched.
+        entry = "https://county.example/Bids.aspx"
+        source = {
+            "name": "Cortland County", "mode": "discovery_pending",
+            "candidate_official_url": entry, "activation_gate": "terms review",
+        }
+        titles = {
+            100: "Hazardous tree removal",
+            101: "Hazardous tree removal",
+            **{n: "Office furniture purchase" for n in range(102, 110)},
+        }
+        listing = "".join(
+            f'<article><a href="/Bids.aspx?bidID={number}">{title}</a>'
+            '<p>Status: Open</p><p>Closes: 11/19/2026 2:00 PM</p></article>'
+            for number, title in titles.items()
+        )
+        seen_rotating = set()
+        for day in range(8):
+            calls = []
+            def fake_fetch(url, binary=False):
+                calls.append(url)
+                if url == entry:
+                    return listing, "text/html", url
+                self.assertTrue(binary)
+                number = int(url.split("bidID=")[1])
+                detail = (
+                    f"<h1>Bid Title: {titles[number]}</h1>"
+                    f"<p>Bid Number: {number}</p>"
+                    f"<p>Description: {titles[number]}.</p>"
+                    "<p>Status: Open</p>"
+                    "<p>Closing Date/Time: 11/19/2026 2:00 PM</p>"
+                )
+                return detail.encode(), "text/html", url
+
+            row = staged.probe(
+                source, fetch=fake_fetch, now=DAY + dt.timedelta(days=day))
+            self.assertEqual(len(calls), 4)  # listing plus exactly three details
+            self.assertEqual(row["individual_samples_attempted"], 3)
+            self.assertEqual(row["individual_samples_confirmed"], 3)
+            self.assertEqual(row["sample_notice_url"], entry + "?bidID=100")
+            self.assertEqual(len(row["additional_sample_notice_urls_confirmed"]), 2)
+            self.assertEqual(calls[2], entry + "?bidID=101")
+            seen_rotating.add(calls[3])
+            self.assertEqual(row["state"], "notice_format_confirmed_terms_review_required")
+            self.assertFalse(row["direct_monitoring_activated"])
+        self.assertEqual(
+            seen_rotating, {entry + f"?bidID={n}" for n in range(102, 110)})
+
     def test_no_extra_requests_when_fewer_notices_or_zero_budget(self):
         records = [notice(1), notice(2)]
         self.assertEqual(staged._daily_sample_candidates(records, DAY), records)
