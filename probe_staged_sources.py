@@ -485,21 +485,26 @@ def probe(source, fetch=scan.fetch, now=None):
                 scan.category(listing_scope) or "not_identified"
             )
             result["sample_notice_scope_evidence"] = "listing_card_unverified"
-            # Use only isolated individual-notice title/description evidence.
-            # CivicPlus has labelled metadata; Granicus has a notice-specific
-            # BID/RFP/RFQ H1 and, occasionally, a labelled description.
-            # Never classify Granicus page-wide navigation or legal boilerplate.
-            detail_scope = ""
+            # Classify only isolated individual-notice scope. A specific
+            # description overrides the title: "Tree removal" in a heading
+            # can be explicitly excluded by the notice's actual scope. Joining
+            # title + description would resurrect that excluded work as a
+            # misleading staged tree-service match. Attachment-only boilerplate
+            # supplies no scope, so the fetched individual title is fallback.
+            # Granicus H1 must be notice-specific, never navigation chrome.
             if adapter is civicplus_bids:
-                detail_scope = " ".join(filter(None, (
-                    civicplus_bids.detail_title(body),
-                    civicplus_bids.detail_description(body),
-                )))
-            elif adapter is granicus_rfps:
-                detail_scope = " ".join(filter(None, (
-                    granicus_rfps.detail_title_html(detail_html),
-                    granicus_rfps.detail_description(body),
-                )))
+                detail_title = civicplus_bids.detail_title(body)
+                detail_description = civicplus_bids.detail_description(body)
+            else:
+                detail_title = granicus_rfps.detail_title_html(detail_html)
+                detail_description = granicus_rfps.detail_description(body)
+            if detail_description and not civicplus_bids.generic_detail_description(
+                    detail_description):
+                detail_scope = detail_description
+                detail_basis = "individual_notice_description"
+            else:
+                detail_scope = detail_title
+                detail_basis = "individual_notice_title" if detail_title else "unknown"
             detail_category = scan.category(detail_scope) if detail_scope else None
             listing_category = scan.category(listing_scope)
             result["sample_notice_detail_scope_category"] = (
@@ -509,6 +514,7 @@ def probe(source, fetch=scan.fetch, now=None):
                 "individual_notice_labelled_fields_unverified" if detail_scope
                 else "not_extracted"
             )
+            result["sample_notice_detail_scope_basis"] = detail_basis
             # Compare the actual categories, not just whether both are relevant.
             # A tree-removal listing pointing to a site-grading notice is a
             # material scope mismatch even though both are in our review set.
