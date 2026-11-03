@@ -17,15 +17,22 @@ from submission_deadlines import eastern_deadline_timezone
 from publisher_status import publisher_closed
 from scan import positive_scope_text
 
+# Regional notices still require *work* in the requested service categories.
+# Bare "right-of-way", "blocked road", "utility right-of-way" and "storm
+# restoration" can describe easement acquisition, bridge reconstruction, or
+# electrical repair with no vegetation/debris scope. Such terms alone are
+# not evidence of a tree-service or clearing contract.
 KEYWORDS = ("debris removal", "disaster debris", "emergency tree", "vegetation management",
-            "right-of-way", "tree removal", "stump removal", "stump grinding",
+            "right-of-way clearing", "right of way clearing",
+            "right-of-way vegetation", "right of way vegetation",
+            "tree removal", "stump removal", "stump grinding",
             "tree and stump removal", "tree & stump removal", "land clearing", "storm cleanup",
             "brush clearing", "forestry mulching", "hazard tree", "debris hauling", "road clearing", "roadside clearing",
-            "highway clearing", "roadway debris", "blocked road", "downed trees",
+            "highway clearing", "roadway debris", "downed trees",
             "line clearance", "line clearing", "power line clearing", "powerline clearing",
             "transmission line clearing", "distribution line clearing", "utility line clearing",
-            "roadway vegetation clearing", "utility right-of-way",
-            "utility vegetation", "electric utility vegetation", "storm restoration")
+            "roadway vegetation clearing",
+            "utility vegetation", "electric utility vegetation")
 AGENCIES = ("fema", "usace", "army corps", "department of transportation",
             "state dot", "penndot", "nysdot", "emergency management")
 
