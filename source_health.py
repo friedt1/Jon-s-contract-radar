@@ -26,7 +26,7 @@ def _access_error_types(names, count):
     types = []
     if "RobotsDenied" in names:
         types.append("robots_blocked")
-    if "RobotsPolicyUnavailable" in names:
+    if "RobotsPolicyUnavailable" in names or "RobotsPolicyRateLimited" in names:
         types.append("robots_policy_unavailable")
     if re.search(r"\bHTTPError HTTP (?:401|403)\b", names):
         types.append("http_blocked")
@@ -34,7 +34,7 @@ def _access_error_types(names, count):
         types.append("challenge_blocked")
     if "UnsafeRedirect" in names:
         types.append("redirect_blocked")
-    if "HTTPError HTTP 429" in names:
+    if "HTTPError HTTP 429" in names or "RobotsPolicyRateLimited" in names:
         types.append("rate_limited")
     return types
 
@@ -73,6 +73,9 @@ def classify(source, status):
         # refusal in the raw diagnostic, but do not misclassify the source
         # as a robot-only integration that would activate if robots changed.
         direct_state = "access_required"
+    elif "direct robots policy rate limited:" in status:
+        # A 429 on robots.txt is temporary throttling, not a path disallow.
+        direct_state = "rate_limited"
     elif "direct robots policy unavailable:" in status:
         direct_state = "robots_policy_unavailable"
     elif "direct blocked by robots policy" in status:
