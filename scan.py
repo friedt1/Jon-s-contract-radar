@@ -1084,8 +1084,11 @@ def error_label(error):
  # A failed robots lookup is not evidence that a publisher disallowed a
  # notice. Preserve the distinction for detail and pagination requests,
  # without logging URLs or exception messages that may contain secrets.
- if isinstance(error, robots_policy.RobotsDenied) and str(error) != 'robots disallows requested path':
-  return 'RobotsPolicyUnavailable'
+ if isinstance(error, robots_policy.RobotsDenied):
+  if str(error) == 'robots HTTP 429':
+   return 'RobotsPolicyRateLimited'
+  if str(error) != 'robots disallows requested path':
+   return 'RobotsPolicyUnavailable'
  return type(error).__name__ + (' HTTP '+str(error.code) if hasattr(error,'code') else '')
 
 def run(src, news_access=None):
@@ -1108,6 +1111,10 @@ def run(src, news_access=None):
     reason = str(e)
     if reason == 'robots disallows requested path':
      statuses.append('direct blocked by robots policy: ' + reason)
+    elif reason == 'robots HTTP 429':
+     # A throttled robots lookup is not an explicit publisher disallow.
+     # Fail closed and expose the rate limit rather than hiding it as DNS failure.
+     statuses.append('direct robots policy rate limited: ' + reason)
     else:
      statuses.append('direct robots policy unavailable: ' + reason)
    except Exception as e:statuses.append('direct error: '+error_label(e))
