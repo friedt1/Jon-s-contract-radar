@@ -169,7 +169,7 @@
       "detail_rate_limited_sources": 0,
       "pagination_rate_limited_sources": 0,
       "pdf_fetch_attempts": 16,
-      "pdf_budget_skips": 378,
+      "pdf_budget_skips": 376,
       "result_award_links_excluded": 305,
       "external_provider_links_skipped": 3,
       "unverified_candidates": 0
@@ -579,11 +579,11 @@
           "robots_policy_unavailable"
         ],
         "pdf_fetch_attempts": 5,
-        "pdf_budget_skips": 23,
+        "pdf_budget_skips": 21,
         "result_award_links_excluded": 22,
         "external_provider_links_skipped": 0,
         "unverified_candidates": 0,
-        "diagnostic": "direct fetched; 1 listing pages; 8 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 23 PDF requests skipped at budget; 22 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: RobotsPolicyUnavailable; indirect RSS provider unavailable (Google News): robots disallows requested path"
+        "diagnostic": "direct fetched; 1 listing pages; 8 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 21 PDF requests skipped at budget; 22 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: RobotsPolicyUnavailable; indirect RSS provider unavailable (Google News): robots disallows requested path"
       },
       {
         "name": "Broome County",
@@ -3142,7 +3142,7 @@
     ],
     "warning": "A source can be fetched without extracting individual bids. Detail fetch attempts do not establish valid notices; individual details fetched prove retrieval, not open status. Individual-detail explicit robots blocks and unavailable robots checks, HTTP refusals, redirects, rate limits and other errors are reported separately, including mixed failure types on the same source. Listing pagination failures, deferred individual bid records, and unfetched generic detail candidates mean extraction coverage may be incomplete. Generic candidates are not verified individual solicitations. External provider links require an approved adapter and are not followed. Provider-access requirements persist even when a scan has no status. Configured access-required portals and unimplemented feed/API adapters are not direct fetch targets. Explicit robots disallows are distinct from unavailable robots policy checks (which fail closed without proving denial). HTTP refusals, unsafe redirects, rate limits and unsupported content are distinguished from transient fetch errors. Staged provider access gates are reported separately from configured direct portals. Staged URLs are not monitored; all leads remain unverified."
   },
-  "updated": "2026-11-04T19:17:36+00:00",
+  "updated": "2026-11-04T20:13:55+00:00",
   "opportunities": [],
   "source_status": {
     "Chemung County bids": "direct fetched; 1 listing pages; 4 individual bid records; 0 conflicting duplicate bid cards; 4 relevant details checked; 0 individual bid records deferred at detail budget; 4 individual bid details fetched; 0 unverified candidates; 0 closed; 0 expired; indirect RSS provider unavailable (Google News): robots disallows requested path",
@@ -3158,7 +3158,7 @@
     "Chemung County purchasing": "direct fetched; 1 listing pages; 18 details checked; 8 detail candidates deferred at request budget; 4 individual bid details fetched; 1 PDFs checked; 1 PDF-shaped requests attempted; 0 PDF requests skipped at budget; 0 result/award links excluded; 2 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 4 detail errors: RobotsPolicyUnavailable; indirect RSS provider unavailable (Google News): robots disallows requested path",
     "PennBid platform": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path; individual listing ingestion not connected; provider-approved feed/access not established",
     "BidNet NY platform": "direct access required: individual listing ingestion not connected; provider-approved feed/access not established; indirect RSS provider unavailable (Google News): robots disallows requested path; individual listing ingestion not connected; provider-approved feed/access not established",
-    "Tioga County NY": "direct fetched; 1 listing pages; 8 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 23 PDF requests skipped at budget; 22 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: RobotsPolicyUnavailable; indirect RSS provider unavailable (Google News): robots disallows requested path",
+    "Tioga County NY": "direct fetched; 1 listing pages; 8 details checked; 0 detail candidates deferred at request budget; 0 individual bid details fetched; 5 PDFs checked; 5 PDF-shaped requests attempted; 21 PDF requests skipped at budget; 22 result/award links excluded; 0 external provider links skipped (access required); 0 candidates; 0 nested listing pages excluded as notices; 1 detail errors: RobotsPolicyUnavailable; indirect RSS provider unavailable (Google News): robots disallows requested path",
     "Broome County": "indirect RSS provider unavailable (Google News): robots disallows requested path",
     "Cortland County": "indirect RSS provider unavailable (Google News): robots disallows requested path",
     "Yates County": "indirect RSS provider unavailable (Google News): robots disallows requested path",
