@@ -25,7 +25,7 @@ class PdfBudgetPriorityTests(unittest.TestCase):
         self.assertEqual(3, scan.pdf_listing_recency(
             'Download PDF', 'https://county.example/media/abc123', 2026,
             context='2026 tree removal bid'))
-        self.assertIsNone(scan.deadline('2026 tree removal bid'))
+        self.assertFalse(scan.deadline('2026 tree removal bid'))
 
     def test_archived_award_is_not_a_live_bid(self):
         self.assertTrue(scan.published_result_link('Tree removal bid results'))
