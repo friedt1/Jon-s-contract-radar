@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-05T01:45:44+00:00",
+  "updated": "2026-11-05T02:40:11+00:00",
   "request_sources_ok": 6,
   "source_status": {
     "Public Mastodon · Elmira": {
@@ -33,8 +33,8 @@
       "kind": "mastodon"
     },
     "Google News · local tree work (context only)": {
-      "state": "ok",
-      "candidates": 0,
+      "state": "error",
+      "error": "HTTPError HTTP 503",
       "kind": "news"
     }
   },
