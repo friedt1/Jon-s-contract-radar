@@ -376,7 +376,7 @@ def historical_pdf_row(title, context, url):
  """
  if not likely_pdf_link(url, title):
   return False
- if not re.fullmatch(r'(?:download|view|open)(?:\\s+(?:the\\s+)?)?(?:pdf|document|file|attachment)?|pdf|document|attachment',
+ if not re.fullmatch(r'(?:download|view|open)(?:\s+(?:the\s+)?)?(?:pdf|document|file|attachment)?|pdf|document|attachment',
                      norm(title), re.I):
   return False
  row=norm(context)
@@ -384,8 +384,8 @@ def historical_pdf_row(title, context, url):
   return False
  # Ambiguous rows mentioning a current bid alongside results must still be
  # inspected rather than silently suppressed.
- if re.search(r'\\b(?:current|open|active|new)\\s+(?:bid|solicitation|rfp|rfq)\\b'
-              r'|\\b(?:invitation to bid|request for proposals?|bid addendum)\\b', row, re.I):
+ if re.search(r'\b(?:current|open|active|new)\s+(?:bid|solicitation|rfp|rfq)\b'
+              r'|\b(?:invitation to bid|request for proposals?|bid addendum)\b', row, re.I):
   return False
  return True
 
