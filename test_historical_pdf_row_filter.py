@@ -47,7 +47,7 @@ class HistoricalPdfRowTests(unittest.TestCase):
 
         self.assertEqual(leads, [])
         self.assertEqual(attempted, ["https://agency.example/media/current.pdf"])
-        self.assertIn("30 historical result/award links excluded", status)
+        self.assertIn("30 result/award links excluded", status)
 
     def test_expired_erie_and_unrelated_owego_not_live(self):
         self.assertFalse(scan.eligible(
