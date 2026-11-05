@@ -63,7 +63,7 @@ class HistoricalPdfRowTests(unittest.TestCase):
                 return ('<table><tr><td>Bid Results: tree removal 2024</td>'
                         '<td><a href="/media/award-2024.pdf">Download PDF</a></td></tr>'
                         '<tr><td>Tree removal bid packet 2026</td>'
-                        '<td><a href="/media/current.pdf">Download PDF</a></td></tr>'
+                        '<td><a href="/media/current.pdf">Tree removal bid packet 2026</a></td></tr>'
                         '</table>'), "text/html", url
             raise TimeoutError("synthetic unavailable document")
 
