@@ -366,6 +366,30 @@ def published_result_link(title):
   norm(title), re.I))
 
 
+def historical_pdf_row(title, context, url):
+ """Skip unambiguous result/award PDFs with generic download labels.
+
+ Only the *isolated listing row* may establish historical context. Never
+ use the page-wide text, and do not discard a row that also advertises a
+ current solicitation or addendum. This is a retrieval filter, not proof
+ of a live opportunity.
+ """
+ if not likely_pdf_link(url, title):
+  return False
+ if not re.fullmatch(r'(?:download|view|open)(?:\\s+(?:the\\s+)?)?(?:pdf|document|file|attachment)?|pdf|document|attachment',
+                     norm(title), re.I):
+  return False
+ row=norm(context)
+ if not published_result_link(row):
+  return False
+ # Ambiguous rows mentioning a current bid alongside results must still be
+ # inspected rather than silently suppressed.
+ if re.search(r'\\b(?:current|open|active|new)\\s+(?:bid|solicitation|rfp|rfq)\\b'
+              r'|\\b(?:invitation to bid|request for proposals?|bid addendum)\\b', row, re.I):
+  return False
+ return True
+
+
 def likely_pdf_link(url, title=''):
  """Conservative pre-fetch hint for PDFs behind extensionless agency links.
 
@@ -843,7 +867,7 @@ def scan_direct(src):
    continue
   # Results and award tabs are historical evidence, not solicitations. Many
   # county PDF links have opaque URLs, so inspect the publisher's link label.
-  if published_result_link(title):
+  if published_result_link(title) or historical_pdf_row(title, context, url):
    result_links_skipped+=1
    continue
   # Follow only same-host notices and explicitly permitted platform links.
