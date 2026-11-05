@@ -49,6 +49,34 @@ class HistoricalPdfRowTests(unittest.TestCase):
         self.assertEqual(attempted, ["https://agency.example/media/current.pdf"])
         self.assertIn("30 result/award links excluded", status)
 
+    def test_nested_index_skips_historical_generic_pdf_rows(self):
+        index = "https://agency.example/bids/tree-removal"
+        old = "https://agency.example/media/award-2024.pdf"
+        current = "https://agency.example/media/current.pdf"
+        calls = []
+
+        def fake_fetch(url, binary=False):
+            calls.append(url)
+            if url == BASE:
+                return '<a href="/bids/tree-removal">Tree removal bids</a>', "text/html", url
+            if url == index:
+                return ('<table><tr><td>Bid Results: tree removal 2024</td>'
+                        '<td><a href="/media/award-2024.pdf">Download PDF</a></td></tr>'
+                        '<tr><td>Tree removal bid packet 2026</td>'
+                        '<td><a href="/media/current.pdf">Download PDF</a></td></tr>'
+                        '</table>'), "text/html", url
+            raise TimeoutError("synthetic unavailable document")
+
+        now = dt.datetime(2026, 11, 5, 10, tzinfo=dt.timezone.utc)
+        with (patch.object(scan, "NOW", now),
+              patch.object(scan, "fetch", side_effect=fake_fetch)):
+            leads, status = scan.scan_direct(SOURCE)
+        self.assertEqual(leads, [])
+        self.assertIn(index, calls)
+        self.assertNotIn(old, calls)
+        self.assertIn(current, calls)
+        self.assertIn("result/award links excluded", status)
+
     def test_expired_erie_and_unrelated_owego_not_live(self):
         self.assertFalse(scan.eligible(
             "Erie tree and stump removal bid due October 28, 2026",
