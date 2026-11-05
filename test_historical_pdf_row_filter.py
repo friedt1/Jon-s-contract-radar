@@ -60,11 +60,14 @@ class HistoricalPdfRowTests(unittest.TestCase):
             if url == BASE:
                 return '<a href="/bids/tree-removal">Tree removal bids</a>', "text/html", url
             if url == index:
-                return ('<table><tr><td>Bid Results: tree removal 2024</td>'
+                page = ('<table><tr><td>Bid Results: tree removal 2024</td>'
                         '<td><a href="/media/award-2024.pdf">Download PDF</a></td></tr>'
                         '<tr><td>Tree removal bid packet 2026</td>'
                         '<td><a href="/media/current.pdf">Tree removal bid packet 2026</a></td></tr>'
-                        '</table>'), "text/html", url
+                        '</table>')
+                # scan_direct fetches detail pages in binary mode; mirror
+                # the real fetch contract so HTML parsing reaches nested links.
+                return page.encode("utf-8") if binary else page, "text/html", url
             raise TimeoutError("synthetic unavailable document")
 
         now = dt.datetime(2026, 11, 5, 10, tzinfo=dt.timezone.utc)
