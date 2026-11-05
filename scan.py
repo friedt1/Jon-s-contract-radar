@@ -374,7 +374,10 @@ def historical_pdf_row(title, context, url):
  current solicitation or addendum. This is a retrieval filter, not proof
  of a live opportunity.
  """
- if not likely_pdf_link(url, title):
+ # An opaque endpoint labeled 'Download PDF' is not enough evidence to
+ # suppress retrieval: it may serve a current solicitation dynamically.
+ # Only skip a historical row when the URL itself identifies a PDF.
+ if not up.urlsplit(url).path.lower().endswith('.pdf'):
   return False
  if not re.fullmatch(r'(?:download|view|open)(?:\s+(?:the\s+)?)?(?:pdf|document|file|attachment)?|pdf|document|attachment',
                      norm(title), re.I):
