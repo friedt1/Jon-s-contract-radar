@@ -49,6 +49,37 @@ class HistoricalPdfRowTests(unittest.TestCase):
         self.assertEqual(attempted, ["https://agency.example/media/current.pdf"])
         self.assertIn("30 result/award links excluded", status)
 
+    def test_nested_index_skips_historical_generic_pdf_rows(self):
+        index = "https://agency.example/bids/tree-removal"
+        old = "https://agency.example/media/award-2024.pdf"
+        current = "https://agency.example/media/current.pdf"
+        calls = []
+
+        def fake_fetch(url, binary=False):
+            calls.append(url)
+            if url == BASE:
+                return '<a href="/bids/tree-removal">Tree removal bids</a>', "text/html", url
+            if url == index:
+                page = ('<table><tr><td>Bid Results: tree removal 2024</td>'
+                        '<td><a href="/media/award-2024.pdf">Download PDF</a></td></tr>'
+                        '<tr><td>Tree removal bid packet 2026</td>'
+                        '<td><a href="/media/current.pdf">Tree removal bid packet 2026</a></td></tr>'
+                        '</table>')
+                # scan_direct fetches detail pages in binary mode; mirror
+                # the real fetch contract so HTML parsing reaches nested links.
+                return page.encode("utf-8") if binary else page, "text/html", url
+            raise TimeoutError("synthetic unavailable document")
+
+        now = dt.datetime(2026, 11, 5, 10, tzinfo=dt.timezone.utc)
+        with (patch.object(scan, "NOW", now),
+              patch.object(scan, "fetch", side_effect=fake_fetch)):
+            leads, status = scan.scan_direct(SOURCE)
+        self.assertEqual(leads, [])
+        self.assertIn(index, calls)
+        self.assertNotIn(old, calls)
+        self.assertIn(current, calls)
+        self.assertIn("result/award links excluded", status)
+
     def test_expired_erie_and_unrelated_owego_not_live(self):
         self.assertFalse(scan.eligible(
             "Erie tree and stump removal bid due October 28, 2026",

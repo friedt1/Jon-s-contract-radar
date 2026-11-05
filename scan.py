@@ -998,7 +998,7 @@ def scan_direct(src):
      # detail/PDF request on a publisher-labeled award or bid tabulation.
      # Mark an index containing only result links as a listing too; it
      # must not become an individual tree-removal notice by inheritance.
-     if published_result_link(label):
+     if published_result_link(label) or historical_pdf_row(label, row, target):
       result_links_skipped += 1
       if not is_individual_notice_link(final_url):
        nested_notice_links = True
