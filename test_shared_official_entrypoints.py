@@ -71,6 +71,23 @@ class SharedOfficialEntrypointTests(unittest.TestCase):
         self.assertEqual(legacy["unique_named_targets"], 1)
         self.assertFalse(legacy["inventory_integrity_ok"])
 
+    def test_casefold_alias_on_one_gateway_is_not_an_independent_agency(self):
+        url = "https://county.example/Bids.aspx"
+        rows = [
+            {"name": "Tioga County NY", "mode": "direct_page",
+             "url": url, "verified_url": True},
+            {"name": "  tIoGa   COUNTY NY  ", "mode": "direct_page",
+             "url": url, "verified_url": True},
+        ]
+        result = audit_source_coverage.audit(rows)
+        self.assertEqual(result["unique_named_targets"], 1)
+        self.assertEqual(result["duplicate_source_rows"], 1)
+        self.assertEqual(result["shared_official_entrypoint_groups"], {})
+        self.assertEqual(result["shared_official_entrypoint_targets"], 0)
+        self.assertFalse(any(row["shared_official_entrypoint"]
+                             for row in result["sources"]))
+        self.assertEqual(source_audit.audit(rows)["shared_official_entrypoint_groups"], {})
+
     def test_real_shared_gateway_counts_distinct_agencies_only(self):
         url = "https://county.example/Bids.aspx"
         rows = [
