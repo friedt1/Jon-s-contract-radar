@@ -92,8 +92,16 @@ def audit(sources):
             normalized = canonical_url(candidate)
             if normalized:
                 by_entrypoint.setdefault(normalized, []).append(row["source"])
-    shared = {url: sorted(set(names)) for url, names in sorted(by_entrypoint.items())
-              if len(set(names)) > 1}
+    # Count unique agency identities, not display-label variants. A duplicate
+    # inventory row with different casing/spacing must never masquerade as a
+    # second publisher sharing the same procurement gateway.
+    shared = {}
+    for url, names in sorted(by_entrypoint.items()):
+        unique_agencies = {}
+        for name in names:
+            unique_agencies.setdefault(name.casefold(), name)
+        if len(unique_agencies) > 1:
+            shared[url] = sorted(unique_agencies.values(), key=str.casefold)
     for row in results:
         candidate = (row["target_url"] if row["direct_configured"] else
                      row["candidate_official_url"] if row["official_url_staged"] else None)
