@@ -1,0 +1,37 @@
+name: PR Offline Regression Checks
+
+on:
+  pull_request:
+    paths:
+      - '**.py'
+      - 'test_website.js'
+      - 'website/**'
+      - 'sources.json'
+      - '.github/workflows/pr-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Python regression suite
+        run: python -m unittest discover -s . -p 'test_*.py' -v
+      - name: Dashboard regression suite
+        run: node test_website.js
