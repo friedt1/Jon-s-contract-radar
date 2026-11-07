@@ -1123,7 +1123,9 @@ def run(src, news_access=None):
  if src.get('mode') in source_config.DIRECT_MODES:
   if not source_config.direct_configured(src):
    statuses.append('direct not configured: verified public HTTPS source URL required')
-  elif (src['name'] in UNCONNECTED_PLATFORMS or src.get('provider_access_required') is True
+  elif (' '.join(str(src.get('name', '')).split()).casefold() in {
+        ' '.join(label.split()).casefold() for label in UNCONNECTED_PLATFORMS
+       } or src.get('provider_access_required') is True
         or bool(src.get('delegated_provider'))):
    statuses.append('direct access required: individual listing ingestion not connected; provider-approved feed/access not established')
   elif not source_config.direct_fetch_target(src):
