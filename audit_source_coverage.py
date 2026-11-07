@@ -28,7 +28,7 @@ def audit(sources):
         mode = source.get("mode", "missing")
         url = source.get("url", "")
         direct = direct_configured(source)
-        access_required = direct and (name.casefold() in {p.casefold() for p in UNCONNECTED_PLATFORMS}
+        access_required = direct and (name.casefold() in {' '.join(p.split()).casefold() for p in UNCONNECTED_PLATFORMS}
                                       or source.get("provider_access_required") is True
                                       or bool(source.get("delegated_provider")))
         adapter_missing = direct and not direct_fetch_target(source)
