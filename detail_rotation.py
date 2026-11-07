@@ -20,7 +20,7 @@ def rotate_boundary_ties(ordered, budget, now, priority):
     advances a partial tie group in subsequent hours.
     """
     items = list(ordered)
-    if (not isinstance(budget, int) or budget <= 0 or len(items) <= budget
+    if (type(budget) is not int or budget <= 0 or len(items) <= budget
             or not isinstance(now, dt.datetime) or now.tzinfo is None
             or now.utcoffset() is None):
         return items
@@ -56,7 +56,7 @@ def rotate_selected_boundary_ties(ordered, budget, now, priority, selected):
     fetch order, not access permission, eligibility, or publication status.
     """
     items = list(ordered)
-    if not isinstance(budget, int) or budget <= 0:
+    if type(budget) is not int or budget <= 0:
         return items
     positions = [i for i, item in enumerate(items) if selected(item)]
     if len(positions) <= budget:
