@@ -5,10 +5,10 @@ import unittest
 from detail_rotation import rotate_boundary_ties, rotate_selected_boundary_ties
 
 
-class CoprimeRotationTests(unittest.TestCase):
-    def test_all_candidates_eventually_reach_budget_when_gcd_is_not_one(self):
-        # The old hour * window offset with 6 candidates and budget 2
-        # visited only 4 of 6 candidates, regardless of scan duration.
+class BoundaryWindowCoverageTests(unittest.TestCase):
+    def test_all_candidates_reach_budget_with_non_coprime_window(self):
+        # Six tied candidates with two slots must all be visited, even
+        # though gcd(window, group_size) is two.
         items = list(range(6))
         observed = set()
         for hour in range(6):
