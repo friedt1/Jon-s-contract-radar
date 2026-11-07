@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-06T06:12:48.232057+00:00",
+  "updated": "2026-11-07T05:58:56.467063+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 84,
   "safe_staged_entrypoints": 84,
@@ -270,8 +270,8 @@
     {
       "name": "Clinton County PA",
       "official_entrypoint": "https://www.clintoncountypa.gov/about-us/rfps",
-      "state": "listing_robots_policy_unavailable",
-      "listing_retrieved": false,
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -420,17 +420,48 @@
     {
       "name": "City of Binghamton",
       "official_entrypoint": "https://www.binghamton-ny.gov/government/departments/purchasing/bids-rfps",
-      "state": "listing_robots_policy_unavailable",
-      "listing_retrieved": false,
-      "individual_notice_retrieved": false,
-      "individual_records_discovered": 0,
-      "individual_samples_attempted": 0,
-      "individual_samples_confirmed": 0,
-      "additional_sample_notice_urls_confirmed": [],
+      "state": "notice_format_confirmed_terms_review_required",
+      "listing_retrieved": true,
+      "individual_notice_retrieved": true,
+      "individual_records_discovered": 5,
+      "individual_samples_attempted": 3,
+      "individual_samples_confirmed": 3,
+      "additional_sample_notice_urls_confirmed": [
+        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/438/90",
+        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/434/90"
+      ],
       "individual_sample_failures": [],
       "activation_gate": "Official city purchasing Bids & RFPs index and same-host individual /Home/Components/RFP/RFP/{id}/90 notices confirmed. Granicus adapter, robots/terms permission, live extraction, deadlines and status checks required before direct activation; historical Open labels may remain stale.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false
+      "direct_monitoring_activated": false,
+      "listing_scope_evidence": "isolated_listing_cards_unverified",
+      "listing_relevant_count": 0,
+      "listing_relevant_by_temporal_evidence": {
+        "future_or_today_unverified": 0,
+        "deadline_unknown": 0,
+        "closed_or_elapsed": 0,
+        "conflicting_evidence": 0
+      },
+      "listing_relevant_examples": [],
+      "sample_notice_url": "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/436/90",
+      "sample_notice_listing_title": "RFQ: Clinton Street Reconstruction & Streetscape Design",
+      "sample_notice_listing_scope_category": "not_identified",
+      "sample_notice_scope_evidence": "listing_card_unverified",
+      "sample_notice_detail_scope_category": "unknown",
+      "sample_notice_detail_scope_evidence": "not_extracted",
+      "sample_notice_detail_scope_basis": "unknown",
+      "sample_notice_listing_detail_scope_disagreement": false,
+      "sample_notice_status": "unknown",
+      "sample_notice_detail_status": "unknown",
+      "sample_notice_listing_status": "open",
+      "sample_notice_status_conflict": false,
+      "sample_notice_status_source": "listing_unverified",
+      "sample_notice_unparseable_detail_closing": false,
+      "sample_notice_deadline_source": "individual_notice",
+      "sample_notice_deadline": "2026-11-18",
+      "sample_notice_deadline_time": "10:00 AM",
+      "sample_notice_deadline_conflict": false,
+      "sample_notice_temporal_evidence": "deadline_not_passed_unverified"
     },
     {
       "name": "Town of Vestal",
@@ -1069,8 +1100,8 @@
     {
       "name": "NYSEG",
       "official_entrypoint": "https://www.nyseg.com/suppliersandpartners",
-      "state": "listing_robots_policy_unavailable",
-      "listing_retrieved": false,
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -1272,8 +1303,8 @@
     {
       "name": "Corning Incorporated",
       "official_entrypoint": "https://www.corning.com/worldwide/en/sustainability/processes/supply-chain-social-responsibility/supplier-responsibility.html",
-      "state": "listing_robots_policy_unavailable",
-      "listing_retrieved": false,
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -1334,8 +1365,8 @@
     {
       "name": "Kimco Realty",
       "official_entrypoint": "https://www.kimcorealty.com/vendor-opportunities",
-      "state": "listing_robots_policy_unavailable",
-      "listing_retrieved": false,
+      "state": "official_supplier_or_contact_gateway_access_required",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -1344,7 +1375,8 @@
       "individual_sample_failures": [],
       "activation_gate": "Official Kimco Vendor Opportunities page invites vendors to contact its team but does not expose a public individual-bid index. Vendor relationship/contact or authorized invitation is required to establish individual work orders. No authenticated access bypass or fabricated jobs; confirm the exact local property, current scope, submission deadline and publisher terms before activation.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false
+      "direct_monitoring_activated": false,
+      "section_note": "Official supplier/contact gateway, not a verified public individual-solicitation feed; vendor authorization or a separate permitted listing is required"
     },
     {
       "name": "CBRE regional property management",
