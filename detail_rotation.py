@@ -40,6 +40,9 @@ def rotate_boundary_ties(ordered, budget, now, priority):
     group = items[start:end]
     window = budget - start
     hour = int(now.astimezone(dt.timezone.utc).timestamp() // 3600)
+    # Advance by the number of available slots. Adjacent windows then
+    # cover a tie group without pinning or skipping candidates; coprime
+    # strides can unnecessarily overlap consecutive windows.
     offset = (hour * window) % len(group)
     items[start:end] = group[offset:] + group[:offset]
     return items
