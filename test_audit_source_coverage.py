@@ -43,6 +43,22 @@ class CoverageAuditTests(unittest.TestCase):
         self.assertTrue(result["sources"][2]["direct_fetch_target"])
         self.assertFalse(result["sources"][3]["direct_fetch_target"])
 
+    def test_platform_name_alias_cannot_bypass_access_gate(self):
+        # Inventory display casing/whitespace is not an authorization signal.
+        rows = [
+            {"name": "  pennbid   PLATFORM ", "mode": "direct_page",
+             "url": "https://pennbid.bonfirehub.com", "verified_url": True},
+            {"name": "bidnet ny PLATFORM", "mode": "direct_page",
+             "url": "https://www.bidnetdirect.com/new-york", "verified_url": True},
+        ]
+        result = audit(rows)
+        self.assertEqual(result["direct_configured"], 2)
+        self.assertEqual(result["configured_provider_access_required"], 2)
+        self.assertEqual(result["direct_fetch_targets"], 0)
+        self.assertTrue(all(row["provider_access_required"] for row in result["sources"]))
+        self.assertTrue(any("provider access required: 2" in reason
+                            for reason in strict_failures(result, expected_targets=2)))
+
     def test_staged_urls_are_not_active_connections(self):
         result = audit([
             {"name": "Staged", "mode": "discovery_pending", "url": "",
