@@ -5,6 +5,7 @@ Rotate only the equal-priority group straddling the fixed request budget.
 This changes retrieval order, not eligibility, permissions or publication.
 """
 import datetime as dt
+import math
 
 
 def rotate_boundary_ties(ordered, budget, now, priority):
@@ -40,7 +41,14 @@ def rotate_boundary_ties(ordered, budget, now, priority):
     group = items[start:end]
     window = budget - start
     hour = int(now.astimezone(dt.timezone.utc).timestamp() // 3600)
-    offset = (hour * window) % len(group)
+    # A window-sized stride can revisit only a subset of candidates when
+    # gcd(window, group_size) > 1 (for example 2 of 6 positions). Choose the
+    # largest stride no greater than the request window that is coprime to
+    # the tie-group size, so every candidate eventually crosses the cutoff.
+    stride = window
+    while math.gcd(stride, len(group)) != 1:
+        stride -= 1
+    offset = (hour * stride) % len(group)
     items[start:end] = group[offset:] + group[:offset]
     return items
 
