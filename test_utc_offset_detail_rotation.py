@@ -40,7 +40,7 @@ class UtcRotationEquivalenceTests(unittest.TestCase):
             self.assertEqual(set(result), set(ordered))
             seen_low.update(item[1] for item in result[:5]
                             if item[1].startswith("low"))
-        self.assertEqual(seen_low, {"low-1"})
+        self.assertEqual(seen_low, {"low-1", "low-2", "low-3"})
 
 
 if __name__ == "__main__":
