@@ -79,6 +79,29 @@ class CoverageAuditTests(unittest.TestCase):
                          "https://county.example/bids")
         self.assertIn("robots", result["sources"][0]["activation_gate"])
 
+    def test_invalid_staged_candidate_is_diagnosed_not_activated(self):
+        rows = [
+            {"name": "Private network", "mode": "discovery_pending",
+             "candidate_official_url": "https://127.0.0.1/bids"},
+            {"name": "Insecure", "mode": "discovery_pending",
+             "candidate_official_url": "http://county.example/bids"},
+            {"name": "Valid staged", "mode": "discovery_pending",
+             "candidate_official_url": "https://county.example/bids"},
+            {"name": "Unknown", "mode": "discovery_pending"},
+        ]
+        report = audit(rows)
+        self.assertEqual(report["invalid_staged_candidate_urls"], 2)
+        self.assertEqual(report["official_urls_staged"], 1)
+        self.assertEqual(report["discovery_required"], 3)
+        self.assertEqual(report["direct_fetch_targets"], 0)
+        for row in report["sources"][:2]:
+            self.assertTrue(row["invalid_staged_candidate_url"])
+            self.assertFalse(row["official_url_staged"])
+            self.assertIsNone(row["candidate_official_url"])
+            self.assertIn("invalid staged candidate URL", row["status"])
+        self.assertFalse(report["sources"][2]["invalid_staged_candidate_url"])
+        self.assertFalse(report["sources"][3]["invalid_staged_candidate_url"])
+
     def test_publisher_homepage_does_not_masquerade_as_bid_index(self):
         sources = [
             {"name": "Homepage", "mode": "discovery_pending", "url": "",
