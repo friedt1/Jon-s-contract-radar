@@ -35,6 +35,8 @@ def audit(sources):
         staged = (not direct and mode == "discovery_pending"
                   and valid_public_https_url(source.get("candidate_official_url")))
         invalid_direct = mode in DIRECT_MODES and not direct
+        invalid_staged = (mode == "discovery_pending"
+                          and bool(source.get("candidate_official_url")) and not staged)
         # An official agency homepage is not an identified procurement index.
         # Keep it in staged coverage, but expose the separate discovery gate.
         publisher_only = staged and source.get("official_page_role") == "publisher_entrypoint_only"
@@ -52,6 +54,7 @@ def audit(sources):
             "official_url_staged": staged,
             "staged_publisher_entrypoint_only": publisher_only,
             "invalid_direct_configuration": invalid_direct,
+            "invalid_staged_candidate_url": invalid_staged,
             "candidate_official_url": source.get("candidate_official_url") if staged else None,
             "activation_gate": source.get("activation_gate", "") if staged else "",
             "official_page_role": source.get("official_page_role", "") if staged else "",
@@ -65,6 +68,7 @@ def audit(sources):
                        "official publisher entrypoint only; current bid index not identified or monitored" if publisher_only else
                        "official URL staged; individual-notice extraction and permissions not verified" if staged else
                        "invalid direct configuration; verified HTTPS URL required" if invalid_direct else
+                       "invalid staged candidate URL; safe public HTTPS URL required" if invalid_staged else
                        "not directly monitored; official source discovery required"),
         })
     # A duplicated name can masquerade as a second one of the 102 targets.
@@ -128,6 +132,7 @@ def audit(sources):
         "staged_publisher_entrypoints_only": sum(
             x["staged_publisher_entrypoint_only"] for x in results),
         "invalid_direct_configurations": sum(x["invalid_direct_configuration"] for x in results),
+        "invalid_staged_candidate_urls": sum(x["invalid_staged_candidate_url"] for x in results),
         "discovery_required": sum(not x["direct_configured"] and not x["official_url_staged"]
                                   and not x["invalid_direct_configuration"] for x in results),
         "sources": results,
