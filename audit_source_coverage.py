@@ -173,6 +173,7 @@ def strict_failures(report, expected_targets=EXPECTED_NAMED_TARGETS):
         ("configured_provider_access_required", "provider access required"),
         ("configured_unimplemented_adapters", "adapter not implemented"),
         ("invalid_direct_configurations", "invalid direct configurations"),
+        ("invalid_staged_candidate_urls", "invalid staged candidate URLs"),
     ):
         if report[key]:
             failures.append(f"{label}: {report[key]}")
