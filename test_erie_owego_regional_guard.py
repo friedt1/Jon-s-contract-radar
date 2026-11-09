@@ -28,7 +28,7 @@ class ErieOwegoGuardTests(unittest.TestCase):
     def test_erie_stump_removal_is_regional_review_not_verified_open(self):
         notice = {
             "title": "Erie tree and stump removal",
-            "summary": "Remove hazardous trees and grind stumps.",
+            "summary": "Tree removal and stump grinding for hazardous roadside trees.",
             "url": "https://county.example/bids?bidID=9002",
             "deadline": "2026-12-01",
             "drive_hours": 3.5,
@@ -43,7 +43,7 @@ class ErieOwegoGuardTests(unittest.TestCase):
     def test_expired_erie_example_cannot_reappear(self):
         notice = {
             "title": "Erie tree and stump removal",
-            "summary": "Remove hazardous trees and grind stumps.",
+            "summary": "Tree removal and stump grinding for hazardous roadside trees.",
             "url": "https://county.example/bids?bidID=9003",
             "deadline": "2026-10-01",
             "drive_hours": 3.5,
