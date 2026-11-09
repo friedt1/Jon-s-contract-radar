@@ -134,7 +134,8 @@ def audit(sources):
         "invalid_direct_configurations": sum(x["invalid_direct_configuration"] for x in results),
         "invalid_staged_candidate_urls": sum(x["invalid_staged_candidate_url"] for x in results),
         "discovery_required": sum(not x["direct_configured"] and not x["official_url_staged"]
-                                  and not x["invalid_direct_configuration"] for x in results),
+                                  and not x["invalid_direct_configuration"]
+                                  and not x["invalid_staged_candidate_url"] for x in results),
         "sources": results,
         "warning": ("Direct configuration is not operational monitoring. Feed/API modes without "
                     "an implemented adapter are not fetch targets. Provider landing URLs "
