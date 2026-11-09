@@ -187,6 +187,43 @@ class CoverageAuditTests(unittest.TestCase):
         self.assertTrue(any("inventory rows" in b
                             for b in strict_failures(report, expected_targets=103)))
 
+    def test_staged_supplier_gateway_requires_authorization_not_fetch(self):
+        rows = [
+            {"name": "County supplier portal", "mode": "discovery_pending",
+             "candidate_official_url": "https://county.example/vendor",
+             "provider_access_required": True},
+            {"name": "Delegated city portal", "mode": "discovery_pending",
+             "candidate_official_url": "https://city.example/bids",
+             "delegated_provider": "Supplier gateway"},
+        ]
+        report = audit(rows)
+        self.assertEqual(report["staged_provider_access_required"], 2)
+        self.assertEqual(report["official_urls_staged"], 2)
+        self.assertEqual(report["direct_fetch_targets"], 0)
+        self.assertEqual(report["direct_configured"], 0)
+        for row in report["sources"]:
+            self.assertTrue(row["staged_provider_access_required"])
+            self.assertFalse(row["direct_fetch_target"])
+            self.assertIn("authorization required", row["status"])
+
+    def test_shared_gateway_does_not_count_duplicate_agency_as_second_publisher(self):
+        rows = [
+            {"name": "Tioga County", "mode": "discovery_pending",
+             "candidate_official_url": "https://procurement.example/bids?utm_source=one"},
+            {"name": " TIOGA  COUNTY ", "mode": "discovery_pending",
+             "candidate_official_url": "https://procurement.example/bids?utm_source=two"},
+            {"name": "Owego", "mode": "discovery_pending",
+             "candidate_official_url": "https://procurement.example/bids"},
+        ]
+        report = audit(rows)
+        self.assertEqual(report["unique_named_targets"], 2)
+        self.assertEqual(report["duplicate_source_rows"], 1)
+        self.assertEqual(report["distinct_official_entrypoints"], 1)
+        self.assertEqual(report["shared_official_entrypoint_targets"], 2)
+        self.assertEqual(len(report["shared_official_entrypoint_groups"]), 1)
+        self.assertTrue(all(row["shared_official_entrypoint"] for row in report["sources"]))
+        self.assertEqual(report["direct_fetch_targets"], 0)
+
     def test_current_102_source_inventory_is_accounted_for(self):
         import json
         from pathlib import Path
