@@ -13,7 +13,7 @@ from notice_identity import canonical_url
 
 EXPECTED_NAMED_TARGETS = 102
 
-from source_config import (DIRECT_MODES, UNCONNECTED_PLATFORMS,
+from source_config import (DIRECT_MODES, IMPLEMENTED_DIRECT_MODES, UNCONNECTED_PLATFORMS,
                            direct_configured, direct_fetch_target,
                            valid_public_https_url)
 
@@ -31,7 +31,7 @@ def audit(sources):
         access_required = direct and (name.casefold() in {' '.join(p.split()).casefold() for p in UNCONNECTED_PLATFORMS}
                                       or source.get("provider_access_required") is True
                                       or bool(source.get("delegated_provider")))
-        adapter_missing = direct and not direct_fetch_target(source)
+        adapter_missing = direct and mode not in IMPLEMENTED_DIRECT_MODES
         staged = (not direct and mode == "discovery_pending"
                   and valid_public_https_url(source.get("candidate_official_url")))
         invalid_direct = mode in DIRECT_MODES and not direct
