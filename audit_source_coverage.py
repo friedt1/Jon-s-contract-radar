@@ -171,6 +171,8 @@ def strict_failures(report, expected_targets=EXPECTED_NAMED_TARGETS):
     for key, label in (
         ("not_directly_monitored", "not directly configured"),
         ("configured_provider_access_required", "provider access required"),
+        ("staged_provider_access_required", "staged provider authorization required"),
+        ("staged_publisher_entrypoints_only", "staged publisher-only pages without bid index"),
         ("configured_unimplemented_adapters", "adapter not implemented"),
         ("invalid_direct_configurations", "invalid direct configurations"),
         ("invalid_staged_candidate_urls", "invalid staged candidate URLs"),
