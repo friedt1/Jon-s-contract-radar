@@ -114,6 +114,10 @@ def audit(sources):
 
     return {
         "distinct_official_entrypoints": len(by_entrypoint),
+        "distinct_direct_fetch_entrypoints": len({
+            canonical_url(row["target_url"])
+            for row in results if row["direct_fetch_target"] and row["target_url"]
+        }),
         "shared_official_entrypoint_groups": shared,
         "shared_official_entrypoint_targets": sum(len(names) for names in shared.values()),
         "total": len(results),
