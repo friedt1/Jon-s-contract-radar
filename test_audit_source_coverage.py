@@ -92,7 +92,7 @@ class CoverageAuditTests(unittest.TestCase):
         report = audit(rows)
         self.assertEqual(report["invalid_staged_candidate_urls"], 2)
         self.assertEqual(report["official_urls_staged"], 1)
-        self.assertEqual(report["discovery_required"], 3)
+        self.assertEqual(report["discovery_required"], 1)
         self.assertEqual(report["direct_fetch_targets"], 0)
         for row in report["sources"][:2]:
             self.assertTrue(row["invalid_staged_candidate_url"])
@@ -195,12 +195,13 @@ class CoverageAuditTests(unittest.TestCase):
         self.assertEqual(result["total"], 102)
         self.assertEqual(
             result["direct_configured"] + result["official_urls_staged"]
-            + result["invalid_direct_configurations"] + result["discovery_required"],
+            + result["invalid_direct_configurations"] + result["invalid_staged_candidate_urls"]
+            + result["discovery_required"],
             102,
         )
         self.assertEqual(result["not_directly_monitored"],
                          result["official_urls_staged"] + result["invalid_direct_configurations"]
-                         + result["discovery_required"])
+                         + result["invalid_staged_candidate_urls"] + result["discovery_required"])
 
 
 if __name__ == "__main__":
