@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-09T06:20:32.827073+00:00",
+  "updated": "2026-11-10T06:05:29.487728+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 84,
   "safe_staged_entrypoints": 84,
@@ -427,8 +427,8 @@
       "individual_samples_attempted": 3,
       "individual_samples_confirmed": 3,
       "additional_sample_notice_urls_confirmed": [
-        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/438/90",
-        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/434/90"
+        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/440/90",
+        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/442/90"
       ],
       "individual_sample_failures": [],
       "activation_gate": "Official city purchasing Bids & RFPs index and same-host individual /Home/Components/RFP/RFP/{id}/90 notices confirmed. Granicus adapter, robots/terms permission, live extraction, deadlines and status checks required before direct activation; historical Open labels may remain stale.",
@@ -541,8 +541,8 @@
     {
       "name": "City of Hornell",
       "official_entrypoint": "https://www.cityofhornell.gov/upcoming-bid-projects",
-      "state": "listing_reachable_off_host_documents_review_required",
-      "listing_retrieved": true,
+      "state": "listing_robots_policy_unavailable",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -551,10 +551,7 @@
       "individual_sample_failures": [],
       "activation_gate": "Official City of Hornell Upcoming Bid Projects page observed 2026-10-30 with PDF bid documents on external irp.cdn-website.com. Stage only: review robots, publisher and CDN terms; implement permitted per-document retrieval, distinguish upcoming from past bids, verify scope/deadline/status and worksite before activation. No off-host PDF is fetched by staging.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false,
-      "off_host_pdf_hosts_unverified": [
-        "irp.cdn-website.com"
-      ]
+      "direct_monitoring_activated": false
     },
     {
       "name": "City of Geneva",
