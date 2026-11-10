@@ -320,6 +320,11 @@ def explicit_closing_passed(text, now):
     timezone. Missing or malformed times are never guessed.
     """
     from zoneinfo import ZoneInfo
+    # A naive runner timestamp has no defined timezone. Python would silently
+    # interpret it in the host timezone, potentially expiring a live NY/PA bid.
+    if (not isinstance(now, dt.datetime) or now.tzinfo is None
+            or now.utcoffset() is None):
+        return False
     date, clock = submission_deadline_details(text)
     if not date or not clock:
         return False
