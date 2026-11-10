@@ -43,7 +43,29 @@ def audit(sources):
         staged_access_required = staged and (
             source.get("provider_access_required") is True
             or bool(source.get("delegated_provider")))
+        # Machine-readable activation gates: a configured URL is not proof
+        # of a live monitor. Multiple independent blockers must be retained.
+        blockers = []
+        if not name:
+            blockers.append("missing_source_name")
+        if invalid_direct:
+            blockers.append("invalid_direct_configuration")
+        if invalid_staged:
+            blockers.append("invalid_staged_candidate_url")
+        if access_required or staged_access_required:
+            blockers.append("provider_authorization_required")
+        if adapter_missing:
+            blockers.append("adapter_not_implemented")
+        if publisher_only:
+            blockers.append("procurement_index_not_identified")
+        if staged and not publisher_only:
+            blockers.append("individual_notice_extraction_unverified")
+        if not direct and not staged and not invalid_direct and not invalid_staged:
+            blockers.append("official_source_discovery_required")
+        if direct and not access_required and not adapter_missing:
+            blockers.append("live_ingestion_unverified")
         results.append({
+            "activation_blockers": blockers,
             "source": name,
             "mode": mode,
             "direct_configured": direct,
