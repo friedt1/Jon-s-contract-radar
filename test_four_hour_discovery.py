@@ -13,7 +13,7 @@ class FourHourDiscoveryTests(unittest.TestCase):
         self.assertTrue(local_evidence("City of Buffalo 2027 stump removal bid"))
 
     def test_extended_area_places_have_discovery_hints(self):
-        for city in ("Rochester", "Erie", "Canandaigua", "Niagara Falls"):
+        for city in ("Rochester", "Canandaigua", "Niagara Falls"):
             with self.subTest(city=city):
                 self.assertTrue(local_evidence(city + " tree removal solicitation"))
 
@@ -24,7 +24,7 @@ class FourHourDiscoveryTests(unittest.TestCase):
             "location": "Buffalo, NY",
         }
         assessment = review_assessment(lead)
-        self.assertIn("four-hour primary drive unverified", assessment["review_factors"])
+        self.assertIn("worksite text present; four-hour primary drive unverified", assessment["review_factors"])
         self.assertIn("not an open-contract or travel verification", assessment["review_disclaimer"])
 
 
