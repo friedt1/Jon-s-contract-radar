@@ -41,6 +41,12 @@ class ChallengeBoundaryRegressionTests(unittest.TestCase):
             with self.subTest(expected=expected):
                 self.assertEqual(challenge_kind(payload.encode()), expected)
 
+    def test_utf8_bom_before_html_challenge_is_detected(self):
+        payload = b"\xef\xbb\xbf<html><script src=\"/cdn-cgi/challenge-platform/\"></script></html>"
+        self.assertEqual(challenge_kind(payload), "cloudflare_challenge")
+        self.assertEqual(challenge_kind(payload.decode("utf-8")), "cloudflare_challenge")
+        self.assertIsNone(challenge_kind(b"\xef\xbb\xbf%PDF-1.7 cf-chl-"))
+
     def test_non_text_inputs_do_not_raise_or_signal_success(self):
         for payload in (None, 42, {}, []):
             with self.subTest(payload=payload):
