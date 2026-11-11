@@ -148,8 +148,8 @@ LOCAL_PLACES = ('elmira','chemung','steuben','schuyler','tompkins','horseheads',
  'ithaca','bradford','tioga','lycoming','williamsport','sayre','athens','towanda','wellsboro',
  'mansfield','broome','binghamton','owego','waverly','cortland','yates','seneca','montour',
  'bath','hornell','big flats','southport','vestal','dryden','lansing','watkins glen',
- # Syracuse city is near the two-hour boundary; worksite drive remains unverified.
- 'syracuse')
+ # Expanded four-hour primary search discovery hints; worksite driving time remains unverified.
+ 'syracuse','buffalo','erie','rochester','auburn','canandaigua','geneva','batavia','lockport','niagara falls')
 BROAD_SOURCES = {'PA procurement opportunities','PA DGS construction bids','PennBid platform','BidNet NY platform','New York State DOT Region 6','PennDOT District 3'}
 # A future-dated *out-of-region* listing must not outrank an undated nearby
 # tree-work notice merely because its date is known. This is a bounded
