@@ -46,6 +46,19 @@ class AntiBotChallengeTests(unittest.TestCase):
             with self.subTest(body=body[:35]):
                 self.assertEqual(access_challenge.challenge_kind(body), expected)
 
+    def test_whitespace_before_bom_challenge_and_pdf_boundary(self):
+        # Some publishers prepend whitespace before a UTF-8 BOM. The HTML
+        # challenge still needs detection, but PDFs must remain unaffected.
+        for body in (
+            b' \r\n\xef\xbb\xbf<html><script>cf-chl-test</script></html>',
+            ' \n\ufeff<!doctype html><html><script>cf-chl-test</script></html>',
+        ):
+            with self.subTest(body=repr(body)[:50]):
+                self.assertEqual(access_challenge.challenge_kind(body),
+                                 "cloudflare_challenge")
+        self.assertIsNone(access_challenge.challenge_kind(
+            b' \r\n\xef\xbb\xbf%PDF-1.7 cf-chl-test'))
+
     def test_http_200_challenge_fails_closed_before_parsing(self):
         body = (b'<html><title>Just a moment</title><script '
                 b'src="/cdn-cgi/challenge-platform/h/b/orchestrate"></script></html>')

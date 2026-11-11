@@ -17,7 +17,7 @@ def challenge_kind(body, content_type=""):
     sample = (body[:131072].decode("utf-8", "replace") if isinstance(body, bytes)
               else body[:131072]).lower()
     # A UTF-8 BOM is valid before an HTML opening and should not hide a challenge.
-    sample = sample.lstrip("\ufeff")
+    sample = sample.lstrip(" \t\r\n\f\v\ufeff")
     # Require an HTML document opening, not a marker embedded in a PDF, JSON,
     # or a plain-text procurement attachment.
     if not re.match(r"^\s*(?:<!doctype\s+html\b|<html\b)", sample):
