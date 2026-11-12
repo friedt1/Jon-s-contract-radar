@@ -41,7 +41,8 @@ def audit(sources):
         # Keep it in staged coverage, but expose the separate discovery gate.
         publisher_only = staged and source.get("official_page_role") == "publisher_entrypoint_only"
         staged_access_required = staged and (
-            source.get("provider_access_required") is True
+            name.casefold() in {' '.join(p.split()).casefold() for p in UNCONNECTED_PLATFORMS}
+            or source.get("provider_access_required") is True
             or bool(source.get("delegated_provider")))
         # Machine-readable activation gates: a configured URL is not proof
         # of a live monitor. Multiple independent blockers must be retained.
