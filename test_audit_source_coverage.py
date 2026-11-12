@@ -59,6 +59,23 @@ class CoverageAuditTests(unittest.TestCase):
         self.assertTrue(any("provider access required: 2" in reason
                             for reason in strict_failures(result, expected_targets=2)))
 
+    def test_staged_platform_alias_requires_provider_access(self):
+        # Moving an unconnected platform from direct to staged must not
+        # silently downgrade its authorization blocker.
+        rows = [
+            {"name": "  pennbid   PLATFORM ", "mode": "discovery_pending",
+             "candidate_official_url": "https://pennbid.bonfirehub.com"},
+            {"name": "BidNet NY platform", "mode": "discovery_pending",
+             "candidate_official_url": "https://www.bidnetdirect.com/new-york"},
+        ]
+        report = audit(rows)
+        self.assertEqual(report["staged_provider_access_required"], 2)
+        self.assertEqual(report["direct_fetch_targets"], 0)
+        for row in report["sources"]:
+            self.assertTrue(row["staged_provider_access_required"])
+            self.assertIn("provider_authorization_required", row["activation_blockers"])
+            self.assertIn("authorization required", row["status"])
+
     def test_staged_urls_are_not_active_connections(self):
         result = audit([
             {"name": "Staged", "mode": "discovery_pending", "url": "",
