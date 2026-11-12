@@ -107,6 +107,10 @@ def audit(sources):
     duplicate_names = sorted(display_names[key] for key in duplicate_keys)
     for row in results:
         row["duplicate_source_name"] = row["source"].casefold() in duplicate_keys
+        # A duplicate inventory identity is an activation blocker, not just a
+        # summary warning: downstream diagnostics must not certify both rows.
+        if row["duplicate_source_name"]:
+            row["activation_blockers"].append("duplicate_source_name")
 
     # A single official procurement gateway may represent multiple named
     # agencies. Report those overlaps without treating a shared landing page
