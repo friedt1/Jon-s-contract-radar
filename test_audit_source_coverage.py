@@ -192,6 +192,22 @@ class CoverageAuditTests(unittest.TestCase):
         self.assertTrue(any("inventory names invalid" in b
                             for b in strict_failures(report, expected_targets=3)))
 
+    def test_duplicate_identity_is_exposed_as_per_source_activation_blocker(self):
+        rows = [
+            {"name": "Tioga County NY", "mode": "direct_page",
+             "url": "https://county.example/bids", "verified_url": True},
+            {"name": " tIoGa  COUNTY NY ", "mode": "discovery_pending",
+             "candidate_official_url": "https://other.example/bids"},
+            {"name": "Owego", "mode": "discovery_pending"},
+        ]
+        report = audit(rows)
+        self.assertEqual(report["duplicate_source_rows"], 1)
+        for row in report["sources"][:2]:
+            self.assertIn("duplicate_source_name", row["activation_blockers"])
+        self.assertNotIn("duplicate_source_name", report["sources"][2]["activation_blockers"])
+        self.assertTrue(any("inventory names invalid" in reason
+                            for reason in strict_failures(report, expected_targets=3)))
+
     def test_strict_gate_is_structural_not_live_extraction_proof(self):
         rows = [
             {"name": f"Agency {n}", "mode": "direct_page",
