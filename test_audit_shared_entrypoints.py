@@ -26,6 +26,23 @@ class SharedEntrypointGateTests(unittest.TestCase):
         self.assertTrue(any("not directly configured: 2" in b
                             for b in strict_failures(report, expected_targets=2)))
 
+    def test_unnamed_row_does_not_create_phantom_shared_agency(self):
+        rows = [
+            {"name": "Tioga County", "mode": "discovery_pending",
+             "candidate_official_url": "https://procurement.example/bids"},
+            {"name": "   ", "mode": "discovery_pending",
+             "candidate_official_url": "https://procurement.example/bids?utm_source=mail"},
+        ]
+        report = audit(rows)
+        self.assertEqual(report["distinct_official_entrypoints"], 1)
+        self.assertEqual(report["shared_official_entrypoint_groups"], {})
+        self.assertEqual(report["shared_official_entrypoint_targets"], 0)
+        self.assertFalse(any(row["shared_official_entrypoint"] for row in report["sources"]))
+        self.assertEqual(report["unnamed_source_rows"], 1)
+        self.assertFalse(report["inventory_integrity_ok"])
+        self.assertTrue(any("unnamed rows" in failure
+                            for failure in strict_failures(report, expected_targets=2)))
+
     def test_distinct_notice_ids_do_not_count_as_shared_entrypoint(self):
         rows = [
             {"name": "County A", "mode": "discovery_pending",
