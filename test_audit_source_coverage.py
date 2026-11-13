@@ -4,6 +4,14 @@ from audit_source_coverage import audit, strict_failures
 
 
 class CoverageAuditTests(unittest.TestCase):
+    def test_unnamed_direct_row_is_not_a_fetch_target(self):
+        report = audit([{"name": "  ", "mode": "direct_page",
+                         "url": "https://county.example/bids", "verified_url": True}])
+        self.assertEqual(report["direct_configured"], 1)
+        self.assertEqual(report["direct_fetch_targets"], 0)
+        self.assertIn("missing_source_name", report["sources"][0]["activation_blockers"])
+        self.assertFalse(report["inventory_integrity_ok"])
+
     def test_indirect_is_not_direct(self):
         result = audit([{"name": "County", "mode": "discovery_pending", "url": "",
                          "verified_url": False}])
