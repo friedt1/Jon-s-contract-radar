@@ -111,6 +111,9 @@ def audit(sources):
     duplicate_names = sorted(display_names[key] for key in duplicate_keys)
     for row in results:
         row["duplicate_source_name"] = row["source"].casefold() in duplicate_keys
+        if not row["source"]:
+            # An unnamed inventory row cannot be an actionable agency target.
+            row["direct_fetch_target"] = False
         # A duplicate inventory identity is an activation blocker, not just a
         # summary warning: downstream diagnostics must not certify both rows.
         if row["duplicate_source_name"]:
