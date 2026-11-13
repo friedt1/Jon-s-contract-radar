@@ -88,6 +88,8 @@ def audit(sources):
                        if access_required else
                        "configured URL only; direct adapter not implemented" if adapter_missing else
                        "configured; live ingestion not independently verified" if direct else
+                       "invalid staged candidate URL; safe public HTTPS URL required; "
+                       "provider authorization also required" if invalid_staged and staged_access_required else
                        "official supplier gateway staged; registration/authorization required, "
                        "individual-notice ingestion not connected" if staged_access_required else
                        "official publisher entrypoint only; current bid index not identified or monitored" if publisher_only else
