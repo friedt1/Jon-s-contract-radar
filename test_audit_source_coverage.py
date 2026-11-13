@@ -91,6 +91,8 @@ class CoverageAuditTests(unittest.TestCase):
         for row in report["sources"]:
             self.assertIn("invalid_staged_candidate_url", row["activation_blockers"])
             self.assertIn("provider_authorization_required", row["activation_blockers"])
+            self.assertIn("invalid staged candidate URL", row["status"])
+            self.assertIn("provider authorization also required", row["status"])
             self.assertFalse(row["direct_fetch_target"])
         self.assertTrue(any("staged provider authorization required: 2" in b
                             for b in strict_failures(report, expected_targets=2)))
