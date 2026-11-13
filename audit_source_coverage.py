@@ -144,7 +144,10 @@ def audit(sources):
     for url, names in sorted(by_entrypoint.items()):
         unique_agencies = {}
         for name in names:
-            unique_agencies.setdefault(name.casefold(), name)
+            # Missing agency identity cannot establish a second publisher.
+            # Keep the URL in entrypoint diagnostics, but not in shared-target counts.
+            if name:
+                unique_agencies.setdefault(name.casefold(), name)
         if len(unique_agencies) > 1:
             shared[url] = sorted(unique_agencies.values(), key=str.casefold)
     for row in results:
