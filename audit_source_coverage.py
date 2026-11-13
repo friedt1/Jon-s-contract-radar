@@ -114,12 +114,14 @@ def audit(sources):
         if not row["source"]:
             # An unnamed inventory row cannot be an actionable agency target.
             row["direct_fetch_target"] = False
+            row["status"] += "; missing agency identity; excluded from direct fetch coverage"
         # A duplicate inventory identity is an activation blocker, not just a
         # summary warning: downstream diagnostics must not certify both rows.
         if row["duplicate_source_name"]:
             row["activation_blockers"].append("duplicate_source_name")
             # Do not count an ambiguous identity as a usable direct fetch target.
             row["direct_fetch_target"] = False
+            row["status"] += "; duplicate agency identity; excluded from direct fetch coverage"
 
     # A single official procurement gateway may represent multiple named
     # agencies. Report those overlaps without treating a shared landing page
