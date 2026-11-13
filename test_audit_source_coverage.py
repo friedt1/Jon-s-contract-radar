@@ -229,6 +229,24 @@ class CoverageAuditTests(unittest.TestCase):
         self.assertTrue(any("inventory names invalid" in reason
                             for reason in strict_failures(report, expected_targets=3)))
 
+    def test_duplicate_direct_sources_are_not_counted_as_fetch_targets(self):
+        rows = [
+            {"name": "Tioga County NY", "mode": "direct_page",
+             "url": "https://county.example/bids", "verified_url": True},
+            {"name": " tIoGa  COUNTY NY ", "mode": "direct_page",
+             "url": "https://duplicate.example/bids", "verified_url": True},
+            {"name": "Owego", "mode": "direct_page",
+             "url": "https://owego.example/bids", "verified_url": True},
+        ]
+        report = audit(rows)
+        self.assertEqual(report["direct_configured"], 3)
+        self.assertEqual(report["direct_fetch_targets"], 1)
+        self.assertEqual(report["distinct_direct_fetch_entrypoints"], 1)
+        self.assertEqual([row["direct_fetch_target"] for row in report["sources"]],
+                         [False, False, True])
+        for row in report["sources"][:2]:
+            self.assertIn("duplicate_source_name", row["activation_blockers"])
+
     def test_strict_gate_is_structural_not_live_extraction_proof(self):
         rows = [
             {"name": f"Agency {n}", "mode": "direct_page",
