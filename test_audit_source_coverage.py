@@ -4,6 +4,23 @@ from audit_source_coverage import audit, strict_failures
 
 
 class CoverageAuditTests(unittest.TestCase):
+    def test_configured_publisher_only_page_is_not_a_bid_fetch_target(self):
+        report = audit([
+            {"name": "Tioga agency landing", "mode": "direct_page",
+             "url": "https://county.example/public-works", "verified_url": True,
+             "official_page_role": "publisher_entrypoint_only"},
+            {"name": "Owego bid index", "mode": "direct_page",
+             "url": "https://village.example/bids", "verified_url": True},
+        ])
+        self.assertEqual(report["direct_configured"], 2)
+        self.assertEqual(report["direct_fetch_targets"], 1)
+        self.assertEqual(report["direct_publisher_entrypoints_only"], 1)
+        self.assertIn("procurement_index_not_identified", report["sources"][0]["activation_blockers"])
+        self.assertIn("procurement index not identified", report["sources"][0]["status"])
+        self.assertTrue(any("configured publisher-only pages" in item
+                            for item in strict_failures(report, expected_targets=2)))
+
+
     def test_identity_blockers_are_visible_in_human_status(self):
         rows = [
             {"name": "Tioga County NY", "mode": "direct_page",

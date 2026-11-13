@@ -40,6 +40,7 @@ def audit(sources):
         # An official agency homepage is not an identified procurement index.
         # Keep it in staged coverage, but expose the separate discovery gate.
         publisher_only = staged and source.get("official_page_role") == "publisher_entrypoint_only"
+        direct_publisher_only = direct and source.get("official_page_role") == "publisher_entrypoint_only"
         # Authorization is independent of URL hygiene. A malformed staged
         # provider URL must report BOTH blockers rather than hiding access needs.
         staged_access_required = mode == "discovery_pending" and (
@@ -59,7 +60,7 @@ def audit(sources):
             blockers.append("provider_authorization_required")
         if adapter_missing:
             blockers.append("adapter_not_implemented")
-        if publisher_only:
+        if publisher_only or direct_publisher_only:
             blockers.append("procurement_index_not_identified")
         if staged and not publisher_only:
             blockers.append("individual_notice_extraction_unverified")
@@ -72,12 +73,13 @@ def audit(sources):
             "source": name,
             "mode": mode,
             "direct_configured": direct,
-            "direct_fetch_target": direct_fetch_target(source) and not access_required,
+            "direct_fetch_target": direct_fetch_target(source) and not access_required and not direct_publisher_only,
             "adapter_not_implemented": adapter_missing,
             "provider_access_required": access_required,
             "staged_provider_access_required": staged_access_required,
             "official_url_staged": staged,
             "staged_publisher_entrypoint_only": publisher_only,
+            "direct_publisher_entrypoint_only": direct_publisher_only,
             "invalid_direct_configuration": invalid_direct,
             "invalid_staged_candidate_url": invalid_staged,
             "candidate_official_url": source.get("candidate_official_url") if staged else None,
@@ -86,6 +88,7 @@ def audit(sources):
             "target_url": url if direct else None,
             "status": ("configured URL only; provider-approved individual-listing ingestion not connected"
                        if access_required else
+                       "configured publisher entrypoint only; procurement index not identified or monitored" if direct_publisher_only else
                        "configured URL only; direct adapter not implemented" if adapter_missing else
                        "configured; live ingestion not independently verified" if direct else
                        "invalid staged candidate URL; safe public HTTPS URL required; "
@@ -171,6 +174,7 @@ def audit(sources):
         "configured_unimplemented_adapters": sum(x["adapter_not_implemented"] for x in results),
         "not_directly_monitored": sum(not x["direct_configured"] for x in results),
         "official_urls_staged": sum(x["official_url_staged"] for x in results),
+        "direct_publisher_entrypoints_only": sum(x["direct_publisher_entrypoint_only"] for x in results),
         "staged_publisher_entrypoints_only": sum(
             x["staged_publisher_entrypoint_only"] for x in results),
         "invalid_direct_configurations": sum(x["invalid_direct_configuration"] for x in results),
@@ -215,6 +219,7 @@ def strict_failures(report, expected_targets=EXPECTED_NAMED_TARGETS):
         ("configured_provider_access_required", "provider access required"),
         ("staged_provider_access_required", "staged provider authorization required"),
         ("staged_publisher_entrypoints_only", "staged publisher-only pages without bid index"),
+        ("direct_publisher_entrypoints_only", "configured publisher-only pages without bid index"),
         ("configured_unimplemented_adapters", "adapter not implemented"),
         ("invalid_direct_configurations", "invalid direct configurations"),
         ("invalid_staged_candidate_urls", "invalid staged candidate URLs"),
