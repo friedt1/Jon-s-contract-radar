@@ -76,6 +76,25 @@ class CoverageAuditTests(unittest.TestCase):
             self.assertIn("provider_authorization_required", row["activation_blockers"])
             self.assertIn("authorization required", row["status"])
 
+    def test_invalid_staged_provider_url_keeps_both_independent_blockers(self):
+        rows = [
+            {"name": "PennBid platform", "mode": "discovery_pending",
+             "candidate_official_url": "http://pennbid.example/bids"},
+            {"name": "Delegated portal", "mode": "discovery_pending",
+             "candidate_official_url": "https://127.0.0.1/bids",
+             "delegated_provider": "registration required"},
+        ]
+        report = audit(rows)
+        self.assertEqual(report["invalid_staged_candidate_urls"], 2)
+        self.assertEqual(report["staged_provider_access_required"], 2)
+        self.assertEqual(report["direct_fetch_targets"], 0)
+        for row in report["sources"]:
+            self.assertIn("invalid_staged_candidate_url", row["activation_blockers"])
+            self.assertIn("provider_authorization_required", row["activation_blockers"])
+            self.assertFalse(row["direct_fetch_target"])
+        self.assertTrue(any("staged provider authorization required: 2" in b
+                            for b in strict_failures(report, expected_targets=2)))
+
     def test_staged_urls_are_not_active_connections(self):
         result = audit([
             {"name": "Staged", "mode": "discovery_pending", "url": "",

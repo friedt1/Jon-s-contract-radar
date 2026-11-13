@@ -40,7 +40,9 @@ def audit(sources):
         # An official agency homepage is not an identified procurement index.
         # Keep it in staged coverage, but expose the separate discovery gate.
         publisher_only = staged and source.get("official_page_role") == "publisher_entrypoint_only"
-        staged_access_required = staged and (
+        # Authorization is independent of URL hygiene. A malformed staged
+        # provider URL must report BOTH blockers rather than hiding access needs.
+        staged_access_required = mode == "discovery_pending" and (
             name.casefold() in {' '.join(p.split()).casefold() for p in UNCONNECTED_PLATFORMS}
             or source.get("provider_access_required") is True
             or bool(source.get("delegated_provider")))
