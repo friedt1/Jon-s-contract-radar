@@ -1,0 +1,37 @@
+name: Regional Federal Contract Radar
+on:
+  schedule:
+    - cron: '43 10 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: regional-sam-main
+  cancel-in-progress: false
+jobs:
+  federal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test regional integration
+        run: python -m unittest test_regional_rank test_regional_sam -v
+      - name: Fetch federal notices when configured
+        env:
+          SAM_API_KEY: ${{ secrets.SAM_API_KEY }}
+        run: python regional_sam.py
+      - name: Publish separate regional feed if updated
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/regional_opportunities.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Update federal regional contract candidates'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
