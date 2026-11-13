@@ -4,6 +4,25 @@ from audit_source_coverage import audit, strict_failures
 
 
 class CoverageAuditTests(unittest.TestCase):
+    def test_identity_blockers_are_visible_in_human_status(self):
+        rows = [
+            {"name": "Tioga County NY", "mode": "direct_page",
+             "url": "https://tioga.example/bids", "verified_url": True},
+            {"name": " tIoGa  COUNTY NY ", "mode": "direct_page",
+             "url": "https://tioga.example/bids2", "verified_url": True},
+            {"name": " ", "mode": "direct_page",
+             "url": "https://unnamed.example/bids", "verified_url": True},
+            {"name": "Owego", "mode": "direct_page",
+             "url": "https://owego.example/bids", "verified_url": True},
+        ]
+        report = audit(rows)
+        self.assertEqual(report["direct_fetch_targets"], 1)
+        for row in report["sources"][:2]:
+            self.assertFalse(row["direct_fetch_target"])
+            self.assertIn("duplicate agency identity", row["status"])
+        self.assertIn("missing agency identity", report["sources"][2]["status"])
+        self.assertNotIn("excluded from direct fetch", report["sources"][3]["status"])
+
     def test_unnamed_direct_row_is_not_a_fetch_target(self):
         report = audit([{"name": "  ", "mode": "direct_page",
                          "url": "https://county.example/bids", "verified_url": True}])
