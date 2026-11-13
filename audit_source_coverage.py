@@ -115,6 +115,8 @@ def audit(sources):
         # summary warning: downstream diagnostics must not certify both rows.
         if row["duplicate_source_name"]:
             row["activation_blockers"].append("duplicate_source_name")
+            # Do not count an ambiguous identity as a usable direct fetch target.
+            row["direct_fetch_target"] = False
 
     # A single official procurement gateway may represent multiple named
     # agencies. Report those overlaps without treating a shared landing page
