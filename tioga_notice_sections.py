@@ -56,7 +56,7 @@ class _Sections(HTMLParser):
             elif self.in_bids and re.match(r'^(?:bid|rfp|rfq)\s*:', title, re.I):
                 self.current = {'title': title, 'text': [], 'links': []}
                 self.sections.append(self.current)
-            elif self.current is not None and tag in ('h2', 'h3'):
+            elif self.current is not None and tag in ('h2', 'h3', 'h4'):
                 self.current = None
             self.heading = None
         if tag == 'a' and self.link is not None:
