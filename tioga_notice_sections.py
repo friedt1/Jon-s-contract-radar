@@ -47,7 +47,13 @@ class _Sections(HTMLParser):
             return
         if tag == self.heading:
             title = ' '.join(' '.join(self.heading_parts).split())
-            if re.match(r'^(?:bid|rfp|rfq)\s*:', title, re.I):
+            if tag == 'h2' and re.search(r'\bbids?\s*(?:&|and)\s*rfps?\b', title, re.I):
+                self.in_bids = True
+                self.current = None
+            elif tag == 'h2':
+                self.in_bids = False
+                self.current = None
+            elif self.in_bids and re.match(r'^(?:bid|rfp|rfq)\s*:', title, re.I):
                 self.current = {'title': title, 'text': [], 'links': []}
                 self.sections.append(self.current)
             elif self.current is not None and tag in ('h2', 'h3'):
