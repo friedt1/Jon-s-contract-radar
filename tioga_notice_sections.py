@@ -82,14 +82,17 @@ def notice_sections(html, page_url):
         links = []
         for href, label in section['links'][:30]:
             # Empty and fragment-only hrefs point back to the index, not a bid document.
-            if not href or not href.strip() or href.strip().startswith('#'):
+            if not href or not href.strip() or href.strip().startswith(('#', '?')):
                 continue
             # Historical result/award attachments must never be offered as bid documents.
             if re.search(r'\b(?:results?|awards?|tabulations?)\b', label, re.I) or re.search(r'\b(?:results?|awards?|tabulations?)\b', urlsplit(href).path, re.I):
                 continue
             url = urljoin(page_url, href)
             parts = urlsplit(url)
-            if parts.scheme == 'https' and parts.hostname == host and not parts.username and not parts.password:
+            if (parts.scheme == 'https' and parts.hostname == host
+                    and not parts.username and not parts.password
+                    and parts.path != urlsplit(page_url).path
+                    and not parts.fragment):
                 links.append({'url': url, 'label': label})
         output.append({'title': title, 'text': ' '.join(' '.join(section['text']).split()), 'links': links})
     return output
