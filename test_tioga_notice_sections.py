@@ -64,7 +64,7 @@ class TiogaSectionsTest(unittest.TestCase):
         self.assertTrue(all('results' not in link['url'] for section in sections for link in section['links']))
 
     def test_empty_and_fragment_links_are_not_documents(self):
-        html = ('<h3>Bid: Brush clearing</h3>'
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
                 '<a>Missing href</a><a href="">Empty href</a>'
                 '<a href="#details">Page anchor</a>'
                 '<a href="/documents/brush.pdf">Actual document</a>')
@@ -75,8 +75,29 @@ class TiogaSectionsTest(unittest.TestCase):
              'label': 'Actual document'}
         ])
 
+    def test_notice_headings_outside_bid_section_are_ignored(self):
+        html = """
+        <h2>News</h2>
+        <h3>Bid: Tree Removal 2026</h3>
+        <p>Not an official procurement notice.</p>
+        <h2>Bids &amp; RFPs</h2>
+        <h3>Bid: Brush clearing</h3>
+        <p>Current section text.</p>
+        <h2>Archived News</h2>
+        <h3>Bid: Tree Removal 2025</h3>
+        <a href="/archive/tree.pdf">Historical document</a>
+        """
+        sections = notice_sections(html, URL)
+        self.assertEqual([s['title'] for s in sections], ['Bid: Brush clearing'])
+        self.assertNotIn('Tree Removal', sections[0]['text'])
+        self.assertEqual(sections[0]['links'], [])
+
+    def test_missing_bids_heading_fails_closed(self):
+        html = '<h3>Bid: Tree removal</h3><p>Due tomorrow</p>'
+        self.assertEqual(notice_sections(html, URL), [])
+
     def test_no_fabricated_or_cross_host_links(self):
-        html = '<h3>Bid: Brush clearing</h3><a href="https://other.example/bid.pdf">External</a>'
+        html = '<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3><a href="https://other.example/bid.pdf">External</a>'
         sections = notice_sections(html, URL)
         self.assertEqual(len(sections), 1)
         self.assertEqual(sections[0]['links'], [])
