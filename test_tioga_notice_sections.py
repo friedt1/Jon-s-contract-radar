@@ -63,6 +63,18 @@ class TiogaSectionsTest(unittest.TestCase):
         self.assertNotIn('Tree Removal', sections[1]['text'])
         self.assertTrue(all('results' not in link['url'] for section in sections for link in section['links']))
 
+    def test_empty_and_fragment_links_are_not_documents(self):
+        html = ('<h3>Bid: Brush clearing</h3>'
+                '<a>Missing href</a><a href="">Empty href</a>'
+                '<a href="#details">Page anchor</a>'
+                '<a href="/documents/brush.pdf">Actual document</a>')
+        sections = notice_sections(html, URL)
+        self.assertEqual(len(sections), 1)
+        self.assertEqual(sections[0]['links'], [
+            {'url': 'https://tiogacountyny.com/documents/brush.pdf',
+             'label': 'Actual document'}
+        ])
+
     def test_no_fabricated_or_cross_host_links(self):
         html = '<h3>Bid: Brush clearing</h3><a href="https://other.example/bid.pdf">External</a>'
         sections = notice_sections(html, URL)
