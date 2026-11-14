@@ -112,8 +112,12 @@ class ScannerClosureLabelTests(unittest.TestCase):
                 self.assertFalse(scan.closed(text))
                 self.assertTrue(scan.eligible(text, today=self.TODAY))
                 found = {}
-                scan.add_lead(found, "Synthetic County", text,
-                              "https://example.gov/bids/tree-notice")
+                # Freeze scanner time to the historical fixture date. Otherwise
+                # this formerly-open 2026-11-13 bid expires as wall time moves.
+                with patch.object(scan, "NOW", dt.datetime(2026, 10, 29, 12, 0,
+                                                          tzinfo=dt.timezone.utc)):
+                    scan.add_lead(found, "Synthetic County", text,
+                                  "https://example.gov/bids/tree-notice")
                 self.assertEqual(len(found), 1)
                 self.assertEqual(next(iter(found.values()))["status"], "unverified")
 
