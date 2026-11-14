@@ -28,6 +28,9 @@ class TiogaSectionsTest(unittest.TestCase):
         self.assertEqual(len(sections[0]['links']), 1)
         self.assertEqual(sections[0]['links'][0]['url'], 'https://tiogacountyny.com/media/demolition.pdf')
         self.assertIn('December 1', sections[1]['text'])
+        self.assertNotIn('Tree Removal', sections[1]['text'])
+        self.assertNotIn('Other department information', sections[1]['text'])
+        self.assertNotIn('Bid: Public Safety', sections[0]['text'])
         self.assertNotIn('November 13', sections[1]['text'])
         self.assertEqual(len(sections[1]['links']), 1)
 
