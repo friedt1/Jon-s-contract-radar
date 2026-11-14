@@ -16,6 +16,8 @@ class CoverageAuditTests(unittest.TestCase):
         self.assertEqual(report["direct_fetch_targets"], 1)
         self.assertEqual(report["direct_publisher_entrypoints_only"], 1)
         self.assertIn("procurement_index_not_identified", report["sources"][0]["activation_blockers"])
+        self.assertNotIn("live_ingestion_unverified", report["sources"][0]["activation_blockers"])
+        self.assertIn("live_ingestion_unverified", report["sources"][1]["activation_blockers"])
         self.assertIn("procurement index not identified", report["sources"][0]["status"])
         self.assertTrue(any("configured publisher-only pages" in item
                             for item in strict_failures(report, expected_targets=2)))
