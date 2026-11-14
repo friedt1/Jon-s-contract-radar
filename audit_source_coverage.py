@@ -20,15 +20,19 @@ from source_config import (DIRECT_MODES, IMPLEMENTED_DIRECT_MODES, UNCONNECTED_P
 
 def audit(sources):
     results = []
+    gated_platforms = {" ".join(p.split()).casefold() for p in UNCONNECTED_PLATFORMS}
     for source in sources:
         raw_name = source.get("name", "")
         # Agency labels are inventory identities, not display-only strings.
         # Whitespace/case variants must not silently count as distinct targets.
         name = " ".join(raw_name.split()) if isinstance(raw_name, str) else ""
+        provider_name = source.get("provider_name", "")
+        provider_identity = " ".join(provider_name.split()).casefold() if isinstance(provider_name, str) else ""
+        provider_gate = name.casefold() in gated_platforms or provider_identity in gated_platforms
         mode = source.get("mode", "missing")
         url = source.get("url", "")
         direct = direct_configured(source)
-        access_required = direct and (name.casefold() in {' '.join(p.split()).casefold() for p in UNCONNECTED_PLATFORMS}
+        access_required = direct and (provider_gate
                                       or source.get("provider_access_required") is True
                                       or bool(source.get("delegated_provider")))
         adapter_missing = direct and mode not in IMPLEMENTED_DIRECT_MODES
@@ -44,7 +48,7 @@ def audit(sources):
         # Authorization is independent of URL hygiene. A malformed staged
         # provider URL must report BOTH blockers rather than hiding access needs.
         staged_access_required = mode == "discovery_pending" and (
-            name.casefold() in {' '.join(p.split()).casefold() for p in UNCONNECTED_PLATFORMS}
+            provider_gate
             or source.get("provider_access_required") is True
             or bool(source.get("delegated_provider")))
         # Machine-readable activation gates: a configured URL is not proof
