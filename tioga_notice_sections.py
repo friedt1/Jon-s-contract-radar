@@ -17,6 +17,7 @@ class _Sections(HTMLParser):
         self.heading_parts = []
         self.link = None
         self.skip = 0
+        self.in_bids = False
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
