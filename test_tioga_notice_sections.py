@@ -75,6 +75,20 @@ class TiogaSectionsTest(unittest.TestCase):
              'label': 'Actual document'}
         ])
 
+    def test_same_page_and_query_only_links_are_not_documents(self):
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                '<a href="?download=1">Query-only index link</a>'
+                '<a href="/departments/public-works/">Index link</a>'
+                '<a href="/departments/public-works/?file=brush.pdf">Index query</a>'
+                '<a href="/docs/brush.pdf#page=2">Fragment link</a>'
+                '<a href="/docs/brush.pdf">Actual specification</a>')
+        sections = notice_sections(html, URL)
+        self.assertEqual(len(sections), 1)
+        self.assertEqual(sections[0]['links'], [
+            {'url': 'https://tiogacountyny.com/docs/brush.pdf',
+             'label': 'Actual specification'}
+        ])
+
     def test_notice_headings_outside_bid_section_are_ignored(self):
         html = """
         <h2>News</h2>
