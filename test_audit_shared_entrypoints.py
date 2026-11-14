@@ -43,6 +43,28 @@ class SharedEntrypointGateTests(unittest.TestCase):
         self.assertTrue(any("unnamed rows" in failure
                             for failure in strict_failures(report, expected_targets=2)))
 
+    def test_renamed_provider_identity_still_requires_authorization(self):
+        rows = [
+            {"name": "County purchasing alias", "provider_name": "  PennBid   platform ",
+             "mode": "direct_page", "verified_url": True,
+             "url": "https://supplier.example/public"},
+            {"name": "County procurement", "provider_name": "PennBid platform",
+             "mode": "discovery_pending",
+             "candidate_official_url": "https://supplier.example/bids"},
+            {"name": "County official public bids", "mode": "direct_page",
+             "verified_url": True, "url": "https://county.example/bids"},
+        ]
+        report = audit(rows)
+        self.assertEqual(report["configured_provider_access_required"], 1)
+        self.assertEqual(report["staged_provider_access_required"], 1)
+        self.assertEqual(report["direct_fetch_targets"], 1)
+        self.assertIn("provider_authorization_required",
+                      report["sources"][0]["activation_blockers"])
+        self.assertIn("provider_authorization_required",
+                      report["sources"][1]["activation_blockers"])
+        self.assertNotIn("provider_authorization_required",
+                         report["sources"][2]["activation_blockers"])
+
     def test_distinct_notice_ids_do_not_count_as_shared_entrypoint(self):
         rows = [
             {"name": "County A", "mode": "discovery_pending",
