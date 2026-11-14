@@ -1,0 +1,82 @@
+"""Conservative, offline Tioga DPW bid-section isolation.
+
+This parser is deliberately NOT a live-source adapter. It provides bounded
+notice blocks for a future adapter, without inferring that any bid is open.
+"""
+from html.parser import HTMLParser
+from urllib.parse import urljoin, urlsplit
+import re
+
+
+class _Sections(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.sections = []
+        self.current = None
+        self.heading = None
+        self.heading_parts = []
+        self.link = None
+        self.skip = 0
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag in ('script', 'style', 'noscript'):
+            self.skip += 1
+        if self.skip:
+            return
+        if tag in ('h2', 'h3', 'h4'):
+            self.heading = tag
+            self.heading_parts = []
+        if tag == 'a' and self.current is not None:
+            self.link = [attrs.get('href', ''), []]
+
+    def handle_data(self, data):
+        if self.skip:
+            return
+        if self.heading:
+            self.heading_parts.append(data)
+        elif self.link is not None:
+            self.link[1].append(data)
+        if self.current is not None:
+            self.current['text'].append(data)
+
+    def handle_endtag(self, tag):
+        if tag in ('script', 'style', 'noscript'):
+            self.skip = max(0, self.skip - 1)
+            return
+        if tag == self.heading:
+            title = ' '.join(' '.join(self.heading_parts).split())
+            if re.match(r'^(?:bid|rfp|rfq)\s*:', title, re.I):
+                self.current = {'title': title, 'text': [], 'links': []}
+                self.sections.append(self.current)
+            elif self.current is not None and tag in ('h2', 'h3'):
+                self.current = None
+            self.heading = None
+        if tag == 'a' and self.link is not None:
+            if self.current is not None:
+                self.current['links'].append((self.link[0], ' '.join(' '.join(self.link[1]).split())))
+            self.link = None
+
+
+def notice_sections(html, page_url):
+    """Return independent notice blocks with same-host HTTPS attachment URLs.
+
+    Never synthesize notice URLs; a section without a real link is not a
+    publishable solicitation. Exclude results/awards before adapter handling.
+    """
+    parser = _Sections()
+    parser.feed(html)
+    host = urlsplit(page_url).hostname
+    output = []
+    for section in parser.sections[:100]:
+        title = section['title']
+        if re.search(r'\b(?:results?|awards?|tabulations?)\b', title, re.I):
+            continue
+        links = []
+        for href, label in section['links'][:30]:
+            url = urljoin(page_url, href)
+            parts = urlsplit(url)
+            if parts.scheme == 'https' and parts.hostname == host and not parts.username and not parts.password:
+                links.append({'url': url, 'label': label})
+        output.append({'title': title, 'text': ' '.join(' '.join(section['text']).split()), 'links': links})
+    return output
