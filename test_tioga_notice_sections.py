@@ -92,6 +92,20 @@ class TiogaSectionsTest(unittest.TestCase):
         self.assertNotIn('Tree Removal', sections[0]['text'])
         self.assertEqual(sections[0]['links'], [])
 
+    def test_h4_non_bid_heading_ends_previous_notice(self):
+        html = """
+        <h2>Bids &amp; RFPs</h2>
+        <h3>Bid: Overhead Door Construction</h3>
+        <p>Door construction only.</p>
+        <h4>Historical Tree Removal Results</h4>
+        <p>Tree removal bid results from a previous year.</p>
+        <a href="/archive/trees.pdf">Historical trees</a>
+        """
+        sections = notice_sections(html, URL)
+        self.assertEqual(len(sections), 1)
+        self.assertEqual(sections[0]['text'], 'Door construction only.')
+        self.assertEqual(sections[0]['links'], [])
+
     def test_missing_bids_heading_fails_closed(self):
         html = '<h3>Bid: Tree removal</h3><p>Due tomorrow</p>'
         self.assertEqual(notice_sections(html, URL), [])
