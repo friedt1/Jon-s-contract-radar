@@ -70,7 +70,7 @@ def audit(sources):
             blockers.append("individual_notice_extraction_unverified")
         if not direct and not staged and not invalid_direct and not invalid_staged:
             blockers.append("official_source_discovery_required")
-        if direct and not access_required and not adapter_missing:
+        if direct and not access_required and not adapter_missing and not direct_publisher_only:
             blockers.append("live_ingestion_unverified")
         results.append({
             "activation_blockers": blockers,
