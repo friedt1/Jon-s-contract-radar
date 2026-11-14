@@ -74,6 +74,9 @@ def notice_sections(html, page_url):
             continue
         links = []
         for href, label in section['links'][:30]:
+            # Empty and fragment-only hrefs point back to the index, not a bid document.
+            if not href or not href.strip() or href.strip().startswith('#'):
+                continue
             url = urljoin(page_url, href)
             parts = urlsplit(url)
             if parts.scheme == 'https' and parts.hostname == host and not parts.username and not parts.password:
