@@ -37,7 +37,7 @@ class _Sections(HTMLParser):
             self.heading_parts.append(data)
         elif self.link is not None:
             self.link[1].append(data)
-        if self.current is not None:
+        if self.current is not None and self.heading is None:
             self.current['text'].append(data)
 
     def handle_endtag(self, tag):
