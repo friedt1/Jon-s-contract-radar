@@ -106,6 +106,23 @@ class TiogaSectionsTest(unittest.TestCase):
         self.assertEqual(sections[0]['text'], 'Door construction only.')
         self.assertEqual(sections[0]['links'], [])
 
+    def test_results_attachment_inside_current_notice_is_not_a_live_document(self):
+        html = """
+        <h2>Bids &amp; RFPs</h2>
+        <h3>Bid: Brush clearing</h3>
+        <p>Current bid specifications.</p>
+        <a href="/docs/brush-specs.pdf">Specifications</a>
+        <a href="/docs/tree-results.pdf">Historical tree results</a>
+        <a href="/docs/award.pdf">Award notice</a>
+        <a href="/docs/old.pdf">2025 Bid Tabulation</a>
+        """
+        sections = notice_sections(html, URL)
+        self.assertEqual(len(sections), 1)
+        self.assertEqual(sections[0]['links'], [
+            {'url': 'https://tiogacountyny.com/docs/brush-specs.pdf',
+             'label': 'Specifications'}
+        ])
+
     def test_missing_bids_heading_fails_closed(self):
         html = '<h3>Bid: Tree removal</h3><p>Due tomorrow</p>'
         self.assertEqual(notice_sections(html, URL), [])
