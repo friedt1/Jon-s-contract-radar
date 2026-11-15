@@ -91,8 +91,14 @@ def notice_sections(html, page_url):
                 continue
             url = urljoin(page_url, href)
             parts = urlsplit(url)
+            # urlsplit accepts malformed port text until .port is accessed.
+            # Reject it without aborting extraction of later valid attachments.
+            try:
+                allowed_port = parts.port in (None, 443)
+            except ValueError:
+                continue
             if (parts.scheme == 'https' and parts.hostname == host
-                    and parts.port in (None, 443)
+                    and allowed_port
                     and not parts.username and not parts.password
                     and parts.path != urlsplit(page_url).path
                     and not parts.fragment and url not in seen_urls):
