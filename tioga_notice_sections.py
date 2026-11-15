@@ -75,8 +75,7 @@ def notice_sections(html, page_url):
     Never synthesize notice URLs; a section without a real link is not a
     publishable solicitation. Exclude results/awards before adapter handling.
     """
-    parser = _Sections()
-    parser.feed(html)
+    # Validate the trusted index before parsing any untrusted page content.
     try:
         index = urlsplit(page_url)
         host = index.hostname
@@ -93,6 +92,8 @@ def notice_sections(html, page_url):
             or index.username is not None or index.password is not None
             or index.query or index.fragment):
         return []
+    parser = _Sections()
+    parser.feed(html)
     output = []
     for section in parser.sections[:1000]:
         title = section['title']
