@@ -75,11 +75,16 @@ def notice_sections(html, page_url):
     parser = _Sections()
     parser.feed(html)
     try:
-        host = urlsplit(page_url).hostname
+        index = urlsplit(page_url)
+        host = index.hostname
+        allowed_index_port = index.port in (None, 443)
     except ValueError:
         return []
-    # A non-HTTPS index is not an authenticated official source. Fail closed.
-    if not host or urlsplit(page_url).scheme != 'https':
+    # Only a canonical HTTPS index may authorize official attachments.
+    # Reject userinfo, alternate ports and query/fragment variants.
+    if (not host or index.scheme != 'https' or not allowed_index_port
+            or index.username is not None or index.password is not None
+            or index.query or index.fragment):
         return []
     output = []
     for section in parser.sections[:1000]:
