@@ -80,6 +80,7 @@ def notice_sections(html, page_url):
         if re.search(r'\b(?:results?|awards?|tabulations?)\b', title, re.I):
             continue
         links = []
+        seen_urls = set()
         for href, label in section['links'][:30]:
             # Empty and fragment-only hrefs point back to the index, not a bid document.
             if not href or not href.strip() or href.strip().startswith(('#', '?')):
@@ -92,7 +93,8 @@ def notice_sections(html, page_url):
             if (parts.scheme == 'https' and parts.hostname == host
                     and not parts.username and not parts.password
                     and parts.path != urlsplit(page_url).path
-                    and not parts.fragment):
+                    and not parts.fragment and url not in seen_urls):
+                seen_urls.add(url)
                 links.append({'url': url, 'label': label})
         output.append({'title': title, 'text': ' '.join(' '.join(section['text']).split()), 'links': links})
     return output
