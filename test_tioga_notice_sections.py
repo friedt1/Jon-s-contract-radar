@@ -279,5 +279,21 @@ class TiogaSectionsTest(unittest.TestCase):
                 self.assertEqual(notice_sections(html, index), [])
         self.assertEqual(len(notice_sections(html, URL)), 1)
 
+    def test_caller_controlled_https_host_cannot_authorize_documents(self):
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                '<a href="/docs/brush.pdf">Specifications</a>')
+        untrusted_indexes = (
+            'https://attacker.example/departments/public-works/',
+            'https://tiogacountyny.com.evil.example/departments/public-works/',
+            'https://www.tiogacountyny.com/departments/public-works/',
+            'https://tiogacountyny.com/other-page/',
+            'https://TIOGACOUNTYNY.COM/departments/public-works/',
+            'https://tiogacountyny.com:443/departments/public-works/',
+        )
+        for index in untrusted_indexes:
+            with self.subTest(index=index):
+                self.assertEqual(notice_sections(html, index), [])
+        self.assertEqual(len(notice_sections(html, URL)), 1)
+
 if __name__ == '__main__':
     unittest.main()
