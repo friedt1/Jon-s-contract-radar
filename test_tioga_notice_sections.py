@@ -227,5 +227,17 @@ class TiogaSectionsTest(unittest.TestCase):
              'label': 'Official host'}
         ])
 
+    def test_malformed_port_does_not_abort_other_attachments(self):
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                '<a href="https://tiogacountyny.com:bad/docs/brush.pdf">Bad port</a>'
+                '<a href="https://tiogacountyny.com:99999/docs/brush.pdf">Out of range</a>'
+                '<a href="/docs/brush.pdf">Valid specification</a>')
+        sections = notice_sections(html, URL)
+        self.assertEqual(sections[0]['links'], [
+            {'url': 'https://tiogacountyny.com/docs/brush.pdf',
+             'label': 'Valid specification'}
+        ])
+
+
 if __name__ == '__main__':
     unittest.main()
