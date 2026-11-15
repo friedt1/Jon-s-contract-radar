@@ -218,6 +218,20 @@ class TiogaSectionsTest(unittest.TestCase):
              'label': 'Specifications'}
         ])
 
+    def test_more_than_two_thousand_historical_links_do_not_hide_spec(self):
+        # Historical archive entries cannot consume the candidate scan budget.
+        archive = ''.join(
+            '<a href="/archive/result-%d.pdf">Bid results</a>' % i
+            for i in range(2100)
+        )
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                + archive + '<a href="/docs/brush.pdf">Specifications</a>')
+        sections = notice_sections(html, URL)
+        self.assertEqual(sections[0]['links'], [
+            {'url': 'https://tiogacountyny.com/docs/brush.pdf',
+             'label': 'Specifications'}
+        ])
+
     def test_nonstandard_https_port_is_not_an_official_attachment(self):
         html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
                 '<a href="https://tiogacountyny.com:8443/docs/brush.pdf">Alternate port</a>'
