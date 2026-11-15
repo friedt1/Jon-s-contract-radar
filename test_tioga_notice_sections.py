@@ -1,5 +1,6 @@
 """Offline isolation regression: no adjacent notice can donate its scope."""
 import unittest
+from unittest.mock import patch
 from tioga_notice_sections import notice_sections
 
 URL = 'https://tiogacountyny.com/departments/public-works/'
@@ -294,6 +295,15 @@ class TiogaSectionsTest(unittest.TestCase):
             with self.subTest(index=index):
                 self.assertEqual(notice_sections(html, index), [])
         self.assertEqual(len(notice_sections(html, URL)), 1)
+
+    def test_untrusted_index_is_rejected_before_html_parser_runs(self):
+        # Untrusted caller URLs must not cause even an offline parse.
+        with patch('tioga_notice_sections._Sections', side_effect=AssertionError('parsed')) as parser:
+            self.assertEqual(notice_sections('<h2>Bids &amp; RFPs</h2>',
+                                             'https://attacker.example/bids'), [])
+            self.assertEqual(notice_sections('<h2>Bids &amp; RFPs</h2>',
+                                             'https://[broken/path'), [])
+            parser.assert_not_called()
 
 if __name__ == '__main__':
     unittest.main()
