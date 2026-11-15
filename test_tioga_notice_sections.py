@@ -163,6 +163,20 @@ class TiogaSectionsTest(unittest.TestCase):
         ])
         self.assertEqual(len(sections[1]['links']), 1)
 
+    def test_historical_links_do_not_exhaust_valid_attachment_budget(self):
+        # A large archive within a notice must not hide a later legitimate spec.
+        links = ''.join(
+            '<a href="/archive/result-%d.pdf">Bid results</a>' % i
+            for i in range(35)
+        )
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                + links + '<a href="/docs/brush.pdf">Specifications</a>')
+        sections = notice_sections(html, URL)
+        self.assertEqual(sections[0]['links'], [
+            {'url': 'https://tiogacountyny.com/docs/brush.pdf',
+             'label': 'Specifications'}
+        ])
+
     def test_missing_bids_heading_fails_closed(self):
         html = '<h3>Bid: Tree removal</h3><p>Due tomorrow</p>'
         self.assertEqual(notice_sections(html, URL), [])
