@@ -203,5 +203,19 @@ class TiogaSectionsTest(unittest.TestCase):
         self.assertEqual(sections[0]['links'], [])
 
 
+    def test_large_archive_does_not_hide_late_current_spec(self):
+        # More than the old 300-link scan cap precede a valid attachment.
+        archive = ''.join(
+            '<a href="/archive/result-%d.pdf">Bid results</a>' % i
+            for i in range(350)
+        )
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                + archive + '<a href="/docs/brush.pdf">Specifications</a>')
+        sections = notice_sections(html, URL)
+        self.assertEqual(sections[0]['links'], [
+            {'url': 'https://tiogacountyny.com/docs/brush.pdf',
+             'label': 'Specifications'}
+        ])
+
 if __name__ == '__main__':
     unittest.main()
