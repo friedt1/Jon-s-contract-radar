@@ -137,6 +137,20 @@ class TiogaSectionsTest(unittest.TestCase):
              'label': 'Specifications'}
         ])
 
+    def test_duplicate_attachment_links_are_not_repeated(self):
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                '<a href="/docs/brush.pdf">Specifications</a>'
+                '<a href="https://tiogacountyny.com/docs/brush.pdf">Download again</a>'
+                '<h3>Bid: Stump removal</h3>'
+                '<a href="/docs/brush.pdf">Separate notice attachment</a>')
+        sections = notice_sections(html, URL)
+        self.assertEqual(len(sections), 2)
+        self.assertEqual(sections[0]['links'], [
+            {'url': 'https://tiogacountyny.com/docs/brush.pdf',
+             'label': 'Specifications'}
+        ])
+        self.assertEqual(len(sections[1]['links']), 1)
+
     def test_missing_bids_heading_fails_closed(self):
         html = '<h3>Bid: Tree removal</h3><p>Due tomorrow</p>'
         self.assertEqual(notice_sections(html, URL), [])
