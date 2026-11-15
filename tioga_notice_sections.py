@@ -25,7 +25,7 @@ class _Sections(HTMLParser):
             self.skip += 1
         if self.skip:
             return
-        if tag in ('h2', 'h3', 'h4'):
+        if tag in ('h1', 'h2', 'h3', 'h4'):
             self.heading = tag
             self.heading_parts = []
         if tag == 'a' and self.current is not None:
@@ -51,7 +51,7 @@ class _Sections(HTMLParser):
             if tag == 'h2' and re.search(r'\bbids?\s*(?:&|and)\s*rfps?\b', title, re.I):
                 self.in_bids = True
                 self.current = None
-            elif tag == 'h2':
+            elif tag in ('h1', 'h2'):
                 self.in_bids = False
                 self.current = None
             elif self.in_bids and re.match(r'^(?:bid|rfp|rfq)\s*:', title, re.I):
