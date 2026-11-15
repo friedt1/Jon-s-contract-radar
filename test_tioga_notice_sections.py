@@ -250,6 +250,12 @@ class TiogaSectionsTest(unittest.TestCase):
              'label': 'Valid specification'}
         ])
 
+    def test_insecure_index_cannot_authorize_official_attachments(self):
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                '<a href="https://tiogacountyny.com/docs/brush.pdf">Specifications</a>')
+        self.assertEqual(notice_sections(html,
+                         'http://tiogacountyny.com/departments/public-works/'), [])
+
     def test_malformed_page_authority_fails_closed(self):
         self.assertEqual(notice_sections(
             '<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>',
