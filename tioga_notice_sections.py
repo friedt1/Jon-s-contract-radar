@@ -132,3 +132,31 @@ def notice_sections(html, page_url):
                     break
         output.append({'title': title, 'text': ' '.join(' '.join(section['text']).split()), 'links': links})
     return output
+
+
+def deadline_evidence_status(index_deadline, document_deadline):
+    """Compare independently verified ISO-8601 deadline strings, without guessing.
+
+    This is a diagnostic only: agreement does not prove that a bid is open.
+    A missing deadline or a disagreement requires manual verification before
+    any future adapter may publish a notice.
+    """
+    from datetime import datetime
+
+    def parse(value):
+        if not isinstance(value, str) or not value.strip():
+            return None
+        try:
+            parsed = datetime.fromisoformat(value)
+        except ValueError:
+            return None
+        # Offset-aware timestamps are required to avoid local-time ambiguity.
+        if parsed.tzinfo is None or parsed.utcoffset() is None:
+            return None
+        return parsed
+
+    index = parse(index_deadline)
+    document = parse(document_deadline)
+    if index is None or document is None:
+        return 'verification_required'
+    return 'consistent' if index == document else 'conflict'
