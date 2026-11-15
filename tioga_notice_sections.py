@@ -78,7 +78,8 @@ def notice_sections(html, page_url):
         host = urlsplit(page_url).hostname
     except ValueError:
         return []
-    if not host:
+    # A non-HTTPS index is not an authenticated official source. Fail closed.
+    if not host or urlsplit(page_url).scheme != 'https':
         return []
     output = []
     for section in parser.sections[:1000]:
