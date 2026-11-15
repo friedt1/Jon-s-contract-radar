@@ -92,7 +92,11 @@ def notice_sections(html, page_url):
             if not href or not href.strip() or href.strip().startswith(('#', '?')):
                 continue
             # Historical result/award attachments must never be offered as bid documents.
-            if re.search(r'\b(?:results?|awards?|tabulations?)\b', label, re.I) or re.search(r'\b(?:results?|awards?|tabulations?)\b', urlsplit(href).path, re.I):
+            try:
+                href_path = urlsplit(href).path
+            except ValueError:
+                continue
+            if re.search(r'\b(?:results?|awards?|tabulations?)\b', label, re.I) or re.search(r'\b(?:results?|awards?|tabulations?)\b', href_path, re.I):
                 continue
             # Invalid IPv6 authorities can fail during urljoin or hostname
             # parsing, not just when reading .port. Skip the malformed link.
