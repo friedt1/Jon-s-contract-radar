@@ -178,6 +178,22 @@ class TiogaSectionsTest(unittest.TestCase):
              'label': 'Specifications'}
         ])
 
+    def test_official_demolition_notice_h1_subheading_preserves_scope(self):
+        # The live Tioga DPW rebid uses an H1 NOTICE TO BIDDERS inside
+        # its H3 bid block. This is historical, never a live bid fixture.
+        html = """<h2>Bids &amp; RFPs</h2>
+        <h3>Bid: 67 Central Ave Demolition Project Rebid</h3>
+        <h1>NOTICE TO BIDDERS</h1>
+        <p>Demolition and site restoration; due November 13, 2026.</p>
+        <a href="/docs/demolition.pdf">Project manual</a>
+        <h3>Bid: 2026 Tree Removal Results</h3>
+        <a href="/docs/tree-results.pdf">Bid tabulation</a>"""
+        sections = notice_sections(html, URL)
+        self.assertEqual(len(sections), 1)
+        self.assertIn('Demolition and site restoration', sections[0]['text'])
+        self.assertNotIn('Tree Removal', sections[0]['text'])
+        self.assertEqual(len(sections[0]['links']), 1)
+
     def test_h1_heading_ends_procurement_section(self):
         html = """
         <h2>Bids &amp; RFPs</h2>
