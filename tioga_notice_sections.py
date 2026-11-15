@@ -101,7 +101,7 @@ def notice_sections(html, page_url):
             continue
         links = []
         seen_urls = set()
-        for href, label in section['links'][:2000]:
+        for href, label in section['links']:
             # Empty and fragment-only hrefs point back to the index, not a bid document.
             if not href or not href.strip() or href.strip().startswith(('#', '?')):
                 continue
