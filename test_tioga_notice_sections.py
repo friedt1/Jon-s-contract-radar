@@ -177,6 +177,21 @@ class TiogaSectionsTest(unittest.TestCase):
              'label': 'Specifications'}
         ])
 
+    def test_h1_heading_ends_procurement_section(self):
+        html = """
+        <h2>Bids &amp; RFPs</h2>
+        <h3>Bid: Brush clearing</h3>
+        <p>Brush specifications.</p>
+        <h1>County News</h1>
+        <h3>Bid: Tree Removal 2026</h3>
+        <p>Not an official procurement listing.</p>
+        <a href="/news/tree.pdf">Unrelated attachment</a>
+        """
+        sections = notice_sections(html, URL)
+        self.assertEqual([s['title'] for s in sections], ['Bid: Brush clearing'])
+        self.assertEqual(sections[0]['text'], 'Brush specifications.')
+        self.assertEqual(sections[0]['links'], [])
+
     def test_missing_bids_heading_fails_closed(self):
         html = '<h3>Bid: Tree removal</h3><p>Due tomorrow</p>'
         self.assertEqual(notice_sections(html, URL), [])
