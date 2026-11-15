@@ -217,5 +217,15 @@ class TiogaSectionsTest(unittest.TestCase):
              'label': 'Specifications'}
         ])
 
+    def test_nonstandard_https_port_is_not_an_official_attachment(self):
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                '<a href="https://tiogacountyny.com:8443/docs/brush.pdf">Alternate port</a>'
+                '<a href="https://tiogacountyny.com/docs/brush.pdf">Official host</a>')
+        sections = notice_sections(html, URL)
+        self.assertEqual(sections[0]['links'], [
+            {'url': 'https://tiogacountyny.com/docs/brush.pdf',
+             'label': 'Official host'}
+        ])
+
 if __name__ == '__main__':
     unittest.main()
