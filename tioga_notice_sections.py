@@ -92,6 +92,7 @@ def notice_sections(html, page_url):
             url = urljoin(page_url, href)
             parts = urlsplit(url)
             if (parts.scheme == 'https' and parts.hostname == host
+                    and parts.port in (None, 443)
                     and not parts.username and not parts.password
                     and parts.path != urlsplit(page_url).path
                     and not parts.fragment and url not in seen_urls):
