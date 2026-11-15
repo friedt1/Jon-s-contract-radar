@@ -7,6 +7,9 @@ from html.parser import HTMLParser
 from urllib.parse import urljoin, urlsplit
 import re
 
+# Explicitly pinned official index; caller-supplied hosts are not trusted.
+OFFICIAL_INDEX_URL = 'https://tiogacountyny.com/departments/public-works/'
+
 
 class _Sections(HTMLParser):
     def __init__(self):
@@ -79,6 +82,10 @@ def notice_sections(html, page_url):
         host = index.hostname
         allowed_index_port = index.port in (None, 443)
     except ValueError:
+        return []
+    # Only the explicitly configured official index may authorize attachments.
+    # A caller-controlled HTTPS host is never evidence of county ownership.
+    if page_url != OFFICIAL_INDEX_URL:
         return []
     # Only a canonical HTTPS index may authorize official attachments.
     # Reject userinfo, alternate ports and query/fragment variants.
