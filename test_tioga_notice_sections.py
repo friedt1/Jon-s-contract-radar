@@ -239,5 +239,22 @@ class TiogaSectionsTest(unittest.TestCase):
         ])
 
 
+    def test_malformed_ipv6_authority_does_not_abort_notice(self):
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                '<a href="https://[broken/docs/brush.pdf">Broken IPv6 host</a>'
+                '<a href="https://[::1]/docs/brush.pdf">Different IPv6 host</a>'
+                '<a href="/docs/brush.pdf">Valid specification</a>')
+        sections = notice_sections(html, URL)
+        self.assertEqual(sections[0]['links'], [
+            {'url': 'https://tiogacountyny.com/docs/brush.pdf',
+             'label': 'Valid specification'}
+        ])
+
+    def test_malformed_page_authority_fails_closed(self):
+        self.assertEqual(notice_sections(
+            '<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>',
+            'https://[broken/path'), [])
+
+
 if __name__ == '__main__':
     unittest.main()
