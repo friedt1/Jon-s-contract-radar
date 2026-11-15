@@ -1,7 +1,7 @@
 """Offline isolation regression: no adjacent notice can donate its scope."""
 import unittest
 from unittest.mock import patch
-from tioga_notice_sections import notice_sections
+from tioga_notice_sections import notice_sections, deadline_evidence_status
 
 URL = 'https://tiogacountyny.com/departments/public-works/'
 HTML = """
@@ -304,6 +304,31 @@ class TiogaSectionsTest(unittest.TestCase):
             self.assertEqual(notice_sections('<h2>Bids &amp; RFPs</h2>',
                                              'https://[broken/path'), [])
             parser.assert_not_called()
+
+
+
+class DeadlineEvidenceTest(unittest.TestCase):
+    def test_owego_demolition_conflicting_official_deadlines(self):
+        # Historical Owego demolition rebid: page 2 PM vs document 11 AM.
+        # These are regression evidence, NEVER a live opportunity.
+        self.assertEqual(deadline_evidence_status(
+            '2026-11-13T14:00:00-05:00',
+            '2026-11-13T11:00:00-05:00'), 'conflict')
+
+    def test_same_instant_with_different_offsets_is_consistent(self):
+        self.assertEqual(deadline_evidence_status(
+            '2026-12-01T11:00:00-05:00',
+            '2026-12-01T16:00:00+00:00'), 'consistent')
+
+    def test_missing_invalid_or_timezone_naive_deadline_fails_closed(self):
+        for value in (None, '', 'not a date', '2026-11-13T14:00:00'):
+            with self.subTest(value=value):
+                self.assertEqual(deadline_evidence_status(
+                    value, '2026-11-13T11:00:00-05:00'),
+                    'verification_required')
+                self.assertEqual(deadline_evidence_status(
+                    '2026-11-13T11:00:00-05:00', value),
+                    'verification_required')
 
 if __name__ == '__main__':
     unittest.main()
