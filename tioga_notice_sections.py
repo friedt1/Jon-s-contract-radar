@@ -76,13 +76,13 @@ def notice_sections(html, page_url):
     parser.feed(html)
     host = urlsplit(page_url).hostname
     output = []
-    for section in parser.sections[:300]:
+    for section in parser.sections[:1000]:
         title = section['title']
         if re.search(r'\b(?:results?|awards?|tabulations?)\b', title, re.I):
             continue
         links = []
         seen_urls = set()
-        for href, label in section['links'][:300]:
+        for href, label in section['links'][:2000]:
             # Empty and fragment-only hrefs point back to the index, not a bid document.
             if not href or not href.strip() or href.strip().startswith(('#', '?')):
                 continue
