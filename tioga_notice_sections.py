@@ -74,7 +74,12 @@ def notice_sections(html, page_url):
     """
     parser = _Sections()
     parser.feed(html)
-    host = urlsplit(page_url).hostname
+    try:
+        host = urlsplit(page_url).hostname
+    except ValueError:
+        return []
+    if not host:
+        return []
     output = []
     for section in parser.sections[:1000]:
         title = section['title']
@@ -89,15 +94,16 @@ def notice_sections(html, page_url):
             # Historical result/award attachments must never be offered as bid documents.
             if re.search(r'\b(?:results?|awards?|tabulations?)\b', label, re.I) or re.search(r'\b(?:results?|awards?|tabulations?)\b', urlsplit(href).path, re.I):
                 continue
-            url = urljoin(page_url, href)
-            parts = urlsplit(url)
-            # urlsplit accepts malformed port text until .port is accessed.
-            # Reject it without aborting extraction of later valid attachments.
+            # Invalid IPv6 authorities can fail during urljoin or hostname
+            # parsing, not just when reading .port. Skip the malformed link.
             try:
+                url = urljoin(page_url, href)
+                parts = urlsplit(url)
                 allowed_port = parts.port in (None, 443)
+                attachment_host = parts.hostname
             except ValueError:
                 continue
-            if (parts.scheme == 'https' and parts.hostname == host
+            if (parts.scheme == 'https' and attachment_host == host
                     and allowed_port
                     and not parts.username and not parts.password
                     and parts.path != urlsplit(page_url).path
