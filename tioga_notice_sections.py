@@ -54,6 +54,11 @@ class _Sections(HTMLParser):
             if tag == 'h2' and re.search(r'\bbids?\s*(?:&|and)\s*rfps?\b', title, re.I):
                 self.in_bids = True
                 self.current = None
+            elif (tag == 'h1' and self.in_bids and self.current is not None
+                  and re.fullmatch(r'NOTICE TO BIDDERS', title, re.I)):
+                # The official demolition rebid embeds this heading inside
+                # its H3 notice. Keep the notice, not a new bid section.
+                pass
             elif tag in ('h1', 'h2'):
                 self.in_bids = False
                 self.current = None
