@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-14T06:00:36.056548+00:00",
+  "updated": "2026-11-15T06:03:52.972518+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 84,
   "safe_staged_entrypoints": 84,
@@ -330,7 +330,7 @@
     {
       "name": "Village of Horseheads",
       "official_entrypoint": "https://www.villageofhorseheads.gov/Bids.aspx",
-      "state": "listing_access_challenge",
+      "state": "listing_fetch_error",
       "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
@@ -340,7 +340,8 @@
       "individual_sample_failures": [],
       "activation_gate": "Official CivicPlus bid-postings page confirmed; check robots, publisher terms, same-host bidID detail extraction, and stale 'Open' labels before activating.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false
+      "direct_monitoring_activated": false,
+      "error_type": "TimeoutError"
     },
     {
       "name": "Town of Big Flats",
@@ -427,8 +428,8 @@
       "individual_samples_attempted": 3,
       "individual_samples_confirmed": 3,
       "additional_sample_notice_urls_confirmed": [
-        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/440/90",
-        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/442/90"
+        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/438/90",
+        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/434/90"
       ],
       "individual_sample_failures": [],
       "activation_gate": "Official city purchasing Bids & RFPs index and same-host individual /Home/Components/RFP/RFP/{id}/90 notices confirmed. Granicus adapter, robots/terms permission, live extraction, deadlines and status checks required before direct activation; historical Open labels may remain stale.",
@@ -1303,8 +1304,8 @@
     {
       "name": "Corning Incorporated",
       "official_entrypoint": "https://www.corning.com/worldwide/en/sustainability/processes/supply-chain-social-responsibility/supplier-responsibility.html",
-      "state": "official_page_reachable_no_procurement_evidence",
-      "listing_retrieved": true,
+      "state": "listing_fetch_error",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -1313,7 +1314,8 @@
       "individual_sample_failures": [],
       "activation_gate": "Official Corning supplier pages describe approved supplier onboarding and purchasing controls; Corning's published enrollment guidance says unsolicited supplier applications and self-registration are not accepted and existing buyers initiate Ariba enrollment. Do not scrape authenticated Ariba or imply public solicitations. Obtain a supplier invitation or explicitly permitted per-notice source; verify local worksite, scope, deadline and status before activation.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false
+      "direct_monitoring_activated": false,
+      "error_type": "TimeoutError"
     },
     {
       "name": "Dandy Mini Marts",
