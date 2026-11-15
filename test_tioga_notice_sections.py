@@ -137,6 +137,18 @@ class TiogaSectionsTest(unittest.TestCase):
              'label': 'Specifications'}
         ])
 
+    def test_attachment_labels_cannot_inject_tree_scope_or_deadline(self):
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Door construction</h3>'
+                '<p>Due December 1, 2026. Door installation only.</p>'
+                '<a href="/docs/door.pdf">Specifications</a>'
+                '<a href="/docs/old.pdf">Tree removal results due tomorrow</a>')
+        sections = notice_sections(html, URL)
+        self.assertEqual(len(sections), 1)
+        self.assertEqual(sections[0]['text'],
+                         'Due December 1, 2026. Door installation only.')
+        self.assertEqual(len(sections[0]['links']), 1)
+        self.assertEqual(sections[0]['links'][0]['label'], 'Specifications')
+
     def test_duplicate_attachment_links_are_not_repeated(self):
         html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
                 '<a href="/docs/brush.pdf">Specifications</a>'
