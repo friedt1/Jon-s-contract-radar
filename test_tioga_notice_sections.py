@@ -262,5 +262,22 @@ class TiogaSectionsTest(unittest.TestCase):
             'https://[broken/path'), [])
 
 
+    def test_noncanonical_index_authority_fails_closed(self):
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                '<a href="/docs/brush.pdf">Specifications</a>')
+        bad_indexes = (
+            'https://user@tiogacountyny.com/departments/public-works/',
+            'https://user:pass@tiogacountyny.com/departments/public-works/',
+            'https://tiogacountyny.com:8443/departments/public-works/',
+            'https://tiogacountyny.com:bad/departments/public-works/',
+            'https://tiogacountyny.com:99999/departments/public-works/',
+            'https://tiogacountyny.com/departments/public-works/?preview=1',
+            'https://tiogacountyny.com/departments/public-works/#archive',
+        )
+        for index in bad_indexes:
+            with self.subTest(index=index):
+                self.assertEqual(notice_sections(html, index), [])
+        self.assertEqual(len(notice_sections(html, URL)), 1)
+
 if __name__ == '__main__':
     unittest.main()
