@@ -248,6 +248,32 @@ class TiogaSectionsTest(unittest.TestCase):
              'label': 'Specifications'}
         ])
 
+    def test_section_cap_reports_truncation_without_publishing_extra_sections(self):
+        html = '<h2>Bids &amp; RFPs</h2>' + ''.join(
+            '<h3>Bid: Test %d</h3><p>Offline fixture</p>' % i
+            for i in range(1002)
+        )
+        diagnostics = {}
+        sections = notice_sections(html, URL, diagnostics=diagnostics)
+        self.assertEqual(len(sections), 1000)
+        self.assertEqual(diagnostics['total_sections'], 1002)
+        self.assertEqual(diagnostics['sections_truncated'], 2)
+        self.assertEqual(diagnostics['attachments_truncated'], 0)
+
+    def test_attachment_cap_reports_truncation(self):
+        links = ''.join(
+            '<a href="/docs/spec-%d.pdf">Specifications</a>' % i
+            for i in range(31)
+        )
+        diagnostics = {}
+        sections = notice_sections(
+            '<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>' + links,
+            URL, diagnostics=diagnostics
+        )
+        self.assertEqual(len(sections[0]['links']), 30)
+        self.assertEqual(diagnostics['sections_truncated'], 0)
+        self.assertEqual(diagnostics['attachments_truncated'], 1)
+
     def test_nonstandard_https_port_is_not_an_official_attachment(self):
         html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
                 '<a href="https://tiogacountyny.com:8443/docs/brush.pdf">Alternate port</a>'
