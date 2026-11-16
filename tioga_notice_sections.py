@@ -103,6 +103,7 @@ def notice_sections(html, page_url, diagnostics=None):
         diagnostics['total_sections'] = len(parser.sections)
         diagnostics['sections_truncated'] = max(0, len(parser.sections) - 1000)
         diagnostics['attachments_truncated'] = 0
+        diagnostics['notices_without_documents'] = 0
     output = []
     for section in parser.sections[:1000]:
         title = section['title']
@@ -141,6 +142,9 @@ def notice_sections(html, page_url, diagnostics=None):
                 elif diagnostics is not None:
                     # Count only actual overflow, not the 30th accepted link.
                     diagnostics['attachments_truncated'] += 1
+        if diagnostics is not None and not links:
+            # A heading alone is not a publishable solicitation.
+            diagnostics['notices_without_documents'] += 1
         output.append({'title': title, 'text': ' '.join(' '.join(section['text']).split()), 'links': links})
     return output
 
