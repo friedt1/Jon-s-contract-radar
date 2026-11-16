@@ -260,6 +260,21 @@ class TiogaSectionsTest(unittest.TestCase):
         self.assertEqual(diagnostics['sections_truncated'], 2)
         self.assertEqual(diagnostics['attachments_truncated'], 0)
 
+    def test_missing_documents_diagnostic_excludes_historical_results(self):
+        html = ('<h2>Bids &amp; RFPs</h2>'
+                '<h3>Bid: Brush clearing</h3><p>No linked documents</p>'
+                '<h3>Bid: Tree removal results</h3>'
+                '<a href="/docs/tree-results.pdf">Bid results</a>'
+                '<h3>Bid: Stump removal</h3>'
+                '<a href="https://other.example/spec.pdf">Untrusted host</a>'
+                '<h3>Bid: Vegetation management</h3>'
+                '<a href="/docs/vegetation.pdf">Specifications</a>')
+        diagnostics = {}
+        sections = notice_sections(html, URL, diagnostics=diagnostics)
+        self.assertEqual(len(sections), 3)
+        self.assertEqual(diagnostics['notices_without_documents'], 2)
+        self.assertEqual(len(sections[-1]['links']), 1)
+
     def test_attachment_cap_reports_truncation(self):
         links = ''.join(
             '<a href="/docs/spec-%d.pdf">Specifications</a>' % i
