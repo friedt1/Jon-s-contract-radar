@@ -113,7 +113,8 @@ def notice_sections(html, page_url, diagnostics=None):
         seen_urls = set()
         for href, label in section['links']:
             # Empty and fragment-only hrefs point back to the index, not a bid document.
-            if not href or not href.strip() or href.strip().startswith(('#', '?')):
+            if (not href or not href.strip() or href.strip().startswith(('#', '?'))
+                    or any(ord(ch) < 33 or ord(ch) == 127 or ch == '\\' for ch in href)):
                 continue
             # Historical result/award attachments must never be offered as bid documents.
             try:
