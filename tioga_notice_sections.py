@@ -136,11 +136,11 @@ def notice_sections(html, page_url, diagnostics=None):
                     and parts.path != urlsplit(page_url).path
                     and not parts.fragment and url not in seen_urls):
                 seen_urls.add(url)
-                links.append({'url': url, 'label': label})
-                if len(links) >= 30:
-                    if diagnostics is not None:
-                        diagnostics['attachments_truncated'] += 1
-                    break
+                if len(links) < 30:
+                    links.append({'url': url, 'label': label})
+                elif diagnostics is not None:
+                    # Count only actual overflow, not the 30th accepted link.
+                    diagnostics['attachments_truncated'] += 1
         output.append({'title': title, 'text': ' '.join(' '.join(section['text']).split()), 'links': links})
     return output
 
