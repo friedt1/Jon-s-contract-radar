@@ -74,7 +74,7 @@ class _Sections(HTMLParser):
             self.link = None
 
 
-def notice_sections(html, page_url):
+def notice_sections(html, page_url, diagnostics=None):
     """Return independent notice blocks with same-host HTTPS attachment URLs.
 
     Never synthesize notice URLs; a section without a real link is not a
@@ -99,6 +99,10 @@ def notice_sections(html, page_url):
         return []
     parser = _Sections()
     parser.feed(html)
+    if diagnostics is not None:
+        diagnostics['total_sections'] = len(parser.sections)
+        diagnostics['sections_truncated'] = max(0, len(parser.sections) - 1000)
+        diagnostics['attachments_truncated'] = 0
     output = []
     for section in parser.sections[:1000]:
         title = section['title']
@@ -134,6 +138,8 @@ def notice_sections(html, page_url):
                 seen_urls.add(url)
                 links.append({'url': url, 'label': label})
                 if len(links) >= 30:
+                    if diagnostics is not None:
+                        diagnostics['attachments_truncated'] += 1
                     break
         output.append({'title': title, 'text': ' '.join(' '.join(section['text']).split()), 'links': links})
     return output
