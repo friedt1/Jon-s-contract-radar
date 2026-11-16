@@ -76,6 +76,21 @@ class TiogaSectionsTest(unittest.TestCase):
              'label': 'Actual document'}
         ])
 
+    def test_ambiguous_attachment_urls_are_rejected(self):
+        # Browsers, proxies and URL parsers can disagree on backslashes,
+        # whitespace and control characters in an href.
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                '<a href="/docs/valid.pdf">Valid spec</a>'
+                '<a href="/docs/white space.pdf">Whitespace</a>'
+                '<a href="/docs/line&#10;break.pdf">Newline</a>'
+                '<a href="/docs/back\\slash.pdf">Backslash</a>'
+                '<a href="/docs/tab&#9;name.pdf">Tab</a>')
+        sections = notice_sections(html, URL)
+        self.assertEqual(sections[0]['links'], [
+            {'url': 'https://tiogacountyny.com/docs/valid.pdf',
+             'label': 'Valid spec'}
+        ])
+
     def test_same_page_and_query_only_links_are_not_documents(self):
         html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
                 '<a href="?download=1">Query-only index link</a>'
