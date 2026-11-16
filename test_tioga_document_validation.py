@@ -32,6 +32,25 @@ class DocumentResponseTests(unittest.TestCase):
             with self.subTest(status=status, mime=mime, body=body):
                 self.assertEqual(check(GOOD, GOOD, status, mime, body), expected)
 
+    def test_ambiguous_response_urls_are_rejected(self):
+        for bad in (
+            'https://tiogacountyny.com/docs/white space.pdf',
+            'https://tiogacountyny.com/docs/line\\nfeed.pdf',
+            'https://tiogacountyny.com/docs/back\\\\slash.pdf',
+            'https://tiogacountyny.com/docs/white%20space.pdf',
+            'https://tiogacountyny.com/docs/line%0Abreak.pdf',
+            'https://tiogacountyny.com/docs/back%5cslash.pdf',
+        ):
+            with self.subTest(bad=bad):
+                self.assertEqual(check(GOOD, bad, 200, 'application/pdf', PDF),
+                                 'untrusted_url')
+                self.assertEqual(check(bad, GOOD, 200, 'application/pdf', PDF),
+                                 'untrusted_url')
+        self.assertEqual(
+            check(GOOD, 'https://tiogacountyny.com/docs/valid%2Dname.pdf',
+                  200, 'application/pdf', PDF),
+            'verified_document_response')
+
     def test_untrusted_requested_url(self):
         self.assertEqual(check('https://evil.example/notice.pdf', GOOD, 200,
                                'application/pdf', PDF), 'untrusted_url')
