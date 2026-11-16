@@ -31,6 +31,7 @@ def document_response_status(requested_url, final_url, status_code, content_type
     if not isinstance(body, bytes) or not body:
         return 'empty_or_invalid_body'
     media_type = (content_type or '').split(';', 1)[0].strip().lower()
-    if media_type == 'application/pdf' and body.startswith(b'%PDF-'):
+    if (media_type == 'application/pdf' and body.startswith(b'%PDF-')
+            and b'%%EOF' in body[-2048:]):
         return 'verified_document_response'
     return 'unsupported_or_mismatched_document'
