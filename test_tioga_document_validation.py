@@ -3,7 +3,7 @@ import unittest
 from tioga_document_validation import document_response_status as check
 
 GOOD = 'https://tiogacountyny.com/docs/notice.pdf'
-PDF = b'%PDF-1.7\n1 0 obj\n'
+PDF = b'%PDF-1.7\n1 0 obj\nendobj\n%%EOF\n'
 
 
 class DocumentResponseTests(unittest.TestCase):
@@ -50,6 +50,13 @@ class DocumentResponseTests(unittest.TestCase):
             check(GOOD, 'https://tiogacountyny.com/docs/valid%2Dname.pdf',
                   200, 'application/pdf', PDF),
             'verified_document_response')
+
+    def test_truncated_pdf_header_is_not_sufficient(self):
+        self.assertEqual(check(GOOD, GOOD, 200, 'application/pdf', b'%PDF-1.7\n1 0 obj\n'),
+                         'unsupported_or_mismatched_document')
+        self.assertEqual(check(GOOD, GOOD, 200, 'application/pdf',
+                               b'%PDF-1.7\n%%EOF\n' + b'x' * 2049),
+                         'unsupported_or_mismatched_document')
 
     def test_untrusted_requested_url(self):
         self.assertEqual(check('https://evil.example/notice.pdf', GOOD, 200,
