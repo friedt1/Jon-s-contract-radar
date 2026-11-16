@@ -4,6 +4,7 @@ The caller must supply the *final* response URL after redirects and response
 bytes. A passing result is only document evidence, not bid eligibility.
 """
 from urllib.parse import urlsplit
+import re
 
 OFFICIAL_HOST = 'tiogacountyny.com'
 
@@ -13,6 +14,10 @@ def document_response_status(requested_url, final_url, status_code, content_type
     try:
         requested = urlsplit(requested_url)
         final = urlsplit(final_url)
+        for raw in (requested_url, final_url):
+            if (not isinstance(raw, str) or any(ord(ch) <= 32 or ord(ch) == 127 or ch == '\\' for ch in raw)
+                    or re.search(r'%(?:0[0-9a-f]|1[0-9a-f]|20|5c|7f)', raw, re.I)):
+                return 'untrusted_url'
         for parsed in (requested, final):
             if (parsed.scheme != 'https' or parsed.hostname != OFFICIAL_HOST
                     or parsed.port not in (None, 443)
