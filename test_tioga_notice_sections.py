@@ -91,6 +91,20 @@ class TiogaSectionsTest(unittest.TestCase):
              'label': 'Valid spec'}
         ])
 
+    def test_percent_encoded_ambiguous_attachment_urls_are_rejected(self):
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                '<a href="/docs/valid%2Dspec.pdf">Valid encoded hyphen</a>'
+                '<a href="/docs/white%20space.pdf">Encoded space</a>'
+                '<a href="/docs/line%0Abreak.pdf">Encoded newline</a>'
+                '<a href="/docs/back%5cslash.pdf">Encoded backslash</a>'
+                '<a href="/docs/tab%09name.pdf">Encoded tab</a>'
+                '<a href="/docs/del%7Fname.pdf">Encoded DEL</a>')
+        sections = notice_sections(html, URL)
+        self.assertEqual(sections[0]['links'], [
+            {'url': 'https://tiogacountyny.com/docs/valid%2Dspec.pdf',
+             'label': 'Valid encoded hyphen'}
+        ])
+
     def test_same_page_and_query_only_links_are_not_documents(self):
         html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
                 '<a href="?download=1">Query-only index link</a>'
