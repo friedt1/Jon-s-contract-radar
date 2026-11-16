@@ -58,6 +58,15 @@ class DocumentResponseTests(unittest.TestCase):
                                b'%PDF-1.7\n%%EOF\n' + b'x' * 2049),
                          'unsupported_or_mismatched_document')
 
+    def test_pdf_eof_must_be_terminal_not_embedded(self):
+        self.assertEqual(
+            check(GOOD, GOOD, 200, 'application/pdf',
+                  PDF + b'<html>injected content</html>'),
+            'unsupported_or_mismatched_document')
+        self.assertEqual(
+            check(GOOD, GOOD, 200, 'application/pdf', PDF + b'\\n \\t'),
+            'verified_document_response')
+
     def test_untrusted_requested_url(self):
         self.assertEqual(check('https://evil.example/notice.pdf', GOOD, 200,
                                'application/pdf', PDF), 'untrusted_url')
