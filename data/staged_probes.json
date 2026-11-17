@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-16T06:39:12.794078+00:00",
+  "updated": "2026-11-17T06:14:41.328100+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 84,
   "safe_staged_entrypoints": 84,
@@ -28,7 +28,7 @@
       "state": "notice_format_confirmed_terms_review_required",
       "listing_retrieved": true,
       "individual_notice_retrieved": true,
-      "individual_records_discovered": 2,
+      "individual_records_discovered": 3,
       "individual_samples_attempted": 1,
       "individual_samples_confirmed": 1,
       "additional_sample_notice_urls_confirmed": [],
@@ -113,8 +113,8 @@
     {
       "name": "Allegany County",
       "official_entrypoint": "https://www.alleganyco.gov/departments/public-works/bids-awards/",
-      "state": "listing_fetch_error",
-      "listing_retrieved": false,
+      "state": "listing_reachable_adapter_required",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -123,8 +123,7 @@
       "individual_sample_failures": [],
       "activation_gate": "Official DPW bid specifications/awards page confirmed; verify robots policy and isolate current individual bid documents from past awards.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false,
-      "error_type": "RemoteDisconnected"
+      "direct_monitoring_activated": false
     },
     {
       "name": "Livingston County",
@@ -424,11 +423,11 @@
       "state": "notice_format_confirmed_terms_review_required",
       "listing_retrieved": true,
       "individual_notice_retrieved": true,
-      "individual_records_discovered": 5,
+      "individual_records_discovered": 6,
       "individual_samples_attempted": 3,
       "individual_samples_confirmed": 3,
       "additional_sample_notice_urls_confirmed": [
-        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/440/90",
+        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/436/90",
         "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/442/90"
       ],
       "individual_sample_failures": [],
@@ -444,8 +443,8 @@
         "conflicting_evidence": 0
       },
       "listing_relevant_examples": [],
-      "sample_notice_url": "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/436/90",
-      "sample_notice_listing_title": "RFQ: Clinton Street Reconstruction & Streetscape Design",
+      "sample_notice_url": "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/444/90",
+      "sample_notice_listing_title": "RFQ: Preliminary Engineering Report",
       "sample_notice_listing_scope_category": "not_identified",
       "sample_notice_scope_evidence": "listing_card_unverified",
       "sample_notice_detail_scope_category": "unknown",
@@ -459,8 +458,8 @@
       "sample_notice_status_source": "listing_unverified",
       "sample_notice_unparseable_detail_closing": false,
       "sample_notice_deadline_source": "individual_notice",
-      "sample_notice_deadline": "2026-11-25",
-      "sample_notice_deadline_time": "10:00 AM",
+      "sample_notice_deadline": "2026-12-16",
+      "sample_notice_deadline_time": "10:30 AM",
       "sample_notice_deadline_conflict": false,
       "sample_notice_temporal_evidence": "deadline_not_passed_unverified"
     },
@@ -1270,8 +1269,8 @@
     {
       "name": "Guthrie Healthcare",
       "official_entrypoint": "https://www.guthrie.org/vendor-information",
-      "state": "listing_reachable_off_host_documents_review_required",
-      "listing_retrieved": true,
+      "state": "listing_access_forbidden",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -1281,9 +1280,7 @@
       "activation_gate": "Official Guthrie vendor information says vendors must complete Green Security credentialing and references Oracle Supplier Portal and purchase-order approval. The public page does not expose current individual landscaping/tree-service bids. Require vendor approval or explicitly permitted individual-notice feed, robots/terms review, scope/deadline/status and Elmira/northern-PA worksite verification. Do not fetch gated portal.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false,
-      "off_host_pdf_hosts_unverified": [
-        "www.guthrie.net"
-      ]
+      "http_status": 403
     },
     {
       "name": "UPMC Williamsport",
