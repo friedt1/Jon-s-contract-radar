@@ -64,7 +64,7 @@ class DocumentResponseTests(unittest.TestCase):
                   PDF + b'<html>injected content</html>'),
             'unsupported_or_mismatched_document')
         self.assertEqual(
-            check(GOOD, GOOD, 200, 'application/pdf', PDF + b'\\n \\t'),
+            check(GOOD, GOOD, 200, 'application/pdf', PDF + b'\n \t'),
             'verified_document_response')
 
     def test_untrusted_requested_url(self):
