@@ -40,6 +40,20 @@ class PublicationGateTest(unittest.TestCase):
         self.assertEqual(publication_decision(**{**BASE, 'checked_at': datetime(2026, 11, 18)})[1],
                          'check_time_unverified')
 
+    def test_naive_or_malformed_deadline_fails_closed(self):
+        for deadline in ('2026-12-01T11:00:00', 'not-a-date', '', None):
+            with self.subTest(deadline=deadline):
+                self.assertEqual(
+                    publication_decision(**{**BASE, 'document_deadline': deadline})[0],
+                    False)
+
+    def test_timezone_equivalent_deadlines_are_consistent(self):
+        self.assertEqual(
+            publication_decision(**{**BASE,
+                'index_deadline': '2026-12-01T11:00:00-05:00',
+                'document_deadline': '2026-12-01T16:00:00+00:00'}),
+            (True, 'verified_candidate_not_publication'))
+
     def test_exact_deadline_is_not_open(self):
         self.assertEqual(publication_decision(**{**BASE,
             'checked_at': datetime(2026, 12, 1, 16, tzinfo=timezone.utc)})[1], 'expired')
