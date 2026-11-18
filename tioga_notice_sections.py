@@ -97,6 +97,12 @@ def notice_sections(html, page_url, diagnostics=None):
             or index.username is not None or index.password is not None
             or index.query or index.fragment):
         return []
+    # A failed fetch or malformed response is not evidence of an official notice.
+    # Do not let non-text payloads crash a scheduled scan or become live leads.
+    if not isinstance(html, str):
+        if diagnostics is not None:
+            diagnostics['invalid_html_response'] = True
+        return []
     parser = _Sections()
     parser.feed(html)
     if diagnostics is not None:
