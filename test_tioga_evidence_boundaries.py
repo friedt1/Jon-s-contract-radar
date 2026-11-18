@@ -27,6 +27,24 @@ class TiogaEvidenceBoundaryTests(unittest.TestCase):
         self.assertEqual([link['url'] for link in sections[0]['links']],
                          ['https://tiogacountyny.com/docs/notice.pdf'])
 
+    def test_double_encoded_separators_are_not_document_evidence(self):
+        index = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                 '<a href="/docs%252fprivate/specs.pdf">Unsafe attachment</a>'
+                 '<a href="/docs/specs.pdf">Official attachment</a>')
+        sections = notice_sections(index, OFFICIAL_INDEX_URL)
+        self.assertEqual(len(sections), 1)
+        self.assertEqual([link['url'] for link in sections[0]['links']],
+                         ['https://tiogacountyny.com/docs/specs.pdf'])
+        good = 'https://tiogacountyny.com/docs/specs.pdf'
+        bad = 'https://tiogacountyny.com/docs%252fprivate/specs.pdf'
+        pdf = b'%PDF-1.7\\n%%EOF'
+        self.assertEqual(document_response_status(bad, good, 200,
+                                                  'application/pdf', pdf),
+                         'untrusted_url')
+        self.assertEqual(document_response_status(good, bad, 200,
+                                                  'application/pdf', pdf),
+                         'untrusted_url')
+
     def test_deadline_evidence_requires_independent_aware_agreement(self):
         self.assertEqual(
             deadline_evidence_status('2026-12-01T11:00:00-05:00',
