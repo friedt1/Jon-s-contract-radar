@@ -51,6 +51,13 @@ class DocumentResponseTests(unittest.TestCase):
                   200, 'application/pdf', PDF),
             'verified_document_response')
 
+    def test_malformed_content_type_fails_closed(self):
+        # Broken HTTP client metadata must be diagnostic, not an exception.
+        for content_type in (None, b'application/pdf', 123, ['application/pdf'], {}):
+            with self.subTest(content_type=content_type):
+                self.assertEqual(check(GOOD, GOOD, 200, content_type, PDF),
+                                 'unsupported_or_mismatched_document')
+
     def test_truncated_pdf_header_is_not_sufficient(self):
         self.assertEqual(check(GOOD, GOOD, 200, 'application/pdf', b'%PDF-1.7\n1 0 obj\n'),
                          'unsupported_or_mismatched_document')
