@@ -17,6 +17,12 @@ def publication_decision(*, index_deadline, document_deadline, checked_at,
     separately labeled, independently verified policy and must not be
     represented as tree contracts.
     """
+    # Require literal booleans: scraped strings such as 'False' are truthy.
+    # Unknown or malformed evidence must never qualify a notice.
+    flags = (official_document_verified, eligible_tree_scope,
+             geographic_match, historical_or_awarded)
+    if any(type(flag) is not bool for flag in flags):
+        return False, 'invalid_evidence_flags'
     if historical_or_awarded:
         return False, 'historical_or_awarded'
     if not official_document_verified:
