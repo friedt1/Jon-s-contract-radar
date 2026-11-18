@@ -18,6 +18,15 @@ class TiogaEvidenceBoundaryTests(unittest.TestCase):
             with self.subTest(url=url):
                 self.assertEqual(notice_sections(html, url), [])
 
+    def test_encoded_path_separator_cannot_become_a_document_link(self):
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                '<a href="/docs%2fprivate/notice.pdf">Encoded slash</a>'
+                '<a href="/docs/notice.pdf">Official document</a>')
+        sections = notice_sections(html, OFFICIAL_INDEX_URL)
+        self.assertEqual(len(sections), 1)
+        self.assertEqual([link['url'] for link in sections[0]['links']],
+                         ['https://tiogacountyny.com/docs/notice.pdf'])
+
     def test_deadline_evidence_requires_independent_aware_agreement(self):
         self.assertEqual(
             deadline_evidence_status('2026-12-01T11:00:00-05:00',
