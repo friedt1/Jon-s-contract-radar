@@ -116,7 +116,7 @@ def notice_sections(html, page_url, diagnostics=None):
             if (not href or not href.strip() or href.strip().startswith(('#', '?'))
                     or any(ord(ch) < 33 or ord(ch) == 127 or ch == '\\' for ch in href)
                     # Encoded controls/backslashes can be decoded downstream.
-                    or re.search(r'%(?:0[0-9a-f]|1[0-9a-f]|20|2f|5c|7f|25(?:2f|5c|20|7f))', href, re.I)):
+                    or re.search(r'%(?:0[0-9a-f]|1[0-9a-f]|20|2f|5c|7f|(?:25)+(?:2f|5c|20|7f))', href, re.I)):
                 continue
             # Historical result/award attachments must never be offered as bid documents.
             try:
