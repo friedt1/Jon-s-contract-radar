@@ -51,6 +51,16 @@ class DocumentResponseTests(unittest.TestCase):
                   200, 'application/pdf', PDF),
             'verified_document_response')
 
+    def test_encoded_slash_is_not_trusted_document_evidence(self):
+        # Keep the response gate consistent with the notice attachment gate.
+        for bad in ('https://tiogacountyny.com/docs%2fprivate/notice.pdf',
+                    'https://tiogacountyny.com/docs%2Fprivate/notice.pdf'):
+            with self.subTest(bad=bad):
+                self.assertEqual(check(GOOD, bad, 200, 'application/pdf', PDF),
+                                 'untrusted_url')
+                self.assertEqual(check(bad, GOOD, 200, 'application/pdf', PDF),
+                                 'untrusted_url')
+
     def test_truncated_pdf_header_is_not_sufficient(self):
         self.assertEqual(check(GOOD, GOOD, 200, 'application/pdf', b'%PDF-1.7\n1 0 obj\n'),
                          'unsupported_or_mismatched_document')
