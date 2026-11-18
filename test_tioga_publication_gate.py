@@ -54,6 +54,14 @@ class PublicationGateTest(unittest.TestCase):
                 'document_deadline': '2026-12-01T16:00:00+00:00'}),
             (True, 'verified_candidate_not_publication'))
 
+    def test_non_boolean_evidence_flags_fail_closed(self):
+        for key in ('official_document_verified', 'eligible_tree_scope',
+                    'geographic_match', 'historical_or_awarded'):
+            for value in ('False', 'True', None, 0, 1, []):
+                with self.subTest(key=key, value=value):
+                    self.assertEqual(publication_decision(**{**BASE, key: value}),
+                                     (False, 'invalid_evidence_flags'))
+
     def test_exact_deadline_is_not_open(self):
         self.assertEqual(publication_decision(**{**BASE,
             'checked_at': datetime(2026, 12, 1, 16, tzinfo=timezone.utc)})[1], 'expired')
