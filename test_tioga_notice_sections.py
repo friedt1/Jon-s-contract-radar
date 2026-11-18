@@ -238,6 +238,19 @@ class TiogaSectionsTest(unittest.TestCase):
         self.assertEqual(sections[0]['text'], 'Brush specifications.')
         self.assertEqual(sections[0]['links'], [])
 
+    def test_non_text_index_response_fails_closed_with_diagnostic(self):
+        # Network clients may return None or raw bytes on failed/invalid fetches.
+        for payload in (None, b'<h2>Bids &amp; RFPs</h2>', 123, {}):
+            with self.subTest(payload=payload):
+                diagnostics = {}
+                self.assertEqual(notice_sections(payload, URL, diagnostics), [])
+                self.assertTrue(diagnostics['invalid_html_response'])
+
+    def test_untrusted_index_rejected_before_non_text_diagnostic(self):
+        diagnostics = {}
+        self.assertEqual(notice_sections(None, 'https://evil.example/bids', diagnostics), [])
+        self.assertNotIn('invalid_html_response', diagnostics)
+
     def test_missing_bids_heading_fails_closed(self):
         html = '<h3>Bid: Tree removal</h3><p>Due tomorrow</p>'
         self.assertEqual(notice_sections(html, URL), [])
