@@ -45,6 +45,22 @@ class TiogaEvidenceBoundaryTests(unittest.TestCase):
                                                   'application/pdf', pdf),
                          'untrusted_url')
 
+    def test_repeatedly_encoded_separators_are_rejected(self):
+        good = 'https://tiogacountyny.com/docs/specs.pdf'
+        pdf = b'%PDF-1.7\\n%%EOF'
+        for encoded in ('%25252f', '%2525252f', '%25255c', '%252520'):
+            with self.subTest(encoded=encoded):
+                bad = 'https://tiogacountyny.com/docs' + encoded + 'private/specs.pdf'
+                html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                        '<a href="' + bad + '">Unsafe attachment</a>')
+                sections = notice_sections(html, OFFICIAL_INDEX_URL)
+                self.assertEqual(len(sections), 1)
+                self.assertEqual(sections[0]['links'], [])
+                self.assertEqual(document_response_status(bad, good, 200,
+                                 'application/pdf', pdf), 'untrusted_url')
+                self.assertEqual(document_response_status(good, bad, 200,
+                                 'application/pdf', pdf), 'untrusted_url')
+
     def test_deadline_evidence_requires_independent_aware_agreement(self):
         self.assertEqual(
             deadline_evidence_status('2026-12-01T11:00:00-05:00',
