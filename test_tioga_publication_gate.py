@@ -62,6 +62,23 @@ class PublicationGateTest(unittest.TestCase):
                     self.assertEqual(publication_decision(**{**BASE, key: value}),
                                      (False, 'invalid_evidence_flags'))
 
+    def test_invalid_check_times_fail_closed(self):
+        # Malformed clocks must not be interpreted as a valid scan timestamp.
+        for checked_at in (None, '2026-11-18T00:00:00Z', 0, {}, datetime(2026, 11, 18)):
+            with self.subTest(checked_at=checked_at):
+                self.assertEqual(
+                    publication_decision(**{**BASE, 'checked_at': checked_at}),
+                    (False, 'check_time_unverified'))
+
+    def test_offset_aware_clock_at_deadline_is_expired(self):
+        # Different offsets representing the same instant cannot reopen a bid.
+        from datetime import timedelta
+        eastern = timezone(timedelta(hours=-5))
+        self.assertEqual(
+            publication_decision(**{**BASE,
+                'checked_at': datetime(2026, 12, 1, 11, tzinfo=eastern)}),
+            (False, 'expired'))
+
     def test_exact_deadline_is_not_open(self):
         self.assertEqual(publication_decision(**{**BASE,
             'checked_at': datetime(2026, 12, 1, 16, tzinfo=timezone.utc)})[1], 'expired')
