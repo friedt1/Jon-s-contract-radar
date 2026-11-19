@@ -97,6 +97,16 @@ def notice_sections(html, page_url, diagnostics=None):
             or index.username is not None or index.password is not None
             or index.query or index.fragment):
         return []
+    # An unavailable or malformed HTTP body is not evidence of a notice.
+    # Record the failure rather than allowing a scheduled scan to crash.
+    if not isinstance(html, str) or not html.strip():
+        if diagnostics is not None:
+            diagnostics['source_status'] = 'invalid_or_empty_html'
+            diagnostics['total_sections'] = 0
+            diagnostics['sections_truncated'] = 0
+            diagnostics['attachments_truncated'] = 0
+            diagnostics['notices_without_documents'] = 0
+        return []
     parser = _Sections()
     parser.feed(html)
     if diagnostics is not None:
