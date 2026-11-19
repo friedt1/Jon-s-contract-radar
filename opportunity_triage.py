@@ -120,7 +120,7 @@ def review_assessment(lead, today=None, now=None):
     if lead.get("location") and not str(lead["location"]).lower().startswith(
             ("worksite unverified", "ny/pa target area")):
         score += 4
-        factors.append("worksite text present; two-hour drive unverified")
+        factors.append("worksite text present; four-hour primary drive unverified")
 
     score = max(0, min(100, score))
     return {
