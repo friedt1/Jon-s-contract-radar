@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-18T06:19:59.349789+00:00",
+  "updated": "2026-11-19T06:17:01.435428+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 84,
   "safe_staged_entrypoints": 84,
@@ -428,7 +428,7 @@
       "individual_samples_confirmed": 3,
       "additional_sample_notice_urls_confirmed": [
         "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/436/90",
-        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/438/90"
+        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/434/90"
       ],
       "individual_sample_failures": [],
       "activation_gate": "Official city purchasing Bids & RFPs index and same-host individual /Home/Components/RFP/RFP/{id}/90 notices confirmed. Granicus adapter, robots/terms permission, live extraction, deadlines and status checks required before direct activation; historical Open labels may remain stale.",
@@ -728,8 +728,8 @@
     {
       "name": "Sayre Borough",
       "official_entrypoint": "https://sayreborough.org/",
-      "state": "official_page_reachable_no_procurement_evidence",
-      "listing_retrieved": true,
+      "state": "listing_robots_policy_unavailable",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -743,8 +743,8 @@
     {
       "name": "Athens Borough",
       "official_entrypoint": "https://athensboroughpa.org/",
-      "state": "official_page_reachable_no_procurement_evidence",
-      "listing_retrieved": true,
+      "state": "listing_robots_policy_unavailable",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -773,8 +773,8 @@
     {
       "name": "Mansfield Borough",
       "official_entrypoint": "https://mansfieldborough.org/",
-      "state": "official_page_reachable_no_procurement_evidence",
-      "listing_retrieved": true,
+      "state": "listing_robots_policy_unavailable",
+      "listing_retrieved": false,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
