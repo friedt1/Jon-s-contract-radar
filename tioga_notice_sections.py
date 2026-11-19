@@ -178,3 +178,23 @@ def deadline_evidence_status(index_deadline, document_deadline):
     if index is None or document is None:
         return 'verification_required'
     return 'consistent' if index == document else 'conflict'
+
+
+def deadline_open_status(index_deadline, document_deadline, as_of):
+    """Fail closed on missing, conflicting, or elapsed bid deadlines.
+
+    All inputs must be offset-aware ISO-8601 timestamps. A future deadline
+    alone never proves scope, document authenticity, or eligibility.
+    """
+    from datetime import datetime
+
+    if deadline_evidence_status(index_deadline, document_deadline) != 'consistent':
+        return 'verification_required'
+    try:
+        now = datetime.fromisoformat(as_of) if isinstance(as_of, str) else None
+        deadline = datetime.fromisoformat(index_deadline)
+        if now is None or now.tzinfo is None or now.utcoffset() is None:
+            return 'verification_required'
+    except (ValueError, TypeError, OverflowError):
+        return 'verification_required'
+    return 'deadline_elapsed' if deadline <= now else 'deadline_future_unverified'
