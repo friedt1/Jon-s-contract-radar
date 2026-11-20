@@ -171,7 +171,7 @@ def notice_sections(html, page_url, diagnostics=None):
         seen_urls = set()
         for href, label in section['links']:
             # Empty and fragment-only hrefs point back to the index, not a bid document.
-            if (not href or not href.strip() or href.strip().startswith(('#', '?'))
+            if (not isinstance(href, str) or not href.strip() or href.strip().startswith(('#', '?'))
                     or any(ord(ch) < 33 or ord(ch) == 127 or ch == '\\' for ch in href)
                     # Encoded controls/backslashes can be decoded downstream.
                     or re.search(r'%(?:0[0-9a-f]|1[0-9a-f]|20|2f|5c|7f|(?:25)+(?:2f|5c|20|7f))', href, re.I)):
