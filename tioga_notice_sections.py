@@ -107,6 +107,15 @@ def notice_sections(html, page_url, diagnostics=None):
             diagnostics['attachments_truncated'] = 0
             diagnostics['notices_without_documents'] = 0
         return []
+    # Bound input before HTMLParser allocates notice and link structures.
+    # Oversized pages require explicit review rather than partial publication.
+    if len(html) > 2_000_000:
+        if diagnostics is not None:
+            diagnostics.update({'source_status': 'html_size_limit_exceeded',
+                                'total_sections': 0, 'sections_truncated': 0,
+                                'attachments_truncated': 0,
+                                'notices_without_documents': 0})
+        return []
     parser = _Sections()
     parser.feed(html)
     if diagnostics is not None:
