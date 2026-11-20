@@ -1,5 +1,6 @@
 """Offline tests: links and MIME declarations alone do not prove a bid PDF."""
 import unittest
+from unittest.mock import patch
 from tioga_document_validation import document_response_status as check
 
 GOOD = 'https://tiogacountyny.com/docs/notice.pdf'
@@ -10,6 +11,12 @@ class DocumentResponseTests(unittest.TestCase):
     def test_valid_pdf_evidence_only(self):
         self.assertEqual(check(GOOD, GOOD, 200, 'application/pdf; charset=binary', PDF),
                          'verified_document_response')
+
+    def test_oversized_pdf_evidence_fails_closed(self):
+        # Exercise the configured limit without allocating a huge fixture.
+        with patch('tioga_document_validation.MAX_DOCUMENT_BYTES', len(PDF) - 1):
+            self.assertEqual(check(GOOD, GOOD, 200, 'application/pdf', PDF),
+                             'document_size_limit_exceeded')
 
     def test_redirect_must_end_on_official_host(self):
         for final in ('https://evil.example/notice.pdf',
