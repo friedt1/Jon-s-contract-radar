@@ -77,6 +77,12 @@ class DocumentResponseTests(unittest.TestCase):
             check(GOOD, GOOD, 200, 'application/pdf', PDF + b'\n \t'),
             'verified_document_response')
 
+    def test_malformed_content_type_fails_closed(self):
+        for value in (None, 123, b'application/pdf', [], {}):
+            with self.subTest(content_type=value):
+                self.assertEqual(check(GOOD, GOOD, 200, value, PDF),
+                                 'unsupported_or_mismatched_document')
+
     def test_untrusted_requested_url(self):
         self.assertEqual(check('https://evil.example/notice.pdf', GOOD, 200,
                                'application/pdf', PDF), 'untrusted_url')
