@@ -83,6 +83,15 @@ class DocumentResponseTests(unittest.TestCase):
                 self.assertEqual(check(GOOD, GOOD, 200, value, PDF),
                                  'unsupported_or_mismatched_document')
 
+    def test_content_type_control_characters_fail_closed(self):
+        for value in ('application/pdf\r\nX-Forged: yes',
+                      'application/pdf\x00',
+                      'application/pdf; charset=\tutf-8',
+                      'application/pdf\x7f'):
+            with self.subTest(content_type=repr(value)):
+                self.assertEqual(check(GOOD, GOOD, 200, value, PDF),
+                                 'unsupported_or_mismatched_document')
+
     def test_untrusted_requested_url(self):
         self.assertEqual(check('https://evil.example/notice.pdf', GOOD, 200,
                                'application/pdf', PDF), 'untrusted_url')
