@@ -28,6 +28,19 @@ class TiogaEvidenceBoundaryTests(unittest.TestCase):
             with self.subTest(url=url):
                 self.assertEqual(notice_sections(html, url), [])
 
+    def test_untrusted_index_records_diagnostic_without_publishing(self):
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                '<a href="/docs/brush.pdf">Specifications</a>')
+        for url in (None, 123, 'https://[broken/path',
+                    'https://evil.example/departments/public-works/',
+                    OFFICIAL_INDEX_URL + '?preview=1'):
+            with self.subTest(url=url):
+                diagnostics = {}
+                self.assertEqual(notice_sections(html, url, diagnostics), [])
+                self.assertEqual(diagnostics['source_status'], 'untrusted_index_url')
+                self.assertEqual(diagnostics['total_sections'], 0)
+                self.assertEqual(diagnostics['notices_without_documents'], 0)
+
     def test_encoded_path_separator_cannot_become_a_document_link(self):
         html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
                 '<a href="/docs%2fprivate/notice.pdf">Encoded slash</a>'
