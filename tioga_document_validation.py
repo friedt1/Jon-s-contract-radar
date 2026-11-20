@@ -32,7 +32,11 @@ def document_response_status(requested_url, final_url, status_code, content_type
         return 'empty_or_invalid_body'
     if not isinstance(content_type, str):
         return 'unsupported_or_mismatched_document'
-    # Reject control characters before parsing MIME: a forged header must not\n    # be accepted merely because its first line says application/pdf.\n    if any(ord(ch) < 32 or ord(ch) == 127 for ch in content_type):\n        return 'unsupported_or_mismatched_document'\n    media_type = content_type.split(';', 1)[0].strip().lower()
+    # Reject control characters before parsing MIME: a forged header must not
+    # be accepted merely because its first line says application/pdf.
+    if any(ord(ch) < 32 or ord(ch) == 127 for ch in content_type):
+        return 'unsupported_or_mismatched_document'
+    media_type = content_type.split(';', 1)[0].strip().lower()
     if (media_type == 'application/pdf' and body.startswith(b'%PDF-')
             and body.rstrip(bytes((0, 9, 10, 12, 13, 32))).endswith(b'%%EOF')):
         return 'verified_document_response'
