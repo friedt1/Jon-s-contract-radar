@@ -11,6 +11,10 @@ import re
 OFFICIAL_INDEX_URL = 'https://tiogacountyny.com/departments/public-works/'
 
 
+class _ParseBudgetExceeded(Exception):
+    """Reject pathological markup before storing unbounded parser structures."""
+
+
 class _Sections(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
@@ -21,8 +25,17 @@ class _Sections(HTMLParser):
         self.link = None
         self.skip = 0
         self.in_bids = False
+        self.events = 0
+        self.text_chars = 0
+
+    def _budget(self, text=''):
+        self.events += 1
+        self.text_chars += len(text)
+        if self.events > 20000 or self.text_chars > 1_000_000:
+            raise _ParseBudgetExceeded()
 
     def handle_starttag(self, tag, attrs):
+        self._budget()
         attrs = dict(attrs)
         if tag in ('script', 'style', 'noscript'):
             self.skip += 1
@@ -35,6 +48,7 @@ class _Sections(HTMLParser):
             self.link = [attrs.get('href', ''), []]
 
     def handle_data(self, data):
+        self._budget(data)
         if self.skip:
             return
         if self.heading:
@@ -46,6 +60,7 @@ class _Sections(HTMLParser):
             self.current['text'].append(data)
 
     def handle_endtag(self, tag):
+        self._budget()
         if tag in ('script', 'style', 'noscript'):
             self.skip = max(0, self.skip - 1)
             return
@@ -117,7 +132,16 @@ def notice_sections(html, page_url, diagnostics=None):
                                 'notices_without_documents': 0})
         return []
     parser = _Sections()
-    parser.feed(html)
+    try:
+        parser.feed(html)
+        parser.close()
+    except _ParseBudgetExceeded:
+        if diagnostics is not None:
+            diagnostics.update({'source_status': 'html_parse_budget_exceeded',
+                                'total_sections': 0, 'sections_truncated': 0,
+                                'attachments_truncated': 0,
+                                'notices_without_documents': 0})
+        return []
     if diagnostics is not None:
         diagnostics['total_sections'] = len(parser.sections)
         diagnostics['sections_truncated'] = max(0, len(parser.sections) - 1000)
