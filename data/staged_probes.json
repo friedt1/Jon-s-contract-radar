@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-19T06:17:01.435428+00:00",
+  "updated": "2026-11-20T06:19:46.480365+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 84,
   "safe_staged_entrypoints": 84,
@@ -428,7 +428,7 @@
       "individual_samples_confirmed": 3,
       "additional_sample_notice_urls_confirmed": [
         "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/436/90",
-        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/434/90"
+        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/440/90"
       ],
       "individual_sample_failures": [],
       "activation_gate": "Official city purchasing Bids & RFPs index and same-host individual /Home/Components/RFP/RFP/{id}/90 notices confirmed. Granicus adapter, robots/terms permission, live extraction, deadlines and status checks required before direct activation; historical Open labels may remain stale.",
@@ -728,8 +728,8 @@
     {
       "name": "Sayre Borough",
       "official_entrypoint": "https://sayreborough.org/",
-      "state": "listing_robots_policy_unavailable",
-      "listing_retrieved": false,
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -743,8 +743,8 @@
     {
       "name": "Athens Borough",
       "official_entrypoint": "https://athensboroughpa.org/",
-      "state": "listing_robots_policy_unavailable",
-      "listing_retrieved": false,
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -773,8 +773,8 @@
     {
       "name": "Mansfield Borough",
       "official_entrypoint": "https://mansfieldborough.org/",
-      "state": "listing_robots_policy_unavailable",
-      "listing_retrieved": false,
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -1301,8 +1301,8 @@
     {
       "name": "Corning Incorporated",
       "official_entrypoint": "https://www.corning.com/worldwide/en/sustainability/processes/supply-chain-social-responsibility/supplier-responsibility.html",
-      "state": "listing_fetch_error",
-      "listing_retrieved": false,
+      "state": "official_page_reachable_no_procurement_evidence",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -1311,8 +1311,7 @@
       "individual_sample_failures": [],
       "activation_gate": "Official Corning supplier pages describe approved supplier onboarding and purchasing controls; Corning's published enrollment guidance says unsolicited supplier applications and self-registration are not accepted and existing buyers initiate Ariba enrollment. Do not scrape authenticated Ariba or imply public solicitations. Obtain a supplier invitation or explicitly permitted per-notice source; verify local worksite, scope, deadline and status before activation.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false,
-      "error_type": "TimeoutError"
+      "direct_monitoring_activated": false
     },
     {
       "name": "Dandy Mini Marts",
