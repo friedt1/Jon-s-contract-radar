@@ -3,12 +3,16 @@
 All notices are synthetic. No live source is fetched by these tests.
 """
 import unittest
+import datetime as dt
 from unittest.mock import patch
 
 import scan
 
 BASE = "https://example.gov/bids"
 SOURCE = {"name": "Test County", "url": BASE, "mode": "direct_page"}
+# Keep synthetic submission deadlines future-dated as CI runs across calendar days.
+# A historical cutoff must correctly be rejected by the production scanner.
+FUTURE_DATE = (scan.NOW + dt.timedelta(days=7)).strftime("%m/%d/%Y")
 
 
 class SafeDirectLinksTests(unittest.TestCase):
@@ -32,9 +36,9 @@ class SafeDirectLinksTests(unittest.TestCase):
                          "https://example.gov/bid/42")
 
     def test_https_downgrade_does_not_consume_detail_budget(self):
-        listing = ('<a href="http://example.gov/bid/1">Tree removal bid due 11/19/2026</a>'
-                   '<a href="/bid/2">Tree removal bid due 11/19/2026</a>')
-        detail = "<h1>Tree removal bid due 11/19/2026</h1>"
+        listing = (f'<a href="http://example.gov/bid/1">Tree removal bid due {FUTURE_DATE}</a>'
+                   f'<a href="/bid/2">Tree removal bid due {FUTURE_DATE}</a>')
+        detail = f"<h1>Tree removal bid due {FUTURE_DATE}</h1>"
         fetched = []
 
         def fake_fetch(url, binary=False):
@@ -64,8 +68,8 @@ class SafeDirectLinksTests(unittest.TestCase):
 
     def test_bad_link_does_not_consume_detail_budget_or_block_valid_bid(self):
         listing = ('<a href="http://[broken/bid">Tree removal bid</a>'
-                   '<a href="/bid/123">Tree removal bid due 11/19/2026</a>')
-        detail = "<h1>Tree removal bid due 11/19/2026</h1>"
+                   f'<a href="/bid/123">Tree removal bid due {FUTURE_DATE}</a>')
+        detail = f"<h1>Tree removal bid due {FUTURE_DATE}</h1>"
         visited = []
 
         def fake_fetch(url, binary=False):
@@ -83,7 +87,7 @@ class SafeDirectLinksTests(unittest.TestCase):
 
     def test_unfetched_nested_notice_never_enters_feed(self):
         listing = '<a href="/procurement">Current bids</a>'
-        nested = ('<table><tr><td>Tree removal bid due 11/19/2026</td>'
+        nested = ('<table><tr><td>Tree removal bid due {FUTURE_DATE}</td>'
                   '<td><a href="/bid/2">Details</a></td></tr></table>')
         calls = []
 
@@ -102,8 +106,8 @@ class SafeDirectLinksTests(unittest.TestCase):
         self.assertIn("detail errors", status)
 
     def test_redirect_to_untrusted_host_never_publishes(self):
-        listing = '<a href="/bid/1">Tree removal bid due 11/19/2026</a>'
-        detail = b'<h1>Tree removal bid due 11/19/2026</h1>'
+        listing = f'<a href="/bid/1">Tree removal bid due {FUTURE_DATE}</a>'
+        detail = f'<h1>Tree removal bid due {FUTURE_DATE}</h1>'.encode()
 
         def fake_fetch(url, binary=False):
             if url == BASE:
