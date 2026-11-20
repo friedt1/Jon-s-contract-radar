@@ -445,6 +445,24 @@ class DeadlineEvidenceTest(unittest.TestCase):
 
 
 class TiogaInputBoundsTest(unittest.TestCase):
+    def test_many_small_tags_exceed_parser_budget_without_partial_results(self):
+        diagnostics = {}
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                '<a href="/docs/brush.pdf">Specifications</a>'
+                + '<span></span>' * 11000)
+        self.assertLess(len(html), 2_000_000)
+        self.assertEqual(notice_sections(html, URL, diagnostics), [])
+        self.assertEqual(diagnostics['source_status'], 'html_parse_budget_exceeded')
+        self.assertEqual(diagnostics['total_sections'], 0)
+
+    def test_large_text_node_exceeds_parser_budget_without_partial_results(self):
+        diagnostics = {}
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                '<p>' + 'x' * 1_000_001 + '</p>'
+                '<a href="/docs/brush.pdf">Specifications</a>')
+        self.assertEqual(notice_sections(html, URL, diagnostics), [])
+        self.assertEqual(diagnostics['source_status'], 'html_parse_budget_exceeded')
+
     def test_oversized_html_fails_closed_with_diagnostic(self):
         diagnostics = {}
         html = HTML + (' ' * 2_000_001)
