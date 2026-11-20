@@ -41,6 +41,19 @@ class TiogaEvidenceBoundaryTests(unittest.TestCase):
                 self.assertEqual(diagnostics['total_sections'], 0)
                 self.assertEqual(diagnostics['notices_without_documents'], 0)
 
+    def test_valueless_href_does_not_crash_or_block_valid_attachment(self):
+        # HTMLParser represents <a href> as href=None; a malformed sibling
+        # must not crash the whole source or donate its text to a real link.
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                '<a href>Missing value</a>'
+                '<a href="/docs/brush.pdf">Specifications</a>')
+        diagnostics = {}
+        sections = notice_sections(html, OFFICIAL_INDEX_URL, diagnostics)
+        self.assertEqual(len(sections), 1)
+        self.assertEqual([link['url'] for link in sections[0]['links']],
+                         ['https://tiogacountyny.com/docs/brush.pdf'])
+        self.assertEqual(diagnostics['notices_without_documents'], 0)
+
     def test_encoded_path_separator_cannot_become_a_document_link(self):
         html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
                 '<a href="/docs%2fprivate/notice.pdf">Encoded slash</a>'
