@@ -100,17 +100,32 @@ def notice_sections(html, page_url, diagnostics=None):
         index = urlsplit(page_url)
         host = index.hostname
         allowed_index_port = index.port in (None, 443)
-    except ValueError:
+    except (ValueError, TypeError, AttributeError):
+        if diagnostics is not None:
+            diagnostics.update({'source_status': 'untrusted_index_url',
+                                'total_sections': 0, 'sections_truncated': 0,
+                                'attachments_truncated': 0,
+                                'notices_without_documents': 0})
         return []
     # Only the explicitly configured official index may authorize attachments.
     # A caller-controlled HTTPS host is never evidence of county ownership.
     if page_url != OFFICIAL_INDEX_URL:
+        if diagnostics is not None:
+            diagnostics.update({'source_status': 'untrusted_index_url',
+                                'total_sections': 0, 'sections_truncated': 0,
+                                'attachments_truncated': 0,
+                                'notices_without_documents': 0})
         return []
     # Only a canonical HTTPS index may authorize official attachments.
     # Reject userinfo, alternate ports and query/fragment variants.
     if (not host or index.scheme != 'https' or not allowed_index_port
             or index.username is not None or index.password is not None
             or index.query or index.fragment):
+        if diagnostics is not None:
+            diagnostics.update({'source_status': 'untrusted_index_url',
+                                'total_sections': 0, 'sections_truncated': 0,
+                                'attachments_truncated': 0,
+                                'notices_without_documents': 0})
         return []
     # An unavailable or malformed HTTP body is not evidence of a notice.
     # Record the failure rather than allowing a scheduled scan to crash.
