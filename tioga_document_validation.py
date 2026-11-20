@@ -7,6 +7,7 @@ from urllib.parse import urlsplit
 import re
 
 OFFICIAL_HOST = 'tiogacountyny.com'
+MAX_DOCUMENT_BYTES = 25 * 1024 * 1024  # Bound offline evidence processing; not a fetch limit.
 
 
 def document_response_status(requested_url, final_url, status_code, content_type, body):
@@ -30,6 +31,8 @@ def document_response_status(requested_url, final_url, status_code, content_type
         return 'http_error'
     if not isinstance(body, bytes) or not body:
         return 'empty_or_invalid_body'
+    if len(body) > MAX_DOCUMENT_BYTES:
+        return 'document_size_limit_exceeded'
     if not isinstance(content_type, str):
         return 'unsupported_or_mismatched_document'
     # Reject control characters before parsing MIME: a forged header must not
