@@ -87,7 +87,7 @@ class SafeDirectLinksTests(unittest.TestCase):
 
     def test_unfetched_nested_notice_never_enters_feed(self):
         listing = '<a href="/procurement">Current bids</a>'
-        nested = ('<table><tr><td>Tree removal bid due {FUTURE_DATE}</td>'
+        nested = ('<table><tr><td>Tree removal bid due 11/19/2026</td>'
                   '<td><a href="/bid/2">Details</a></td></tr></table>')
         calls = []
 
