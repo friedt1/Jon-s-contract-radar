@@ -443,5 +443,15 @@ class DeadlineEvidenceTest(unittest.TestCase):
                     '2026-11-13T11:00:00-05:00', value),
                     'verification_required')
 
+
+class TiogaInputBoundsTest(unittest.TestCase):
+    def test_oversized_html_fails_closed_with_diagnostic(self):
+        diagnostics = {}
+        html = HTML + (' ' * 2_000_001)
+        self.assertEqual(notice_sections(html, URL, diagnostics), [])
+        self.assertEqual(diagnostics['source_status'], 'html_size_limit_exceeded')
+        self.assertEqual(diagnostics['total_sections'], 0)
+
+
 if __name__ == '__main__':
     unittest.main()
