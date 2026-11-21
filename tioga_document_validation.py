@@ -23,7 +23,7 @@ def document_response_status(requested_url, final_url, status_code, content_type
             if (parsed.scheme != 'https' or parsed.hostname != OFFICIAL_HOST
                     or parsed.port not in (None, 443)
                     or parsed.username is not None or parsed.password is not None
-                    or parsed.fragment):
+                    or parsed.query or parsed.fragment):
                 return 'untrusted_url'
     except (TypeError, ValueError, AttributeError):
         return 'untrusted_url'
