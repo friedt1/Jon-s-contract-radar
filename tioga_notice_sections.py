@@ -158,6 +158,8 @@ def notice_sections(html, page_url, diagnostics=None):
                                 'notices_without_documents': 0})
         return []
     if diagnostics is not None:
+        # Parsed index content is not proof of an open or eligible bid.
+        diagnostics['source_status'] = 'parsed_unverified'
         diagnostics['total_sections'] = len(parser.sections)
         diagnostics['sections_truncated'] = max(0, len(parser.sections) - 1000)
         diagnostics['attachments_truncated'] = 0
