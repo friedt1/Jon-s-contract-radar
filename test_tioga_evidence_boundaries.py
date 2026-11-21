@@ -6,6 +6,16 @@ from tioga_notice_sections import (
 from tioga_document_validation import document_response_status
 
 class TiogaEvidenceBoundaryTests(unittest.TestCase):
+    def test_successful_parse_remains_unverified(self):
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Tree removal</h3>'
+                '<a href="/docs/specs.pdf">Specifications</a>')
+        diagnostics = {}
+        sections = notice_sections(html, OFFICIAL_INDEX_URL, diagnostics)
+        self.assertEqual(len(sections), 1)
+        self.assertEqual(diagnostics['source_status'], 'parsed_unverified')
+        self.assertEqual(diagnostics['total_sections'], 1)
+        self.assertEqual(diagnostics['notices_without_documents'], 0)
+
     def test_missing_index_body_fails_closed_with_diagnostics(self):
         for body in (None, b'<h2>Bids & RFPs</h2>', '', '   '):
             with self.subTest(body=body):
