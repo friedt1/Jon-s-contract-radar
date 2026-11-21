@@ -58,6 +58,14 @@ class DocumentResponseTests(unittest.TestCase):
                   200, 'application/pdf', PDF),
             'verified_document_response')
 
+    def test_nested_percent_encoded_controls_are_rejected(self):
+        for encoded in ('%25250a', '%25251f', '%252520', '%25252f',
+                        '%25255c', '%25257f'):
+            url = 'https://tiogacountyny.com/docs/' + encoded + '.pdf'
+            with self.subTest(encoded=encoded):
+                self.assertEqual(check(GOOD, url, 200, 'application/pdf', PDF),
+                                 'untrusted_url')
+
     def test_encoded_slash_is_not_trusted_document_evidence(self):
         # Keep the response gate consistent with the notice attachment gate.
         for bad in ('https://tiogacountyny.com/docs%2fprivate/notice.pdf',
