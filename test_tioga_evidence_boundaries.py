@@ -110,6 +110,22 @@ class TiogaEvidenceBoundaryTests(unittest.TestCase):
                     deadline_evidence_status('2026-12-01T11:00:00-05:00', missing),
                     'verification_required')
 
+    def test_query_bearing_attachments_are_not_verified(self):
+        # A query can select a different resource despite a trustworthy path.
+        html = ('<h2>Bids &amp; RFPs</h2><h3>Bid: Brush clearing</h3>'
+                '<a href="/docs/specs.pdf?download=1">Ambiguous attachment</a>'
+                '<a href="/docs/specs.pdf">Canonical attachment</a>')
+        sections = notice_sections(html, OFFICIAL_INDEX_URL)
+        self.assertEqual([link['url'] for link in sections[0]['links']],
+                         ['https://tiogacountyny.com/docs/specs.pdf'])
+        good = 'https://tiogacountyny.com/docs/specs.pdf'
+        query = good + '?download=1'
+        pdf = b'%PDF-1.7\\n%%EOF'
+        self.assertEqual(document_response_status(query, good, 200,
+                         'application/pdf', pdf), 'untrusted_url')
+        self.assertEqual(document_response_status(good, query, 200,
+                         'application/pdf', pdf), 'untrusted_url')
+
     def test_pdf_looking_login_response_is_not_document_evidence(self):
         url = 'https://tiogacountyny.com/docs/specs.pdf'
         self.assertEqual(
