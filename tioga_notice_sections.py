@@ -196,7 +196,7 @@ def notice_sections(html, page_url, diagnostics=None):
                     and allowed_port
                     and not parts.username and not parts.password
                     and parts.path != urlsplit(page_url).path
-                    and not parts.fragment and url not in seen_urls):
+                    and not parts.query and not parts.fragment and url not in seen_urls):
                 seen_urls.add(url)
                 if len(links) < 30:
                     links.append({'url': url, 'label': label})
