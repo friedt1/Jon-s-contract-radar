@@ -169,6 +169,13 @@ def notice_sections(html, page_url, diagnostics=None):
         title = section['title']
         if re.search(r'\b(?:results?|awards?|tabulations?)\b', title, re.I):
             continue
+        # The county retains completed solicitations under their original Bid:
+        # headings. Explicit award/result status in the same notice body must
+        # suppress the entire notice, even if a generic specs link remains.
+        # Do not use text from a neighboring notice as status evidence.
+        section_text = ' '.join(section['text'])
+        if re.search(r'\b(?:bid\s+results?|award(?:ed|ee)?|contract\s+awarded|bid\s+tabulations?)\b', section_text, re.I):
+            continue
         links = []
         seen_urls = set()
         for href, label in section['links']:
