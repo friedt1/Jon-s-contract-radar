@@ -16,6 +16,23 @@ class TiogaEvidenceBoundaryTests(unittest.TestCase):
         self.assertEqual(diagnostics['total_sections'], 1)
         self.assertEqual(diagnostics['notices_without_documents'], 0)
 
+    def test_awarded_notice_cannot_reuse_generic_specifications_link(self):
+        # Historical result and a distinct current-looking heading are separate.
+        # Neither fixture is evidence that an actual opportunity is live.
+        html = ('<h2>Bids &amp; RFPs</h2>'
+                '<h3>Bid: Tree and stump removal</h3>'
+                '<p>Contract awarded November 13, 2026.</p>'
+                '<a href="/docs/tree-specs.pdf">Specifications</a>'
+                '<h3>Bid: Roadside brush clearing</h3>'
+                '<a href="/docs/brush-specs.pdf">Specifications</a>')
+        diagnostics = {}
+        sections = notice_sections(html, OFFICIAL_INDEX_URL, diagnostics)
+        self.assertEqual([s['title'] for s in sections],
+                         ['Bid: Roadside brush clearing'])
+        self.assertEqual([l['url'] for l in sections[0]['links']],
+                         ['https://tiogacountyny.com/docs/brush-specs.pdf'])
+        self.assertEqual(diagnostics['source_status'], 'parsed_unverified')
+
     def test_missing_index_body_fails_closed_with_diagnostics(self):
         for body in (None, b'<h2>Bids & RFPs</h2>', '', '   '):
             with self.subTest(body=body):
