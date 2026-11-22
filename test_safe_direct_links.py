@@ -35,7 +35,7 @@ class SafeDirectLinksTests(unittest.TestCase):
 
     def test_https_downgrade_does_not_consume_detail_budget(self):
         listing = ('<a href="http://example.gov/bid/1">Tree removal bid due {FUTURE_DEADLINE}</a>'
-                   '<a href="/bid/2">Tree removal bid due {FUTURE_DEADLINE}</a>')
+                   f'<a href="/bid/2">Tree removal bid due {FUTURE_DEADLINE}</a>')
         detail = f"<h1>Tree removal bid due {FUTURE_DEADLINE}</h1>"
         fetched = []
 
@@ -66,7 +66,7 @@ class SafeDirectLinksTests(unittest.TestCase):
 
     def test_bad_link_does_not_consume_detail_budget_or_block_valid_bid(self):
         listing = ('<a href="http://[broken/bid">Tree removal bid</a>'
-                   '<a href="/bid/123">Tree removal bid due {FUTURE_DEADLINE}</a>')
+                   f'<a href="/bid/123">Tree removal bid due {FUTURE_DEADLINE}</a>')
         detail = f"<h1>Tree removal bid due {FUTURE_DEADLINE}</h1>"
         visited = []
 
