@@ -37,6 +37,22 @@ class HistoricalOpportunityIsolationTests(unittest.TestCase):
         self.assertEqual(notices[0]['links'], [])
         self.assertEqual(diagnostics['notices_without_documents'], 1)
 
+    def test_award_attachment_does_not_leak_into_next_notice(self):
+        # A prior result PDF must never be attached to a later solicitation.
+        html = (
+            '<h2>Bids &amp; RFPs</h2>'
+            '<h3>Bid: Tree removal results</h3>'
+            '<a href="/docs/tree-award.pdf">Award notice</a>'
+            '<h3>Bid: Roadside vegetation clearing</h3>'
+            '<p>Specifications forthcoming</p>'
+        )
+        diagnostics = {}
+        notices = notice_sections(html, OFFICIAL_INDEX_URL, diagnostics)
+        self.assertEqual(len(notices), 1)
+        self.assertEqual(notices[0]['title'], 'Bid: Roadside vegetation clearing')
+        self.assertEqual(notices[0]['links'], [])
+        self.assertEqual(diagnostics['notices_without_documents'], 1)
+
 
 if __name__ == '__main__':
     unittest.main()
