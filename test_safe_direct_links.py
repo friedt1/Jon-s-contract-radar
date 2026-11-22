@@ -34,7 +34,7 @@ class SafeDirectLinksTests(unittest.TestCase):
                          "https://example.gov/bid/42")
 
     def test_https_downgrade_does_not_consume_detail_budget(self):
-        listing = ('<a href="http://example.gov/bid/1">Tree removal bid due {FUTURE_DEADLINE}</a>'
+        listing = (f'<a href="http://example.gov/bid/1">Tree removal bid due {FUTURE_DEADLINE}</a>'
                    f'<a href="/bid/2">Tree removal bid due {FUTURE_DEADLINE}</a>')
         detail = f"<h1>Tree removal bid due {FUTURE_DEADLINE}</h1>"
         fetched = []
@@ -104,8 +104,8 @@ class SafeDirectLinksTests(unittest.TestCase):
         self.assertIn("detail errors", status)
 
     def test_redirect_to_untrusted_host_never_publishes(self):
-        listing = '<a href="/bid/1">Tree removal bid due {FUTURE_DEADLINE}</a>'
-        detail = bf'<h1>Tree removal bid due {FUTURE_DEADLINE}</h1>'
+        listing = f'<a href="/bid/1">Tree removal bid due {FUTURE_DEADLINE}</a>'
+        detail = f'<h1>Tree removal bid due {FUTURE_DEADLINE}</h1>'.encode()
 
         def fake_fetch(url, binary=False):
             if url == BASE:
