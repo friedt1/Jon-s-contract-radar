@@ -231,15 +231,21 @@ def deadline_evidence_status(index_deadline, document_deadline):
     def parse(value):
         if not isinstance(value, str) or not value.strip():
             return None
+        # Accept only explicit RFC 3339-style date/time and numeric UTC offsets.
+        # datetime.fromisoformat alone also accepts week dates and compact forms,
+        # which are unsuitable as independently verified bid deadline evidence.
+        if not re.fullmatch(
+            r'\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}'
+            r'(?:\\.\\d{1,6})?(?:Z|[+-]\\d{2}:\\d{2})', value
+        ):
+            return None
         try:
-            parsed = datetime.fromisoformat(value)
+            parsed = datetime.fromisoformat(value.replace('Z', '+00:00'))
         except ValueError:
             return None
-        # Offset-aware timestamps are required to avoid local-time ambiguity.
         if parsed.tzinfo is None or parsed.utcoffset() is None:
             return None
         return parsed
-
     index = parse(index_deadline)
     document = parse(document_deadline)
     if index is None or document is None:
@@ -258,8 +264,13 @@ def deadline_open_status(index_deadline, document_deadline, as_of):
     if deadline_evidence_status(index_deadline, document_deadline) != 'consistent':
         return 'verification_required'
     try:
-        now = datetime.fromisoformat(as_of) if isinstance(as_of, str) else None
-        deadline = datetime.fromisoformat(index_deadline)
+        # Apply the same strict format to the observation timestamp.
+        if (not isinstance(as_of, str) or not re.fullmatch(
+                r'\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}'
+                r'(?:\\.\\d{1,6})?(?:Z|[+-]\\d{2}:\\d{2})', as_of)):
+            return 'verification_required'
+        now = datetime.fromisoformat(as_of.replace('Z', '+00:00'))
+        deadline = datetime.fromisoformat(index_deadline.replace('Z', '+00:00'))
         if now is None or now.tzinfo is None or now.utcoffset() is None:
             return 'verification_required'
     except (ValueError, TypeError, OverflowError):
