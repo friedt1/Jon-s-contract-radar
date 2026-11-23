@@ -7,7 +7,7 @@ from urllib.parse import urlsplit
 import re
 
 OFFICIAL_HOST = 'tiogacountyny.com'
-MAX_DOCUMENT_BYTES = 25 * 1024 * 1024  # Bound offline evidence processing; not a fetch limit.
+MAX_DOCUMENT_BYTES = 2_500_000  # Match scan.MAX_BYTES; offline validation is not a fetch authorization.
 
 
 def document_response_status(requested_url, final_url, status_code, content_type, body):
