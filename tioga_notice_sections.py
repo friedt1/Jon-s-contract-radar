@@ -235,8 +235,8 @@ def deadline_evidence_status(index_deadline, document_deadline):
         # datetime.fromisoformat alone also accepts week dates and compact forms,
         # which are unsuitable as independently verified bid deadline evidence.
         if not re.fullmatch(
-            r'\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}'
-            r'(?:\\.\\d{1,6})?(?:Z|[+-]\\d{2}:\\d{2})', value
+            r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}'
+            r'(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})', value
         ):
             return None
         try:
@@ -266,8 +266,8 @@ def deadline_open_status(index_deadline, document_deadline, as_of):
     try:
         # Apply the same strict format to the observation timestamp.
         if (not isinstance(as_of, str) or not re.fullmatch(
-                r'\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}'
-                r'(?:\\.\\d{1,6})?(?:Z|[+-]\\d{2}:\\d{2})', as_of)):
+                r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}'
+                r'(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})', as_of)):
             return 'verification_required'
         now = datetime.fromisoformat(as_of.replace('Z', '+00:00'))
         deadline = datetime.fromisoformat(index_deadline.replace('Z', '+00:00'))
