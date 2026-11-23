@@ -112,6 +112,27 @@ class DocumentResponseTests(unittest.TestCase):
                 self.assertEqual(check(GOOD, GOOD, 200, value, PDF),
                                  'unsupported_or_mismatched_document')
 
+    def test_partial_or_redirect_http_status_is_not_document_evidence(self):
+        # A 206 response may be a valid byte range but is not a complete PDF.
+        for status in (206, 301, 302, 304, 403, 429, 500):
+            with self.subTest(status=status):
+                self.assertEqual(check(GOOD, GOOD, status, 'application/pdf', PDF),
+                                 'http_error')
+
+    def test_query_fragment_and_host_spoofing_fail_closed(self):
+        for bad in (
+            'https://tiogacountyny.com/docs/notice.pdf?download=1',
+            'https://tiogacountyny.com/docs/notice.pdf#page=1',
+            'https://tiogacountyny.com.evil.example/docs/notice.pdf',
+            'https://evil.example@tiogacountyny.com/docs/notice.pdf',
+            'https://tiogacountyny.com:444/docs/notice.pdf',
+        ):
+            with self.subTest(url=bad):
+                self.assertEqual(check(GOOD, bad, 200, 'application/pdf', PDF),
+                                 'untrusted_url')
+                self.assertEqual(check(bad, GOOD, 200, 'application/pdf', PDF),
+                                 'untrusted_url')
+
     def test_untrusted_requested_url(self):
         self.assertEqual(check('https://evil.example/notice.pdf', GOOD, 200,
                                'application/pdf', PDF), 'untrusted_url')
