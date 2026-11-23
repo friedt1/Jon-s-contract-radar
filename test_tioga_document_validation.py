@@ -8,6 +8,11 @@ PDF = b'%PDF-1.7\n1 0 obj\nendobj\n%%EOF\n'
 
 
 class DocumentResponseTests(unittest.TestCase):
+    def test_offline_pdf_budget_matches_production_fetch_limit(self):
+        import scan
+        import tioga_document_validation
+        self.assertEqual(tioga_document_validation.MAX_DOCUMENT_BYTES, scan.MAX_BYTES)
+
     def test_valid_pdf_evidence_only(self):
         self.assertEqual(check(GOOD, GOOD, 200, 'application/pdf; charset=binary', PDF),
                          'verified_document_response')
