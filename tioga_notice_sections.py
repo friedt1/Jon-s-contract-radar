@@ -1,0 +1,278 @@
+"""Conservative, offline Tioga DPW bid-section isolation.
+
+This parser is deliberately NOT a live-source adapter. It provides bounded
+notice blocks for a future adapter, without inferring that any bid is open.
+"""
+from html.parser import HTMLParser
+from urllib.parse import urljoin, urlsplit
+import re
+
+# Explicitly pinned official index; caller-supplied hosts are not trusted.
+OFFICIAL_INDEX_URL = 'https://tiogacountyny.com/departments/public-works/'
+
+
+class _ParseBudgetExceeded(Exception):
+    """Reject pathological markup before storing unbounded parser structures."""
+
+
+class _Sections(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.sections = []
+        self.current = None
+        self.heading = None
+        self.heading_parts = []
+        self.link = None
+        self.skip = 0
+        self.in_bids = False
+        self.events = 0
+        self.text_chars = 0
+
+    def _budget(self, text=''):
+        self.events += 1
+        self.text_chars += len(text)
+        if self.events > 20000 or self.text_chars > 1_000_000:
+            raise _ParseBudgetExceeded()
+
+    def handle_starttag(self, tag, attrs):
+        self._budget()
+        attrs = dict(attrs)
+        if tag in ('script', 'style', 'noscript'):
+            self.skip += 1
+        if self.skip:
+            return
+        if tag in ('h1', 'h2', 'h3', 'h4'):
+            self.heading = tag
+            self.heading_parts = []
+        if tag == 'a' and self.current is not None:
+            self.link = [attrs.get('href', ''), []]
+
+    def handle_data(self, data):
+        self._budget(data)
+        if self.skip:
+            return
+        if self.heading:
+            self.heading_parts.append(data)
+        elif self.link is not None:
+            self.link[1].append(data)
+        if self.current is not None and self.heading is None and self.link is None:
+            # Attachment labels are metadata, not notice scope or deadline text.
+            self.current['text'].append(data)
+
+    def handle_endtag(self, tag):
+        self._budget()
+        if tag in ('script', 'style', 'noscript'):
+            self.skip = max(0, self.skip - 1)
+            return
+        if tag == self.heading:
+            title = ' '.join(' '.join(self.heading_parts).split())
+            if tag == 'h2' and re.search(r'\bbids?\s*(?:&|and)\s*rfps?\b', title, re.I):
+                self.in_bids = True
+                self.current = None
+            elif (tag == 'h1' and self.in_bids and self.current is not None
+                  and re.fullmatch(r'NOTICE TO BIDDERS', title, re.I)):
+                # The official demolition rebid embeds this heading inside
+                # its H3 notice. Keep the notice, not a new bid section.
+                pass
+            elif tag in ('h1', 'h2'):
+                self.in_bids = False
+                self.current = None
+            elif self.in_bids and re.match(r'^(?:bid|rfp|rfq)\s*:', title, re.I):
+                self.current = {'title': title, 'text': [], 'links': []}
+                self.sections.append(self.current)
+            elif self.current is not None and tag in ('h2', 'h3', 'h4'):
+                self.current = None
+            self.heading = None
+        if tag == 'a' and self.link is not None:
+            if self.current is not None:
+                self.current['links'].append((self.link[0], ' '.join(' '.join(self.link[1]).split())))
+            self.link = None
+
+
+def notice_sections(html, page_url, diagnostics=None):
+    """Return independent notice blocks with same-host HTTPS attachment URLs.
+
+    Never synthesize notice URLs; a section without a real link is not a
+    publishable solicitation. Exclude results/awards before adapter handling.
+    """
+    # Validate the trusted index before parsing any untrusted page content.
+    try:
+        index = urlsplit(page_url)
+        host = index.hostname
+        allowed_index_port = index.port in (None, 443)
+    except (ValueError, TypeError, AttributeError):
+        if diagnostics is not None:
+            diagnostics.update({'source_status': 'untrusted_index_url',
+                                'total_sections': 0, 'sections_truncated': 0,
+                                'attachments_truncated': 0,
+                                'notices_without_documents': 0})
+        return []
+    # Only the explicitly configured official index may authorize attachments.
+    # A caller-controlled HTTPS host is never evidence of county ownership.
+    if page_url != OFFICIAL_INDEX_URL:
+        if diagnostics is not None:
+            diagnostics.update({'source_status': 'untrusted_index_url',
+                                'total_sections': 0, 'sections_truncated': 0,
+                                'attachments_truncated': 0,
+                                'notices_without_documents': 0})
+        return []
+    # Only a canonical HTTPS index may authorize official attachments.
+    # Reject userinfo, alternate ports and query/fragment variants.
+    if (not host or index.scheme != 'https' or not allowed_index_port
+            or index.username is not None or index.password is not None
+            or index.query or index.fragment):
+        if diagnostics is not None:
+            diagnostics.update({'source_status': 'untrusted_index_url',
+                                'total_sections': 0, 'sections_truncated': 0,
+                                'attachments_truncated': 0,
+                                'notices_without_documents': 0})
+        return []
+    # An unavailable or malformed HTTP body is not evidence of a notice.
+    # Record the failure rather than allowing a scheduled scan to crash.
+    if not isinstance(html, str) or not html.strip():
+        if diagnostics is not None:
+            diagnostics['source_status'] = 'invalid_or_empty_html'
+            diagnostics['total_sections'] = 0
+            diagnostics['sections_truncated'] = 0
+            diagnostics['attachments_truncated'] = 0
+            diagnostics['notices_without_documents'] = 0
+        return []
+    # Bound input before HTMLParser allocates notice and link structures.
+    # Oversized pages require explicit review rather than partial publication.
+    if len(html) > 2_000_000:
+        if diagnostics is not None:
+            diagnostics.update({'source_status': 'html_size_limit_exceeded',
+                                'total_sections': 0, 'sections_truncated': 0,
+                                'attachments_truncated': 0,
+                                'notices_without_documents': 0})
+        return []
+    parser = _Sections()
+    try:
+        parser.feed(html)
+        parser.close()
+    except _ParseBudgetExceeded:
+        if diagnostics is not None:
+            diagnostics.update({'source_status': 'html_parse_budget_exceeded',
+                                'total_sections': 0, 'sections_truncated': 0,
+                                'attachments_truncated': 0,
+                                'notices_without_documents': 0})
+        return []
+    if diagnostics is not None:
+        # Parsed index content is not proof of an open or eligible bid.
+        diagnostics['source_status'] = 'parsed_unverified'
+        diagnostics['total_sections'] = len(parser.sections)
+        diagnostics['sections_truncated'] = max(0, len(parser.sections) - 1000)
+        diagnostics['attachments_truncated'] = 0
+        diagnostics['notices_without_documents'] = 0
+    output = []
+    for section in parser.sections[:1000]:
+        title = section['title']
+        if re.search(r'\b(?:results?|awards?|tabulations?)\b', title, re.I):
+            continue
+        # The county retains completed solicitations under their original Bid:
+        # headings. Explicit award/result status in the same notice body must
+        # suppress the entire notice, even if a generic specs link remains.
+        # Do not use text from a neighboring notice as status evidence.
+        section_text = ' '.join(section['text'])
+        if re.search(r'\b(?:bid\s+results?|award(?:ed|ee)?|contract\s+awarded|bid\s+tabulations?)\b', section_text, re.I):
+            continue
+        links = []
+        seen_urls = set()
+        for href, label in section['links']:
+            # Empty and fragment-only hrefs point back to the index, not a bid document.
+            if (not isinstance(href, str) or not href.strip() or href.strip().startswith(('#', '?'))
+                    or any(ord(ch) < 33 or ord(ch) == 127 or ch == '\\' for ch in href)
+                    # Encoded controls/backslashes can be decoded downstream.
+                    or re.search(r'%(?:0[0-9a-f]|1[0-9a-f]|20|2f|5c|7f|(?:25)+(?:0[0-9a-f]|1[0-9a-f]|20|2f|5c|7f))', href, re.I)):
+                continue
+            # Historical result/award attachments must never be offered as bid documents.
+            try:
+                href_path = urlsplit(href).path
+            except ValueError:
+                continue
+            if re.search(r'\b(?:results?|awards?|tabulations?)\b', label, re.I) or re.search(r'\b(?:results?|awards?|tabulations?)\b', href_path, re.I):
+                continue
+            # Invalid IPv6 authorities can fail during urljoin or hostname
+            # parsing, not just when reading .port. Skip the malformed link.
+            try:
+                url = urljoin(page_url, href)
+                parts = urlsplit(url)
+                allowed_port = parts.port in (None, 443)
+                attachment_host = parts.hostname
+            except ValueError:
+                continue
+            if (parts.scheme == 'https' and attachment_host == host
+                    and allowed_port
+                    and not parts.username and not parts.password
+                    and parts.path != urlsplit(page_url).path
+                    and not parts.query and not parts.fragment and url not in seen_urls):
+                seen_urls.add(url)
+                if len(links) < 30:
+                    links.append({'url': url, 'label': label})
+                elif diagnostics is not None:
+                    # Count only actual overflow, not the 30th accepted link.
+                    diagnostics['attachments_truncated'] += 1
+        if diagnostics is not None and not links:
+            # A heading alone is not a publishable solicitation.
+            diagnostics['notices_without_documents'] += 1
+        output.append({'title': title, 'text': ' '.join(' '.join(section['text']).split()), 'links': links})
+    return output
+
+
+def deadline_evidence_status(index_deadline, document_deadline):
+    """Compare independently verified ISO-8601 deadline strings, without guessing.
+
+    This is a diagnostic only: agreement does not prove that a bid is open.
+    A missing deadline or a disagreement requires manual verification before
+    any future adapter may publish a notice.
+    """
+    from datetime import datetime
+
+    def parse(value):
+        if not isinstance(value, str) or not value.strip():
+            return None
+        # Accept only explicit RFC 3339-style date/time and numeric UTC offsets.
+        # datetime.fromisoformat alone also accepts week dates and compact forms,
+        # which are unsuitable as independently verified bid deadline evidence.
+        if not re.fullmatch(
+            r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}'
+            r'(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})', value
+        ):
+            return None
+        try:
+            parsed = datetime.fromisoformat(value.replace('Z', '+00:00'))
+        except ValueError:
+            return None
+        if parsed.tzinfo is None or parsed.utcoffset() is None:
+            return None
+        return parsed
+    index = parse(index_deadline)
+    document = parse(document_deadline)
+    if index is None or document is None:
+        return 'verification_required'
+    return 'consistent' if index == document else 'conflict'
+
+
+def deadline_open_status(index_deadline, document_deadline, as_of):
+    """Fail closed on missing, conflicting, or elapsed bid deadlines.
+
+    All inputs must be offset-aware ISO-8601 timestamps. A future deadline
+    alone never proves scope, document authenticity, or eligibility.
+    """
+    from datetime import datetime
+
+    if deadline_evidence_status(index_deadline, document_deadline) != 'consistent':
+        return 'verification_required'
+    try:
+        # Apply the same strict format to the observation timestamp.
+        if (not isinstance(as_of, str) or not re.fullmatch(
+                r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}'
+                r'(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})', as_of)):
+            return 'verification_required'
+        now = datetime.fromisoformat(as_of.replace('Z', '+00:00'))
+        deadline = datetime.fromisoformat(index_deadline.replace('Z', '+00:00'))
+        if now is None or now.tzinfo is None or now.utcoffset() is None:
+            return 'verification_required'
+    except (ValueError, TypeError, OverflowError):
+        return 'verification_required'
+    return 'deadline_elapsed' if deadline <= now else 'deadline_future_unverified'
