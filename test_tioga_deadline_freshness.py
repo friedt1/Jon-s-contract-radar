@@ -42,3 +42,26 @@ class DeadlineFreshnessTests(unittest.TestCase):
             with self.subTest(now=now):
                 self.assertEqual(deadline_open_status(deadline, deadline, now),
                                  'verification_required')
+
+    def test_noncanonical_iso_dates_fail_closed(self):
+        canonical = '2026-12-01T11:00:00-05:00'
+        invalid = (
+            '20261201T110000-05:00',
+            '2026-W49-2T11:00:00-05:00',
+            '2026-12-01 11:00:00-05:00',
+            '2026-12-01T11:00-05:00',
+            '2026-12-01T11:00:00',
+        )
+        for value in invalid:
+            with self.subTest(value=value):
+                self.assertEqual(deadline_open_status(value, value,
+                                 '2026-11-18T20:00:00-05:00'),
+                                 'verification_required')
+                self.assertEqual(deadline_open_status(canonical, canonical,
+                                 value), 'verification_required')
+
+    def test_utc_z_and_numeric_offset_agree(self):
+        self.assertEqual(deadline_open_status('2026-12-01T16:00:00Z',
+                         '2026-12-01T11:00:00-05:00',
+                         '2026-11-18T20:00:00-05:00'),
+                         'deadline_future_unverified')
