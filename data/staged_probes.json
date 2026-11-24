@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-23T06:22:22.558161+00:00",
+  "updated": "2026-11-24T06:11:33.561703+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 84,
   "safe_staged_entrypoints": 84,
@@ -128,12 +128,12 @@
     {
       "name": "Livingston County",
       "official_entrypoint": "https://www.livingstoncountyny.gov/Bids.aspx",
-      "state": "listing_reachable_no_open_bids",
+      "state": "notice_format_confirmed_terms_review_required",
       "listing_retrieved": true,
-      "individual_notice_retrieved": false,
-      "individual_records_discovered": 0,
-      "individual_samples_attempted": 0,
-      "individual_samples_confirmed": 0,
+      "individual_notice_retrieved": true,
+      "individual_records_discovered": 3,
+      "individual_samples_attempted": 1,
+      "individual_samples_confirmed": 1,
       "additional_sample_notice_urls_confirmed": [],
       "individual_sample_failures": [],
       "activation_gate": "Official county CivicPlus bid listings exist, but county also directs vendors to BidNet. Verify robots and publisher terms, same-host individual bidID extraction, and current listing completeness before activation.",
@@ -147,7 +147,26 @@
         "closed_or_elapsed": 0,
         "conflicting_evidence": 0
       },
-      "listing_relevant_examples": []
+      "listing_relevant_examples": [],
+      "sample_notice_url": "https://www.livingstoncountyny.gov/bids.aspx?bidID=364",
+      "sample_notice_listing_title": "Construction and Maintenance Materials and Services",
+      "sample_notice_listing_scope_category": "not_identified",
+      "sample_notice_scope_evidence": "listing_card_unverified",
+      "sample_notice_detail_scope_category": "not_identified",
+      "sample_notice_detail_scope_evidence": "individual_notice_labelled_fields_unverified",
+      "sample_notice_detail_scope_basis": "individual_notice_description",
+      "sample_notice_listing_detail_scope_disagreement": false,
+      "sample_notice_status": "open",
+      "sample_notice_detail_status": "open",
+      "sample_notice_listing_status": "open",
+      "sample_notice_status_conflict": false,
+      "sample_notice_status_source": "individual_notice",
+      "sample_notice_unparseable_detail_closing": false,
+      "sample_notice_deadline_source": "individual_notice",
+      "sample_notice_deadline": "2027-01-27",
+      "sample_notice_deadline_time": "10:30 AM",
+      "sample_notice_deadline_conflict": false,
+      "sample_notice_temporal_evidence": "deadline_not_passed_unverified"
     },
     {
       "name": "Wayne County",
@@ -409,7 +428,7 @@
       "individual_samples_confirmed": 3,
       "additional_sample_notice_urls_confirmed": [
         "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/436/90",
-        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/434/90"
+        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/440/90"
       ],
       "individual_sample_failures": [],
       "activation_gate": "Official city purchasing Bids & RFPs index and same-host individual /Home/Components/RFP/RFP/{id}/90 notices confirmed. Granicus adapter, robots/terms permission, live extraction, deadlines and status checks required before direct activation; historical Open labels may remain stale.",
@@ -1266,8 +1285,8 @@
     {
       "name": "UPMC Williamsport",
       "official_entrypoint": "https://www.upmc.com/about/supply-chain/inquiries/registration-non-mwdbe",
-      "state": "listing_fetch_error",
-      "listing_retrieved": false,
+      "state": "official_supplier_or_contact_gateway_access_required",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -1277,7 +1296,7 @@
       "activation_gate": "Official UPMC supplier registration route is available for prospective non-MWDBE suppliers; sourcing invitations/contract notices are not anonymously published here. Require authorized supplier onboarding or a permitted per-notice feed, robots/terms review, individual scope/deadline/status and verified Williamsport-area worksite before activation. Do not assume Pittsburgh-based or systemwide sourcing opportunities are within 2 hours of Elmira.",
       "terms_review": "required; robots allowance alone is not authorization",
       "direct_monitoring_activated": false,
-      "error_type": "RemoteDisconnected"
+      "section_note": "Official supplier/contact gateway, not a verified public individual-solicitation feed; vendor authorization or a separate permitted listing is required"
     },
     {
       "name": "Corning Incorporated",
@@ -1361,8 +1380,8 @@
     {
       "name": "CBRE regional property management",
       "official_entrypoint": "https://www.cbre.com/about-us/supply-chain/suppliers-supply-chain-technologies-and-registration",
-      "state": "listing_robots_policy_unavailable",
-      "listing_retrieved": false,
+      "state": "official_supplier_or_contact_gateway_access_required",
+      "listing_retrieved": true,
       "individual_notice_retrieved": false,
       "individual_records_discovered": 0,
       "individual_samples_attempted": 0,
@@ -1371,7 +1390,8 @@
       "individual_sample_failures": [],
       "activation_gate": "Official CBRE supplier information says mySource supports RFPs and supplier onboarding is invitation/approval-based. Do not crawl authenticated supplier systems or count this page as live monitoring. Obtain CBRE-approved supplier access or a permitted public per-notice feed and independently verify Elmira/northern-PA worksite, scope, deadline and status.",
       "terms_review": "required; robots allowance alone is not authorization",
-      "direct_monitoring_activated": false
+      "direct_monitoring_activated": false,
+      "section_note": "Official supplier/contact gateway, not a verified public individual-solicitation feed; vendor authorization or a separate permitted listing is required"
     },
     {
       "name": "JLL regional property management",
