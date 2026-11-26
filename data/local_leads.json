@@ -1,20 +1,20 @@
 {
-  "updated": "2026-11-26T11:43:28+00:00",
-  "request_sources_ok": 1,
+  "updated": "2026-11-26T12:52:17+00:00",
+  "request_sources_ok": 6,
   "source_status": {
     "Public Mastodon · Elmira": {
-      "state": "error",
-      "error": "HTTPError HTTP 503",
+      "state": "ok",
+      "candidates": 0,
       "kind": "mastodon"
     },
     "Public Mastodon · Southern Tier": {
-      "state": "error",
-      "error": "HTTPError HTTP 503",
+      "state": "ok",
+      "candidates": 0,
       "kind": "mastodon"
     },
     "Public Mastodon · Finger Lakes": {
-      "state": "error",
-      "error": "HTTPError HTTP 503",
+      "state": "ok",
+      "candidates": 0,
       "kind": "mastodon"
     },
     "Public Mastodon · Northern PA": {
@@ -23,13 +23,13 @@
       "kind": "mastodon"
     },
     "Public Mastodon · Ithaca": {
-      "state": "error",
-      "error": "HTTPError HTTP 503",
+      "state": "ok",
+      "candidates": 0,
       "kind": "mastodon"
     },
     "Public Mastodon · Corning": {
-      "state": "error",
-      "error": "HTTPError HTTP 503",
+      "state": "ok",
+      "candidates": 0,
       "kind": "mastodon"
     },
     "Google News · local tree work (context only)": {
