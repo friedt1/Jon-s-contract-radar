@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-26T06:11:26.326915+00:00",
+  "updated": "2026-11-27T06:16:19.569511+00:00",
   "configured_targets": 102,
   "staged_entrypoints": 84,
   "safe_staged_entrypoints": 84,
@@ -428,7 +428,7 @@
       "individual_samples_confirmed": 3,
       "additional_sample_notice_urls_confirmed": [
         "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/436/90",
-        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/438/90"
+        "https://www.binghamton-ny.gov/Home/Components/RFP/RFP/434/90"
       ],
       "individual_sample_failures": [],
       "activation_gate": "Official city purchasing Bids & RFPs index and same-host individual /Home/Components/RFP/RFP/{id}/90 notices confirmed. Granicus adapter, robots/terms permission, live extraction, deadlines and status checks required before direct activation; historical Open labels may remain stale.",
